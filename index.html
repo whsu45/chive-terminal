@@ -361,8 +361,8 @@
             );
             const startOfDaySec = Math.floor(startOfDayUTC / 1000);
 
-            let currentPrice = stock.basePrice || 100;
-            const targetChange = stock.changePercent || 0;
+            let currentPrice = Number(stock.basePrice) || 100;
+            const targetChange = Number(stock.changePercent) || 0;
             const driftPerStep = (targetChange / 100) / 270;
 
             for (let i = 0; i < limitMinutes; i++) {
@@ -378,9 +378,9 @@
                 if (targetChange < 0 && currentPrice > stock.basePrice * 1.05) currentPrice = stock.basePrice * 1.02;
 
                 let pVal = parseFloat(currentPrice.toFixed(2));
-                if (isNaN(pVal) || pVal <= 0) pVal = stock.basePrice || 100;
+                if (isNaN(pVal) || pVal <= 0) pVal = Number(stock.basePrice) || 100;
 
-                let vVal = Math.floor(Math.abs(Math.sin(i)) * ((stock.volume || 10000) / 270) * (1 + (hashValue % 10)/10));
+                let vVal = Math.floor(Math.abs(Math.sin(i)) * ((Number(stock.volume) || 10000) / 270) * (1 + (hashValue % 10)/10));
                 if (isNaN(vVal)) vVal = 0;
 
                 intradayPrice.push({ time: unixSec, value: pVal });
@@ -485,10 +485,10 @@
             } else if (currentTab === 'losers') {
                 updateLosersTable();
                 updateLineChartFeed('losers', selectedLosersSymbol);
-            } {
+            } else if (currentTab === 'volume') {
                 updateVolumeTable();
                 updateLineChartFeed('volume', selectedVolumeSymbol);
-            } if (currentTab === 'watchlist') {
+            } else if (currentTab === 'watchlist') {
                 updateWatchlistTable();
                 if (selectedWatchlistSymbol) {
                     updateLineChartFeed('watchlist', selectedWatchlistSymbol);
@@ -559,12 +559,18 @@
 
         /* ---------------- TAB 2: GAINERS LOGIC ---------------- */
         function updateGainersTable() {
-            const aiGainers = STOCKS_POOL.filter(s => s.category === 'AI')
-                .sort((a, b) => b.changePercent - a.changePercent)
+            // Strict logical filter: only show stocks with actual positive changes
+            const aiGainers = STOCKS_POOL.filter(s => s.category === 'AI' && Number(s.changePercent) > 0)
+                .sort((a, b) => Number(b.changePercent) - Number(a.changePercent))
                 .slice(0, 10);
 
             const tbody = document.getElementById('gainers-table-body');
             tbody.innerHTML = '';
+
+            if (aiGainers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-500">No active AI gainers in this session.</td></tr>`;
+                return;
+            }
 
             aiGainers.forEach((stock, index) => {
                 const tr = document.createElement('tr');
@@ -575,15 +581,18 @@
                     initLineChart('gainers', stock.symbol);
                 };
 
-                const prefix = stock.changePercent > 0 ? '+' : '';
+                const curPrice = Number(stock.currentPrice) || 0;
+                const changePct = Number(stock.changePercent) || 0;
+                const prefix = changePct > 0 ? '+' : '';
+
                 tr.innerHTML = `
                     <td class="py-2.5 font-bold text-slate-400">${index + 1}</td>
                     <td class="py-2.5">
                         <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
                         <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
                     </td>
-                    <td class="py-2.5 text-right font-mono text-slate-200">${stock.currentPrice.toFixed(2)}</td>
-                    <td class="py-2.5 text-right font-semibold text-emerald-400 font-mono">${prefix}${stock.changePercent.toFixed(2)}%</td>
+                    <td class="py-2.5 text-right font-mono text-slate-200">${curPrice.toFixed(2)}</td>
+                    <td class="py-2.5 text-right font-semibold text-emerald-400 font-mono">${prefix}${changePct.toFixed(2)}%</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -591,12 +600,18 @@
 
         /* ---------------- TAB 3: LOSERS LOGIC ---------------- */
         function updateLosersTable() {
-            const aiLosers = STOCKS_POOL.filter(s => s.category === 'AI')
-                .sort((a, b) => a.changePercent - b.changePercent)
+            // Strict logical filter: only show stocks with actual negative changes
+            const aiLosers = STOCKS_POOL.filter(s => s.category === 'AI' && Number(s.changePercent) < 0)
+                .sort((a, b) => Number(a.changePercent) - Number(b.changePercent))
                 .slice(0, 10);
 
             const tbody = document.getElementById('losers-table-body');
             tbody.innerHTML = '';
+
+            if (aiLosers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-500">No active AI losers in this session.</td></tr>`;
+                return;
+            }
 
             aiLosers.forEach((stock, index) => {
                 const tr = document.createElement('tr');
@@ -607,15 +622,18 @@
                     initLineChart('losers', stock.symbol);
                 };
 
-                const prefix = stock.changePercent > 0 ? '+' : '';
+                const curPrice = Number(stock.currentPrice) || 0;
+                const changePct = Number(stock.changePercent) || 0;
+                const prefix = changePct > 0 ? '+' : '';
+
                 tr.innerHTML = `
                     <td class="py-2.5 font-bold text-slate-400">${index + 1}</td>
                     <td class="py-2.5">
                         <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
                         <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
                     </td>
-                    <td class="py-2.5 text-right font-mono text-slate-200">${stock.currentPrice.toFixed(2)}</td>
-                    <td class="py-2.5 text-right font-semibold text-rose-400 font-mono">${prefix}${stock.changePercent.toFixed(2)}%</td>
+                    <td class="py-2.5 text-right font-mono text-slate-200">${curPrice.toFixed(2)}</td>
+                    <td class="py-2.5 text-right font-semibold text-rose-400 font-mono">${prefix}${changePct.toFixed(2)}%</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -624,7 +642,7 @@
         /* ---------------- TAB 4: POPULAR INTRA_DAY LOGIC ---------------- */
         function updateVolumeTable() {
             const popularStocks = [...STOCKS_POOL]
-                .sort((a, b) => b.volume - a.volume)
+                .sort((a, b) => Number(b.volume) - Number(a.volume))
                 .slice(0, 10);
 
             const tbody = document.getElementById('volume-table-body');
@@ -639,14 +657,17 @@
                     initLineChart('volume', stock.symbol);
                 };
 
+                const curPrice = Number(stock.currentPrice) || 0;
+                const totalVol = Number(stock.volume) || 0;
+
                 tr.innerHTML = `
                     <td class="py-2.5 font-bold text-slate-400">${index + 1}</td>
                     <td class="py-2.5">
                         <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
                         <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
                     </td>
-                    <td class="py-2.5 text-right font-mono text-slate-300">${stock.volume.toLocaleString()}</td>
-                    <td class="py-2.5 text-right font-mono text-slate-200">${stock.currentPrice.toFixed(2)}</td>
+                    <td class="py-2.5 text-right font-mono text-slate-300">${totalVol.toLocaleString()}</td>
+                    <td class="py-2.5 text-right font-mono text-slate-200">${curPrice.toFixed(2)}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -737,16 +758,18 @@
                     initLineChart('watchlist', stock.symbol);
                 };
 
-                const changeColor = stock.changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400';
-                const prefix = stock.changePercent > 0 ? '+' : '';
+                const curPrice = Number(stock.currentPrice) || 0;
+                const changePct = Number(stock.changePercent) || 0;
+                const changeColor = changePct >= 0 ? 'text-emerald-400' : 'text-rose-400';
+                const prefix = changePct > 0 ? '+' : '';
 
                 tr.innerHTML = `
                     <td class="py-2.5">
                         <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
                         <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
                     </td>
-                    <td class="py-2.5 text-right font-mono text-slate-200">${stock.currentPrice.toFixed(2)}</td>
-                    <td class="py-2.5 text-right font-semibold font-mono ${changeColor}">${prefix}${stock.changePercent.toFixed(2)}%</td>
+                    <td class="py-2.5 text-right font-mono text-slate-200">${curPrice.toFixed(2)}</td>
+                    <td class="py-2.5 text-right font-semibold font-mono ${changeColor}">${prefix}${changePct.toFixed(2)}%</td>
                     <td class="py-2.5 text-center">
                         <button onclick="removeStockFromWatchlist('${stock.symbol}', event)" class="text-rose-400 hover:text-rose-600 font-semibold text-xs px-2 py-1">Delete</button>
                     </td>
@@ -773,79 +796,118 @@
                 return;
             }
 
+            // Parse numbers safely to prevent code execution halts
+            const basePrice = Number(stock.basePrice) || 100;
+            const currentPrice = Number(stock.currentPrice) || 100;
+            const changePercent = Number(stock.changePercent) || 0;
+
+            const historyData = (stock.history || []).map(p => ({
+                time: Number(p.time),
+                value: Number(p.value) || basePrice
+            }));
+
+            const volumeData = (stock.volumeHistory || []).map(v => ({
+                time: Number(v.time),
+                value: Number(v.value) || 0
+            }));
+
+            if (historyData.length === 0) {
+                document.getElementById(`${tab}-chart-title`).innerText = 'Loading chart data...';
+                return;
+            }
+
             const w = container.clientWidth || 600;
             const h = 400;
 
-            charts[tab] = LightweightCharts.createChart(container, {
-                ...CHART_OPTIONS,
-                width: w,
-                height: h
-            });
+            try {
+                charts[tab] = LightweightCharts.createChart(container, {
+                    ...CHART_OPTIONS,
+                    width: w,
+                    height: h
+                });
 
-            // Taiwan Theme colors: Red is Up, Green is Down
-            const themeColor = stock.currentPrice >= stock.basePrice ? '#ef4444' : '#22c55e';
-            const fadeColor = stock.currentPrice >= stock.basePrice ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)';
+                // Taiwan colors: Red Up, Green Down
+                const themeColor = currentPrice >= basePrice ? '#ef4444' : '#22c55e';
+                const fadeColor = currentPrice >= basePrice ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)';
 
-            series[tab] = charts[tab].addAreaSeries({
-                lineColor: themeColor,
-                topColor: fadeColor,
-                bottomColor: 'rgba(30, 41, 59, 0)',
-                lineWidth: 2,
-            });
+                series[tab] = charts[tab].addAreaSeries({
+                    lineColor: themeColor,
+                    topColor: fadeColor,
+                    bottomColor: 'rgba(30, 41, 59, 0)',
+                    lineWidth: 2,
+                });
 
-            // Yellow volume bars overlay on the native left scale to prevent layout crashes
-            volumeSeries[tab] = charts[tab].addHistogramSeries({
-                color: 'rgba(234, 179, 8, 0.35)',
-                priceFormat: { type: 'volume' },
-                priceScaleId: 'left', // Binds volume to the standard native left axis scale
-            });
+                // Confine volume overlay cleanly on the native left scale to prevent layout script exceptions
+                volumeSeries[tab] = charts[tab].addHistogramSeries({
+                    color: 'rgba(234, 179, 8, 0.35)',
+                    priceFormat: { type: 'volume' },
+                    priceScaleId: 'left', // Avoids custom scale indexation blocks
+                });
 
-            // Configure the left scale parameters to hide and confine labels
-            charts[tab].priceScale('left').applyOptions({
-                scaleMargins: {
-                    top: 0.8, // Confine volume bars to the bottom 20%
-                    bottom: 0,
-                },
-                visible: false, // Hides the scale labels of the left axis
-            });
+                charts[tab].priceScale('left').applyOptions({
+                    scaleMargins: {
+                        top: 0.8, // Confinements
+                        bottom: 0,
+                    },
+                    visible: false, // Keep scales hidden
+                });
 
-            // Add standard Dashed previous close baseline (0% reference line)
-            series[tab].createPriceLine({
-                price: stock.basePrice,
-                color: '#64748b',
-                lineWidth: 1,
-                lineStyle: 1, // Dashed
-                axisLabelVisible: true,
-                title: 'Ref: ' + stock.basePrice.toFixed(2)
-            });
+                // Add Dashed previous close baseline
+                series[tab].createPriceLine({
+                    price: basePrice,
+                    color: '#64748b',
+                    lineWidth: 1,
+                    lineStyle: 1, // Dashed
+                    axisLabelVisible: true,
+                    title: 'Ref: ' + basePrice.toFixed(2)
+                });
 
-            const changePrefix = stock.changePercent > 0 ? '+' : '';
-            document.getElementById(`${tab}-chart-title`).innerText = `${stock.name} (${stock.symbol}) : ${stock.currentPrice.toFixed(2)} (${changePrefix}${stock.changePercent.toFixed(2)}%)`;
+                const changePrefix = changePercent > 0 ? '+' : '';
+                document.getElementById(`${tab}-chart-title`).innerText = `${stock.name} (${stock.symbol}) : ${currentPrice.toFixed(2)} (${changePrefix}${changePercent.toFixed(2)}%)`;
 
-            series[tab].setData(stock.history);
-            volumeSeries[tab].setData(stock.volumeHistory);
+                series[tab].setData(historyData);
+                volumeSeries[tab].setData(volumeData);
 
-            charts[tab].timeScale().fitContent();
+                charts[tab].timeScale().fitContent();
 
-            const resizeObserver = new ResizeObserver(entries => {
-                if (charts[tab] && container.clientWidth > 0) {
-                    charts[tab].resize(container.clientWidth, h);
-                }
-            });
-            resizeObserver.observe(container);
+                const resizeObserver = new ResizeObserver(entries => {
+                    if (charts[tab] && container.clientWidth > 0) {
+                        charts[tab].resize(container.clientWidth, h);
+                    }
+                });
+                resizeObserver.observe(container);
+            } catch (error) {
+                console.error("TradingView Canvas execution halted: ", error);
+            }
         }
 
         function updateLineChartFeed(tab, symbol) {
             const stock = STOCKS_POOL.find(s => s.symbol === symbol);
             if (!stock || !series[tab]) return;
 
-            series[tab].setData(stock.history);
-            if (volumeSeries[tab]) {
-                volumeSeries[tab].setData(stock.volumeHistory);
+            const basePrice = Number(stock.basePrice) || 100;
+            const currentPrice = Number(stock.currentPrice) || 100;
+            const changePercent = Number(stock.changePercent) || 0;
+
+            const historyData = (stock.history || []).map(p => ({
+                time: Number(p.time),
+                value: Number(p.value) || basePrice
+            }));
+
+            const volumeData = (stock.volumeHistory || []).map(v => ({
+                time: Number(v.time),
+                value: Number(v.value) || 0
+            }));
+
+            if (historyData.length > 0) {
+                series[tab].setData(historyData);
+                if (volumeSeries[tab] && volumeData.length > 0) {
+                    volumeSeries[tab].setData(volumeData);
+                }
             }
 
-            const changePrefix = stock.changePercent > 0 ? '+' : '';
-            document.getElementById(`${tab}-chart-title`).innerText = `${stock.name} (${stock.symbol}) : ${stock.currentPrice.toFixed(2)} (${changePrefix}${stock.changePercent.toFixed(2)}%)`;
+            const changePrefix = changePercent > 0 ? '+' : '';
+            document.getElementById(`${tab}-chart-title`).innerText = `${stock.name} (${stock.symbol}) : ${currentPrice.toFixed(2)} (${changePrefix}${changePercent.toFixed(2)}%)`;
         }
 
         document.addEventListener('click', function(e) {

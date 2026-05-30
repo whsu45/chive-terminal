@@ -1,10 +1,761 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taiwan AI Stock Terminal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- TradingView Lightweight Charts CDN -->
+    <script type="text/javascript" src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
-<body>
-$END$
+<body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header & Dashboard Control -->
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center space-x-3">
+            <span class="text-2xl">⚡</span>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h1 class="text-xl font-bold tracking-tight text-white">Taiwan AI Stock Terminal</h1>
+                    <span id="source-badge" class="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-slate-700 text-slate-300">Syncing...</span>
+                </div>
+                <p class="text-xs text-slate-400">Professional Grade Fintech Analytics Platform</p>
+            </div>
+        </div>
+
+        <!-- Auto-Refresh Widget -->
+        <div class="flex items-center space-x-4 bg-slate-900/60 px-4 py-2 rounded-lg border border-slate-700/50">
+            <div class="flex flex-col text-right">
+                <span class="text-xs text-slate-400" id="refresh-label">Smart Syncing...</span>
+                <span class="text-xs font-mono text-emerald-400" id="sync-time">Last update: --:--:--</span>
+            </div>
+            <!-- Progress Circle Indicator -->
+            <div class="relative w-8 h-8">
+                <svg class="w-full h-full transform -rotate-90">
+                    <circle cx="16" cy="16" r="12" stroke="currentColor" class="text-slate-700" stroke-width="3" fill="transparent" />
+                    <circle id="progress-circle" cx="16" cy="16" r="12" stroke="currentColor" class="text-emerald-500" stroke-width="3" fill="transparent" stroke-dasharray="75.36" stroke-dashoffset="0" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold" id="countdown-num">10</div>
+            </div>
+            <!-- Toggle for Hard Refresh Mode -->
+            <div class="border-l border-slate-700 pl-4 flex flex-col justify-center">
+                <label class="text-[10px] uppercase text-slate-400 font-semibold tracking-wider mb-1">Refresh Mode</label>
+                <select id="refresh-mode-select" class="bg-slate-800 text-xs border border-slate-600 rounded px-1 py-0.5 text-slate-200 outline-none cursor-pointer">
+                    <option value="smart">Smart Live Sync (Recommended)</option>
+                    <option value="hard">Hard Browser Reload (10s)</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-slate-800/80 border-b border-slate-700/60 sticky top-0 z-50 overflow-x-auto">
+        <div class="max-w-7xl mx-auto px-4 flex space-x-1" role="tablist">
+            <button onclick="switchTab('report')" id="tab-report" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
+                <span>📊</span> <span>Stock Report</span>
+            </button>
+            <button onclick="switchTab('gainers')" id="tab-gainers" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
+                <span>📈</span> <span>Top 10 AI Gainers</span>
+            </button>
+            <button onclick="switchTab('losers')" id="tab-losers" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
+                <span>📉</span> <span>Top 10 AI Losers</span>
+            </button>
+            <button onclick="switchTab('volume')" id="tab-volume" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
+                <span>🕯️</span> <span>Popular (K-Line)</span>
+            </button>
+            <button onclick="switchTab('watchlist')" id="tab-watchlist" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
+                <span>⭐</span> <span>Custom Watchlist</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow p-4 md:p-6 max-w-7xl mx-auto w-full">
+
+        <!-- TAB 1: Stock Report Iframe -->
+        <div id="content-report" class="tab-content hidden h-full">
+            <div class="bg-slate-800 rounded-xl border border-slate-700/80 overflow-hidden shadow-xl">
+                <div class="bg-slate-700/50 px-4 py-2 border-b border-slate-600 flex justify-between items-center">
+                    <span class="text-xs font-mono text-slate-300">Target URL: https://eric-lam.com/tw_stocker/stock_report.html</span>
+                    <button onclick="reloadIframe()" class="text-xs text-sky-400 hover:underline">Reload Frame</button>
+                </div>
+                <iframe id="report-iframe" src="https://eric-lam.com/tw_stocker/stock_report.html" class="w-full h-[70vh] border-0 bg-white"></iframe>
+            </div>
+        </div>
+
+        <!-- TAB 2: AI Gainers -->
+        <div id="content-gainers" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-5 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg">
+                    <h3 class="text-base font-semibold text-emerald-400 mb-3 flex items-center gap-2">🟢 Top 10 AI Gainers (Real-Time Performance)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-700 text-slate-400 uppercase tracking-wider">
+                                    <th class="py-2">Rank</th>
+                                    <th class="py-2">Stock</th>
+                                    <th class="py-2 text-right">Price</th>
+                                    <th class="py-2 text-right">Change %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gainers-table-body" class="divide-y divide-slate-700/50"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-base font-semibold text-slate-200" id="gainers-chart-title">Line Chart</h3>
+                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300">10s Live Interval</span>
+                    </div>
+                    <div id="gainers-chart-container" class="w-full h-[400px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: AI Losers -->
+        <div id="content-losers" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-5 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg">
+                    <h3 class="text-base font-semibold text-rose-400 mb-3 flex items-center gap-2">🔴 Top 10 AI Losers (Real-Time Performance)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-700 text-slate-400 uppercase tracking-wider">
+                                    <th class="py-2">Rank</th>
+                                    <th class="py-2">Stock</th>
+                                    <th class="py-2 text-right">Price</th>
+                                    <th class="py-2 text-right">Change %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="losers-table-body" class="divide-y divide-slate-700/50"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-base font-semibold text-slate-200" id="losers-chart-title">Line Chart</h3>
+                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300">10s Live Interval</span>
+                    </div>
+                    <div id="losers-chart-container" class="w-full h-[400px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Popular (K-Line) -->
+        <div id="content-volume" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-5 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg">
+                    <h3 class="text-base font-semibold text-sky-400 mb-3 flex items-center gap-2">🔥 Top 10 Popular Stocks by Volume</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-700 text-slate-400 uppercase tracking-wider">
+                                    <th class="py-2">Rank</th>
+                                    <th class="py-2">Stock</th>
+                                    <th class="py-2 text-right">Volume</th>
+                                    <th class="py-2 text-right">Current Price</th>
+                                </tr>
+                            </thead>
+                            <tbody id="volume-table-body" class="divide-y divide-slate-700/50"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-base font-semibold text-slate-200" id="volume-chart-title">Daily K-Line Chart</h3>
+                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300">Candlestick (Interactive)</span>
+                    </div>
+                    <div id="volume-chart-container" class="w-full h-[400px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Custom Watchlist -->
+        <div id="content-watchlist" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-5 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col gap-4">
+
+                    <!-- Search & Add Section -->
+                    <div>
+                        <h3 class="text-base font-semibold text-amber-400 mb-2">⭐ Taiwan Stock Watchlist</h3>
+                        <div class="relative">
+                            <input type="text" id="search-input" oninput="handleSearch()" placeholder="Type stock name or code (e.g. 2330)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition" />
+                            <div id="search-results" class="absolute left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl max-h-60 overflow-y-auto hidden z-20 divide-y divide-slate-700/50"></div>
+                        </div>
+                    </div>
+
+                    <!-- Watchlist Table -->
+                    <div class="overflow-x-auto flex-grow">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-700 text-slate-400 uppercase tracking-wider">
+                                    <th class="py-2">Stock</th>
+                                    <th class="py-2 text-right">Price</th>
+                                    <th class="py-2 text-right">Change %</th>
+                                    <th class="py-2 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="watchlist-table-body" class="divide-y divide-slate-700/50"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-base font-semibold text-slate-200" id="watchlist-chart-title">Line Chart</h3>
+                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300">10s Live Interval</span>
+                    </div>
+                    <div id="watchlist-chart-container" class="w-full h-[400px]"></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800/50 border-t border-slate-700/80 text-center py-4 text-xs text-slate-500">
+        Taiwan AI Stock Terminal &copy; 2026. Standalone client-side caching enabled. Real-world indexes managed by GitHub Actions pipeline.
+    </footer>
+
+    <!-- JS Core Engine logic -->
+    <script>
+        // Fallback Stock Data Pool used if JSON hasn't been built yet
+        let STOCKS_POOL = [
+            { symbol: '2330.TW', name: 'TSMC (台積電)', basePrice: 940, category: 'AI', volume: 45000 },
+            { symbol: '2317.TW', name: 'Foxconn (鴻海)', basePrice: 210, category: 'AI', volume: 68000 },
+            { symbol: '2454.TW', name: 'MediaTek (聯發科)', basePrice: 1350, category: 'AI', volume: 8200 },
+            { symbol: '2382.TW', name: 'Quanta (廣達)', basePrice: 290, category: 'AI', volume: 31000 },
+            { symbol: '3231.TW', name: 'Wistron (緯創)', basePrice: 115, category: 'AI', volume: 55000 },
+            { symbol: '2356.TW', name: 'Inventec (英業達)', basePrice: 55, category: 'AI', volume: 42000 },
+            { symbol: '2357.TW', name: 'ASUS (華碩)', basePrice: 480, category: 'AI', volume: 5000 },
+            { symbol: '2376.TW', name: 'Gigabyte (技嘉)', basePrice: 310, category: 'AI', volume: 15000 },
+            { symbol: '6669.TW', name: 'Wiwynn (緯穎)', basePrice: 2400, category: 'AI', volume: 1800 },
+            { symbol: '2301.TW', name: 'Lite-On (光寶科)', basePrice: 105, category: 'AI', volume: 22000 },
+            { symbol: '2345.TW', name: 'Accton (智邦)', basePrice: 530, category: 'AI', volume: 3500 },
+            { symbol: '3017.TW', name: 'AMax (奇鋐)', basePrice: 720, category: 'AI', volume: 9200 },
+            { symbol: '3037.TW', name: 'Unimicron (欣興)', basePrice: 180, category: 'AI', volume: 28000 },
+            { symbol: '2603.TW', name: 'Evergreen (長榮)', basePrice: 195, category: 'Non-AI', volume: 48000 },
+            { symbol: '2609.TW', name: 'Yang Ming (陽明)', basePrice: 75, category: 'Non-AI', volume: 95000 },
+            { symbol: '2881.TW', name: 'Fubon Financial (富邦金)', basePrice: 78, category: 'Non-AI', volume: 24000 },
+            { symbol: '2882.TW', name: 'Cathay Financial (國泰金)', basePrice: 58, category: 'Non-AI', volume: 31000 },
+            { symbol: '3481.TW', name: 'Innolux (群創)', basePrice: 15.5, category: 'Non-AI', volume: 120000 },
+            { symbol: '2409.TW', name: 'AUO (友達)', basePrice: 18.2, category: 'Non-AI', volume: 85000 }
+        ];
+
+        // System States
+        let currentTab = 'report';
+        let refreshCountdown = 10;
+        let selectedGainersSymbol = '2330.TW';
+        let selectedLosersSymbol = '2317.TW';
+        let selectedVolumeSymbol = '3231.TW';
+        let selectedWatchlistSymbol = '';
+        let watchlistSymbols = ['2330.TW', '2454.TW'];
+
+        // Chart References
+        let charts = { gainers: null, losers: null, volume: null, watchlist: null };
+        let series = { gainers: null, losers: null, volume: null, watchlist: null };
+
+        const CHART_OPTIONS = {
+            layout: { background: { color: '#1e293b' }, textColor: '#cbd5e1' },
+            grid: { vertLines: { color: '#334155' }, horzLines: { color: '#334155' } },
+            rightPriceScale: { borderColor: '#475569' },
+            timeScale: { borderColor: '#475569', timeVisible: true, secondsVisible: true },
+            crosshair: { mode: 0 }
+        };
+
+        // Initialize Core Engine
+        window.addEventListener('DOMContentLoaded', async () => {
+            const stored = localStorage.getItem('tw_watchlist');
+            if (stored) {
+                watchlistSymbols = JSON.parse(stored);
+            }
+            if (watchlistSymbols.length > 0) {
+                selectedWatchlistSymbol = watchlistSymbols[0];
+            }
+
+            // Attempt to load JSON data generated by GitHub Action pipeline
+            await loadLatestData();
+
+            switchTab('report');
+            startSyncTimers();
+        });
+
+        // Tries to pull real stock_data.json fetched via GitHub Actions
+        async function loadLatestData() {
+            const badge = document.getElementById('source-badge');
+            try {
+                const response = await fetch('./stock_data.json');
+                if (!response.ok) throw new Error("JSON file could not be fetched or does not exist yet.");
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    STOCKS_POOL = data;
+
+                    // Identify which source was compiled by the GitHub Action
+                    const source = data[0].source || "GitHub-Actions";
+                    if (source === "YahooFinance") {
+                        badge.className = "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                        badge.innerText = "Source: Yahoo Finance";
+                    } else if (source === "TWSE-OpenAPI") {
+                        badge.className = "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-sky-500/20 text-sky-400 border border-sky-500/30";
+                        badge.innerText = "Source: TWSE OpenAPI";
+                    } else {
+                        badge.className = "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-amber-500/20 text-amber-400 border border-amber-500/30";
+                        badge.innerText = `Backup: ${source}`;
+                    }
+                    console.log(`Real-world stock baseline loaded. Source: ${source}`);
+                    return;
+                }
+            } catch (err) {
+                console.warn("Falling back to simulated seed stock data engine:", err.message);
+            }
+            seedStockData();
+            badge.className = "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-slate-700 text-slate-400 border border-slate-600";
+            badge.innerText = "Simulated Fallback";
+        }
+
+        // Seeding baseline if JSON data is not available
+        function seedStockData() {
+            const today = new Date();
+            const nowSeconds = Math.floor(Date.now() / 1000);
+
+            STOCKS_POOL.forEach(stock => {
+                const rFactor = (Math.random() * 8 - 4) / 100; // -4% to +4%
+                stock.currentPrice = parseFloat((stock.basePrice * (1 + rFactor)).toFixed(2));
+                stock.change = parseFloat((stock.currentPrice - stock.basePrice).toFixed(2));
+                stock.changePercent = parseFloat(((stock.change / stock.basePrice) * 100).toFixed(2));
+
+                stock.history = [];
+                let stepPrice = stock.basePrice;
+                for (let i = 50; i >= 1; i--) {
+                    const stepPct = (Math.random() * 0.4 - 0.2) / 100;
+                    stepPrice = parseFloat((stepPrice * (1 + stepPct)).toFixed(2));
+                    stock.history.push({
+                        time: nowSeconds - (i * 10),
+                        value: stepPrice
+                    });
+                }
+
+                stock.candles = [];
+                let previousClose = stock.basePrice * 0.95;
+                for (let d = 30; d >= 1; d--) {
+                    const dOffset = new Date();
+                    dOffset.setDate(today.getDate() - d);
+                    const dStr = dOffset.toISOString().split('T')[0];
+
+                    const dChangePct = (Math.random() * 4 - 2) / 100;
+                    const open = previousClose;
+                    const close = parseFloat((open * (1 + dChangePct)).toFixed(2));
+                    const high = parseFloat((Math.max(open, close) * (1 + Math.random() * 0.015)).toFixed(2));
+                    const low = parseFloat((Math.min(open, close) * (1 - Math.random() * 0.015)).toFixed(2));
+
+                    stock.candles.push({ time: dStr, open, high, low, close });
+                    previousClose = close;
+                }
+            });
+        }
+
+        // Performs live simulated market updates every 10 seconds
+        function handleGlobalTick() {
+            const nowSeconds = Math.floor(Date.now() / 1000);
+
+            STOCKS_POOL.forEach(stock => {
+                const delta = (Math.random() * 0.6 - 0.3) / 100; // simulated tick swing
+                stock.currentPrice = parseFloat((stock.currentPrice * (1 + delta)).toFixed(2));
+                stock.change = parseFloat((stock.currentPrice - stock.basePrice).toFixed(2));
+                stock.changePercent = parseFloat(((stock.change / stock.basePrice) * 100).toFixed(2));
+                stock.volume += Math.floor(Math.random() * 800) + 50;
+
+                const nextTime = stock.history.length > 0 ? stock.history[stock.history.length - 1].time + 10 : nowSeconds;
+                const newTick = { time: nextTime, value: stock.currentPrice };
+                stock.history.push(newTick);
+                if (stock.history.length > 100) stock.history.shift();
+
+                if (stock.candles && stock.candles.length > 0) {
+                    const todayCandle = stock.candles[stock.candles.length - 1];
+                    todayCandle.close = stock.currentPrice;
+                    if (stock.currentPrice > todayCandle.high) todayCandle.high = stock.currentPrice;
+                    if (stock.currentPrice < todayCandle.low) todayCandle.low = stock.currentPrice;
+                }
+            });
+
+            renderActiveTabComponents();
+
+            const t = new Date();
+            document.getElementById('sync-time').innerText = `Last update: ${t.toTimeString().split(' ')[0]}`;
+        }
+
+        function renderActiveTabComponents() {
+            if (currentTab === 'gainers') {
+                updateGainersTable();
+                updateLineChartFeed('gainers', selectedGainersSymbol);
+            } else if (currentTab === 'losers') {
+                updateLosersTable();
+                updateLineChartFeed('losers', selectedLosersSymbol);
+            } else if (currentTab === 'volume') {
+                updateVolumeTable();
+                updateKLineChartFeed(selectedVolumeSymbol);
+            } else if (currentTab === 'watchlist') {
+                updateWatchlistTable();
+                if (selectedWatchlistSymbol) {
+                    updateLineChartFeed('watchlist', selectedWatchlistSymbol);
+                }
+            }
+        }
+
+        function startSyncTimers() {
+            setInterval(() => {
+                const mode = document.getElementById('refresh-mode-select').value;
+                refreshCountdown--;
+
+                if (refreshCountdown <= 0) {
+                    refreshCountdown = 10;
+                    if (mode === 'hard') {
+                        location.reload();
+                    } else {
+                        handleGlobalTick();
+                    }
+                }
+
+                document.getElementById('countdown-num').innerText = refreshCountdown;
+                const offset = 75.36 - (75.36 * refreshCountdown / 10);
+                document.getElementById('progress-circle').setAttribute('stroke-dashoffset', offset);
+            }, 1000);
+
+            handleGlobalTick();
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-amber-400', 'text-amber-400', 'border-emerald-500', 'text-emerald-500', 'border-rose-500', 'text-rose-500', 'border-sky-500', 'text-sky-500', 'border-slate-300', 'text-slate-100');
+                btn.classList.add('border-transparent', 'text-slate-400');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.remove('border-transparent', 'text-slate-400');
+            if (tabId === 'gainers') activeBtn.classList.add('border-emerald-500', 'text-emerald-500');
+            else if (tabId === 'losers') activeBtn.classList.add('border-rose-500', 'text-rose-500');
+            else if (tabId === 'volume') activeBtn.classList.add('border-sky-500', 'text-sky-500');
+            else if (tabId === 'watchlist') activeBtn.classList.add('border-amber-400', 'text-amber-400');
+            else activeBtn.classList.add('border-slate-300', 'text-slate-100');
+
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById(`content-${tabId}`).classList.remove('hidden');
+
+            setTimeout(() => {
+                if (tabId === 'gainers') {
+                    initLineChart('gainers', selectedGainersSymbol);
+                } else if (tabId === 'losers') {
+                    initLineChart('losers', selectedLosersSymbol);
+                } else if (tabId === 'volume') {
+                    initKLineChart(selectedVolumeSymbol);
+                } else if (tabId === 'watchlist') {
+                    if (selectedWatchlistSymbol) {
+                        initLineChart('watchlist', selectedWatchlistSymbol);
+                    }
+                }
+                renderActiveTabComponents();
+            }, 50);
+        }
+
+        function reloadIframe() {
+            document.getElementById('report-iframe').src = "https://eric-lam.com/tw_stocker/stock_report.html";
+        }
+
+        /* ---------------- TAB 2: GAINERS LOGIC ---------------- */
+        function updateGainersTable() {
+            const aiGainers = STOCKS_POOL.filter(s => s.category === 'AI')
+                .sort((a, b) => b.changePercent - a.changePercent)
+                .slice(0, 10);
+
+            const tbody = document.getElementById('gainers-table-body');
+            tbody.innerHTML = '';
+
+            aiGainers.forEach((stock, index) => {
+                const tr = document.createElement('tr');
+                tr.className = `cursor-pointer transition duration-150 ${stock.symbol === selectedGainersSymbol ? 'bg-emerald-500/20 hover:bg-emerald-500/30' : 'hover:bg-slate-700/40'}`;
+                tr.onclick = () => {
+                    selectedGainersSymbol = stock.symbol;
+                    updateGainersTable();
+                    initLineChart('gainers', stock.symbol);
+                };
+
+                tr.innerHTML = `
+                    <td class="py-2.5 font-bold text-slate-400">${index + 1}</td>
+                    <td class="py-2.5">
+                        <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
+                    </td>
+                    <td class="py-2.5 text-right font-mono text-slate-200">${stock.currentPrice.toFixed(2)}</td>
+                    <td class="py-2.5 text-right font-semibold text-emerald-400 font-mono">+${stock.changePercent.toFixed(2)}%</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* ---------------- TAB 3: LOSERS LOGIC ---------------- */
+        function updateLosersTable() {
+            const aiLosers = STOCKS_POOL.filter(s => s.category === 'AI')
+                .sort((a, b) => a.changePercent - b.changePercent)
+                .slice(0, 10);
+
+            const tbody = document.getElementById('losers-table-body');
+            tbody.innerHTML = '';
+
+            aiLosers.forEach((stock, index) => {
+                const tr = document.createElement('tr');
+                tr.className = `cursor-pointer transition duration-150 ${stock.symbol === selectedLosersSymbol ? 'bg-rose-500/20 hover:bg-rose-500/30' : 'hover:bg-slate-700/40'}`;
+                tr.onclick = () => {
+                    selectedLosersSymbol = stock.symbol;
+                    updateLosersTable();
+                    initLineChart('losers', stock.symbol);
+                };
+
+                tr.innerHTML = `
+                    <td class="py-2.5 font-bold text-slate-400">${index + 1}</td>
+                    <td class="py-2.5">
+                        <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
+                    </td>
+                    <td class="py-2.5 text-right font-mono text-slate-200">${stock.currentPrice.toFixed(2)}</td>
+                    <td class="py-2.5 text-right font-semibold text-rose-400 font-mono">${stock.changePercent.toFixed(2)}%</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* ---------------- TAB 4: VOLUME LOGIC (K-LINE) ---------------- */
+        function updateVolumeTable() {
+            const popularStocks = [...STOCKS_POOL]
+                .sort((a, b) => b.volume - a.volume)
+                .slice(0, 10);
+
+            const tbody = document.getElementById('volume-table-body');
+            tbody.innerHTML = '';
+
+            popularStocks.forEach((stock, index) => {
+                const tr = document.createElement('tr');
+                tr.className = `cursor-pointer transition duration-150 ${stock.symbol === selectedVolumeSymbol ? 'bg-sky-500/20 hover:bg-sky-500/30' : 'hover:bg-slate-700/40'}`;
+                tr.onclick = () => {
+                    selectedVolumeSymbol = stock.symbol;
+                    updateVolumeTable();
+                    initKLineChart(stock.symbol);
+                };
+
+                tr.innerHTML = `
+                    <td class="py-2.5 font-bold text-slate-400">${index + 1}</td>
+                    <td class="py-2.5">
+                        <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
+                    </td>
+                    <td class="py-2.5 text-right font-mono text-slate-300">${stock.volume.toLocaleString()}</td>
+                    <td class="py-2.5 text-right font-mono text-slate-200">${stock.currentPrice.toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* ---------------- TAB 5: WATCHLIST & SEARCH LOGIC ---------------- */
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const resultsDiv = document.getElementById('search-results');
+            if (!query) {
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+
+            const matches = STOCKS_POOL.filter(s =>
+                s.symbol.toLowerCase().includes(query) ||
+                s.name.toLowerCase().includes(query)
+            );
+
+            if (matches.length === 0) {
+                resultsDiv.innerHTML = `<div class="p-3 text-xs text-slate-500">No stocks found</div>`;
+            } else {
+                resultsDiv.innerHTML = matches.map(stock => `
+                    <div onclick="addStockToWatchlist('${stock.symbol}')" class="p-3 text-xs hover:bg-slate-700 cursor-pointer flex justify-between items-center text-slate-200">
+                        <div>
+                            <span class="font-bold text-white">${stock.name}</span>
+                            <span class="text-[10px] text-slate-400 font-mono ml-2">${stock.symbol}</span>
+                        </div>
+                        <span class="text-amber-400 font-semibold">+ Add</span>
+                    </div>
+                `).join('');
+            }
+            resultsDiv.classList.remove('hidden');
+        }
+
+        function addStockToWatchlist(symbol) {
+            if (!watchlistSymbols.includes(symbol)) {
+                watchlistSymbols.push(symbol);
+                localStorage.setItem('tw_watchlist', JSON.stringify(watchlistSymbols));
+            }
+            document.getElementById('search-input').value = '';
+            document.getElementById('search-results').classList.add('hidden');
+            selectedWatchlistSymbol = symbol;
+            updateWatchlistTable();
+            initLineChart('watchlist', symbol);
+        }
+
+        function removeStockFromWatchlist(symbol, event) {
+            event.stopPropagation();
+            watchlistSymbols = watchlistSymbols.filter(s => s !== symbol);
+            localStorage.setItem('tw_watchlist', JSON.stringify(watchlistSymbols));
+
+            if (selectedWatchlistSymbol === symbol) {
+                selectedWatchlistSymbol = watchlistSymbols.length > 0 ? watchlistSymbols[0] : '';
+            }
+            updateWatchlistTable();
+            if (selectedWatchlistSymbol) {
+                initLineChart('watchlist', selectedWatchlistSymbol);
+            } else {
+                if (charts.watchlist) {
+                    charts.watchlist.remove();
+                    charts.watchlist = null;
+                    series.watchlist = null;
+                }
+                document.getElementById('watchlist-chart-title').innerText = 'No Stock Selected';
+            }
+        }
+
+        function updateWatchlistTable() {
+            const tbody = document.getElementById('watchlist-table-body');
+            tbody.innerHTML = '';
+
+            if (watchlistSymbols.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-500">Your watchlist is empty. Search above to add stocks.</td></tr>`;
+                return;
+            }
+
+            watchlistSymbols.forEach(symbol => {
+                const stock = STOCKS_POOL.find(s => s.symbol === symbol);
+                if (!stock) return;
+
+                const tr = document.createElement('tr');
+                tr.className = `cursor-pointer transition duration-150 ${stock.symbol === selectedWatchlistSymbol ? 'bg-amber-500/20 hover:bg-amber-500/30' : 'hover:bg-slate-700/40'}`;
+                tr.onclick = () => {
+                    selectedWatchlistSymbol = stock.symbol;
+                    updateWatchlistTable();
+                    initLineChart('watchlist', stock.symbol);
+                };
+
+                const changeColor = stock.changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400';
+                const prefix = stock.changePercent >= 0 ? '+' : '';
+
+                tr.innerHTML = `
+                    <td class="py-2.5">
+                        <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
+                    </td>
+                    <td class="py-2.5 text-right font-mono text-slate-200">${stock.currentPrice.toFixed(2)}</td>
+                    <td class="py-2.5 text-right font-semibold font-mono ${changeColor}">${prefix}${stock.changePercent.toFixed(2)}%</td>
+                    <td class="py-2.5 text-center">
+                        <button onclick="removeStockFromWatchlist('${stock.symbol}', event)" class="text-rose-400 hover:text-rose-600 font-semibold text-xs px-2 py-1">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* ---------------- TRADINGVIEW LIGHTWEIGHT CHARTS ENGINE ---------------- */
+        function initLineChart(tab, symbol) {
+            const container = document.getElementById(`${tab}-chart-container`);
+            if (!container) return;
+
+            if (charts[tab]) {
+                charts[tab].remove();
+                charts[tab] = null;
+                series[tab] = null;
+            }
+
+            const stock = STOCKS_POOL.find(s => s.symbol === symbol);
+            if (!stock) {
+                document.getElementById(`${tab}-chart-title`).innerText = 'No Stock Selected';
+                return;
+            }
+
+            charts[tab] = LightweightCharts.createChart(container, CHART_OPTIONS);
+
+            const themeColor = tab === 'gainers' ? '#10b981' : (tab === 'losers' ? '#f43f5e' : '#f59e0b');
+            const fadeColor = tab === 'gainers' ? 'rgba(16, 185, 129, 0.2)' : (tab === 'losers' ? 'rgba(244, 63, 94, 0.2)' : 'rgba(245, 158, 11, 0.2)');
+
+            series[tab] = charts[tab].addAreaSeries({
+                lineColor: themeColor,
+                topColor: fadeColor,
+                bottomColor: 'rgba(30, 41, 59, 0)',
+                lineWidth: 2,
+            });
+
+            document.getElementById(`${tab}-chart-title`).innerText = `${stock.name} (${stock.symbol}) - Intraday Feed`;
+            series[tab].setData(stock.history);
+            charts[tab].timeScale().fitContent();
+
+            const resizeObserver = new ResizeObserver(entries => {
+                if (charts[tab] && container.clientWidth > 0) {
+                    charts[tab].applyOptions({ width: container.clientWidth });
+                }
+            });
+            resizeObserver.observe(container);
+        }
+
+        function updateLineChartFeed(tab, symbol) {
+            const stock = STOCKS_POOL.find(s => s.symbol === symbol);
+            if (!stock || !series[tab]) return;
+            series[tab].setData(stock.history);
+        }
+
+        function initKLineChart(symbol) {
+            const container = document.getElementById('volume-chart-container');
+            if (!container) return;
+
+            if (charts.volume) {
+                charts.volume.remove();
+                charts.volume = null;
+                series.volume = null;
+            }
+
+            const stock = STOCKS_POOL.find(s => s.symbol === symbol);
+            if (!stock) return;
+
+            charts.volume = LightweightCharts.createChart(container, CHART_OPTIONS);
+
+            // Taiwan Theme: Red Close > Open (Up), Green Close < Open (Down)
+            series.volume = charts.volume.addCandlestickSeries({
+                upColor: '#ef4444',
+                downColor: '#22c55e',
+                borderUpColor: '#ef4444',
+                borderDownColor: '#22c55e',
+                wickUpColor: '#ef4444',
+                wickDownColor: '#22c55e',
+            });
+
+            document.getElementById('volume-chart-title').innerText = `${stock.name} (${stock.symbol}) - Daily Candlestick`;
+            series.volume.setData(stock.candles);
+            charts.volume.timeScale().fitContent();
+
+            const resizeObserver = new ResizeObserver(entries => {
+                if (charts.volume && container.clientWidth > 0) {
+                    charts.volume.applyOptions({ width: container.clientWidth });
+                }
+            });
+            resizeObserver.observe(container);
+        }
+
+        function updateKLineChartFeed(symbol) {
+            const stock = STOCKS_POOL.find(s => s.symbol === symbol);
+            if (!stock || !series.volume) return;
+            series.volume.setData(stock.candles);
+        }
+
+        document.addEventListener('click', function(e) {
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.getElementById('search-results');
+            if (e.target !== searchInput && e.target !== searchResults) {
+                searchResults.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -485,10 +485,10 @@
             } else if (currentTab === 'losers') {
                 updateLosersTable();
                 updateLineChartFeed('losers', selectedLosersSymbol);
-            } else if (currentTab === 'volume') {
+            } {
                 updateVolumeTable();
                 updateLineChartFeed('volume', selectedVolumeSymbol);
-            } else if (currentTab === 'watchlist') {
+            } if (currentTab === 'watchlist') {
                 updateWatchlistTable();
                 if (selectedWatchlistSymbol) {
                     updateLineChartFeed('watchlist', selectedWatchlistSymbol);
@@ -793,20 +793,20 @@
                 lineWidth: 2,
             });
 
-            // Yellow/Amber Overlay Volume bars at bottom using custom overlay scaleId to avoid layout crashes
+            // Yellow volume bars overlay on the native left scale to prevent layout crashes
             volumeSeries[tab] = charts[tab].addHistogramSeries({
                 color: 'rgba(234, 179, 8, 0.35)',
                 priceFormat: { type: 'volume' },
-                priceScaleId: 'volume', // Set explicit scale to avoid overlapping scale configurations
+                priceScaleId: 'left', // Binds volume to the standard native left axis scale
             });
 
-            // Configure the volume price scale properties
-            charts[tab].priceScale('volume').applyOptions({
+            // Configure the left scale parameters to hide and confine labels
+            charts[tab].priceScale('left').applyOptions({
                 scaleMargins: {
-                    top: 0.8, // Vol confined to bottom 20%
+                    top: 0.8, // Confine volume bars to the bottom 20%
                     bottom: 0,
                 },
-                visible: false, // Hides the separate volume scale labels
+                visible: false, // Hides the scale labels of the left axis
             });
 
             // Add standard Dashed previous close baseline (0% reference line)

@@ -62,7 +62,7 @@
                 <span>📉</span> <span>Top 10 AI Losers</span>
             </button>
             <button onclick="switchTab('volume')" id="tab-volume" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
-                <span>🕯️</span> <span>Popular (K-Line)</span>
+                <span>📈</span> <span>Popular Trend</span>
             </button>
             <button onclick="switchTab('watchlist')" id="tab-watchlist" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
                 <span>⭐</span> <span>Custom Watchlist</span>
@@ -105,8 +105,8 @@
                 </div>
                 <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-base font-semibold text-slate-200" id="gainers-chart-title">Line Chart</h3>
-                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300" id="gainers-time-badge">10s Live Interval</span>
+                        <h3 class="text-base font-semibold text-slate-200" id="gainers-chart-title">Intraday Price & Volume (分時圖)</h3>
+                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300" id="gainers-time-badge">Syncing...</span>
                     </div>
                     <div id="gainers-chart-container" class="w-full h-[400px]"></div>
                 </div>
@@ -134,15 +134,15 @@
                 </div>
                 <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-base font-semibold text-slate-200" id="losers-chart-title">Line Chart</h3>
-                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300" id="losers-time-badge">10s Live Interval</span>
+                        <h3 class="text-base font-semibold text-slate-200" id="losers-chart-title">Intraday Price & Volume (分時圖)</h3>
+                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300" id="losers-time-badge">Syncing...</span>
                     </div>
                     <div id="losers-chart-container" class="w-full h-[400px]"></div>
                 </div>
             </div>
         </div>
 
-        <!-- TAB 4: Popular (K-Line) -->
+        <!-- TAB 4: Popular -->
         <div id="content-volume" class="tab-content hidden">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-5 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg">
@@ -163,8 +163,8 @@
                 </div>
                 <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-base font-semibold text-slate-200" id="volume-chart-title">Daily K-Line Chart</h3>
-                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300">Candlestick (Interactive)</span>
+                        <h3 class="text-base font-semibold text-slate-200" id="volume-chart-title">Intraday Price & Volume (分時圖)</h3>
+                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300" id="volume-time-badge">Syncing...</span>
                     </div>
                     <div id="volume-chart-container" class="w-full h-[400px]"></div>
                 </div>
@@ -203,8 +203,8 @@
 
                 <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-base font-semibold text-slate-200" id="watchlist-chart-title">Line Chart</h3>
-                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300" id="watchlist-time-badge">10s Live Interval</span>
+                        <h3 class="text-base font-semibold text-slate-200" id="watchlist-chart-title">Intraday Price & Volume (分時圖)</h3>
+                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300" id="watchlist-time-badge">Syncing...</span>
                     </div>
                     <div id="watchlist-chart-container" class="w-full h-[400px]"></div>
                 </div>
@@ -220,7 +220,7 @@
 
     <!-- JS Core Engine logic -->
     <script>
-        // Fallback Stock Data Pool used if JSON hasn't been built yet
+        // Core Static Pool of Stocks
         let STOCKS_POOL = [
             { symbol: '2330.TW', name: 'TSMC (台積電)', basePrice: 940, category: 'AI', volume: 45000 },
             { symbol: '2317.TW', name: 'Foxconn (鴻海)', basePrice: 210, category: 'AI', volume: 68000 },
@@ -252,15 +252,22 @@
         let selectedWatchlistSymbol = '';
         let watchlistSymbols = ['2330.TW', '2454.TW'];
 
-        // Chart References
+        // Chart and Series Reference maps
         let charts = { gainers: null, losers: null, volume: null, watchlist: null };
         let series = { gainers: null, losers: null, volume: null, watchlist: null };
+        let volumeSeries = { gainers: null, losers: null, volume: null, watchlist: null };
 
         const CHART_OPTIONS = {
             layout: { background: { color: '#1e293b' }, textColor: '#cbd5e1' },
             grid: { vertLines: { color: '#334155' }, horzLines: { color: '#334155' } },
             rightPriceScale: { borderColor: '#475569' },
-            timeScale: { borderColor: '#475569', timeVisible: true, secondsVisible: true },
+            timeScale: {
+                borderColor: '#475569',
+                timeVisible: true,
+                secondsVisible: false,
+                rightOffset: 5,
+                barSpacing: 6
+            },
             crosshair: { mode: 0 }
         };
 
@@ -274,14 +281,12 @@
                 selectedWatchlistSymbol = watchlistSymbols[0];
             }
 
-            // Attempt to load JSON data generated by GitHub Action pipeline
             await loadLatestData();
-
             switchTab('report');
             startSyncTimers();
         });
 
-        // Detect Taiwan trading hours (Mon-Fri 09:00 - 13:30 Taipei Time)
+        // Detect Taiwan trading window (Monday to Friday, 09:00 - 13:30 Taipei Time)
         function isTaiwanTradingWindow() {
             const now = new Date();
             const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
@@ -300,7 +305,26 @@
             return (timeInMinutes >= startTrading && timeInMinutes <= endTrading);
         }
 
-        // Tries to pull real stock_data.json fetched via GitHub Actions
+        // Return latest active or most recent weekday trading date (Timezone-Independent UTC Fields)
+        function getMostRecentTradingDateUTC() {
+            const now = new Date();
+            const taipeiTime = new Date(now.getTime() + (8 * 3600000)); // Translate to Taipei Time offset
+
+            let day = taipeiTime.getUTCDay();
+            if (day === 0) taipeiTime.setUTCDate(taipeiTime.getUTCDate() - 2); // Sun -> Fri
+            else if (day === 6) taipeiTime.setUTCDate(taipeiTime.getUTCDate() - 1); // Sat -> Fri
+
+            const hour = taipeiTime.getUTCHours();
+            if (hour < 9) {
+                taipeiTime.setUTCDate(taipeiTime.getUTCDate() - 1);
+                let newDay = taipeiTime.getUTCDay();
+                if (newDay === 0) taipeiTime.setUTCDate(taipeiTime.getUTCDate() - 2);
+                if (newDay === 6) taipeiTime.setUTCDate(taipeiTime.getUTCDate() - 1);
+            }
+            return taipeiTime;
+        }
+
+        // Tries to load JSON, falls back to simulation
         async function loadLatestData() {
             const badge = document.getElementById('source-badge');
             try {
@@ -309,77 +333,98 @@
                 const data = await response.json();
                 if (data && data.length > 0) {
                     STOCKS_POOL = data;
-
                     const source = data[0].source || "GitHub-Actions";
-                    if (source === "YahooFinance") {
-                        badge.className = "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-                        badge.innerText = "Source: Yahoo Finance";
-                    } else if (source === "TWSE-OpenAPI") {
-                        badge.className = "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-sky-500/20 text-sky-400 border border-sky-500/30";
-                        badge.innerText = "Source: TWSE OpenAPI";
-                    } else {
-                        badge.className = "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-amber-500/20 text-amber-400 border border-amber-500/30";
-                        badge.innerText = `Backup: ${source}`;
-                    }
+                    badge.className = "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                    badge.innerText = `Source: ${source}`;
+                    reconstructStockTimelines();
                     return;
                 }
             } catch (err) {
-                console.warn("Falling back to simulated seed stock data engine:", err.message);
+                console.warn("Falling back to simulated stock calculations:", err.message);
             }
             seedStockData();
             badge.className = "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-slate-700 text-slate-400 border border-slate-600";
             badge.innerText = "Simulated Fallback";
         }
 
-        // Seeding baseline if JSON data is not available
-        function seedStockData() {
-            const today = new Date();
-            const nowSeconds = Math.floor(Date.now() / 1000);
+        // Formats a clean 9:00 to 13:30 (270 min) timeline (Timezone-Independent Epoch alignment)
+        function generateIntradayTimeline(stock, baseDate, limitMinutes = 270) {
+            const intradayPrice = [];
+            const intradayVol = [];
+
+            // Taipei 09:00 is exactly UTC 01:00 on the same day
+            const startOfDayUTC = Date.UTC(
+                baseDate.getUTCFullYear(),
+                baseDate.getUTCMonth(),
+                baseDate.getUTCDate(),
+                1, 0, 0, 0
+            );
+            const startOfDaySec = Math.floor(startOfDayUTC / 1000);
+
+            let currentPrice = stock.basePrice || 100;
+            const targetChange = stock.changePercent || 0;
+            const driftPerStep = (targetChange / 100) / 270;
+
+            for (let i = 0; i < limitMinutes; i++) {
+                const unixSec = startOfDaySec + i * 60; // 1-minute step increments
+
+                // Deterministic pattern matching based on character codes
+                const hashValue = Math.abs(Math.sin((stock.symbol || 'TSMC').charCodeAt(0) + i)) * 1000;
+                const noise = (hashValue % 100 - 50) / 15000; // -0.3% to +0.3% micro noise
+
+                currentPrice = currentPrice * (1 + noise + driftPerStep);
+
+                if (targetChange > 0 && currentPrice < stock.basePrice * 0.95) currentPrice = stock.basePrice * 0.98;
+                if (targetChange < 0 && currentPrice > stock.basePrice * 1.05) currentPrice = stock.basePrice * 1.02;
+
+                let pVal = parseFloat(currentPrice.toFixed(2));
+                if (isNaN(pVal) || pVal <= 0) pVal = stock.basePrice || 100;
+
+                let vVal = Math.floor(Math.abs(Math.sin(i)) * ((stock.volume || 10000) / 270) * (1 + (hashValue % 10)/10));
+                if (isNaN(vVal)) vVal = 0;
+
+                intradayPrice.push({ time: unixSec, value: pVal });
+                intradayVol.push({ time: unixSec, value: vVal });
+            }
+
+            return { prices: intradayPrice, volumes: intradayVol };
+        }
+
+        function reconstructStockTimelines() {
+            const isLive = isTaiwanTradingWindow();
+            const baseDate = getMostRecentTradingDateUTC();
+
+            let currentMinutes = 270;
+            if (isLive) {
+                const now = new Date();
+                const taipei = new Date(now.getTime() + (8 * 3600000));
+                currentMinutes = (taipei.getUTCHours() - 9) * 60 + taipei.getUTCMinutes();
+                if (currentMinutes < 0) currentMinutes = 0;
+                if (currentMinutes > 270) currentMinutes = 270;
+            }
 
             STOCKS_POOL.forEach(stock => {
-                const rFactor = (Math.random() * 8 - 4) / 100;
-                stock.currentPrice = parseFloat((stock.basePrice * (1 + rFactor)).toFixed(2));
-                stock.change = parseFloat((stock.currentPrice - stock.basePrice).toFixed(2));
-                stock.changePercent = parseFloat(((stock.change / stock.basePrice) * 100).toFixed(2));
-
-                stock.history = [];
-                let stepPrice = stock.basePrice;
-                for (let i = 50; i >= 1; i--) {
-                    const stepPct = (Math.random() * 0.4 - 0.2) / 100;
-                    stepPrice = parseFloat((stepPrice * (1 + stepPct)).toFixed(2));
-                    stock.history.push({
-                        time: nowSeconds - (i * 10),
-                        value: stepPrice
-                    });
-                }
-
-                stock.candles = [];
-                let previousClose = stock.basePrice * 0.95;
-                for (let d = 30; d >= 1; d--) {
-                    const dOffset = new Date();
-                    dOffset.setDate(today.getDate() - d);
-                    const dStr = dOffset.toISOString().split('T')[0];
-
-                    const dChangePct = (Math.random() * 4 - 2) / 100;
-                    const open = previousClose;
-                    const close = parseFloat((open * (1 + dChangePct)).toFixed(2));
-                    const high = parseFloat((Math.max(open, close) * (1 + Math.random() * 0.015)).toFixed(2));
-                    const low = parseFloat((Math.min(open, close) * (1 - Math.random() * 0.015)).toFixed(2));
-
-                    stock.candles.push({ time: dStr, open, high, low, close });
-                    previousClose = close;
-                }
+                const profile = generateIntradayTimeline(stock, baseDate, currentMinutes);
+                stock.history = profile.prices;
+                stock.volumeHistory = profile.volumes;
             });
         }
 
-        // Performs live updates if in trading window
+        function seedStockData() {
+            STOCKS_POOL.forEach(stock => {
+                const rFactor = (Math.random() * 8 - 4) / 100; // -4% to +4%
+                stock.currentPrice = parseFloat((stock.basePrice * (1 + rFactor)).toFixed(2));
+                stock.change = parseFloat((stock.currentPrice - stock.basePrice).toFixed(2));
+                stock.changePercent = parseFloat(((stock.change / stock.basePrice) * 100).toFixed(2));
+            });
+            reconstructStockTimelines();
+        }
+
+        // Live ticker executor
         function handleGlobalTick() {
             const isLive = isTaiwanTradingWindow();
-            const nowSeconds = Math.floor(Date.now() / 1000);
-
-            // UI Badge text adjustments
             const refreshLabel = document.getElementById('refresh-label');
-            const timeBadges = ['gainers-time-badge', 'losers-time-badge', 'watchlist-time-badge'];
+            const timeBadges = ['gainers-time-badge', 'losers-time-badge', 'watchlist-time-badge', 'volume-time-badge'];
 
             if (isLive) {
                 refreshLabel.innerText = "Smart Syncing...";
@@ -389,27 +434,36 @@
                     if (el) el.innerText = "10s Live Interval";
                 });
 
+                const now = new Date();
+                const taipei = new Date(now.getTime() + (8 * 3600000));
+                const unixSec = Math.floor(taipei.getTime() / 1000);
+
                 STOCKS_POOL.forEach(stock => {
-                    const delta = (Math.random() * 0.6 - 0.3) / 100;
+                    const delta = (Math.random() * 0.1 - 0.05) / 100; // micro ticks
                     stock.currentPrice = parseFloat((stock.currentPrice * (1 + delta)).toFixed(2));
                     stock.change = parseFloat((stock.currentPrice - stock.basePrice).toFixed(2));
                     stock.changePercent = parseFloat(((stock.change / stock.basePrice) * 100).toFixed(2));
-                    stock.volume += Math.floor(Math.random() * 800) + 50;
 
-                    const nextTime = stock.history.length > 0 ? stock.history[stock.history.length - 1].time + 10 : nowSeconds;
-                    const newTick = { time: nextTime, value: stock.currentPrice };
-                    stock.history.push(newTick);
-                    if (stock.history.length > 100) stock.history.shift();
+                    const addedVol = Math.floor(Math.random() * 50) + 5;
+                    stock.volume += addedVol;
 
-                    if (stock.candles && stock.candles.length > 0) {
-                        const todayCandle = stock.candles[stock.candles.length - 1];
-                        todayCandle.close = stock.currentPrice;
-                        if (stock.currentPrice > todayCandle.high) todayCandle.high = stock.currentPrice;
-                        if (stock.currentPrice < todayCandle.low) todayCandle.low = stock.currentPrice;
+                    // Append ticks to arrays safely
+                    if (stock.history && stock.history.length > 0) {
+                        const last = stock.history[stock.history.length - 1];
+                        if (unixSec - last.time >= 60) {
+                            stock.history.push({ time: unixSec, value: stock.currentPrice });
+                            stock.volumeHistory.push({ time: unixSec, value: addedVol });
+                            if (stock.history.length > 270) {
+                                stock.history.shift();
+                                stock.volumeHistory.shift();
+                            }
+                        } else {
+                            last.value = stock.currentPrice;
+                            stock.volumeHistory[stock.volumeHistory.length - 1].value += addedVol;
+                        }
                     }
                 });
             } else {
-                // If market is closed, freeze the ticker values to preserve true closes and latest baseline charts
                 refreshLabel.innerText = "Market Closed";
                 refreshLabel.className = "text-xs text-rose-400 font-bold uppercase tracking-wider";
                 timeBadges.forEach(id => {
@@ -433,7 +487,7 @@
                 updateLineChartFeed('losers', selectedLosersSymbol);
             } else if (currentTab === 'volume') {
                 updateVolumeTable();
-                updateKLineChartFeed(selectedVolumeSymbol);
+                updateLineChartFeed('volume', selectedVolumeSymbol);
             } else if (currentTab === 'watchlist') {
                 updateWatchlistTable();
                 if (selectedWatchlistSymbol) {
@@ -489,7 +543,7 @@
                 } else if (tabId === 'losers') {
                     initLineChart('losers', selectedLosersSymbol);
                 } else if (tabId === 'volume') {
-                    initKLineChart(selectedVolumeSymbol);
+                    initLineChart('volume', selectedVolumeSymbol);
                 } else if (tabId === 'watchlist') {
                     if (selectedWatchlistSymbol) {
                         initLineChart('watchlist', selectedWatchlistSymbol);
@@ -567,7 +621,7 @@
             });
         }
 
-        /* ---------------- TAB 4: VOLUME LOGIC (K-LINE) ---------------- */
+        /* ---------------- TAB 4: POPULAR INTRA_DAY LOGIC ---------------- */
         function updateVolumeTable() {
             const popularStocks = [...STOCKS_POOL]
                 .sort((a, b) => b.volume - a.volume)
@@ -582,7 +636,7 @@
                 tr.onclick = () => {
                     selectedVolumeSymbol = stock.symbol;
                     updateVolumeTable();
-                    initKLineChart(stock.symbol);
+                    initLineChart('volume', stock.symbol);
                 };
 
                 tr.innerHTML = `
@@ -656,6 +710,7 @@
                     charts.watchlist.remove();
                     charts.watchlist = null;
                     series.watchlist = null;
+                    volumeSeries.watchlist = null;
                 }
                 document.getElementById('watchlist-chart-title').innerText = 'No Stock Selected';
             }
@@ -709,6 +764,7 @@
                 charts[tab].remove();
                 charts[tab] = null;
                 series[tab] = null;
+                volumeSeries[tab] = null;
             }
 
             const stock = STOCKS_POOL.find(s => s.symbol === symbol);
@@ -717,7 +773,6 @@
                 return;
             }
 
-            // Create chart with explicit dimension options
             const w = container.clientWidth || 600;
             const h = 400;
 
@@ -727,8 +782,9 @@
                 height: h
             });
 
-            const themeColor = tab === 'gainers' ? '#10b981' : (tab === 'losers' ? '#f43f5e' : '#f59e0b');
-            const fadeColor = tab === 'gainers' ? 'rgba(16, 185, 129, 0.2)' : (tab === 'losers' ? 'rgba(244, 63, 94, 0.2)' : 'rgba(245, 158, 11, 0.2)');
+            // Taiwan Theme colors: Red is Up, Green is Down
+            const themeColor = stock.currentPrice >= stock.basePrice ? '#ef4444' : '#22c55e';
+            const fadeColor = stock.currentPrice >= stock.basePrice ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)';
 
             series[tab] = charts[tab].addAreaSeries({
                 lineColor: themeColor,
@@ -737,11 +793,40 @@
                 lineWidth: 2,
             });
 
-            document.getElementById(`${tab}-chart-title`).innerText = `${stock.name} (${stock.symbol}) - Intraday Feed`;
+            // Yellow/Amber Overlay Volume bars at bottom using custom overlay scaleId to avoid layout crashes
+            volumeSeries[tab] = charts[tab].addHistogramSeries({
+                color: 'rgba(234, 179, 8, 0.35)',
+                priceFormat: { type: 'volume' },
+                priceScaleId: 'volume', // Set explicit scale to avoid overlapping scale configurations
+            });
+
+            // Configure the volume price scale properties
+            charts[tab].priceScale('volume').applyOptions({
+                scaleMargins: {
+                    top: 0.8, // Vol confined to bottom 20%
+                    bottom: 0,
+                },
+                visible: false, // Hides the separate volume scale labels
+            });
+
+            // Add standard Dashed previous close baseline (0% reference line)
+            series[tab].createPriceLine({
+                price: stock.basePrice,
+                color: '#64748b',
+                lineWidth: 1,
+                lineStyle: 1, // Dashed
+                axisLabelVisible: true,
+                title: 'Ref: ' + stock.basePrice.toFixed(2)
+            });
+
+            const changePrefix = stock.changePercent > 0 ? '+' : '';
+            document.getElementById(`${tab}-chart-title`).innerText = `${stock.name} (${stock.symbol}) : ${stock.currentPrice.toFixed(2)} (${changePrefix}${stock.changePercent.toFixed(2)}%)`;
+
             series[tab].setData(stock.history);
+            volumeSeries[tab].setData(stock.volumeHistory);
+
             charts[tab].timeScale().fitContent();
 
-            // Handle browser resizing with the formal API resize() call
             const resizeObserver = new ResizeObserver(entries => {
                 if (charts[tab] && container.clientWidth > 0) {
                     charts[tab].resize(container.clientWidth, h);
@@ -753,56 +838,14 @@
         function updateLineChartFeed(tab, symbol) {
             const stock = STOCKS_POOL.find(s => s.symbol === symbol);
             if (!stock || !series[tab]) return;
+
             series[tab].setData(stock.history);
-        }
-
-        function initKLineChart(symbol) {
-            const container = document.getElementById('volume-chart-container');
-            if (!container) return;
-
-            if (charts.volume) {
-                charts.volume.remove();
-                charts.volume = null;
-                series.volume = null;
+            if (volumeSeries[tab]) {
+                volumeSeries[tab].setData(stock.volumeHistory);
             }
 
-            const stock = STOCKS_POOL.find(s => s.symbol === symbol);
-            if (!stock) return;
-
-            const w = container.clientWidth || 600;
-            const h = 400;
-
-            charts.volume = LightweightCharts.createChart(container, {
-                ...CHART_OPTIONS,
-                width: w,
-                height: h
-            });
-
-            series.volume = charts.volume.addCandlestickSeries({
-                upColor: '#ef4444',
-                downColor: '#22c55e',
-                borderUpColor: '#ef4444',
-                borderDownColor: '#22c55e',
-                wickUpColor: '#ef4444',
-                wickDownColor: '#22c55e',
-            });
-
-            document.getElementById('volume-chart-title').innerText = `${stock.name} (${stock.symbol}) - Daily Candlestick`;
-            series.volume.setData(stock.candles);
-            charts.volume.timeScale().fitContent();
-
-            const resizeObserver = new ResizeObserver(entries => {
-                if (charts.volume && container.clientWidth > 0) {
-                    charts.volume.resize(container.clientWidth, h);
-                }
-            });
-            resizeObserver.observe(container);
-        }
-
-        function updateKLineChartFeed(symbol) {
-            const stock = STOCKS_POOL.find(s => s.symbol === symbol);
-            if (!stock || !series.volume) return;
-            series.volume.setData(stock.candles);
+            const changePrefix = stock.changePercent > 0 ? '+' : '';
+            document.getElementById(`${tab}-chart-title`).innerText = `${stock.name} (${stock.symbol}) : ${stock.currentPrice.toFixed(2)} (${changePrefix}${stock.changePercent.toFixed(2)}%)`;
         }
 
         document.addEventListener('click', function(e) {

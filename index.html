@@ -1,922 +1,779 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taiwan AI Stock Terminal</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- TradingView Lightweight Charts CDN -->
-    <script type="text/javascript" src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Financial Analytics Dashboard</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
 
-    <!-- Header & Dashboard Control -->
-    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="flex items-center space-x-3">
-            <span class="text-2xl">⚡</span>
+  <!-- Core Container -->
+  <div class="flex flex-col min-h-screen">
+
+    <!-- Top Unified Header -->
+    <header class="bg-slate-950 border-b border-slate-800 py-4 px-6">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            Fintech Analytics Dashboard
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">v2.0</span>
+          </h1>
+          <p class="text-slate-400 text-xs mt-0.5">Static sandboxed mock engine for multi-market execution</p>
+        </div>
+
+        <!-- Dynamic Clock Bar -->
+        <div class="flex flex-wrap items-center gap-4 text-xs font-mono">
+          <!-- Taiwan Stock Timezone Tracker -->
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 flex items-center gap-2">
+            <span id="tw-indicator" class="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
             <div>
-                <div class="flex items-center space-x-2">
-                    <h1 class="text-xl font-bold tracking-tight text-white">Taiwan AI Stock Terminal</h1>
-                    <span id="source-badge" class="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-slate-700 text-slate-300">Syncing...</span>
-                </div>
-                <p class="text-xs text-slate-400">Professional Grade Fintech Analytics Platform</p>
+              <p class="text-slate-400">TW Market: <span id="tw-market-status" class="font-bold">--</span></p>
+              <p class="text-[10px] text-slate-500">TP (UTC+8): <span id="tw-clock" class="text-slate-300">--:--:--</span></p>
             </div>
+          </div>
+          <!-- US Stock Timezone Tracker -->
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 flex items-center gap-2">
+            <span id="us-indicator" class="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
+            <div>
+              <p class="text-slate-400">US Market: <span id="us-market-status" class="font-bold">--</span></p>
+              <p class="text-[10px] text-slate-500">NY (EST): <span id="us-clock" class="text-slate-300">--:--:--</span></p>
+            </div>
+          </div>
+          <!-- General Timer -->
+          <div id="countdown-banner" class="bg-emerald-950/20 border border-emerald-800/30 rounded-lg p-2 text-emerald-400 text-[11px] font-semibold hidden">
+            <span>Updating in <span id="countdown">15</span>s</span>
+          </div>
         </div>
-
-        <!-- Auto-Refresh Widget -->
-        <div class="flex items-center space-x-4 bg-slate-900/60 px-4 py-2 rounded-lg border border-slate-700/50">
-            <div class="flex flex-col text-right">
-                <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider" id="refresh-label">Smart Syncing...</span>
-                <span class="text-xs font-mono text-emerald-400" id="sync-time">Last update: --:--:--</span>
-            </div>
-            <!-- Progress Circle Indicator -->
-            <div class="relative w-8 h-8">
-                <svg class="w-full h-full transform -rotate-90">
-                    <circle cx="16" cy="16" r="12" stroke="currentColor" class="text-slate-700" stroke-width="3" fill="transparent" />
-                    <circle id="progress-circle" cx="16" cy="16" r="12" stroke="currentColor" class="text-emerald-500" stroke-width="3" fill="transparent" stroke-dasharray="75.36" stroke-dashoffset="0" />
-                </svg>
-                <div class="absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold" id="countdown-num">10</div>
-            </div>
-            <!-- Toggle for Hard Refresh Mode -->
-            <div class="border-l border-slate-700 pl-4 flex flex-col justify-center">
-                <label class="text-[10px] uppercase text-slate-400 font-semibold tracking-wider mb-1">Refresh Mode</label>
-                <select id="refresh-mode-select" class="bg-slate-800 text-xs border border-slate-600 rounded px-1 py-0.5 text-slate-200 outline-none cursor-pointer">
-                    <option value="smart">Smart Live Sync (Recommended)</option>
-                    <option value="hard">Hard Browser Reload (10s)</option>
-                </select>
-            </div>
-        </div>
+      </div>
     </header>
 
-    <!-- Navigation Tabs (Fluid/Widescreen Spacing) -->
-    <nav class="bg-slate-800/80 border-b border-slate-700/60 sticky top-0 z-50 overflow-x-auto">
-        <div class="w-full px-6 flex space-x-1" role="tablist">
-            <button onclick="switchTab('report')" id="tab-report" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
-                <span>📊</span> <span>Stock Report</span>
-            </button>
-            <button onclick="switchTab('gainers')" id="tab-gainers" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
-                <span>📈</span> <span>Top 10 AI Gainers</span>
-            </button>
-            <button onclick="switchTab('losers')" id="tab-losers" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
-                <span>📉</span> <span>Top 10 AI Losers</span>
-            </button>
-            <button onclick="switchTab('volume')" id="tab-volume" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
-                <span>📈</span> <span>Popular Trend</span>
-            </button>
-            <button onclick="switchTab('watchlist')" id="tab-watchlist" class="tab-btn px-4 py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition-all duration-150 flex items-center space-x-2">
-                <span>⭐</span> <span>Custom Watchlist</span>
-            </button>
+    <!-- Unified Tab Navigation Controller -->
+    <nav class="bg-slate-950/80 border-b border-slate-800 sticky top-0 z-50 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="flex space-x-2 py-2 overflow-x-auto scrollbar-none">
+          <button onclick="switchTab(1)" id="tab-btn-1" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-white border border-slate-700/50 transition-all flex items-center gap-2">
+            <i data-lucide="file-text" class="h-4 w-4"></i> TW Stocker Report
+          </button>
+          <button onclick="switchTab(2)" id="tab-btn-2" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-850 transition-all flex items-center gap-2">
+            <i data-lucide="trending-up" class="h-4 w-4"></i> Top 10 Gainers (TW)
+          </button>
+          <button onclick="switchTab(3)" id="tab-btn-3" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-850 transition-all flex items-center gap-2">
+            <i data-lucide="trending-down" class="h-4 w-4"></i> Top 10 Losers (TW)
+          </button>
+          <button onclick="switchTab(4)" id="tab-btn-4" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-850 transition-all flex items-center gap-2">
+            <i data-lucide="globe" class="h-4 w-4"></i> NASDAQ & AI Stocks
+          </button>
+          <button onclick="switchTab(5)" id="tab-btn-5" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-850 transition-all flex items-center gap-2">
+            <i data-lucide="sliders" class="h-4 w-4"></i> Custom Watchlist
+          </button>
         </div>
+      </div>
     </nav>
 
-    <!-- Main Content Area (Widescreen Fluid Spacing) -->
-    <main class="flex-grow p-4 md:p-6 w-full max-w-none">
+    <!-- Dashboard Main Viewport -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-6 space-y-6">
 
-        <!-- TAB 1: Stock Report Iframe -->
-        <div id="content-report" class="tab-content hidden h-full">
-            <div class="bg-slate-800 rounded-xl border border-slate-700/80 overflow-hidden shadow-xl">
-                <div class="bg-slate-700/50 px-4 py-2 border-b border-slate-600 flex justify-between items-center">
-                    <span class="text-xs font-mono text-slate-300">Target URL: https://eric-lam.com/tw_stocker/stock_report.html</span>
-                    <button onclick="reloadIframe()" class="text-xs text-sky-400 hover:underline">Reload Frame</button>
-                </div>
-                <iframe id="report-iframe" src="https://eric-lam.com/tw_stocker/stock_report.html" class="w-full h-[70vh] border-0 bg-white"></iframe>
+      <!-- ==================== TAB 1: IFRAME STOCK REPORT ==================== -->
+      <section id="tab-content-1" class="tab-panel flex flex-col space-y-4">
+        <div class="flex justify-between items-center bg-slate-850/50 border border-slate-800 p-4 rounded-xl">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">TW Stocker Strategy Framework</h2>
+            <p class="text-xs text-slate-400">Integrated AI Momentum and Sector Rotation system outputs</p>
+          </div>
+          <a href="https://eric-lam.com/tw_stocker/stock_report.html" target="_blank" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all">
+            <i data-lucide="external-link" class="h-3.5 w-3.5"></i> External Link
+          </a>
+        </div>
+        <!-- Iframe container with explicit boundaries -->
+        <div class="relative w-full rounded-xl border border-slate-800 bg-slate-950 overflow-hidden h-[calc(100vh-280px)]">
+          <iframe
+            src="https://eric-lam.com/tw_stocker/stock_report.html"
+            class="w-full h-full border-0 bg-slate-900"
+            sandbox="allow-scripts allow-same-origin allow-popups"
+          ></iframe>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 2: TOP 10 GAINERS (TW) ==================== -->
+      <section id="tab-content-2" class="tab-panel hidden space-y-6">
+        <div>
+          <h2 class="text-xl font-bold text-white mb-1">Taiwan Stock Exchange (TWSE) Top Gainers</h2>
+          <p class="text-xs text-slate-400">Updates dynamically every 15s during local market hours</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="gainers-charts-grid"></div>
+        <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-700/50"><h3 class="font-bold text-white">Gainers Leaderboard</h3></div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                  <th class="py-3 px-6">Ticker</th>
+                  <th class="py-3 px-6">Company</th>
+                  <th class="py-3 px-6 text-right">Price</th>
+                  <th class="py-3 px-6 text-right">Change ($)</th>
+                  <th class="py-3 px-6 text-right">Change (%)</th>
+                  <th class="py-3 px-6 text-right">Volume</th>
+                </tr>
+              </thead>
+              <tbody id="gainers-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 3: TOP 10 LOSERS (TW) ==================== -->
+      <section id="tab-content-3" class="tab-panel hidden space-y-6">
+        <div>
+          <h2 class="text-xl font-bold text-white mb-1">Taiwan Stock Exchange (TWSE) Top Losers</h2>
+          <p class="text-xs text-slate-400">Tracking intraday market downward pressure vectors</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="losers-charts-grid"></div>
+        <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-700/50"><h3 class="font-bold text-white">Losers Leaderboard</h3></div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                  <th class="py-3 px-6">Ticker</th>
+                  <th class="py-3 px-6">Company</th>
+                  <th class="py-3 px-6 text-right text-rose-400">Price</th>
+                  <th class="py-3 px-6 text-right text-rose-400">Change ($)</th>
+                  <th class="py-3 px-6 text-right text-rose-400">Change (%)</th>
+                  <th class="py-3 px-6 text-right text-slate-400">Volume</th>
+                </tr>
+              </thead>
+              <tbody id="losers-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 4: NASDAQ & AI STOCKS ==================== -->
+      <section id="tab-content-4" class="tab-panel hidden space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Nasdaq Index Card -->
+          <div class="bg-slate-850 border border-slate-800 p-6 rounded-xl flex flex-col justify-between col-span-1 md:col-span-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-xs text-slate-400 font-mono">INDEX</span>
+                <h3 class="text-2xl font-bold text-white">NASDAQ Composite ($IXIC)</h3>
+              </div>
+              <span id="ndx-change" class="text-sm px-2.5 py-1 rounded bg-indigo-500/10 text-indigo-400 font-bold font-mono">--</span>
             </div>
+            <div class="h-32 w-full mt-4">
+              <canvas id="nasdaq-chart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-white mb-1">Top 10 US AI-Related Infrastructure Companies</h2>
+          <p class="text-xs text-slate-400">Real-time fluctuations linked to US stock exchange hours</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="ai-charts-grid"></div>
+        <!-- Table view -->
+        <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                  <th class="py-3 px-6">Ticker</th>
+                  <th class="py-3 px-6">Company</th>
+                  <th class="py-3 px-6 text-right">Price (USD)</th>
+                  <th class="py-3 px-6 text-right">Change ($)</th>
+                  <th class="py-3 px-6 text-right">Change (%)</th>
+                  <th class="py-3 px-6 text-right">Volume</th>
+                </tr>
+              </thead>
+              <tbody id="ai-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 5: CUSTOM WATCHLIST ==================== -->
+      <section id="tab-content-5" class="tab-panel hidden space-y-6">
+        <!-- Stock Picker Box -->
+        <div class="bg-slate-850 border border-slate-800 p-6 rounded-xl">
+          <h2 class="text-lg font-bold text-white mb-2">Custom Stock Picker (Max 10 Selected)</h2>
+          <p class="text-xs text-slate-400 mb-4">Toggle checkmarks to dynamically construct your custom parallel tracking panels.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3" id="watchlist-selector"></div>
         </div>
 
-        <!-- TAB 2: AI Gainers -->
-        <div id="content-gainers" class="tab-content hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-5 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg">
-                    <h3 class="text-base font-semibold text-emerald-400 mb-3 flex items-center gap-2">🟢 Top 10 AI Gainers (Real-Time Performance)</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead>
-                                <tr class="border-b border-slate-700 text-slate-400 uppercase tracking-wider">
-                                    <th class="py-2">Rank</th>
-                                    <th class="py-2">Stock</th>
-                                    <th class="py-2 text-right">Price</th>
-                                    <th class="py-2 text-right">Change %</th>
-                                </tr>
-                            </thead>
-                            <tbody id="gainers-table-body" class="divide-y divide-slate-700/50"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-base font-semibold text-slate-200" id="gainers-chart-title">Intraday Price & Volume (分時圖)</h3>
-                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300" id="gainers-time-badge">Syncing...</span>
-                    </div>
-                    <div id="gainers-chart-container" class="w-full h-[400px]"></div>
-                </div>
-            </div>
+        <div id="watchlist-empty" class="text-center py-12 border border-dashed border-slate-800 rounded-xl hidden">
+          <i data-lucide="info" class="h-8 w-8 text-slate-500 mx-auto mb-2"></i>
+          <p class="text-sm text-slate-400">Please select at least one stock to start visualization</p>
         </div>
 
-        <!-- TAB 3: AI Losers -->
-        <div id="content-losers" class="tab-content hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-5 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg">
-                    <h3 class="text-base font-semibold text-rose-400 mb-3 flex items-center gap-2">🔴 Top 10 AI Losers (Real-Time Performance)</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead>
-                                <tr class="border-b border-slate-700 text-slate-400 uppercase tracking-wider">
-                                    <th class="py-2">Rank</th>
-                                    <th class="py-2">Stock</th>
-                                    <th class="py-2 text-right">Price</th>
-                                    <th class="py-2 text-right">Change %</th>
-                                </tr>
-                            </thead>
-                            <tbody id="losers-table-body" class="divide-y divide-slate-700/50"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-base font-semibold text-slate-200" id="losers-chart-title">Intraday Price & Volume (分時圖)</h3>
-                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300" id="losers-time-badge">Syncing...</span>
-                    </div>
-                    <div id="losers-chart-container" class="w-full h-[400px]"></div>
-                </div>
+        <!-- Render Target of Custom Watchlist -->
+        <div id="watchlist-active-wrapper" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="watchlist-charts-grid"></div>
+          <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-700/50"><h3 class="font-bold text-white">Watchlist Monitor</h3></div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                    <th class="py-3 px-6">Ticker</th>
+                    <th class="py-3 px-6">Company</th>
+                    <th class="py-3 px-6 text-right">Price</th>
+                    <th class="py-3 px-6 text-right">Change ($)</th>
+                    <th class="py-3 px-6 text-right">Change (%)</th>
+                    <th class="py-3 px-6 text-right">Volume</th>
+                  </tr>
+                </thead>
+                <tbody id="watchlist-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
+              </table>
             </div>
+          </div>
         </div>
-
-        <!-- TAB 4: Popular -->
-        <div id="content-volume" class="tab-content hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-5 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg">
-                    <h3 class="text-base font-semibold text-sky-400 mb-3 flex items-center gap-2">🔥 Top 10 Popular Stocks by Volume</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead>
-                                <tr class="border-b border-slate-700 text-slate-400 uppercase tracking-wider">
-                                    <th class="py-2">Rank</th>
-                                    <th class="py-2">Stock</th>
-                                    <th class="py-2 text-right">Volume</th>
-                                    <th class="py-2 text-right">Current Price</th>
-                                </tr>
-                            </thead>
-                            <tbody id="volume-table-body" class="divide-y divide-slate-700/50"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-base font-semibold text-slate-200" id="volume-chart-title">Intraday Price & Volume (分時圖)</h3>
-                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300" id="volume-time-badge">Syncing...</span>
-                    </div>
-                    <div id="volume-chart-container" class="w-full h-[400px]"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 5: Custom Watchlist -->
-        <div id="content-watchlist" class="tab-content hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-5 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col gap-4">
-
-                    <!-- Search & Add Section -->
-                    <div>
-                        <h3 class="text-base font-semibold text-amber-400 mb-2">⭐ Taiwan Stock Watchlist</h3>
-                        <div class="relative">
-                            <input type="text" id="search-input" oninput="handleSearch()" placeholder="Type stock name or code (e.g. 2330)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition" />
-                            <div id="search-results" class="absolute left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl max-h-60 overflow-y-auto hidden z-20 divide-y divide-slate-700/50"></div>
-                        </div>
-                    </div>
-
-                    <!-- Watchlist Table -->
-                    <div class="overflow-x-auto flex-grow">
-                        <table class="w-full text-left text-xs">
-                            <thead>
-                                <tr class="border-b border-slate-700 text-slate-400 uppercase tracking-wider">
-                                    <th class="py-2">Stock</th>
-                                    <th class="py-2 text-right">Price</th>
-                                    <th class="py-2 text-right">Change %</th>
-                                    <th class="py-2 text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="watchlist-table-body" class="divide-y divide-slate-700/50"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-7 bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-base font-semibold text-slate-200" id="watchlist-chart-title">Intraday Price & Volume (分時圖)</h3>
-                        <span class="text-xs bg-slate-700/60 px-2 py-1 rounded text-slate-300" id="watchlist-time-badge">Syncing...</span>
-                    </div>
-                    <div id="watchlist-chart-container" class="w-full h-[400px]"></div>
-                </div>
-            </div>
-        </div>
+      </section>
 
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-slate-800/50 border-t border-slate-700/80 text-center py-4 text-xs text-slate-500">
-        Taiwan AI Stock Terminal &copy; 2026. Standalone client-side caching enabled. Real-world indexes managed by GitHub Actions pipeline.
-    </footer>
+  </div>
 
-    <!-- JS Core Engine logic -->
-    <script>
-        // Core Static Pool of Stocks
-        let STOCKS_POOL = [
-            { symbol: '2330.TW', name: 'TSMC (台積電)', basePrice: 940, category: 'AI', volume: 45000 },
-            { symbol: '2317.TW', name: 'Foxconn (鴻海)', basePrice: 210, category: 'AI', volume: 68000 },
-            { symbol: '2454.TW', name: 'MediaTek (聯發科)', basePrice: 1350, category: 'AI', volume: 8200 },
-            { symbol: '2382.TW', name: 'Quanta (廣達)', basePrice: 290, category: 'AI', volume: 31000 },
-            { symbol: '3231.TW', name: 'Wistron (緯創)', basePrice: 115, category: 'AI', volume: 55000 },
-            { symbol: '2356.TW', name: 'Inventec (英業達)', basePrice: 55, category: 'AI', volume: 42000 },
-            { symbol: '2357.TW', name: 'ASUS (華碩)', basePrice: 480, category: 'AI', volume: 5000 },
-            { symbol: '2376.TW', name: 'Gigabyte (技嘉)', basePrice: 310, category: 'AI', volume: 15000 },
-            { symbol: '6669.TW', name: 'Wiwynn (緯穎)', basePrice: 2400, category: 'AI', volume: 1800 },
-            { symbol: '2301.TW', name: 'Lite-On (光寶科)', basePrice: 105, category: 'AI', volume: 22000 },
-            { symbol: '2345.TW', name: 'Accton (智邦)', basePrice: 530, category: 'AI', volume: 3500 },
-            { symbol: '3017.TW', name: 'AMax (奇鋐)', basePrice: 720, category: 'AI', volume: 9200 },
-            { symbol: '3037.TW', name: 'Unimicron (欣興)', basePrice: 180, category: 'AI', volume: 28000 },
-            { symbol: '2603.TW', name: 'Evergreen (長榮)', basePrice: 195, category: 'Non-AI', volume: 48000 },
-            { symbol: '2609.TW', name: 'Yang Ming (陽明)', basePrice: 75, category: 'Non-AI', volume: 95000 },
-            { symbol: '2881.TW', name: 'Fubon Financial (富邦金)', basePrice: 78, category: 'Non-AI', volume: 24000 },
-            { symbol: '2882.TW', name: 'Cathay Financial (國泰金)', basePrice: 58, category: 'Non-AI', volume: 31000 },
-            { symbol: '3481.TW', name: 'Innolux (群創)', basePrice: 15.5, category: 'Non-AI', volume: 120000 },
-            { symbol: '2409.TW', name: 'AUO (友達)', basePrice: 18.2, category: 'Non-AI', volume: 85000 }
-        ];
+  <script>
+    // --- State Storage Structures ---
+    let activeTab = 1;
+    let countdownVal = 15;
+    let systemLoopInterval = null;
+    let globalCharts = {};
 
-        // System States
-        let currentTab = 'report';
-        let refreshCountdown = 10;
-        let selectedGainersSymbol = '2330.TW';
-        let selectedLosersSymbol = '2317.TW';
-        let selectedVolumeSymbol = '3231.TW';
-        let selectedWatchlistSymbol = '';
-        let watchlistSymbols = ['2330.TW', '2454.TW'];
+    // Base mock dictionaries
+    const gainersPool = [
+      { symbol: "2330", name: "TSMC", basePrice: 1000 },
+      { symbol: "2454", name: "MediaTek", basePrice: 1200 },
+      { symbol: "2317", name: "Foxconn", basePrice: 180 },
+      { symbol: "2603", name: "Evergreen", basePrice: 190 },
+      { symbol: "2308", name: "Delta Elec", basePrice: 350 },
+      { symbol: "2881", name: "Fubon Financial", basePrice: 75 },
+      { symbol: "2382", name: "Quanta", basePrice: 270 },
+      { symbol: "3711", name: "ASE Group", basePrice: 150 },
+      { symbol: "2882", name: "Cathay Financial", basePrice: 55 },
+      { symbol: "3008", name: "Largan", basePrice: 2500 }
+    ];
 
-        // Chart and Series Reference maps
-        let charts = { gainers: null, losers: null, volume: null, watchlist: null };
-        let series = { gainers: null, losers: null, volume: null, watchlist: null };
-        let volumeSeries = { gainers: null, losers: null, volume: null, watchlist: null };
+    const losersPool = [
+      { symbol: "2609", name: "Yang Ming", basePrice: 74 },
+      { symbol: "2303", name: "UMC", basePrice: 52 },
+      { symbol: "3481", name: "Innolux", basePrice: 15.2 },
+      { symbol: "2409", name: "AUO", basePrice: 18.1 },
+      { symbol: "2891", name: "CTBC Financial", basePrice: 36.5 },
+      { symbol: "2892", name: "First Financial", basePrice: 28.2 },
+      { symbol: "2002", name: "CSC", basePrice: 24.3 },
+      { symbol: "2352", name: "Qisda", basePrice: 35.8 },
+      { symbol: "2324", name: "Compal", basePrice: 38.0 },
+      { symbol: "2357", name: "ASUS", basePrice: 480 }
+    ];
 
-        const CHART_OPTIONS = {
-            layout: { background: { color: '#1e293b' }, textColor: '#cbd5e1' },
-            grid: { vertLines: { color: '#334155' }, horzLines: { color: '#334155' } },
-            rightPriceScale: { borderColor: '#475569' },
-            timeScale: {
-                borderColor: '#475569',
-                timeVisible: true,
-                secondsVisible: false,
-                rightOffset: 5,
-                barSpacing: 6
-            },
-            crosshair: { mode: 0 }
+    const aiPool = [
+      { symbol: "NVDA", name: "NVIDIA Corp.", basePrice: 1020 },
+      { symbol: "AMD", name: "AMD Inc.", basePrice: 165 },
+      { symbol: "MSFT", name: "Microsoft Corp.", basePrice: 425 },
+      { symbol: "GOOGL", name: "Alphabet Inc.", basePrice: 172 },
+      { symbol: "META", name: "Meta Platforms", basePrice: 475 },
+      { symbol: "AVGO", name: "Broadcom Inc.", basePrice: 1420 },
+      { symbol: "TSM", name: "TSMC ADR", basePrice: 155 },
+      { symbol: "SMCI", name: "Super Micro Computer", basePrice: 850 },
+      { symbol: "PLTR", name: "Palantir Tech", basePrice: 23.5 },
+      { symbol: "AMZN", name: "Amazon.com Inc.", basePrice: 184 }
+    ];
+
+    const watchlistMasterPool = [
+      { symbol: "2330", name: "TSMC", basePrice: 1000 },
+      { symbol: "2454", name: "MediaTek", basePrice: 1200 },
+      { symbol: "2317", name: "Foxconn", basePrice: 180 },
+      { symbol: "2603", name: "Evergreen", basePrice: 190 },
+      { symbol: "2308", name: "Delta Elec", basePrice: 350 },
+      { symbol: "2382", name: "Quanta Computer", basePrice: 270 },
+      { symbol: "2881", name: "Fubon Financial", basePrice: 75 },
+      { symbol: "2882", name: "Cathay Financial", basePrice: 55 },
+      { symbol: "3008", name: "Largan Precision", basePrice: 2500 },
+      { symbol: "3711", name: "ASE Group", basePrice: 150 },
+      { symbol: "2890", name: "SinoPac Holdings", basePrice: 22.8 },
+      { symbol: "2886", name: "Mega Financial", basePrice: 39.5 },
+      { symbol: "2891", name: "CTBC Financial", basePrice: 36.5 },
+      { symbol: "1303", name: "Nan Ya Plastics", basePrice: 56 },
+      { symbol: "1301", name: "Formosa Plastics", basePrice: 65 },
+      { symbol: "2303", name: "UMC", basePrice: 52 }
+    ];
+
+    let stateGainers = [];
+    let stateLosers = [];
+    let stateAI = [];
+    let stateNasdaq = { name: "NASDAQ", history: [] };
+    let selectedSymbols = ["2330", "2454", "2317", "2308", "2382"]; // Default checks
+
+    // --- Market Time Calculations (Taiwan & US EST) ---
+    function getTaiwanMarketStatus() {
+      const taipeiString = new Date().toLocaleString("en-US", { timeZone: "Asia/Taipei" });
+      const taipeiTime = new Date(taipeiString);
+      const day = taipeiTime.getDay();
+      const mins = taipeiTime.getHours() * 60 + taipeiTime.getMinutes();
+      const isOpen = (day >= 1 && day <= 5) && (mins >= 540 && mins <= 810); // Mon-Fri 09:00 - 13:30
+      return { isOpen, timeString: taipeiTime.toLocaleTimeString('zh-TW', { hour12: false }) };
+    }
+
+    function getUSMarketStatus() {
+      const nyString = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
+      const nyTime = new Date(nyString);
+      const day = nyTime.getDay();
+      const mins = nyTime.getHours() * 60 + nyTime.getMinutes();
+      const isOpen = (day >= 1 && day <= 5) && (mins >= 570 && mins <= 960); // Mon-Fri 09:30 - 16:00
+      return { isOpen, timeString: nyTime.toLocaleTimeString('en-US', { hour12: false }) };
+    }
+
+    // --- Data Model Initialization ---
+    function initializeAllData() {
+      const twStatus = getTaiwanMarketStatus();
+      const usStatus = getUSMarketStatus();
+
+      // Seed Gainers (+6.5% to +9.5%)
+      stateGainers = buildMockArray(gainersPool, 1, 6.5, 0.3, twStatus.isOpen);
+      // Seed Losers (-3.5% to -6.5%)
+      stateLosers = buildMockArray(losersPool, -1, 3.5, 0.3, twStatus.isOpen);
+      // Seed US AI Stocks (+1.5% to +5.5%)
+      stateAI = buildMockArray(aiPool, 1, 1.5, 0.4, usStatus.isOpen);
+
+      // Seed Nasdaq composite trend
+      let ndxBase = 17200;
+      stateNasdaq.price = ndxBase;
+      stateNasdaq.changePercent = 1.62;
+      stateNasdaq.change = Number((ndxBase * 0.0162).toFixed(2));
+      stateNasdaq.history = Array.from({ length: 12 }, (_, i) => {
+        const step = (1.62 / 11) * i;
+        const noise = (Math.random() - 0.5) * 40;
+        return {
+          time: `${9 + Math.floor(i * 0.5)}:${i % 2 === 0 ? '00' : '30'}`,
+          price: Number((ndxBase * (1 + step / 100) + noise).toFixed(0))
         };
+      });
+    }
 
-        // Initialize Core Engine
-        window.addEventListener('DOMContentLoaded', async () => {
-            const stored = localStorage.getItem('tw_watchlist');
-            if (stored) {
-                watchlistSymbols = JSON.parse(stored);
-            }
-            if (watchlistSymbols.length > 0) {
-                selectedWatchlistSymbol = watchlistSymbols[0];
-            }
+    function buildMockArray(source, direction, startPct, stepSize, marketOpen) {
+      return source.map((stock, idx) => {
+        const targetPercent = direction * (startPct + (idx * stepSize));
+        const currentPrice = Number((stock.basePrice * (1 + targetPercent / 100)).toFixed(2));
+        const changeValue = Number((currentPrice - stock.basePrice).toFixed(2));
+        const volume = Math.floor(Math.random() * 50000) + 15000;
 
-            await loadLatestData();
-            switchTab('report');
-            startSyncTimers();
+        let ticks = [];
+        const maxTicks = marketOpen ? 5 : 12; // Fewer elements represents dynamic partial progress
+        for (let i = 0; i < maxTicks; i++) {
+          const stepPercent = (targetPercent / (maxTicks - 1)) * i;
+          const noise = (Math.random() - 0.5) * (stock.basePrice * 0.003);
+          ticks.push({
+            time: `${9 + Math.floor(i * 0.5)}:${i % 2 === 0 ? '00' : '30'}`,
+            price: Number((stock.basePrice * (1 + stepPercent / 100) + noise).toFixed(2))
+          });
+        }
+        return { ...stock, price: currentPrice, change: changeValue, changePercent: targetPercent, volume, history: ticks };
+      });
+    }
+
+    // --- Dynamic Simulation / Ticks Engine ---
+    function tickTaiwanData() {
+      const updateData = (targetArr, direction) => {
+        return targetArr.map(stock => {
+          const delta = (Math.random() - (direction > 0 ? 0.4 : 0.6)) * 0.15;
+          const pct = Math.max(-10, Math.min(10, stock.changePercent + delta));
+          const price = Number((stock.basePrice * (1 + pct / 100)).toFixed(2));
+          const change = Number((price - stock.basePrice).toFixed(2));
+
+          const lastTick = stock.history[stock.history.length - 1]?.time || "09:00";
+          let [h, m] = lastTick.split(':').map(Number);
+          m += 15; if (m >= 60) { m = 0; h += 1; }
+          const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+
+          const history = [...stock.history, { time, price }];
+          if (history.length > 12) history.shift();
+
+          return { ...stock, price, change, changePercent: pct, volume: stock.volume + Math.floor(Math.random() * 500), history };
         });
+      };
+      stateGainers = updateData(stateGainers, 1);
+      stateLosers = updateData(stateLosers, -1);
+    }
 
-        // Detect Taiwan trading window (Monday to Friday, 09:00 - 13:30 Taipei Time)
-        function isTaiwanTradingWindow() {
-            const now = new Date();
-            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-            const taipeiTime = new Date(utc + (3600000 * 8)); // UTC+8
+    function tickUSData() {
+      stateAI = stateAI.map(stock => {
+        const delta = (Math.random() - 0.45) * 0.2;
+        const pct = stock.changePercent + delta;
+        const price = Number((stock.basePrice * (1 + pct / 100)).toFixed(2));
+        const change = Number((price - stock.basePrice).toFixed(2));
 
-            const day = taipeiTime.getDay(); // 0: Sunday, 6: Saturday
-            const hours = taipeiTime.getHours();
-            const minutes = taipeiTime.getMinutes();
+        const lastTick = stock.history[stock.history.length - 1]?.time || "09:30";
+        let [h, m] = lastTick.split(':').map(Number);
+        m += 15; if (m >= 60) { m = 0; h += 1; }
+        const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 
-            if (day < 1 || day > 5) return false;
+        const history = [...stock.history, { time, price }];
+        if (history.length > 12) history.shift();
 
-            const timeInMinutes = hours * 60 + minutes;
-            const startTrading = 9 * 60;        // 09:00
-            const endTrading = 13 * 60 + 30;    // 13:30
+        return { ...stock, price, change, changePercent: pct, volume: stock.volume + Math.floor(Math.random() * 400), history };
+      });
 
-            return (timeInMinutes >= startTrading && timeInMinutes <= endTrading);
+      // Tick Nasdaq index
+      const ndxDelta = (Math.random() - 0.45) * 0.05;
+      stateNasdaq.changePercent += ndxDelta;
+      stateNasdaq.price = Number((stateNasdaq.price * (1 + ndxDelta / 100)).toFixed(0));
+      stateNasdaq.change = Number((stateNasdaq.price - 17200).toFixed(0));
+      const ndxHistory = [...stateNasdaq.history, { time: "Tick", price: stateNasdaq.price }];
+      if (ndxHistory.length > 12) ndxHistory.shift();
+      stateNasdaq.history = ndxHistory;
+    }
+
+    // --- Tab Rendering Engine ---
+    function renderTab2() {
+      renderStandardGrid("gainers-charts-grid", "gainers-table-body", stateGainers, "#10b981", "rgba(16, 185, 129, 0.2)");
+    }
+
+    function renderTab3() {
+      renderStandardGrid("losers-charts-grid", "losers-table-body", stateLosers, "#f43f5e", "rgba(244, 63, 94, 0.2)");
+    }
+
+    function renderTab4() {
+      // Index component
+      const ndxElem = document.getElementById('ndx-change');
+      ndxElem.innerText = `${stateNasdaq.changePercent >= 0 ? '+' : ''}${stateNasdaq.changePercent.toFixed(2)}% (${stateNasdaq.change >= 0 ? '+' : ''}${stateNasdaq.change})`;
+      if (stateNasdaq.changePercent >= 0) {
+        ndxElem.className = "text-sm px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 font-bold font-mono";
+      } else {
+        ndxElem.className = "text-sm px-2.5 py-1 rounded bg-rose-500/10 text-rose-400 font-bold font-mono";
+      }
+
+      // Re-initialize or update NASDAQ Index chart
+      const ctx = document.getElementById('nasdaq-chart').getContext('2d');
+      if (globalCharts['NASDAQ']) {
+        globalCharts['NASDAQ'].data.labels = stateNasdaq.history.map(t => t.time);
+        globalCharts['NASDAQ'].data.datasets[0].data = stateNasdaq.history.map(t => t.price);
+        globalCharts['NASDAQ'].update('none');
+      } else {
+        globalCharts['NASDAQ'] = createChartInstance(ctx, stateNasdaq.history, "#6366f1", "rgba(99, 102, 241, 0.15)");
+      }
+
+      // Parallel AI Stocks list
+      renderStandardGrid("ai-charts-grid", "ai-table-body", stateAI, "#6366f1", "rgba(99, 102, 241, 0.2)");
+    }
+
+    function renderTab5() {
+      const container = document.getElementById('watchlist-selector');
+      container.innerHTML = '';
+
+      // Render Checkboxes
+      watchlistMasterPool.forEach(stock => {
+        const isChecked = selectedSymbols.includes(stock.symbol);
+        const btn = document.createElement('label');
+        btn.className = `flex items-center gap-2 p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all ${
+          isChecked ? 'bg-indigo-600/25 border-indigo-500 text-white' : 'bg-slate-800/40 border-slate-700/50 text-slate-400 hover:border-slate-600'
+        }`;
+        btn.innerHTML = `
+          <input type="checkbox" class="rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-0"
+            ${isChecked ? 'checked' : ''} onchange="toggleWatchlist('${stock.symbol}')">
+          <span class="truncate font-mono">${stock.symbol} ${stock.name}</span>
+        `;
+        container.appendChild(btn);
+      });
+
+      const wrapper = document.getElementById('watchlist-active-wrapper');
+      const emptyMsg = document.getElementById('watchlist-empty');
+
+      if (selectedSymbols.length === 0) {
+        wrapper.classList.add('hidden');
+        emptyMsg.classList.remove('hidden');
+        return;
+      }
+      wrapper.classList.remove('hidden');
+      emptyMsg.classList.add('hidden');
+
+      // Intersect selections and current live values
+      const currentList = selectedSymbols.map(sym => {
+        const sourceGainer = stateGainers.find(s => s.symbol === sym);
+        if (sourceGainer) return sourceGainer;
+        const sourceLoser = stateLosers.find(s => s.symbol === sym);
+        if (sourceLoser) return sourceLoser;
+
+        // Fallback calculation for custom stock item outside top gainers/losers
+        const baseItem = watchlistMasterPool.find(s => s.symbol === sym);
+        const targetPercent = 1.25;
+        const currentPrice = Number((baseItem.basePrice * (1 + targetPercent / 100)).toFixed(2));
+        const changeValue = Number((currentPrice - baseItem.basePrice).toFixed(2));
+        return {
+          ...baseItem,
+          price: currentPrice,
+          change: changeValue,
+          changePercent: targetPercent,
+          volume: 24000,
+          history: Array.from({ length: 8 }, (_, i) => ({
+            time: `${9 + Math.floor(i * 0.5)}:${i % 2 === 0 ? '00' : '30'}`,
+            price: Number((baseItem.basePrice * (1 + (targetPercent / 7) * i / 100)).toFixed(2))
+          }))
+        };
+      });
+
+      renderStandardGrid("watchlist-charts-grid", "watchlist-table-body", currentList, "#38bdf8", "rgba(56, 189, 248, 0.2)");
+    }
+
+    function toggleWatchlist(sym) {
+      if (selectedSymbols.includes(sym)) {
+        selectedSymbols = selectedSymbols.filter(s => s !== sym);
+      } else {
+        if (selectedSymbols.length >= 10) {
+          alert("Maximum watchlist capacity (10 selected stocks) reached. Please deselect another stock first.");
+          renderTab5();
+          return;
         }
-
-        // Return latest active or most recent weekday trading date (Timezone-Independent UTC Fields)
-        function getMostRecentTradingDateUTC() {
-            const now = new Date();
-            const taipeiTime = new Date(now.getTime() + (8 * 3600000)); // Translate to Taipei Time offset
-
-            let day = taipeiTime.getUTCDay();
-            if (day === 0) taipeiTime.setUTCDate(taipeiTime.getUTCDate() - 2); // Sun -> Fri
-            else if (day === 6) taipeiTime.setUTCDate(taipeiTime.getUTCDate() - 1); // Sat -> Fri
-
-            const hour = taipeiTime.getUTCHours();
-            if (hour < 9) {
-                taipeiTime.setUTCDate(taipeiTime.getUTCDate() - 1);
-                let newDay = taipeiTime.getUTCDay();
-                if (newDay === 0) taipeiTime.setUTCDate(taipeiTime.getUTCDate() - 2);
-                if (newDay === 6) taipeiTime.setUTCDate(taipeiTime.getUTCDate() - 1);
-            }
-            return taipeiTime;
-        }
-
-        // Tries to load JSON, falls back to simulation
-        async function loadLatestData() {
-            const badge = document.getElementById('source-badge');
-            try {
-                const response = await fetch('./stock_data.json');
-                if (!response.ok) throw new Error("JSON file could not be fetched.");
-                const data = await response.json();
-                if (data && data.length > 0) {
-                    STOCKS_POOL = data;
-                    const source = data[0].source || "GitHub-Actions";
-                    badge.className = "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-                    badge.innerText = `Source: ${source}`;
-                    reconstructStockTimelines();
-                    return;
-                }
-            } catch (err) {
-                console.warn("Falling back to simulated stock calculations:", err.message);
-            }
-            seedStockData();
-            badge.className = "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-slate-700 text-slate-400 border border-slate-600";
-            badge.innerText = "Simulated Fallback";
-        }
-
-        // Formats a clean 9:00 to 13:30 (270 min) timeline (Timezone-Independent Epoch alignment)
-        function generateIntradayTimeline(stock, baseDate, limitMinutes = 270) {
-            const intradayPrice = [];
-            const intradayVol = [];
-
-            // Taipei 09:00 is exactly UTC 01:00 on the same day
-            const startOfDayUTC = Date.UTC(
-                baseDate.getUTCFullYear(),
-                baseDate.getUTCMonth(),
-                baseDate.getUTCDate(),
-                1, 0, 0, 0
-            );
-            const startOfDaySec = Math.floor(startOfDayUTC / 1000);
-
-            let currentPrice = Number(stock.basePrice) || 100;
-            const targetChange = Number(stock.changePercent) || 0;
-            const driftPerStep = (targetChange / 100) / 270;
-
-            for (let i = 0; i < limitMinutes; i++) {
-                const unixSec = startOfDaySec + i * 60; // 1-minute step increments
-
-                // Deterministic pattern matching based on character codes
-                const hashValue = Math.abs(Math.sin((stock.symbol || 'TSMC').charCodeAt(0) + i)) * 1000;
-                const noise = (hashValue % 100 - 50) / 15000; // -0.3% to +0.3% micro noise
-
-                currentPrice = currentPrice * (1 + noise + driftPerStep);
-
-                if (targetChange > 0 && currentPrice < stock.basePrice * 0.95) currentPrice = stock.basePrice * 0.98;
-                if (targetChange < 0 && currentPrice > stock.basePrice * 1.05) currentPrice = stock.basePrice * 1.02;
-
-                let pVal = parseFloat(currentPrice.toFixed(2));
-                if (isNaN(pVal) || pVal <= 0) pVal = Number(stock.basePrice) || 100;
-
-                let vVal = Math.floor(Math.abs(Math.sin(i)) * ((Number(stock.volume) || 10000) / 270) * (1 + (hashValue % 10)/10));
-                if (isNaN(vVal)) vVal = 0;
-
-                intradayPrice.push({ time: unixSec, value: pVal });
-                intradayVol.push({ time: unixSec, value: vVal });
-            }
-
-            return { prices: intradayPrice, volumes: intradayVol };
-        }
-
-        function reconstructStockTimelines() {
-            const isLive = isTaiwanTradingWindow();
-            const baseDate = getMostRecentTradingDateUTC();
-
-            let currentMinutes = 270;
-            if (isLive) {
-                const now = new Date();
-                const taipei = new Date(now.getTime() + (8 * 3600000));
-                currentMinutes = (taipei.getUTCHours() - 9) * 60 + taipei.getUTCMinutes();
-                if (currentMinutes < 0) currentMinutes = 0;
-                if (currentMinutes > 270) currentMinutes = 270;
-            }
-
-            STOCKS_POOL.forEach(stock => {
-                const profile = generateIntradayTimeline(stock, baseDate, currentMinutes);
-                stock.history = profile.prices;
-                stock.volumeHistory = profile.volumes;
-            });
-        }
-
-        function seedStockData() {
-            STOCKS_POOL.forEach(stock => {
-                const rFactor = (Math.random() * 8 - 4) / 100; // -4% to +4%
-                stock.currentPrice = parseFloat((stock.basePrice * (1 + rFactor)).toFixed(2));
-                stock.change = parseFloat((stock.currentPrice - stock.basePrice).toFixed(2));
-                stock.changePercent = parseFloat(((stock.change / stock.basePrice) * 100).toFixed(2));
-            });
-            reconstructStockTimelines();
-        }
-
-        // Live ticker executor
-        function handleGlobalTick() {
-            const isLive = isTaiwanTradingWindow();
-            const refreshLabel = document.getElementById('refresh-label');
-            const timeBadges = ['gainers-time-badge', 'losers-time-badge', 'watchlist-time-badge', 'volume-time-badge'];
-
-            if (isLive) {
-                refreshLabel.innerText = "Smart Syncing...";
-                refreshLabel.className = "text-xs text-slate-400 font-semibold uppercase tracking-wider";
-                timeBadges.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.innerText = "10s Live Interval";
-                });
-
-                const now = new Date();
-                const taipei = new Date(now.getTime() + (8 * 3600000));
-                const unixSec = Math.floor(taipei.getTime() / 1000);
-
-                STOCKS_POOL.forEach(stock => {
-                    const delta = (Math.random() * 0.1 - 0.05) / 100; // micro ticks
-                    stock.currentPrice = parseFloat((stock.currentPrice * (1 + delta)).toFixed(2));
-                    stock.change = parseFloat((stock.currentPrice - stock.basePrice).toFixed(2));
-                    stock.changePercent = parseFloat(((stock.change / stock.basePrice) * 100).toFixed(2));
-
-                    const addedVol = Math.floor(Math.random() * 50) + 5;
-                    stock.volume += addedVol;
-
-                    // Append ticks to arrays safely
-                    if (stock.history && stock.history.length > 0) {
-                        const last = stock.history[stock.history.length - 1];
-                        if (unixSec - last.time >= 60) {
-                            stock.history.push({ time: unixSec, value: stock.currentPrice });
-                            stock.volumeHistory.push({ time: unixSec, value: addedVol });
-                            if (stock.history.length > 270) {
-                                stock.history.shift();
-                                stock.volumeHistory.shift();
-                            }
-                        } else {
-                            last.value = stock.currentPrice;
-                            stock.volumeHistory[stock.volumeHistory.length - 1].value += addedVol;
-                        }
-                    }
-                });
-            } else {
-                refreshLabel.innerText = "Market Closed";
-                refreshLabel.className = "text-xs text-rose-400 font-bold uppercase tracking-wider";
-                timeBadges.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.innerText = "Latest Session Static View";
-                });
-            }
-
-            renderActiveTabComponents();
-
-            const t = new Date();
-            document.getElementById('sync-time').innerText = `Last update: ${t.toTimeString().split(' ')[0]}`;
-        }
-
-        function renderActiveTabComponents() {
-            if (currentTab === 'gainers') {
-                updateGainersTable();
-                updateLineChartFeed('gainers', selectedGainersSymbol);
-            } else if (currentTab === 'losers') {
-                updateLosersTable();
-                updateLineChartFeed('losers', selectedLosersSymbol);
-            } else if (currentTab === 'volume') {
-                updateVolumeTable();
-                updateLineChartFeed('volume', selectedVolumeSymbol);
-            } else if (currentTab === 'watchlist') {
-                updateWatchlistTable();
-                if (selectedWatchlistSymbol) {
-                    updateLineChartFeed('watchlist', selectedWatchlistSymbol);
-                }
-            }
-        }
-
-        function startSyncTimers() {
-            setInterval(() => {
-                const mode = document.getElementById('refresh-mode-select').value;
-                refreshCountdown--;
-
-                if (refreshCountdown <= 0) {
-                    refreshCountdown = 10;
-                    if (mode === 'hard') {
-                        location.reload();
-                    } else {
-                        handleGlobalTick();
-                    }
-                }
-
-                document.getElementById('countdown-num').innerText = refreshCountdown;
-                const offset = 75.36 - (75.36 * refreshCountdown / 10);
-                document.getElementById('progress-circle').setAttribute('stroke-dashoffset', offset);
-            }, 1000);
-
-            handleGlobalTick();
-        }
-
-        function switchTab(tabId) {
-            currentTab = tabId;
-
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('border-amber-400', 'text-amber-400', 'border-emerald-500', 'text-emerald-500', 'border-rose-500', 'text-rose-500', 'border-sky-500', 'text-sky-500', 'border-slate-300', 'text-slate-100');
-                btn.classList.add('border-transparent', 'text-slate-400');
-            });
-
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            activeBtn.classList.remove('border-transparent', 'text-slate-400');
-            if (tabId === 'gainers') activeBtn.classList.add('border-emerald-500', 'text-emerald-500');
-            else if (tabId === 'losers') activeBtn.classList.add('border-rose-500', 'text-rose-500');
-            else if (tabId === 'volume') activeBtn.classList.add('border-sky-500', 'text-sky-500');
-            else if (tabId === 'watchlist') activeBtn.classList.add('border-amber-400', 'text-amber-400');
-            else activeBtn.classList.add('border-slate-300', 'text-slate-100');
-
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-            document.getElementById(`content-${tabId}`).classList.remove('hidden');
-
-            setTimeout(() => {
-                if (tabId === 'gainers') {
-                    initLineChart('gainers', selectedGainersSymbol);
-                } else if (tabId === 'losers') {
-                    initLineChart('losers', selectedLosersSymbol);
-                } else if (tabId === 'volume') {
-                    initLineChart('volume', selectedVolumeSymbol);
-                } else if (tabId === 'watchlist') {
-                    if (selectedWatchlistSymbol) {
-                        initLineChart('watchlist', selectedWatchlistSymbol);
-                    }
-                }
-                renderActiveTabComponents();
-            }, 50);
-        }
-
-        function reloadIframe() {
-            document.getElementById('report-iframe').src = "https://eric-lam.com/tw_stocker/stock_report.html";
-        }
-
-        /* ---------------- TAB 2: GAINERS LOGIC ---------------- */
-        function updateGainersTable() {
-            // Strict logical filter: only show stocks with actual positive changes
-            const aiGainers = STOCKS_POOL.filter(s => s.category === 'AI' && Number(s.changePercent) > 0)
-                .sort((a, b) => Number(b.changePercent) - Number(a.changePercent))
-                .slice(0, 10);
-
-            const tbody = document.getElementById('gainers-table-body');
-            tbody.innerHTML = '';
-
-            if (aiGainers.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-500">No active AI gainers in this session.</td></tr>`;
-                return;
-            }
-
-            aiGainers.forEach((stock, index) => {
-                const tr = document.createElement('tr');
-                tr.className = `cursor-pointer transition duration-150 ${stock.symbol === selectedGainersSymbol ? 'bg-emerald-500/20 hover:bg-emerald-500/30' : 'hover:bg-slate-700/40'}`;
-                tr.onclick = () => {
-                    selectedGainersSymbol = stock.symbol;
-                    updateGainersTable();
-                    initLineChart('gainers', stock.symbol);
-                };
-
-                const curPrice = Number(stock.currentPrice) || 0;
-                const changePct = Number(stock.changePercent) || 0;
-                const prefix = changePct > 0 ? '+' : '';
-
-                tr.innerHTML = `
-                    <td class="py-2.5 font-bold text-slate-400">${index + 1}</td>
-                    <td class="py-2.5">
-                        <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
-                        <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
-                    </td>
-                    <td class="py-2.5 text-right font-mono text-slate-200">${curPrice.toFixed(2)}</td>
-                    <td class="py-2.5 text-right font-semibold text-emerald-400 font-mono">${prefix}${changePct.toFixed(2)}%</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        /* ---------------- TAB 3: LOSERS LOGIC ---------------- */
-        function updateLosersTable() {
-            // Strict logical filter: only show stocks with actual negative changes
-            const aiLosers = STOCKS_POOL.filter(s => s.category === 'AI' && Number(s.changePercent) < 0)
-                .sort((a, b) => Number(a.changePercent) - Number(b.changePercent))
-                .slice(0, 10);
-
-            const tbody = document.getElementById('losers-table-body');
-            tbody.innerHTML = '';
-
-            if (aiLosers.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-500">No active AI losers in this session.</td></tr>`;
-                return;
-            }
-
-            aiLosers.forEach((stock, index) => {
-                const tr = document.createElement('tr');
-                tr.className = `cursor-pointer transition duration-150 ${stock.symbol === selectedLosersSymbol ? 'bg-rose-500/20 hover:bg-rose-500/30' : 'hover:bg-slate-700/40'}`;
-                tr.onclick = () => {
-                    selectedLosersSymbol = stock.symbol;
-                    updateLosersTable();
-                    initLineChart('losers', stock.symbol);
-                };
-
-                const curPrice = Number(stock.currentPrice) || 0;
-                const changePct = Number(stock.changePercent) || 0;
-                const prefix = changePct > 0 ? '+' : '';
-
-                tr.innerHTML = `
-                    <td class="py-2.5 font-bold text-slate-400">${index + 1}</td>
-                    <td class="py-2.5">
-                        <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
-                        <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
-                    </td>
-                    <td class="py-2.5 text-right font-mono text-slate-200">${curPrice.toFixed(2)}</td>
-                    <td class="py-2.5 text-right font-semibold text-rose-400 font-mono">${prefix}${changePct.toFixed(2)}%</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        /* ---------------- TAB 4: POPULAR INTRA_DAY LOGIC ---------------- */
-        function updateVolumeTable() {
-            const popularStocks = [...STOCKS_POOL]
-                .sort((a, b) => Number(b.volume) - Number(a.volume))
-                .slice(0, 10);
-
-            const tbody = document.getElementById('volume-table-body');
-            tbody.innerHTML = '';
-
-            popularStocks.forEach((stock, index) => {
-                const tr = document.createElement('tr');
-                tr.className = `cursor-pointer transition duration-150 ${stock.symbol === selectedVolumeSymbol ? 'bg-sky-500/20 hover:bg-sky-500/30' : 'hover:bg-slate-700/40'}`;
-                tr.onclick = () => {
-                    selectedVolumeSymbol = stock.symbol;
-                    updateVolumeTable();
-                    initLineChart('volume', stock.symbol);
-                };
-
-                const curPrice = Number(stock.currentPrice) || 0;
-                const totalVol = Number(stock.volume) || 0;
-
-                tr.innerHTML = `
-                    <td class="py-2.5 font-bold text-slate-400">${index + 1}</td>
-                    <td class="py-2.5">
-                        <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
-                        <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
-                    </td>
-                    <td class="py-2.5 text-right font-mono text-slate-300">${totalVol.toLocaleString()}</td>
-                    <td class="py-2.5 text-right font-mono text-slate-200">${curPrice.toFixed(2)}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        /* ---------------- TAB 5: WATCHLIST & SEARCH LOGIC ---------------- */
-        function handleSearch() {
-            const query = document.getElementById('search-input').value.toLowerCase().trim();
-            const resultsDiv = document.getElementById('search-results');
-            if (!query) {
-                resultsDiv.classList.add('hidden');
-                return;
-            }
-
-            const matches = STOCKS_POOL.filter(s =>
-                s.symbol.toLowerCase().includes(query) ||
-                s.name.toLowerCase().includes(query)
-            );
-
-            if (matches.length === 0) {
-                resultsDiv.innerHTML = `<div class="p-3 text-xs text-slate-500">No stocks found</div>`;
-            } else {
-                resultsDiv.innerHTML = matches.map(stock => `
-                    <div onclick="addStockToWatchlist('${stock.symbol}')" class="p-3 text-xs hover:bg-slate-700 cursor-pointer flex justify-between items-center text-slate-200">
-                        <div>
-                            <span class="font-bold text-white">${stock.name}</span>
-                            <span class="text-[10px] text-slate-400 font-mono ml-2">${stock.symbol}</span>
-                        </div>
-                        <span class="text-amber-400 font-semibold">+ Add</span>
-                    </div>
-                `).join('');
-            }
-            resultsDiv.classList.remove('hidden');
-        }
-
-        function addStockToWatchlist(symbol) {
-            if (!watchlistSymbols.includes(symbol)) {
-                watchlistSymbols.push(symbol);
-                localStorage.setItem('tw_watchlist', JSON.stringify(watchlistSymbols));
-            }
-            document.getElementById('search-input').value = '';
-            document.getElementById('search-results').classList.add('hidden');
-            selectedWatchlistSymbol = symbol;
-            updateWatchlistTable();
-            initLineChart('watchlist', symbol);
-        }
-
-        function removeStockFromWatchlist(symbol, event) {
-            event.stopPropagation();
-            watchlistSymbols = watchlistSymbols.filter(s => s !== symbol);
-            localStorage.setItem('tw_watchlist', JSON.stringify(watchlistSymbols));
-
-            if (selectedWatchlistSymbol === symbol) {
-                selectedWatchlistSymbol = watchlistSymbols.length > 0 ? watchlistSymbols[0] : '';
-            }
-            updateWatchlistTable();
-            if (selectedWatchlistSymbol) {
-                initLineChart('watchlist', selectedWatchlistSymbol);
-            } else {
-                if (charts.watchlist) {
-                    charts.watchlist.remove();
-                    charts.watchlist = null;
-                    series.watchlist = null;
-                    volumeSeries.watchlist = null;
-                }
-                document.getElementById('watchlist-chart-title').innerText = 'No Stock Selected';
-            }
-        }
-
-        function updateWatchlistTable() {
-            const tbody = document.getElementById('watchlist-table-body');
-            tbody.innerHTML = '';
-
-            if (watchlistSymbols.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-500">Your watchlist is empty. Search above to add stocks.</td></tr>`;
-                return;
-            }
-
-            watchlistSymbols.forEach(symbol => {
-                const stock = STOCKS_POOL.find(s => s.symbol === symbol);
-                if (!stock) return;
-
-                const tr = document.createElement('tr');
-                tr.className = `cursor-pointer transition duration-150 ${stock.symbol === selectedWatchlistSymbol ? 'bg-amber-500/20 hover:bg-amber-500/30' : 'hover:bg-slate-700/40'}`;
-                tr.onclick = () => {
-                    selectedWatchlistSymbol = stock.symbol;
-                    updateWatchlistTable();
-                    initLineChart('watchlist', stock.symbol);
-                };
-
-                const curPrice = Number(stock.currentPrice) || 0;
-                const changePct = Number(stock.changePercent) || 0;
-                const changeColor = changePct >= 0 ? 'text-emerald-400' : 'text-rose-400';
-                const prefix = changePct > 0 ? '+' : '';
-
-                tr.innerHTML = `
-                    <td class="py-2.5">
-                        <div class="font-semibold text-white">${stock.name.split(' ')[0]}</div>
-                        <div class="text-[10px] text-slate-400 font-mono">${stock.symbol}</div>
-                    </td>
-                    <td class="py-2.5 text-right font-mono text-slate-200">${curPrice.toFixed(2)}</td>
-                    <td class="py-2.5 text-right font-semibold font-mono ${changeColor}">${prefix}${changePct.toFixed(2)}%</td>
-                    <td class="py-2.5 text-center">
-                        <button onclick="removeStockFromWatchlist('${stock.symbol}', event)" class="text-rose-400 hover:text-rose-600 font-semibold text-xs px-2 py-1">Delete</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        /* ---------------- TRADINGVIEW LIGHTWEIGHT CHARTS ENGINE ---------------- */
-        function initLineChart(tab, symbol) {
-            const container = document.getElementById(`${tab}-chart-container`);
-            if (!container) return;
-
-            if (charts[tab]) {
-                charts[tab].remove();
-                charts[tab] = null;
-                series[tab] = null;
-                volumeSeries[tab] = null;
-            }
-
-            const stock = STOCKS_POOL.find(s => s.symbol === symbol);
-            if (!stock) {
-                document.getElementById(`${tab}-chart-title`).innerText = 'No Stock Selected';
-                return;
-            }
-
-            // Parse numbers safely to prevent code execution halts
-            const basePrice = Number(stock.basePrice) || 100;
-            const currentPrice = Number(stock.currentPrice) || 100;
-            const changePercent = Number(stock.changePercent) || 0;
-
-            const historyData = (stock.history || []).map(p => ({
-                time: Number(p.time),
-                value: Number(p.value) || basePrice
-            }));
-
-            const volumeData = (stock.volumeHistory || []).map(v => ({
-                time: Number(v.time),
-                value: Number(v.value) || 0
-            }));
-
-            if (historyData.length === 0) {
-                document.getElementById(`${tab}-chart-title`).innerText = 'Loading chart data...';
-                return;
-            }
-
-            const w = container.clientWidth || 600;
-            const h = 400;
-
-            try {
-                charts[tab] = LightweightCharts.createChart(container, {
-                    ...CHART_OPTIONS,
-                    width: w,
-                    height: h
-                });
-
-                // Taiwan colors: Red Up, Green Down
-                const themeColor = currentPrice >= basePrice ? '#ef4444' : '#22c55e';
-                const fadeColor = currentPrice >= basePrice ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)';
-
-                series[tab] = charts[tab].addAreaSeries({
-                    lineColor: themeColor,
-                    topColor: fadeColor,
-                    bottomColor: 'rgba(30, 41, 59, 0)',
-                    lineWidth: 2,
-                });
-
-                // Confine volume overlay cleanly on the native left scale to prevent layout script exceptions
-                volumeSeries[tab] = charts[tab].addHistogramSeries({
-                    color: 'rgba(234, 179, 8, 0.35)',
-                    priceFormat: { type: 'volume' },
-                    priceScaleId: 'left', // Avoids custom scale indexation blocks
-                });
-
-                charts[tab].priceScale('left').applyOptions({
-                    scaleMargins: {
-                        top: 0.8, // Confinements
-                        bottom: 0,
-                    },
-                    visible: false, // Keep scales hidden
-                });
-
-                // Add Dashed previous close baseline
-                series[tab].createPriceLine({
-                    price: basePrice,
-                    color: '#64748b',
-                    lineWidth: 1,
-                    lineStyle: 1, // Dashed
-                    axisLabelVisible: true,
-                    title: 'Ref: ' + basePrice.toFixed(2)
-                });
-
-                const changePrefix = changePercent > 0 ? '+' : '';
-                document.getElementById(`${tab}-chart-title`).innerText = `${stock.name} (${stock.symbol}) : ${currentPrice.toFixed(2)} (${changePrefix}${changePercent.toFixed(2)}%)`;
-
-                series[tab].setData(historyData);
-                volumeSeries[tab].setData(volumeData);
-
-                charts[tab].timeScale().fitContent();
-
-                const resizeObserver = new ResizeObserver(entries => {
-                    if (charts[tab] && container.clientWidth > 0) {
-                        charts[tab].resize(container.clientWidth, h);
-                    }
-                });
-                resizeObserver.observe(container);
-            } catch (error) {
-                console.error("TradingView Canvas execution halted: ", error);
-            }
-        }
-
-        function updateLineChartFeed(tab, symbol) {
-            const stock = STOCKS_POOL.find(s => s.symbol === symbol);
-            if (!stock || !series[tab]) return;
-
-            const basePrice = Number(stock.basePrice) || 100;
-            const currentPrice = Number(stock.currentPrice) || 100;
-            const changePercent = Number(stock.changePercent) || 0;
-
-            const historyData = (stock.history || []).map(p => ({
-                time: Number(p.time),
-                value: Number(p.value) || basePrice
-            }));
-
-            const volumeData = (stock.volumeHistory || []).map(v => ({
-                time: Number(v.time),
-                value: Number(v.value) || 0
-            }));
-
-            if (historyData.length > 0) {
-                series[tab].setData(historyData);
-                if (volumeSeries[tab] && volumeData.length > 0) {
-                    volumeSeries[tab].setData(volumeData);
-                }
-            }
-
-            const changePrefix = changePercent > 0 ? '+' : '';
-            document.getElementById(`${tab}-chart-title`).innerText = `${stock.name} (${stock.symbol}) : ${currentPrice.toFixed(2)} (${changePrefix}${changePercent.toFixed(2)}%)`;
-        }
-
-        document.addEventListener('click', function(e) {
-            const searchInput = document.getElementById('search-input');
-            const searchResults = document.getElementById('search-results');
-            if (e.target !== searchInput && e.target !== searchResults) {
-                searchResults.classList.add('hidden');
-            }
+        selectedSymbols.push(sym);
+      }
+      renderTab5();
+    }
+
+    // --- Generic Builder for charts + list tables ---
+    function renderStandardGrid(gridId, tableId, dataArr, strokeColor, fillColor) {
+      const grid = document.getElementById(gridId);
+      const tbody = document.getElementById(tableId);
+
+      // 1. Render charts only on initial mount or dimension update
+      const existingCards = grid.children.length;
+      if (existingCards !== dataArr.length) {
+        grid.innerHTML = '';
+        dataArr.forEach(stock => {
+          const card = document.createElement('div');
+          card.className = "bg-slate-800/40 border border-slate-700/30 rounded-xl p-4 flex flex-col justify-between hover:border-slate-600 transition-all duration-200";
+          card.innerHTML = `
+            <div>
+              <div class="flex justify-between items-start gap-1">
+                <div>
+                  <span class="text-[10px] font-mono text-slate-500">${stock.symbol}</span>
+                  <h3 class="font-bold text-white text-xs truncate max-w-[100px]">${stock.name}</h3>
+                </div>
+                <span id="${gridId}-badge-${stock.symbol}" class="text-[10px] px-1.5 py-0.5 rounded font-bold font-mono">--</span>
+              </div>
+              <div class="mt-2 flex items-baseline">
+                <span id="${gridId}-price-${stock.symbol}" class="text-base font-bold text-white font-mono">--</span>
+                <span id="${gridId}-change-${stock.symbol}" class="text-[10px] font-mono ml-2">--</span>
+              </div>
+            </div>
+            <div class="h-16 w-full mt-3">
+              <canvas id="${gridId}-chart-${stock.symbol}"></canvas>
+            </div>
+          `;
+          grid.appendChild(card);
+
+          // Instantiate Chart
+          const ctx = document.getElementById(`${gridId}-chart-${stock.symbol}`).getContext('2d');
+          const key = `${gridId}-${stock.symbol}`;
+          if (globalCharts[key]) globalCharts[key].destroy();
+          globalCharts[key] = createChartInstance(ctx, stock.history, strokeColor, fillColor);
         });
-    </script>
+      }
+
+      // 2. Refresh values
+      dataArr.forEach(stock => {
+        const badge = document.getElementById(`${gridId}-badge-${stock.symbol}`);
+        const price = document.getElementById(`${gridId}-price-${stock.symbol}`);
+        const change = document.getElementById(`${gridId}-change-${stock.symbol}`);
+
+        if (badge) {
+          badge.innerText = `${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%`;
+          badge.className = `text-[10px] px-1.5 py-0.5 rounded font-bold font-mono ${stock.changePercent >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`;
+        }
+        if (price) price.innerText = stock.price.toFixed(2);
+        if (change) {
+          change.innerText = `${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}`;
+          change.className = `text-[10px] font-mono ml-2 ${stock.change >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+        }
+
+        const chart = globalCharts[`${gridId}-${stock.symbol}`];
+        if (chart) {
+          chart.data.labels = stock.history.map(t => t.time);
+          chart.data.datasets[0].data = stock.history.map(t => t.price);
+          chart.update('none');
+        }
+      });
+
+      // 3. Render Table rows
+      tbody.innerHTML = '';
+      dataArr.forEach(stock => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/20 transition-colors";
+        tr.innerHTML = `
+          <td class="py-3 px-6 font-mono text-slate-400">${stock.symbol}</td>
+          <td class="py-3 px-6 text-white">${stock.name}</td>
+          <td class="py-3 px-6 text-right font-mono text-white">${stock.price.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-6 text-right font-mono ${stock.change >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}</td>
+          <td class="py-3 px-6 text-right font-mono ${stock.changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%</td>
+          <td class="py-3 px-6 text-right font-mono text-slate-400">${stock.volume.toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Helper to generate minimal chart configs
+    function createChartInstance(ctx, history, strokeColor, fillColor) {
+      return new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: history.map(t => t.time),
+          datasets: [{
+            data: history.map(t => t.price),
+            borderColor: strokeColor,
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: true,
+            tension: 0.25,
+            backgroundColor: fillColor
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: true } },
+          scales: { x: { display: false }, y: { display: false } }
+        }
+      });
+    }
+
+    // --- Main Tab Navigation Switching ---
+    function switchTab(tabNum) {
+      activeTab = tabNum;
+
+      // Update button visual states
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = "tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-850 transition-all flex items-center gap-2";
+      });
+      const activeBtn = document.getElementById(`tab-btn-${tabNum}`);
+      activeBtn.className = "tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600/15 text-indigo-400 border border-indigo-500/30 transition-all flex items-center gap-2";
+
+      // Hide and show sections
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
+      document.getElementById(`tab-content-${tabNum}`).classList.remove('hidden');
+
+      // Re-trigger layout paints (prevents Chart.js render collapses inside hidden divs)
+      setTimeout(() => {
+        Object.keys(globalCharts).forEach(key => {
+          globalCharts[key].resize();
+          globalCharts[key].update('none');
+        });
+      }, 50);
+
+      renderActiveTabData();
+    }
+
+    function renderActiveTabData() {
+      if (activeTab === 2) renderTab2();
+      if (activeTab === 3) renderTab3();
+      if (activeTab === 4) renderTab4();
+      if (activeTab === 5) renderTab5();
+    }
+
+    // --- Core Sync Clock Loops ---
+    function runGlobalTimeTracker() {
+      const tw = getTaiwanMarketStatus();
+      const us = getUSMarketStatus();
+
+      // Taiwan Elements Update
+      document.getElementById('tw-clock').innerText = tw.timeString;
+      const twIndicator = document.getElementById('tw-indicator');
+      const twStatus = document.getElementById('tw-market-status');
+      if (tw.isOpen) {
+        twIndicator.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse";
+        twStatus.innerText = "OPEN";
+        twStatus.className = "font-bold text-emerald-400";
+      } else {
+        twIndicator.className = "h-2.5 w-2.5 rounded-full bg-rose-500";
+        twStatus.innerText = "CLOSED";
+        twStatus.className = "font-bold text-rose-500";
+      }
+
+      // US Elements Update
+      document.getElementById('us-clock').innerText = us.timeString;
+      const usIndicator = document.getElementById('us-indicator');
+      const usStatus = document.getElementById('us-market-status');
+      if (us.isOpen) {
+        usIndicator.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse";
+        usStatus.innerText = "OPEN";
+        usStatus.className = "font-bold text-emerald-400";
+      } else {
+        usIndicator.className = "h-2.5 w-2.5 rounded-full bg-rose-500";
+        usStatus.innerText = "CLOSED";
+        usStatus.className = "font-bold text-rose-500";
+      }
+
+      // Display the global counting banner if either market is currently running
+      const isAnyOpen = tw.isOpen || us.isOpen;
+      const banner = document.getElementById('countdown-banner');
+      if (isAnyOpen) {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function launchPollingTickers() {
+      if (systemLoopInterval) clearInterval(systemLoopInterval);
+
+      systemLoopInterval = setInterval(() => {
+        runGlobalTimeTracker();
+
+        const tw = getTaiwanMarketStatus();
+        const us = getUSMarketStatus();
+
+        if ((tw.isOpen || us.isOpen) && document.visibilityState === 'visible') {
+          countdownVal--;
+          document.getElementById('countdown').innerText = countdownVal;
+
+          if (countdownVal <= 0) {
+            // Apply updates dynamically
+            if (tw.isOpen) tickTaiwanData();
+            if (us.isOpen) tickUSData();
+
+            renderActiveTabData();
+            countdownVal = 15;
+          }
+        }
+      }, 1000);
+    }
+
+    // --- Manual Refresh Button ---
+    document.getElementById('manual-refresh').addEventListener('click', () => {
+      const icon = document.getElementById('refresh-icon');
+      icon.classList.add('animate-spin');
+
+      setTimeout(() => {
+        const tw = getTaiwanMarketStatus();
+        const us = getUSMarketStatus();
+
+        if (tw.isOpen) tickTaiwanData();
+        if (us.isOpen) tickUSData();
+
+        // Force state rebuild if closed to simulate user fetching latest day shifts
+        if (!tw.isOpen && !us.isOpen) {
+          initializeAllData();
+        }
+
+        renderActiveTabData();
+        icon.classList.remove('animate-spin');
+        countdownVal = 15;
+      }, 400);
+    });
+
+    // --- Init Bootstrap ---
+    function boot() {
+      lucide.createIcons();
+      initializeAllData();
+      runGlobalTimeTracker();
+      launchPollingTickers();
+      switchTab(1); // Default initial view set to Tab 1
+    }
+
+    window.onload = boot;
+  </script>
 </body>
 </html>

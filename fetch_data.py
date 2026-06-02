@@ -1,4 +1,3 @@
-# fetch_data.py
 import yfinance as yf
 import json
 from datetime import datetime

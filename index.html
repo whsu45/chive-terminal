@@ -827,6 +827,66 @@
       }
     }
 
+    // --- Dynamic Simulation / Ticks Engine ---
+    function tickTaiwanData() {
+      const updateData = (targetArr, direction) => {
+        return targetArr.map(stock => {
+          const delta = (Math.random() - (direction > 0 ? 0.4 : 0.6)) * 0.15;
+          const pct = Math.max(-10, Math.min(10, stock.changePercent + delta));
+          
+          // Defensive fallback calculation prevents NaN
+          const basePrice = stock.basePrice || (stock.price - stock.change) || stock.price;
+          const price = Number((basePrice * (1 + pct / 100)).toFixed(2));
+          const change = Number((price - basePrice).toFixed(2));
+
+          const lastTick = stock.history[stock.history.length - 1]?.time || "09:00";
+          let [h, m] = lastTick.split(':').map(Number);
+          m += 15; if (m >= 60) { m = 0; h += 1; }
+          const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+
+          const history = [...stock.history, { time, price }];
+          if (history.length > 12) history.shift();
+
+          return { ...stock, price, change, changePercent: pct, volume: stock.volume + Math.floor(Math.random() * 500), history };
+        });
+      };
+      stateGainers = updateData(stateGainers, 1);
+      stateLosers = updateData(stateLosers, -1);
+    }
+
+    function tickUSData() {
+      stateAI = stateAI.map(stock => {
+        const delta = (Math.random() - 0.45) * 0.2;
+        const pct = stock.changePercent + delta;
+        
+        // Defensive fallback calculation prevents NaN
+        const basePrice = stock.basePrice || (stock.price - stock.change) || stock.price;
+        const price = Number((basePrice * (1 + pct / 100)).toFixed(2));
+        const change = Number((price - basePrice).toFixed(2));
+
+        const lastTick = stock.history[stock.history.length - 1]?.time || "09:30";
+        let [h, m] = lastTick.split(':').map(Number);
+        m += 15; if (m >= 60) { m = 0; h += 1; }
+        const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+
+        const history = [...stock.history, { time, price }];
+        if (history.length > 12) history.shift();
+
+        return { ...stock, price, change, changePercent: pct, volume: stock.volume + Math.floor(Math.random() * 400), history };
+      });
+
+      const ndxDelta = (Math.random() - 0.45) * 0.05;
+      stateNasdaq.changePercent += ndxDelta;
+      
+      const baseNdxPrice = stateNasdaq.basePrice || (stateNasdaq.price - stateNasdaq.change) || stateNasdaq.price;
+      stateNasdaq.price = Number((baseNdxPrice * (1 + stateNasdaq.changePercent / 100)).toFixed(0));
+      stateNasdaq.change = Number((stateNasdaq.price - baseNdxPrice).toFixed(0));
+      
+      const ndxHistory = [...stateNasdaq.history, { time: "Tick", price: stateNasdaq.price }];
+      if (ndxHistory.length > 12) ndxHistory.shift();
+      stateNasdaq.history = ndxHistory;
+    }
+    
     function launchPollingTickers() {
       if (systemLoopInterval) clearInterval(systemLoopInterval);
 

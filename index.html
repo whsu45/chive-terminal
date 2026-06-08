@@ -58,7 +58,7 @@
             <span id="tw-indicator" class="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
             <div>
               <p class="text-slate-400"><span id="tw-market-label">台股市場</span> <span id="tw-market-status" class="font-bold">--</span></p>
-              <p class="text-[10px] text-slate-500">TP (UTC+8): <span id="tw-clock" class="text-slate-300">--:--:--</span></p>
+              <p class="text-[10px] text-slate-500">TW (UTC+8): <span id="tw-clock" class="text-slate-300">--:--:--</span></p>
             </div>
           </div>
           <!-- US Stock Timezone Tracker -->
@@ -66,7 +66,7 @@
             <span id="us-indicator" class="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
             <div>
               <p class="text-slate-400"><span id="us-market-label">美股市場</span> <span id="us-market-status" class="font-bold">--</span></p>
-              <p class="text-[10px] text-slate-500">NY (EST): <span id="us-clock" class="text-slate-300">--:--:--</span></p>
+              <p class="text-[10px] text-slate-500">ET (UTC-5): <span id="us-clock" class="text-slate-300">--:--:--</span></p>
             </div>
           </div>
           <!-- General Timer -->
@@ -414,7 +414,7 @@
     };
 
     let currentLang = "zh";
-    let currentViewMode = "responsive"; // 'responsive' (adaptive grid) or 'desktop' (fixed wide tables & lateral grids scroll wrapper)
+    let currentViewMode = "responsive"; // 'responsive' or 'desktop'
 
     function getName(symbol, fallback) {
       if (stockNames[symbol]) {
@@ -613,59 +613,34 @@
     let selectedSymbols = ["2330", "2454", "2317", "2308", "2382"];
 
     // --- High-Performance Cross-Browser Safe Timezone Core ---
-    function getTimezoneTime(tz) {
-      try {
-        // 1. Fetch time in 24-hour HH:MM:SS format
-        const timeFormatter = new Intl.DateTimeFormat('en-US', {
-          timeZone: tz,
-          hour12: false,
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit'
-        });
-        const timeString = timeFormatter.format(new Date());
+    function getOffsetTime(offset) {
+      const d = new Date();
+      // Calculate UTC time in milliseconds and add offset
+      const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      const targetDate = new Date(utc + (3600000 * offset));
 
-        // 2. Parse values securely
-        const parts = timeString.split(':');
-        const hour = parseInt(parts[0], 10) % 24;
-        const minute = parseInt(parts[1], 10) % 60;
+      const hour = targetDate.getHours();
+      const minute = targetDate.getMinutes();
+      const second = targetDate.getSeconds();
+      const dayOfWeek = targetDate.getDay(); // 0 = Sun, 6 = Sat
 
-        // 3. Fetch standard short weekday name
-        const weekdayFormatter = new Intl.DateTimeFormat('en-US', {
-          timeZone: tz,
-          weekday: 'short'
-        });
-        const weekdayStr = weekdayFormatter.format(new Date()); // "Sun" - "Sat"
+      const pad = (n) => String(n).padStart(2, '0');
+      const timeString = `${pad(hour)}:${pad(minute)}:${pad(second)}`;
 
-        const dayMap = { "Sun": 0, "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6 };
-        const dayOfWeek = dayMap[weekdayStr] !== undefined ? dayMap[weekdayStr] : new Date().getDay();
-
-        return { dayOfWeek, hour, minute, timeString };
-      } catch (e) {
-        console.error("Timezone parsing error, falling back to local system clock:", e);
-        const now = new Date();
-        const pad = (n) => String(n).padStart(2, '0');
-        const fallbackString = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-        return {
-          dayOfWeek: now.getDay(),
-          hour: now.getHours(),
-          minute: now.getMinutes(),
-          timeString: fallbackString
-        };
-      }
+      return { dayOfWeek, hour, minute, timeString };
     }
 
     function getTaiwanMarketStatus() {
-      const details = getTimezoneTime("Asia/Taipei");
+      const details = getOffsetTime(8); // Fixed UTC+8 for Taipei
       const mins = details.hour * 60 + details.minute;
-      const isOpen = (details.dayOfWeek >= 1 && details.dayOfWeek <= 6) && (mins >= 480 && mins <= 900); // Mon-Sat 08:00 - 15:00
+      const isOpen = (details.dayOfWeek >= 1 && details.dayOfWeek <= 6) && (mins >= 480 && mins <= 900); // 8:00 AM - 15:00
       return { isOpen, timeString: details.timeString };
     }
 
     function getUSMarketStatus() {
-      const details = getTimezoneTime("America/New_York");
+      const details = getOffsetTime(-5); // Fixed UTC-5 for Eastern Standard Time (EST)
       const mins = details.hour * 60 + details.minute;
-      const isOpen = (details.dayOfWeek >= 1 && details.dayOfWeek <= 5) && (mins >= 570 && mins <= 960); // Mon-Fri 09:30 - 16:00
+      const isOpen = (details.dayOfWeek >= 1 && details.dayOfWeek <= 5) && (mins >= 570 && mins <= 960); // 09:30 - 16:00
       return { isOpen, timeString: details.timeString };
     }
 
@@ -868,6 +843,7 @@
       renderStandardGrid("gainers-charts-grid", "gainers-table-body", stateGainers, "#10b981", "rgba(16, 185, 129, 0.2)");
     }
 
+    // Un-truncated complete render methods
     function renderTabLosers() {
       renderStandardGrid("losers-charts-grid", "losers-table-body", stateLosers, "#f43f5e", "rgba(244, 63, 94, 0.2)");
     }

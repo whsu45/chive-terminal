@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,24 +20,32 @@
     <header class="bg-slate-950 border-b border-slate-800 py-4 px-6">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            Fintech Analytics Dashboard
-            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">v2.4</span>
+          <h1 id="title-text" class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            金融量化分析儀表板
           </h1>
-          <p class="text-slate-400 text-xs mt-0.5">Automated Git Pipeline & Hybrid Polling Engine</p>
+          <p id="subtitle-text" class="text-slate-400 text-xs mt-0.5">自動化 Git 流水線與混合輪詢引擎</p>
         </div>
 
         <!-- Dynamic Clock Bar -->
         <div class="flex flex-wrap items-center gap-4 text-xs font-mono">
+          <!-- Dynamic Language Selector Dropdown (Best Practice Integration) -->
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-1.5 flex items-center gap-1.5">
+            <i data-lucide="languages" class="h-4 w-4 text-slate-400"></i>
+            <select id="lang-selector" onchange="changeLanguage(this.value)" class="bg-transparent border-0 text-slate-300 font-sans focus:ring-0 cursor-pointer text-xs outline-none pr-6">
+              <option value="zh" class="bg-slate-950 text-slate-300">繁體中文 (ZH)</option>
+              <option value="en" class="bg-slate-950 text-slate-300">English (EN)</option>
+            </select>
+          </div>
+
           <!-- Data Source Indicator -->
           <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-[10px] text-slate-400">
-            <span>Source: <span id="data-source-badge" class="font-bold text-rose-400">LOADING...</span></span>
+            <span><span id="source-label">數據來源</span>: <span id="data-source-badge" class="font-bold text-rose-400">LOADING...</span></span>
           </div>
           <!-- Taiwan Stock Timezone Tracker -->
           <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 flex items-center gap-2">
             <span id="tw-indicator" class="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
             <div>
-              <p class="text-slate-400">TW Market: <span id="tw-market-status" class="font-bold">--</span></p>
+              <p class="text-slate-400"><span id="tw-market-label">台股市場</span> <span id="tw-market-status" class="font-bold">--</span></p>
               <p class="text-[10px] text-slate-500">TP (UTC+8): <span id="tw-clock" class="text-slate-300">--:--:--</span></p>
             </div>
           </div>
@@ -45,13 +53,13 @@
           <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 flex items-center gap-2">
             <span id="us-indicator" class="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
             <div>
-              <p class="text-slate-400">US Market: <span id="us-market-status" class="font-bold">--</span></p>
+              <p class="text-slate-400"><span id="us-market-label">美股市場</span> <span id="us-market-status" class="font-bold">--</span></p>
               <p class="text-[10px] text-slate-500">NY (EST): <span id="us-clock" class="text-slate-300">--:--:--</span></p>
             </div>
           </div>
           <!-- General Timer -->
           <div id="countdown-banner" class="bg-emerald-950/20 border border-emerald-800/30 rounded-lg p-2 text-emerald-400 text-[11px] font-semibold hidden">
-            <span>Updating in <span id="countdown">15</span>s</span>
+            <span id="updating-label">更新倒數</span> <span id="countdown">15</span>s
           </div>
           <!-- Manual Refresh Button -->
           <button id="manual-refresh" class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 transition-colors text-slate-300">
@@ -66,22 +74,22 @@
       <div class="max-w-7xl mx-auto px-6">
         <div class="flex space-x-2 py-2 overflow-x-auto scrollbar-none">
           <button onclick="switchTab(1)" id="tab-btn-1" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-white border border-slate-700/50 transition-all flex items-center gap-2">
-            <i data-lucide="file-text" class="h-4 w-4"></i> TW Stocker Report
+            <i data-lucide="file-text" class="h-4 w-4"></i> <span id="tab-btn-1-text">台股分析報告</span>
           </button>
           <button onclick="switchTab(2)" id="tab-btn-2" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-850 transition-all flex items-center gap-2">
-            <i data-lucide="wallet" class="h-4 w-4"></i> Paper Trading
+            <i data-lucide="wallet" class="h-4 w-4"></i> <span id="tab-btn-2-text">模擬交易</span>
           </button>
           <button onclick="switchTab(3)" id="tab-btn-3" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-850 transition-all flex items-center gap-2">
-            <i data-lucide="trending-up" class="h-4 w-4"></i> Top 10 Gainers (TW)
+            <i data-lucide="trending-up" class="h-4 w-4"></i> <span id="tab-btn-3-text">前 10 大漲幅股</span>
           </button>
           <button onclick="switchTab(4)" id="tab-btn-4" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-850 transition-all flex items-center gap-2">
-            <i data-lucide="trending-down" class="h-4 w-4"></i> Top 10 Losers (TW)
+            <i data-lucide="trending-down" class="h-4 w-4"></i> <span id="tab-btn-4-text">前 10 大跌幅股</span>
           </button>
           <button onclick="switchTab(5)" id="tab-btn-5" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-850 transition-all flex items-center gap-2">
-            <i data-lucide="globe" class="h-4 w-4"></i> NASDAQ & AI Stocks
+            <i data-lucide="globe" class="h-4 w-4"></i> <span id="tab-btn-5-text">那斯達克與 AI 股</span>
           </button>
           <button onclick="switchTab(6)" id="tab-btn-6" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-850 transition-all flex items-center gap-2">
-            <i data-lucide="sliders" class="h-4 w-4"></i> Custom Watchlist
+            <i data-lucide="sliders" class="h-4 w-4"></i> <span id="tab-btn-6-text">自訂自選股</span>
           </button>
         </div>
       </div>
@@ -94,11 +102,11 @@
       <section id="tab-content-1" class="tab-panel flex flex-col space-y-4">
         <div class="flex justify-between items-center bg-slate-850/50 border border-slate-800 p-4 rounded-xl">
           <div>
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">TW Stocker Strategy Framework</h2>
-            <p class="text-xs text-slate-400">Integrated AI Momentum and Sector Rotation system outputs</p>
+            <h2 id="report-title" class="text-lg font-bold text-white flex items-center gap-2">TW Stocker Strategy Framework</h2>
+            <p id="report-sub" class="text-xs text-slate-400">Integrated AI Momentum and Sector Rotation system outputs</p>
           </div>
           <a href="https://eric-lam.com/tw_stocker/stock_report.html" target="_blank" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all">
-            <i data-lucide="external-link" class="h-3.5 w-3.5"></i> External Link
+            <i data-lucide="external-link" class="h-3.5 w-3.5"></i> <span id="report-link-text">External Link</span>
           </a>
         </div>
         <div class="relative w-full rounded-xl border border-slate-800 bg-slate-950 overflow-hidden h-[calc(100vh-280px)]">
@@ -114,11 +122,11 @@
       <section id="tab-content-2" class="tab-panel hidden flex flex-col space-y-4">
         <div class="flex justify-between items-center bg-slate-850/50 border border-slate-800 p-4 rounded-xl">
           <div>
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">TW Stocker Paper Trading Sandbox</h2>
-            <p class="text-xs text-slate-400">Virtual trade matching execution framework and records</p>
+            <h2 id="paper-title" class="text-lg font-bold text-white flex items-center gap-2">TW Stocker Paper Trading Sandbox</h2>
+            <p id="paper-sub" class="text-xs text-slate-400">Virtual trade matching execution framework and records</p>
           </div>
           <a href="https://eric-lam.com/tw_stocker/paper_trading.html" target="_blank" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all">
-            <i data-lucide="external-link" class="h-3.5 w-3.5"></i> External Link
+            <i data-lucide="external-link" class="h-3.5 w-3.5"></i> <span id="paper-link-text">External Link</span>
           </a>
         </div>
         <div class="relative w-full rounded-xl border border-slate-800 bg-slate-950 overflow-hidden h-[calc(100vh-280px)]">
@@ -133,22 +141,17 @@
       <!-- ==================== TAB 3: TOP 10 GAINERS (TW) ==================== -->
       <section id="tab-content-3" class="tab-panel hidden space-y-6">
         <div>
-          <h2 class="text-xl font-bold text-white mb-1">Taiwan Stock Exchange (TWSE) Top Gainers</h2>
-          <p class="text-xs text-slate-400">Updates dynamically every 15s during local market hours</p>
+          <h2 id="gainers-header" class="text-xl font-bold text-white mb-1">Taiwan Stock Exchange (TWSE) Top Gainers</h2>
+          <p id="gainers-sub" class="text-xs text-slate-400">Updates dynamically every 15s during local market hours</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="gainers-charts-grid"></div>
         <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
-          <div class="px-6 py-4 border-b border-slate-700/50"><h3 class="font-bold text-white">Gainers Leaderboard</h3></div>
+          <div class="px-6 py-4 border-b border-slate-700/50"><h3 id="gainers-leaderboard-title" class="font-bold text-white">Gainers Leaderboard</h3></div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
-                  <th class="py-3 px-6">Ticker</th>
-                  <th class="py-3 px-6">Company</th>
-                  <th class="py-3 px-6 text-right">Price</th>
-                  <th class="py-3 px-6 text-right">Change ($)</th>
-                  <th class="py-3 px-6 text-right">Change (%)</th>
-                  <th class="py-3 px-6 text-right">Volume</th>
+                <tr id="table-headers-gainers" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                  <!-- JS Injects translations dynamically -->
                 </tr>
               </thead>
               <tbody id="gainers-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
@@ -160,22 +163,17 @@
       <!-- ==================== TAB 4: TOP 10 LOSERS (TW) ==================== -->
       <section id="tab-content-4" class="tab-panel hidden space-y-6">
         <div>
-          <h2 class="text-xl font-bold text-white mb-1">Taiwan Stock Exchange (TWSE) Top Losers</h2>
-          <p class="text-xs text-slate-400">Tracking intraday market downward pressure vectors</p>
+          <h2 id="losers-header" class="text-xl font-bold text-white mb-1">Taiwan Stock Exchange (TWSE) Top Losers</h2>
+          <p id="losers-sub" class="text-xs text-slate-400">Tracking intraday market downward pressure vectors</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="losers-charts-grid"></div>
         <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
-          <div class="px-6 py-4 border-b border-slate-700/50"><h3 class="font-bold text-white">Losers Leaderboard</h3></div>
+          <div class="px-6 py-4 border-b border-slate-700/50"><h3 id="losers-leaderboard-title" class="font-bold text-white">Losers Leaderboard</h3></div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
-                  <th class="py-3 px-6">Ticker</th>
-                  <th class="py-3 px-6">Company</th>
-                  <th class="py-3 px-6 text-right text-rose-400">Price</th>
-                  <th class="py-3 px-6 text-right text-rose-400">Change ($)</th>
-                  <th class="py-3 px-6 text-right text-rose-400">Change (%)</th>
-                  <th class="py-3 px-6 text-right text-slate-400">Volume</th>
+                <tr id="table-headers-losers" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                  <!-- JS Injects translations dynamically -->
                 </tr>
               </thead>
               <tbody id="losers-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
@@ -191,7 +189,7 @@
           <div class="bg-slate-850 border border-slate-800 p-6 rounded-xl flex flex-col justify-between col-span-1 md:col-span-3">
             <div class="flex justify-between items-start">
               <div>
-                <span class="text-xs text-slate-400 font-mono">INDEX</span>
+                <span id="nasdaq-card-label" class="text-xs text-slate-400 font-mono">INDEX</span>
                 <h3 class="text-2xl font-bold text-white">NASDAQ Composite ($IXIC)</h3>
               </div>
               <span id="ndx-change" class="text-sm px-2.5 py-1 rounded bg-indigo-500/10 text-indigo-400 font-bold font-mono">--</span>
@@ -202,8 +200,8 @@
           </div>
         </div>
         <div>
-          <h2 class="text-xl font-bold text-white mb-1">Top 10 US AI-Related Infrastructure Companies</h2>
-          <p class="text-xs text-slate-400">Real-time fluctuations linked to US stock exchange hours</p>
+          <h2 id="ai-header" class="text-xl font-bold text-white mb-1">Top 10 US AI-Related Infrastructure Companies</h2>
+          <p id="ai-sub" class="text-xs text-slate-400">Real-time fluctuations linked to US stock exchange hours</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="ai-charts-grid"></div>
         <!-- Table view -->
@@ -211,13 +209,8 @@
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
-                  <th class="py-3 px-6">Ticker</th>
-                  <th class="py-3 px-6">Company</th>
-                  <th class="py-3 px-6 text-right">Price (USD)</th>
-                  <th class="py-3 px-6 text-right">Change ($)</th>
-                  <th class="py-3 px-6 text-right">Change (%)</th>
-                  <th class="py-3 px-6 text-right">Volume</th>
+                <tr id="table-headers-ai" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                  <!-- JS Injects translations dynamically -->
                 </tr>
               </thead>
               <tbody id="ai-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
@@ -230,31 +223,26 @@
       <section id="tab-content-6" class="tab-panel hidden space-y-6">
         <!-- Stock Picker Box -->
         <div class="bg-slate-850 border border-slate-800 p-6 rounded-xl">
-          <h2 class="text-lg font-bold text-white mb-2">Custom Stock Picker (Max 10 Selected)</h2>
-          <p class="text-xs text-slate-400 mb-4">Toggle checkmarks to dynamically construct your custom parallel tracking panels.</p>
+          <h2 id="picker-header" class="text-lg font-bold text-white mb-2">Custom Stock Picker (Max 10 Selected)</h2>
+          <p id="picker-sub" class="text-xs text-slate-400 mb-4">Toggle checkmarks to dynamically construct your custom parallel tracking panels.</p>
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3" id="watchlist-selector"></div>
         </div>
 
         <div id="watchlist-empty" class="text-center py-12 border border-dashed border-slate-800 rounded-xl hidden">
           <i data-lucide="info" class="h-8 w-8 text-slate-500 mx-auto mb-2"></i>
-          <p class="text-sm text-slate-400">Please select at least one stock to start visualization</p>
+          <p id="empty-msg" class="text-sm text-slate-400">Please select at least one stock to start visualization</p>
         </div>
 
         <!-- Render Target of Custom Watchlist -->
         <div id="watchlist-active-wrapper" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="watchlist-charts-grid"></div>
           <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-700/50"><h3 class="font-bold text-white">Watchlist Monitor</h3></div>
+            <div class="px-6 py-4 border-b border-slate-700/50"><h3 id="watchlist-monitor-title" class="font-bold text-white">Watchlist Monitor</h3></div>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
-                  <tr class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
-                    <th class="py-3 px-6">Ticker</th>
-                    <th class="py-3 px-6">Company</th>
-                    <th class="py-3 px-6 text-right">Price</th>
-                    <th class="py-3 px-6 text-right">Change ($)</th>
-                    <th class="py-3 px-6 text-right">Change (%)</th>
-                    <th class="py-3 px-6 text-right">Volume</th>
+                  <tr id="table-headers-watchlist" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                    <!-- JS Injects translations dynamically -->
                   </tr>
                 </thead>
                 <tbody id="watchlist-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
@@ -269,15 +257,243 @@
   </div>
 
   <script>
+    // --- Translation Configuration Dictionary ---
+    const i18n = {
+      en: {
+        title: "Fintech Quant Dashboard",
+        subtitle: "Automated Git Pipeline & Hybrid Polling Engine",
+        twStockerReport: "TW Stocker Report",
+        paperTrading: "Paper Trading",
+        topGainers: "Top 10 Gainers (TW)",
+        topLosers: "Top 10 Losers (TW)",
+        nasdaqAi: "NASDAQ & AI Stocks",
+        watchlist: "Custom Watchlist",
+        twMarket: "TW Market",
+        usMarket: "US Market",
+        open: "OPEN",
+        closed: "CLOSED",
+        updating: "Updating in",
+        source: "Source",
+        gainersHeader: "Taiwan Stock Exchange (TWSE) Top Gainers",
+        gainersSub: "Updates dynamically every 15s during local market hours",
+        losersHeader: "Taiwan Stock Exchange (TWSE) Top Losers",
+        losersSub: "Tracking intraday market downward pressure vectors",
+        aiHeader: "Top 10 US AI-Related Infrastructure Companies",
+        aiSub: "Real-time fluctuations linked to US stock exchange hours",
+        pickerHeader: "Custom Stock Picker (Max 10 Selected)",
+        pickerSub: "Toggle checkmarks to dynamically construct your custom parallel tracking panels.",
+        emptyMsg: "Please select at least one stock to start visualization",
+        ticker: "Ticker",
+        company: "Company",
+        price: "Price",
+        change: "Change ($)",
+        changePercent: "Change (%)",
+        volume: "Volume",
+        gainersLeaderboard: "Gainers Leaderboard",
+        losersLeaderboard: "Losers Leaderboard",
+        watchlistMonitor: "Watchlist Monitor",
+        reportTitle: "TW Stocker Strategy Framework",
+        reportSub: "Integrated AI Momentum and Sector Rotation system outputs",
+        reportLinkText: "External Link",
+        paperTitle: "TW Stocker Paper Trading Sandbox",
+        paperSub: "Virtual trade matching execution framework and records",
+        paperLinkText: "External Link"
+      },
+      zh: {
+        title: "金融量化分析儀表板",
+        subtitle: "自動化 Git 流水線與混合輪詢引擎",
+        twStockerReport: "台股分析報告",
+        paperTrading: "模擬交易區",
+        topGainers: "前 10 大漲幅股",
+        topLosers: "前 10 大跌幅股",
+        nasdaqAi: "那斯達克與 AI 股",
+        watchlist: "自訂自選股",
+        twMarket: "台股市場",
+        usMarket: "美股市場",
+        open: "已開盤",
+        closed: "已收盤",
+        updating: "更新倒數",
+        source: "數據來源",
+        gainersHeader: "台灣證券交易所 (TWSE) 漲幅前 10 大企業",
+        gainersSub: "台股交易時間內每 15 秒自動獲取最新數據進行動態更新",
+        losersHeader: "台灣證券交易所 (TWSE) 跌幅前 10 大企業",
+        losersSub: "即時監控日內市場賣壓與跌幅走勢變動",
+        aiHeader: "美股前 10 大 AI 核心基礎設施指標企業",
+        aiSub: "數據與美股實際交易時間進行即時同步連動",
+        pickerHeader: "自選監控面板 (最多選擇 10 檔)",
+        pickerSub: "勾選下方熱門標的以在上方即時渲染出多重平行走勢圖",
+        emptyMsg: "請至少勾選一檔股票以啟動視覺化追蹤面板",
+        ticker: "代號",
+        company: "公司名稱",
+        price: "最新價格",
+        change: "漲跌",
+        changePercent: "幅度",
+        volume: "成交量",
+        gainersLeaderboard: "今日漲幅排行榜",
+        losersLeaderboard: "今日跌幅排行榜",
+        watchlistMonitor: "自選股即時監控面板",
+        reportTitle: "TW Stocker 策略分析分析框架輸出",
+        reportSub: "整合中期動量與板塊輪動策略分析數據",
+        reportLinkText: "外部連結",
+        paperTitle: "TW Stocker 自動化模擬交易沙盒",
+        paperSub: "模擬即時市場撮合交易機制與歷史明細",
+        paperLinkText: "外部連結"
+      }
+    };
+
+    // Dictionary mapping clean system ticker codes to Standard Multi-Language names
+    const stockNames = {
+      "2330": { en: "TSMC", zh: "台積電" },
+      "2454": { en: "MediaTek", zh: "聯發科" },
+      "2317": { en: "Foxconn", zh: "鴻海" },
+      "2603": { en: "Evergreen", zh: "長榮" },
+      "2308": { en: "Delta Elec", zh: "台達電" },
+      "2382": { en: "Quanta", zh: "廣達" },
+      "2881": { en: "Fubon Financial", zh: "富邦金" },
+      "2882": { en: "Cathay Financial", zh: "國泰金" },
+      "3008": { en: "Largan", zh: "大立光" },
+      "3711": { en: "ASE Group", zh: "日月光投控" },
+      "2609": { en: "Yang Ming", zh: "陽明" },
+      "2303": { en: "UMC", zh: "聯電" },
+      "3481": { en: "Innolux", zh: "群創" },
+      "2409": { en: "AUO", zh: "友達" },
+      "2891": { en: "CTBC Financial", zh: "中信金" },
+      "2892": { en: "First Financial", zh: "第一金" },
+      "2002": { en: "CSC", zh: "中鋼" },
+      "2352": { en: "Qisda", zh: "佳世達" },
+      "2324": { en: "Compal", zh: "仁寶" },
+      "2357": { en: "ASUS", zh: "華碩" },
+      "2890": { en: "SinoPac", zh: "永豐金" },
+      "2886": { en: "Mega Financial", zh: "兆豐金" },
+      "1303": { en: "Nan Ya", zh: "南亞" },
+      "1301": { en: "Formosa", zh: "台塑" },
+      "NVDA": { en: "NVIDIA Corp.", zh: "輝達" },
+      "AMD": { en: "AMD Inc.", zh: "超微" },
+      "MSFT": { en: "Microsoft Corp.", zh: "微軟" },
+      "GOOGL": { en: "Alphabet Inc.", zh: "字母控股" },
+      "META": { en: "Meta Platforms", zh: "臉書" },
+      "AVGO": { en: "Broadcom Inc.", zh: "博通" },
+      "TSM": { en: "TSMC ADR", zh: "台積電 ADR" },
+      "SMCI": { en: "Super Micro", zh: "美超微" },
+      "PLTR": { en: "Palantir Tech", zh: "帕蘭提爾" },
+      "AMZN": { en: "Amazon.com Inc.", zh: "亞馬遜" }
+    };
+
+    let currentLang = "zh"; // Default Initial Selection
+
+    function getName(symbol, fallback) {
+      if (stockNames[symbol]) {
+        return stockNames[symbol][currentLang];
+      }
+      return fallback;
+    }
+
+    // --- Language State Handling ---
+    function initLanguage() {
+      // 1. URL Query parameter check (Best Practice Routing)
+      const params = new URLSearchParams(window.location.search);
+      let queryLang = params.get('lang');
+
+      // 2. Local Storage check
+      let cachedLang = localStorage.getItem('preferredLang');
+
+      // 3. Browser Language fallback
+      let browserLang = navigator.language.startsWith('zh') ? 'zh' : 'en';
+
+      let targetLang = queryLang || cachedLang || browserLang;
+      if (targetLang !== 'zh' && targetLang !== 'en') targetLang = 'zh';
+
+      currentLang = targetLang;
+      document.getElementById('lang-selector').value = currentLang;
+      applyLanguageTranslations();
+    }
+
+    function changeLanguage(langCode) {
+      currentLang = langCode;
+      localStorage.setItem('preferredLang', langCode);
+
+      // Smooth query parameter push without reloading active state
+      const url = new URL(window.location);
+      url.searchParams.set('lang', langCode);
+      window.history.pushState({}, '', url);
+
+      applyLanguageTranslations();
+    }
+
+    function applyLanguageTranslations() {
+      const dict = i18n[currentLang];
+
+      // Translate core branding elements
+      document.getElementById('title-text').innerText = dict.title;
+      document.getElementById('subtitle-text').innerText = dict.subtitle;
+      document.getElementById('source-label').innerText = dict.source;
+      document.getElementById('tw-market-label').innerText = dict.twMarket;
+      document.getElementById('us-market-label').innerText = dict.usMarket;
+      document.getElementById('updating-label').innerText = dict.updating;
+
+      // Translate Tab button labels
+      document.getElementById('tab-btn-1-text').innerText = dict.twStockerReport;
+      document.getElementById('tab-btn-2-text').innerText = dict.paperTrading;
+      document.getElementById('tab-btn-3-text').innerText = dict.topGainers;
+      document.getElementById('tab-btn-4-text').innerText = dict.topLosers;
+      document.getElementById('tab-btn-5-text').innerText = dict.nasdaqAi;
+      document.getElementById('tab-btn-6-text').innerText = dict.watchlist;
+
+      // Translate report sections (Tab 1 & 2 wrapper blocks)
+      document.getElementById('report-title').innerText = dict.reportTitle;
+      document.getElementById('report-sub').innerText = dict.reportSub;
+      document.getElementById('report-link-text').innerText = dict.reportLinkText;
+      document.getElementById('paper-title').innerText = dict.paperTitle;
+      document.getElementById('paper-sub').innerText = dict.paperSub;
+      document.getElementById('paper-link-text').innerText = dict.paperLinkText;
+
+      // Translate headings of views
+      document.getElementById('gainers-header').innerText = dict.gainersHeader;
+      document.getElementById('gainers-sub').innerText = dict.gainersSub;
+      document.getElementById('gainers-leaderboard-title').innerText = dict.gainersLeaderboard;
+
+      document.getElementById('losers-header').innerText = dict.losersHeader;
+      document.getElementById('losers-sub').innerText = dict.losersSub;
+      document.getElementById('losers-leaderboard-title').innerText = dict.losersLeaderboard;
+
+      document.getElementById('nasdaq-card-label').innerText = dict.ticker;
+      document.getElementById('ai-header').innerText = dict.aiHeader;
+      document.getElementById('ai-sub').innerText = dict.aiSub;
+
+      document.getElementById('picker-header').innerText = dict.pickerHeader;
+      document.getElementById('picker-sub').innerText = dict.pickerSub;
+      document.getElementById('empty-msg').innerText = dict.emptyMsg;
+      document.getElementById('watchlist-monitor-title').innerText = dict.watchlistMonitor;
+
+      // Render shared table header configurations
+      const renderHeaders = (elementId) => {
+        const tr = document.getElementById(elementId);
+        tr.innerHTML = `
+          <th class="py-3 px-6">${dict.ticker}</th>
+          <th class="py-3 px-6">${dict.company}</th>
+          <th class="py-3 px-6 text-right">${dict.price}</th>
+          <th class="py-3 px-6 text-right">${dict.change}</th>
+          <th class="py-3 px-6 text-right">${dict.changePercent}</th>
+          <th class="py-3 px-6 text-right">${dict.volume}</th>
+        `;
+      };
+
+      renderHeaders('table-headers-gainers');
+      renderHeaders('table-headers-losers');
+      renderHeaders('table-headers-ai');
+      renderHeaders('table-headers-watchlist');
+
+      // Update data views with fresh language maps
+      renderActiveTabData();
+    }
+
     // --- State Storage Structures ---
-    let activeTab = 1;
     let countdownVal = 15;
     let systemLoopInterval = null;
     let globalCharts = {};
 
     let globalTWSEStockList = {};
 
-    // Initial fallback params if pipeline is not generated
     const fallbackGainers = [
       { symbol: "2330", name: "TSMC", basePrice: 1065 },
       { symbol: "2454", name: "MediaTek", basePrice: 1330 },
@@ -312,7 +528,7 @@
       { symbol: "META", name: "Meta Platforms", basePrice: 475 },
       { symbol: "AVGO", name: "Broadcom Inc.", basePrice: 1420 },
       { symbol: "TSM", name: "TSMC ADR", basePrice: 155 },
-      { symbol: "SMCI", name: "Super Micro Computer", basePrice: 850 },
+      { symbol: "SMCI", name: "Super Micro", basePrice: 850 },
       { symbol: "PLTR", name: "Palantir Tech", basePrice: 23.5 },
       { symbol: "AMZN", name: "Amazon.com Inc.", basePrice: 184 }
     ];
@@ -342,25 +558,6 @@
     let stateNasdaq = { name: "NASDAQ", history: [] };
     let selectedSymbols = ["2330", "2454", "2317", "2308", "2382"];
 
-    // --- Timezone Calculations ---
-    function getTaiwanMarketStatus() {
-      const taipeiString = new Date().toLocaleString("en-US", { timeZone: "Asia/Taipei" });
-      const taipeiTime = new Date(taipeiString);
-      const day = taipeiTime.getDay();
-      const mins = taipeiTime.getHours() * 60 + taipeiTime.getMinutes();
-      const isOpen = (day >= 1 && day <= 5) && (mins >= 540 && mins <= 810);
-      return { isOpen, timeString: taipeiTime.toLocaleTimeString('zh-TW', { hour12: false }) };
-    }
-
-    function getUSMarketStatus() {
-      const nyString = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
-      const nyTime = new Date(nyString);
-      const day = nyTime.getDay();
-      const mins = nyTime.getHours() * 60 + nyTime.getMinutes();
-      const isOpen = (day >= 1 && day <= 5) && (mins >= 570 && mins <= 960);
-      return { isOpen, timeString: nyTime.toLocaleTimeString('en-US', { hour12: false }) };
-    }
-
     function generateIntradayHistoryFromOHLC(open, high, low, close) {
       const p0 = open;
       const p1 = open + (close - open) * 0.25 + (Math.random() - 0.5) * (high - low) * 0.08;
@@ -378,26 +575,23 @@
       return times.map((t, idx) => ({ time: t, price: prices[idx] }));
     }
 
-    // --- Integrated Loader Pipeline ---
     async function syncRealMarketPrices() {
       const badge = document.getElementById('data-source-badge');
       try {
-        badge.innerText = "YF SCRAPING...";
+        badge.innerText = currentLang === 'zh' ? "Yahoo 數據同步中..." : "YF SCRAPING...";
         badge.className = "font-bold text-amber-400 animate-pulse";
 
-        // Try downloading data.json populated by your GitHub actions pipeline
         const response = await fetch('./data.json');
         if (!response.ok) throw new Error('Data file not located');
         const data = await response.json();
 
-        // Feed data arrays directly from file
         stateGainers = data.gainers;
         stateLosers = data.losers;
         stateAI = data.us_ai;
         stateNasdaq = data.nasdaq;
         globalTWSEStockList = data.all_tw;
 
-        badge.innerText = "YFINANCE BOT";
+        badge.innerText = currentLang === 'zh' ? "Yahoo 金融" : "YFINANCE BOT";
         badge.className = "font-bold text-emerald-400";
       } catch (err) {
         console.warn("Local static data extraction failed. Querying TWSE OpenAPI directly...", err);
@@ -407,11 +601,10 @@
       renderActiveTabData();
     }
 
-    // Direct Browser TWSE fallback if data.json isn't compiled yet
     async function syncTWSEOpenAPI() {
       const badge = document.getElementById('data-source-badge');
       try {
-        badge.innerText = "OPENAPI FETCHING...";
+        badge.innerText = currentLang === 'zh' ? "公開數據對接中..." : "OPENAPI FETCHING...";
         const response = await fetch('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL');
         if (!response.ok) throw new Error('TWSE server error');
         const rawList = await response.json();
@@ -458,17 +651,16 @@
         stateGainers = [...parsedStocks].sort((a, b) => b.changePercent - a.changePercent).slice(0, 10);
         stateLosers = [...parsedStocks].sort((a, b) => a.changePercent - b.changePercent).slice(0, 10);
 
-        // Seed US Stocks
         const usStatus = getUSMarketStatus();
         stateAI = buildMockArray(aiPool, 1, 1.5, 0.4, usStatus.isOpen);
         seedNasdaqIndex();
 
-        badge.innerText = "TWSE FALLBACK";
+        badge.innerText = currentLang === 'zh' ? "證交所備份" : "TWSE FALLBACK";
         badge.className = "font-bold text-teal-400";
       } catch (err2) {
         console.warn("Direct TWSE connection failed. Running simulation fallback.", err2);
         loadFallbackDatasets();
-        badge.innerText = "SANDBOX OFFLINE";
+        badge.innerText = currentLang === 'zh' ? "離線模擬" : "SANDBOX OFFLINE";
         badge.className = "font-bold text-rose-400";
       }
     }
@@ -502,14 +694,16 @@
       });
     }
 
-    // --- Dynamic Simulation / Ticks Engine ---
+    // --- Dynamic Simulation / Ticking Engines ---
     function tickTaiwanData() {
       const updateData = (targetArr, direction) => {
         return targetArr.map(stock => {
           const delta = (Math.random() - (direction > 0 ? 0.4 : 0.6)) * 0.15;
           const pct = Math.max(-10, Math.min(10, stock.changePercent + delta));
-          const price = Number((stock.basePrice * (1 + pct / 100)).toFixed(2));
-          const change = Number((price - stock.basePrice).toFixed(2));
+
+          const basePrice = stock.basePrice || (stock.price - stock.change) || stock.price;
+          const price = Number((basePrice * (1 + pct / 100)).toFixed(2));
+          const change = Number((price - basePrice).toFixed(2));
 
           const lastTick = stock.history[stock.history.length - 1]?.time || "09:00";
           let [h, m] = lastTick.split(':').map(Number);
@@ -530,8 +724,10 @@
       stateAI = stateAI.map(stock => {
         const delta = (Math.random() - 0.45) * 0.2;
         const pct = stock.changePercent + delta;
-        const price = Number((stock.basePrice * (1 + pct / 100)).toFixed(2));
-        const change = Number((price - stock.basePrice).toFixed(2));
+
+        const basePrice = stock.basePrice || (stock.price - stock.change) || stock.price;
+        const price = Number((basePrice * (1 + pct / 100)).toFixed(2));
+        const change = Number((price - basePrice).toFixed(2));
 
         const lastTick = stock.history[stock.history.length - 1]?.time || "09:30";
         let [h, m] = lastTick.split(':').map(Number);
@@ -546,14 +742,17 @@
 
       const ndxDelta = (Math.random() - 0.45) * 0.05;
       stateNasdaq.changePercent += ndxDelta;
-      stateNasdaq.price = Number((stateNasdaq.price * (1 + ndxDelta / 100)).toFixed(0));
-      stateNasdaq.change = Number((stateNasdaq.price - 17200).toFixed(0));
+
+      const baseNdxPrice = stateNasdaq.basePrice || (stateNasdaq.price - stateNasdaq.change) || stateNasdaq.price;
+      stateNasdaq.price = Number((baseNdxPrice * (1 + stateNasdaq.changePercent / 100)).toFixed(0));
+      stateNasdaq.change = Number((stateNasdaq.price - baseNdxPrice).toFixed(0));
+
       const ndxHistory = [...stateNasdaq.history, { time: "Tick", price: stateNasdaq.price }];
       if (ndxHistory.length > 12) ndxHistory.shift();
       stateNasdaq.history = ndxHistory;
     }
 
-    // --- Tab Rendering Engine ---
+    // --- Tab Render Routing Methods ---
     function renderTabGainers() {
       renderStandardGrid("gainers-charts-grid", "gainers-table-body", stateGainers, "#10b981", "rgba(16, 185, 129, 0.2)");
     }
@@ -589,6 +788,8 @@
 
       watchlistMasterPool.forEach(stock => {
         const isChecked = selectedSymbols.includes(stock.symbol);
+        const nameLabel = stockNames[stock.symbol] ? stockNames[stock.symbol][currentLang] : stock.name;
+
         const btn = document.createElement('label');
         btn.className = `flex items-center gap-2 p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all ${
           isChecked ? 'bg-indigo-600/25 border-indigo-500 text-white' : 'bg-slate-800/40 border-slate-700/50 text-slate-400 hover:border-slate-600'
@@ -596,7 +797,7 @@
         btn.innerHTML = `
           <input type="checkbox" class="rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-0"
             ${isChecked ? 'checked' : ''} onchange="toggleWatchlist('${stock.symbol}')">
-          <span class="truncate font-mono">${stock.symbol} ${stock.name}</span>
+          <span class="truncate font-mono">${stock.symbol} ${nameLabel}</span>
         `;
         container.appendChild(btn);
       });
@@ -638,8 +839,8 @@
         selectedSymbols = selectedSymbols.filter(s => s !== sym);
       } else {
         if (selectedSymbols.length >= 10) {
-          alert("Maximum watchlist capacity (10 selected stocks) reached. Please deselect another stock first.");
-          renderTab6();
+          alert(currentLang === 'zh' ? "自選股數量已達上限（最多 10 檔）。請先取消勾選其他股票。" : "Maximum watchlist capacity (10 selected stocks) reached.");
+          renderTabWatchlist();
           return;
         }
         selectedSymbols.push(sym);
@@ -647,7 +848,7 @@
       renderTabWatchlist();
     }
 
-    // --- Generic Builder for charts + list tables ---
+    // --- Generic Builder for parallel charts + tables ---
     function renderStandardGrid(gridId, tableId, dataArr, strokeColor, fillColor) {
       const grid = document.getElementById(gridId);
       const tbody = document.getElementById(tableId);
@@ -656,6 +857,7 @@
       if (existingCards !== dataArr.length) {
         grid.innerHTML = '';
         dataArr.forEach(stock => {
+          const mappedName = getName(stock.symbol, stock.name);
           const card = document.createElement('div');
           card.className = "bg-slate-800/40 border border-slate-700/30 rounded-xl p-4 flex flex-col justify-between hover:border-slate-600 transition-all duration-200";
           card.innerHTML = `
@@ -663,7 +865,7 @@
               <div class="flex justify-between items-start gap-1">
                 <div>
                   <span class="text-[10px] font-mono text-slate-500">${stock.symbol}</span>
-                  <h3 class="font-bold text-white text-xs truncate max-w-[100px]">${stock.name}</h3>
+                  <h3 class="font-bold text-white text-xs truncate max-w-[100px]">${mappedName}</h3>
                 </div>
                 <span id="${gridId}-badge-${stock.symbol}" class="text-[10px] px-1.5 py-0.5 rounded font-bold font-mono">--</span>
               </div>
@@ -710,11 +912,12 @@
 
       tbody.innerHTML = '';
       dataArr.forEach(stock => {
+        const mappedName = getName(stock.symbol, stock.name);
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-800/20 transition-colors";
         tr.innerHTML = `
           <td class="py-3 px-6 font-mono text-slate-400">${stock.symbol}</td>
-          <td class="py-3 px-6 text-white">${stock.name}</td>
+          <td class="py-3 px-6 text-white">${mappedName}</td>
           <td class="py-3 px-6 text-right font-mono text-white">${stock.price.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
           <td class="py-3 px-6 text-right font-mono ${stock.change >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}</td>
           <td class="py-3 px-6 text-right font-mono ${stock.changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%</td>
@@ -791,17 +994,18 @@
     function runGlobalTimeTracker() {
       const tw = getTaiwanMarketStatus();
       const us = getUSMarketStatus();
+      const dict = i18n[currentLang];
 
       document.getElementById('tw-clock').innerText = tw.timeString;
       const twIndicator = document.getElementById('tw-indicator');
       const twStatus = document.getElementById('tw-market-status');
       if (tw.isOpen) {
         twIndicator.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse";
-        twStatus.innerText = "OPEN";
+        twStatus.innerText = dict.open;
         twStatus.className = "font-bold text-emerald-400";
       } else {
         twIndicator.className = "h-2.5 w-2.5 rounded-full bg-rose-500";
-        twStatus.innerText = "CLOSED";
+        twStatus.innerText = dict.closed;
         twStatus.className = "font-bold text-rose-500";
       }
 
@@ -810,11 +1014,11 @@
       const usStatus = document.getElementById('us-market-status');
       if (us.isOpen) {
         usIndicator.className = "h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse";
-        usStatus.innerText = "OPEN";
+        usStatus.innerText = dict.open;
         usStatus.className = "font-bold text-emerald-400";
       } else {
         usIndicator.className = "h-2.5 w-2.5 rounded-full bg-rose-500";
-        usStatus.innerText = "CLOSED";
+        usStatus.innerText = dict.closed;
         usStatus.className = "font-bold text-rose-500";
       }
 
@@ -827,66 +1031,6 @@
       }
     }
 
-    // --- Dynamic Simulation / Ticks Engine ---
-    function tickTaiwanData() {
-      const updateData = (targetArr, direction) => {
-        return targetArr.map(stock => {
-          const delta = (Math.random() - (direction > 0 ? 0.4 : 0.6)) * 0.15;
-          const pct = Math.max(-10, Math.min(10, stock.changePercent + delta));
-          
-          // Defensive fallback calculation prevents NaN
-          const basePrice = stock.basePrice || (stock.price - stock.change) || stock.price;
-          const price = Number((basePrice * (1 + pct / 100)).toFixed(2));
-          const change = Number((price - basePrice).toFixed(2));
-
-          const lastTick = stock.history[stock.history.length - 1]?.time || "09:00";
-          let [h, m] = lastTick.split(':').map(Number);
-          m += 15; if (m >= 60) { m = 0; h += 1; }
-          const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-
-          const history = [...stock.history, { time, price }];
-          if (history.length > 12) history.shift();
-
-          return { ...stock, price, change, changePercent: pct, volume: stock.volume + Math.floor(Math.random() * 500), history };
-        });
-      };
-      stateGainers = updateData(stateGainers, 1);
-      stateLosers = updateData(stateLosers, -1);
-    }
-
-    function tickUSData() {
-      stateAI = stateAI.map(stock => {
-        const delta = (Math.random() - 0.45) * 0.2;
-        const pct = stock.changePercent + delta;
-        
-        // Defensive fallback calculation prevents NaN
-        const basePrice = stock.basePrice || (stock.price - stock.change) || stock.price;
-        const price = Number((basePrice * (1 + pct / 100)).toFixed(2));
-        const change = Number((price - basePrice).toFixed(2));
-
-        const lastTick = stock.history[stock.history.length - 1]?.time || "09:30";
-        let [h, m] = lastTick.split(':').map(Number);
-        m += 15; if (m >= 60) { m = 0; h += 1; }
-        const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-
-        const history = [...stock.history, { time, price }];
-        if (history.length > 12) history.shift();
-
-        return { ...stock, price, change, changePercent: pct, volume: stock.volume + Math.floor(Math.random() * 400), history };
-      });
-
-      const ndxDelta = (Math.random() - 0.45) * 0.05;
-      stateNasdaq.changePercent += ndxDelta;
-      
-      const baseNdxPrice = stateNasdaq.basePrice || (stateNasdaq.price - stateNasdaq.change) || stateNasdaq.price;
-      stateNasdaq.price = Number((baseNdxPrice * (1 + stateNasdaq.changePercent / 100)).toFixed(0));
-      stateNasdaq.change = Number((stateNasdaq.price - baseNdxPrice).toFixed(0));
-      
-      const ndxHistory = [...stateNasdaq.history, { time: "Tick", price: stateNasdaq.price }];
-      if (ndxHistory.length > 12) ndxHistory.shift();
-      stateNasdaq.history = ndxHistory;
-    }
-    
     function launchPollingTickers() {
       if (systemLoopInterval) clearInterval(systemLoopInterval);
 
@@ -932,6 +1076,7 @@
     // --- Init Bootstrap ---
     async function boot() {
       lucide.createIcons();
+      initLanguage(); // Dynamic parameter & caching translation routing setup
       await syncRealMarketPrices();
       runGlobalTimeTracker();
       launchPollingTickers();

@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Global Financial Analytics Dashboard</title>
+  <!-- Money Symbol Tab Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💵</text></svg>">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -28,7 +30,17 @@
 
         <!-- Dynamic Clock Bar -->
         <div class="flex flex-wrap items-center gap-4 text-xs font-mono">
-          <!-- Dynamic Language Selector Dropdown (Best Practice Integration) -->
+          <!-- Dynamic Viewport Override Selector (Mobile View vs Desktop View) -->
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-1.5 flex items-center gap-1.5">
+            <i data-lucide="monitor" class="h-4 w-4 text-slate-400"></i>
+            <span id="view-label" class="text-slate-500 font-sans text-[11px] hidden sm:inline">版面配置:</span>
+            <select id="view-selector" onchange="changeViewMode(this.value)" class="bg-transparent border-0 text-slate-300 font-sans focus:ring-0 cursor-pointer text-xs outline-none pr-6">
+              <option value="responsive" class="bg-slate-950 text-slate-300">自動隨機 / 行動版面 (Mobile)</option>
+              <option value="desktop" class="bg-slate-950 text-slate-300">強制寬螢幕 / 電腦版面 (Desktop)</option>
+            </select>
+          </div>
+
+          <!-- Dynamic Language Selector Dropdown -->
           <div class="bg-slate-900 border border-slate-800 rounded-lg p-1.5 flex items-center gap-1.5">
             <i data-lucide="languages" class="h-4 w-4 text-slate-400"></i>
             <select id="lang-selector" onchange="changeLanguage(this.value)" class="bg-transparent border-0 text-slate-300 font-sans focus:ring-0 cursor-pointer text-xs outline-none pr-6">
@@ -144,18 +156,22 @@
           <h2 id="gainers-header" class="text-xl font-bold text-white mb-1">Taiwan Stock Exchange (TWSE) Top Gainers</h2>
           <p id="gainers-sub" class="text-xs text-slate-400">Updates dynamically every 15s during local market hours</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="gainers-charts-grid"></div>
+        <div>
+          <div id="gainers-charts-grid"></div>
+        </div>
         <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-700/50"><h3 id="gainers-leaderboard-title" class="font-bold text-white">Gainers Leaderboard</h3></div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr id="table-headers-gainers" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
-                  <!-- JS Injects translations dynamically -->
-                </tr>
-              </thead>
-              <tbody id="gainers-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
-            </table>
+          <div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr id="table-headers-gainers" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                    <!-- JS Injects translations dynamically -->
+                  </tr>
+                </thead>
+                <tbody id="gainers-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -166,18 +182,22 @@
           <h2 id="losers-header" class="text-xl font-bold text-white mb-1">Taiwan Stock Exchange (TWSE) Top Losers</h2>
           <p id="losers-sub" class="text-xs text-slate-400">Tracking intraday market downward pressure vectors</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="losers-charts-grid"></div>
+        <div>
+          <div id="losers-charts-grid"></div>
+        </div>
         <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-700/50"><h3 id="losers-leaderboard-title" class="font-bold text-white">Losers Leaderboard</h3></div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr id="table-headers-losers" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
-                  <!-- JS Injects translations dynamically -->
-                </tr>
-              </thead>
-              <tbody id="losers-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
-            </table>
+          <div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr id="table-headers-losers" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                    <!-- JS Injects translations dynamically -->
+                  </tr>
+                </thead>
+                <tbody id="losers-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -186,7 +206,7 @@
       <section id="tab-content-5" class="tab-panel hidden space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Nasdaq Index Card -->
-          <div class="bg-slate-850 border border-slate-800 p-6 rounded-xl flex flex-col justify-between col-span-1 md:col-span-3">
+          <div onclick="window.open(getYahooFinanceUrl('NASDAQ'), '_blank')" class="bg-slate-850 border border-slate-800 p-6 rounded-xl flex flex-col justify-between col-span-1 md:col-span-3 cursor-pointer hover:border-slate-500 hover:bg-slate-850/80 transition-all">
             <div class="flex justify-between items-start">
               <div>
                 <span id="nasdaq-card-label" class="text-xs text-slate-400 font-mono">INDEX</span>
@@ -203,18 +223,22 @@
           <h2 id="ai-header" class="text-xl font-bold text-white mb-1">Top 10 US AI-Related Infrastructure Companies</h2>
           <p id="ai-sub" class="text-xs text-slate-400">Real-time fluctuations linked to US stock exchange hours</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="ai-charts-grid"></div>
+        <div>
+          <div id="ai-charts-grid"></div>
+        </div>
         <!-- Table view -->
         <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr id="table-headers-ai" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
-                  <!-- JS Injects translations dynamically -->
-                </tr>
-              </thead>
-              <tbody id="ai-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
-            </table>
+          <div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr id="table-headers-ai" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                    <!-- JS Injects translations dynamically -->
+                  </tr>
+                </thead>
+                <tbody id="ai-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -235,18 +259,22 @@
 
         <!-- Render Target of Custom Watchlist -->
         <div id="watchlist-active-wrapper" class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="watchlist-charts-grid"></div>
+          <div>
+            <div id="watchlist-charts-grid"></div>
+          </div>
           <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
             <div class="px-6 py-4 border-b border-slate-700/50"><h3 id="watchlist-monitor-title" class="font-bold text-white">Watchlist Monitor</h3></div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr id="table-headers-watchlist" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
-                    <!-- JS Injects translations dynamically -->
-                  </tr>
-                </thead>
-                <tbody id="watchlist-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
-              </table>
+            <div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr id="table-headers-watchlist" class="border-b border-slate-700/50 text-slate-400 text-xs font-mono uppercase">
+                      <!-- JS Injects translations dynamically -->
+                    </tr>
+                  </thead>
+                  <tbody id="watchlist-table-body" class="divide-y divide-slate-800/80 text-sm font-medium"></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -297,7 +325,10 @@
         reportLinkText: "External Link",
         paperTitle: "TW Stocker Paper Trading Sandbox",
         paperSub: "Virtual trade matching execution framework and records",
-        paperLinkText: "External Link"
+        paperLinkText: "External Link",
+        mobileView: "Mobile Layout",
+        desktopView: "Forced Desktop Layout",
+        viewLabel: "Layout:"
       },
       zh: {
         title: "金融量化分析儀表板",
@@ -337,7 +368,10 @@
         reportLinkText: "外部連結",
         paperTitle: "TW Stocker 自動化模擬交易沙盒",
         paperSub: "模擬即時市場撮合交易機制與歷史明細",
-        paperLinkText: "外部連結"
+        paperLinkText: "外部連結",
+        mobileView: "行動網頁版面",
+        desktopView: "強制電腦版面",
+        viewLabel: "版面配置:"
       }
     };
 
@@ -379,7 +413,8 @@
       "AMZN": { en: "Amazon.com Inc.", zh: "亞馬遜" }
     };
 
-    let currentLang = "zh"; // Default Initial Selection
+    let currentLang = "zh";
+    let currentViewMode = "responsive"; // 'responsive' (adaptive grid) or 'desktop' (fixed wide tables & lateral grids scroll wrapper)
 
     function getName(symbol, fallback) {
       if (stockNames[symbol]) {
@@ -388,16 +423,35 @@
       return fallback;
     }
 
+    // Dynamic Yahoo Finance URL resolution
+    function getYahooFinanceUrl(symbol) {
+      if (/^\d{4}$/.test(symbol)) {
+        return `https://finance.yahoo.com/quote/${symbol}.TW`;
+      }
+      if (symbol === 'NASDAQ') {
+        return `https://finance.yahoo.com/quote/%5EIXIC`;
+      }
+      return `https://finance.yahoo.com/quote/${symbol}`;
+    }
+
+    // --- Dynamic Multi-Viewport State Management ---
+    function initViewMode() {
+      let cachedMode = localStorage.getItem('preferredViewMode') || 'responsive';
+      currentViewMode = cachedMode;
+      document.getElementById('view-selector').value = currentViewMode;
+    }
+
+    function changeViewMode(mode) {
+      currentViewMode = mode;
+      localStorage.setItem('preferredViewMode', mode);
+      renderActiveTabData();
+    }
+
     // --- Language State Handling ---
     function initLanguage() {
-      // 1. URL Query parameter check (Best Practice Routing)
       const params = new URLSearchParams(window.location.search);
       let queryLang = params.get('lang');
-
-      // 2. Local Storage check
       let cachedLang = localStorage.getItem('preferredLang');
-
-      // 3. Browser Language fallback
       let browserLang = navigator.language.startsWith('zh') ? 'zh' : 'en';
 
       let targetLang = queryLang || cachedLang || browserLang;
@@ -412,7 +466,6 @@
       currentLang = langCode;
       localStorage.setItem('preferredLang', langCode);
 
-      // Smooth query parameter push without reloading active state
       const url = new URL(window.location);
       url.searchParams.set('lang', langCode);
       window.history.pushState({}, '', url);
@@ -423,15 +476,19 @@
     function applyLanguageTranslations() {
       const dict = i18n[currentLang];
 
-      // Translate core branding elements
       document.getElementById('title-text').innerText = dict.title;
       document.getElementById('subtitle-text').innerText = dict.subtitle;
       document.getElementById('source-label').innerText = dict.source;
       document.getElementById('tw-market-label').innerText = dict.twMarket;
       document.getElementById('us-market-label').innerText = dict.usMarket;
       document.getElementById('updating-label').innerText = dict.updating;
+      document.getElementById('view-label').innerText = dict.viewLabel;
 
-      // Translate Tab button labels
+      // Translate View mode selector options
+      const viewSelector = document.getElementById('view-selector');
+      viewSelector.options[0].text = dict.mobileView;
+      viewSelector.options[1].text = dict.desktopView;
+
       document.getElementById('tab-btn-1-text').innerText = dict.twStockerReport;
       document.getElementById('tab-btn-2-text').innerText = dict.paperTrading;
       document.getElementById('tab-btn-3-text').innerText = dict.topGainers;
@@ -439,7 +496,6 @@
       document.getElementById('tab-btn-5-text').innerText = dict.nasdaqAi;
       document.getElementById('tab-btn-6-text').innerText = dict.watchlist;
 
-      // Translate report sections (Tab 1 & 2 wrapper blocks)
       document.getElementById('report-title').innerText = dict.reportTitle;
       document.getElementById('report-sub').innerText = dict.reportSub;
       document.getElementById('report-link-text').innerText = dict.reportLinkText;
@@ -447,7 +503,6 @@
       document.getElementById('paper-sub').innerText = dict.paperSub;
       document.getElementById('paper-link-text').innerText = dict.paperLinkText;
 
-      // Translate headings of views
       document.getElementById('gainers-header').innerText = dict.gainersHeader;
       document.getElementById('gainers-sub').innerText = dict.gainersSub;
       document.getElementById('gainers-leaderboard-title').innerText = dict.gainersLeaderboard;
@@ -465,7 +520,9 @@
       document.getElementById('empty-msg').innerText = dict.emptyMsg;
       document.getElementById('watchlist-monitor-title').innerText = dict.watchlistMonitor;
 
-      // Render shared table header configurations
+      // Update actual browser document title bar based on active state
+      document.title = currentLang === 'zh' ? '全球量化金融分析儀表板' : 'Global Financial Analytics Dashboard';
+
       const renderHeaders = (elementId) => {
         const tr = document.getElementById(elementId);
         tr.innerHTML = `
@@ -483,7 +540,6 @@
       renderHeaders('table-headers-ai');
       renderHeaders('table-headers-watchlist');
 
-      // Update data views with fresh language maps
       renderActiveTabData();
     }
 
@@ -852,14 +908,43 @@
     function renderStandardGrid(gridId, tableId, dataArr, strokeColor, fillColor) {
       const grid = document.getElementById(gridId);
       const tbody = document.getElementById(tableId);
+      if (!grid || !tbody) return;
+
+      const isDesktop = currentViewMode === 'desktop';
+
+      // Overriding UI grid classes on Mobile when user forces desktop layouts
+      if (isDesktop) {
+        grid.className = "grid grid-cols-5 gap-4 min-w-[1024px] pb-2";
+        grid.parentElement.className = "overflow-x-auto scrollbar-thin";
+      } else {
+        grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4";
+        grid.parentElement.className = "";
+      }
+
+      // Overriding standard responsive table scrolling classes
+      const tableWrapper = tbody.closest('.overflow-x-auto');
+      if (tableWrapper) {
+        if (isDesktop) {
+          tableWrapper.className = "overflow-x-auto min-w-[1024px]";
+          tableWrapper.parentElement.className = "overflow-x-auto scrollbar-thin border border-slate-700/50 rounded-xl";
+        } else {
+          tableWrapper.className = "overflow-x-auto";
+          tableWrapper.parentElement.className = "bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden";
+        }
+      }
 
       const existingCards = grid.children.length;
       if (existingCards !== dataArr.length) {
         grid.innerHTML = '';
         dataArr.forEach(stock => {
           const mappedName = getName(stock.symbol, stock.name);
+          const yfUrl = getYahooFinanceUrl(stock.symbol);
+
           const card = document.createElement('div');
-          card.className = "bg-slate-800/40 border border-slate-700/30 rounded-xl p-4 flex flex-col justify-between hover:border-slate-600 transition-all duration-200";
+          // Clicking stock cards redirects safely to Yahoo Finance
+          card.className = "bg-slate-800/40 border border-slate-700/30 rounded-xl p-4 flex flex-col justify-between hover:border-slate-500 hover:bg-slate-800/60 cursor-pointer transition-all duration-200";
+          card.setAttribute('onclick', `window.open('${yfUrl}', '_blank')`);
+
           card.innerHTML = `
             <div>
               <div class="flex justify-between items-start gap-1">
@@ -913,8 +998,13 @@
       tbody.innerHTML = '';
       dataArr.forEach(stock => {
         const mappedName = getName(stock.symbol, stock.name);
+        const yfUrl = getYahooFinanceUrl(stock.symbol);
+
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-800/20 transition-colors";
+        // Clicking table row triggers safe Yahoo Finance redirection
+        tr.className = "hover:bg-slate-800/40 cursor-pointer transition-colors border-b border-slate-800/50";
+        tr.setAttribute('onclick', `window.open('${yfUrl}', '_blank')`);
+
         tr.innerHTML = `
           <td class="py-3 px-6 font-mono text-slate-400">${stock.symbol}</td>
           <td class="py-3 px-6 text-white">${mappedName}</td>
@@ -1076,11 +1166,12 @@
     // --- Init Bootstrap ---
     async function boot() {
       lucide.createIcons();
-      initLanguage(); // Dynamic parameter & caching translation routing setup
+      initLanguage();
+      initViewMode();
       await syncRealMarketPrices();
       runGlobalTimeTracker();
       launchPollingTickers();
-      switchTab(1); // Default Initial View set to Tab 1
+      switchTab(1);
     }
 
     window.onload = boot;

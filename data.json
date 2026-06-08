@@ -3,11 +3,11 @@
     {
       "symbol": "2892",
       "name": "FIRST FINANCIAL HOLDING CO LTD",
-      "price": 28.75,
+      "price": 29.1,
       "basePrice": 29.3,
-      "change": -0.55,
-      "changePercent": -1.88,
-      "volume": 22205531,
+      "change": -0.2,
+      "changePercent": -0.68,
+      "volume": 50936438,
       "history": [
         {
           "time": "09:00",
@@ -23,45 +23,157 @@
         },
         {
           "time": "09:45",
+          "price": 28.8
+        },
+        {
+          "time": "10:00",
+          "price": 28.7
+        },
+        {
+          "time": "10:15",
           "price": 28.75
+        },
+        {
+          "time": "10:30",
+          "price": 28.85
+        },
+        {
+          "time": "10:45",
+          "price": 28.85
+        },
+        {
+          "time": "11:00",
+          "price": 28.85
+        },
+        {
+          "time": "11:15",
+          "price": 28.85
+        },
+        {
+          "time": "11:30",
+          "price": 28.95
+        },
+        {
+          "time": "11:45",
+          "price": 28.95
+        },
+        {
+          "time": "12:00",
+          "price": 28.9
+        },
+        {
+          "time": "12:15",
+          "price": 28.85
+        },
+        {
+          "time": "12:30",
+          "price": 28.95
+        },
+        {
+          "time": "12:45",
+          "price": 28.9
+        },
+        {
+          "time": "13:00",
+          "price": 29.1
+        },
+        {
+          "time": "13:15",
+          "price": 29.05
         }
       ]
     },
     {
-      "symbol": "2891",
-      "name": "CTBC FINANCIAL HOLDINGS COMPANY",
-      "price": 65.3,
-      "basePrice": 66.6,
-      "change": -1.3,
-      "changePercent": -1.95,
-      "volume": 15964564,
+      "symbol": "2881",
+      "name": "FUBON FINANCIAL HLDG CO LTD",
+      "price": 116.0,
+      "basePrice": 118.0,
+      "change": -2.0,
+      "changePercent": -1.69,
+      "volume": 104667315,
       "history": [
         {
           "time": "09:00",
-          "price": 66.5
+          "price": 114.0
         },
         {
           "time": "09:15",
-          "price": 65.1
+          "price": 112.0
         },
         {
           "time": "09:30",
-          "price": 65.1
+          "price": 112.5
         },
         {
           "time": "09:45",
-          "price": 65.3
+          "price": 113.5
+        },
+        {
+          "time": "10:00",
+          "price": 113.5
+        },
+        {
+          "time": "10:15",
+          "price": 113.5
+        },
+        {
+          "time": "10:30",
+          "price": 116.0
+        },
+        {
+          "time": "10:45",
+          "price": 117.0
+        },
+        {
+          "time": "11:00",
+          "price": 117.0
+        },
+        {
+          "time": "11:15",
+          "price": 117.0
+        },
+        {
+          "time": "11:30",
+          "price": 117.5
+        },
+        {
+          "time": "11:45",
+          "price": 117.0
+        },
+        {
+          "time": "12:00",
+          "price": 116.5
+        },
+        {
+          "time": "12:15",
+          "price": 115.5
+        },
+        {
+          "time": "12:30",
+          "price": 115.0
+        },
+        {
+          "time": "12:45",
+          "price": 115.0
+        },
+        {
+          "time": "13:00",
+          "price": 116.5
+        },
+        {
+          "time": "13:15",
+          "price": 116.0
         }
       ]
     },
     {
       "symbol": "2886",
       "name": "MEGA FINANCIAL HOLDING CO",
-      "price": 41.05,
+      "price": 41.2,
       "basePrice": 41.95,
-      "change": -0.9,
-      "changePercent": -2.15,
-      "volume": 8882243,
+      "change": -0.75,
+      "changePercent": -1.79,
+      "volume": 29323603,
       "history": [
         {
           "time": "09:00",
@@ -77,45 +189,323 @@
         },
         {
           "time": "09:45",
+          "price": 41.2
+        },
+        {
+          "time": "10:00",
+          "price": 41.15
+        },
+        {
+          "time": "10:15",
+          "price": 41.0
+        },
+        {
+          "time": "10:30",
+          "price": 41.15
+        },
+        {
+          "time": "10:45",
           "price": 41.05
+        },
+        {
+          "time": "11:00",
+          "price": 41.05
+        },
+        {
+          "time": "11:15",
+          "price": 40.95
+        },
+        {
+          "time": "11:30",
+          "price": 41.1
+        },
+        {
+          "time": "11:45",
+          "price": 41.15
+        },
+        {
+          "time": "12:00",
+          "price": 41.2
+        },
+        {
+          "time": "12:15",
+          "price": 41.15
+        },
+        {
+          "time": "12:30",
+          "price": 41.15
+        },
+        {
+          "time": "12:45",
+          "price": 41.25
+        },
+        {
+          "time": "13:00",
+          "price": 41.4
+        },
+        {
+          "time": "13:15",
+          "price": 41.4
         }
       ]
     },
     {
-      "symbol": "2603",
-      "name": "EVERGREEN MARINE CORP(TAIWAN)",
-      "price": 226.5,
-      "basePrice": 232.0,
-      "change": -5.5,
-      "changePercent": -2.37,
-      "volume": 9016081,
+      "symbol": "2891",
+      "name": "CTBC FINANCIAL HOLDINGS COMPANY",
+      "price": 65.4,
+      "basePrice": 66.6,
+      "change": -1.2,
+      "changePercent": -1.8,
+      "volume": 46227602,
       "history": [
         {
           "time": "09:00",
-          "price": 227.0
+          "price": 66.5
         },
         {
           "time": "09:15",
-          "price": 225.0
+          "price": 65.1
         },
         {
           "time": "09:30",
-          "price": 227.5
+          "price": 65.1
         },
         {
           "time": "09:45",
-          "price": 226.5
+          "price": 65.4
+        },
+        {
+          "time": "10:00",
+          "price": 65.6
+        },
+        {
+          "time": "10:15",
+          "price": 65.9
+        },
+        {
+          "time": "10:30",
+          "price": 66.5
+        },
+        {
+          "time": "10:45",
+          "price": 66.3
+        },
+        {
+          "time": "11:00",
+          "price": 65.8
+        },
+        {
+          "time": "11:15",
+          "price": 65.8
+        },
+        {
+          "time": "11:30",
+          "price": 65.8
+        },
+        {
+          "time": "11:45",
+          "price": 65.5
+        },
+        {
+          "time": "12:00",
+          "price": 65.2
+        },
+        {
+          "time": "12:15",
+          "price": 65.1
+        },
+        {
+          "time": "12:30",
+          "price": 65.1
+        },
+        {
+          "time": "12:45",
+          "price": 65.3
+        },
+        {
+          "time": "13:00",
+          "price": 65.6
+        },
+        {
+          "time": "13:15",
+          "price": 65.7
+        }
+      ]
+    },
+    {
+      "symbol": "2308",
+      "name": "DELTA ELECTRONIC",
+      "price": 2255.0,
+      "basePrice": 2300.0,
+      "change": -45.0,
+      "changePercent": -1.96,
+      "volume": 14887146,
+      "history": [
+        {
+          "time": "09:00",
+          "price": 2210.0
+        },
+        {
+          "time": "09:15",
+          "price": 2160.0
+        },
+        {
+          "time": "09:30",
+          "price": 2165.0
+        },
+        {
+          "time": "09:45",
+          "price": 2165.0
+        },
+        {
+          "time": "10:00",
+          "price": 2185.0
+        },
+        {
+          "time": "10:15",
+          "price": 2200.0
+        },
+        {
+          "time": "10:30",
+          "price": 2175.0
+        },
+        {
+          "time": "10:45",
+          "price": 2200.0
+        },
+        {
+          "time": "11:00",
+          "price": 2195.0
+        },
+        {
+          "time": "11:15",
+          "price": 2210.0
+        },
+        {
+          "time": "11:30",
+          "price": 2215.0
+        },
+        {
+          "time": "11:45",
+          "price": 2220.0
+        },
+        {
+          "time": "12:00",
+          "price": 2215.0
+        },
+        {
+          "time": "12:15",
+          "price": 2225.0
+        },
+        {
+          "time": "12:30",
+          "price": 2220.0
+        },
+        {
+          "time": "12:45",
+          "price": 2230.0
+        },
+        {
+          "time": "13:00",
+          "price": 2240.0
+        },
+        {
+          "time": "13:15",
+          "price": 2255.0
+        }
+      ]
+    },
+    {
+      "symbol": "2890",
+      "name": "SINOPAC FINANCIAL HLDGS CO LTD",
+      "price": 31.9,
+      "basePrice": 32.7,
+      "change": -0.8,
+      "changePercent": -2.45,
+      "volume": 45157880,
+      "history": [
+        {
+          "time": "09:00",
+          "price": 32.15
+        },
+        {
+          "time": "09:15",
+          "price": 31.65
+        },
+        {
+          "time": "09:30",
+          "price": 31.6
+        },
+        {
+          "time": "09:45",
+          "price": 31.6
+        },
+        {
+          "time": "10:00",
+          "price": 31.6
+        },
+        {
+          "time": "10:15",
+          "price": 31.5
+        },
+        {
+          "time": "10:30",
+          "price": 31.75
+        },
+        {
+          "time": "10:45",
+          "price": 31.7
+        },
+        {
+          "time": "11:00",
+          "price": 31.6
+        },
+        {
+          "time": "11:15",
+          "price": 31.65
+        },
+        {
+          "time": "11:30",
+          "price": 31.7
+        },
+        {
+          "time": "11:45",
+          "price": 31.7
+        },
+        {
+          "time": "12:00",
+          "price": 31.75
+        },
+        {
+          "time": "12:15",
+          "price": 31.7
+        },
+        {
+          "time": "12:30",
+          "price": 31.7
+        },
+        {
+          "time": "12:45",
+          "price": 31.75
+        },
+        {
+          "time": "13:00",
+          "price": 31.85
+        },
+        {
+          "time": "13:15",
+          "price": 31.95
         }
       ]
     },
     {
       "symbol": "2330",
       "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
-      "price": 2290.0,
+      "price": 2295.0,
       "basePrice": 2365.0,
-      "change": -75.0,
-      "changePercent": -3.17,
-      "volume": 22733962,
+      "change": -70.0,
+      "changePercent": -2.96,
+      "volume": 51824183,
       "history": [
         {
           "time": "09:00",
@@ -132,6 +522,145 @@
         {
           "time": "09:45",
           "price": 2290.0
+        },
+        {
+          "time": "10:00",
+          "price": 2315.0
+        },
+        {
+          "time": "10:15",
+          "price": 2310.0
+        },
+        {
+          "time": "10:30",
+          "price": 2300.0
+        },
+        {
+          "time": "10:45",
+          "price": 2310.0
+        },
+        {
+          "time": "11:00",
+          "price": 2305.0
+        },
+        {
+          "time": "11:15",
+          "price": 2305.0
+        },
+        {
+          "time": "11:30",
+          "price": 2310.0
+        },
+        {
+          "time": "11:45",
+          "price": 2305.0
+        },
+        {
+          "time": "12:00",
+          "price": 2310.0
+        },
+        {
+          "time": "12:15",
+          "price": 2305.0
+        },
+        {
+          "time": "12:30",
+          "price": 2305.0
+        },
+        {
+          "time": "12:45",
+          "price": 2305.0
+        },
+        {
+          "time": "13:00",
+          "price": 2305.0
+        },
+        {
+          "time": "13:15",
+          "price": 2305.0
+        }
+      ]
+    },
+    {
+      "symbol": "2352",
+      "name": "QISDA CORPORATION",
+      "price": 30.1,
+      "basePrice": 31.1,
+      "change": -1.0,
+      "changePercent": -3.22,
+      "volume": 15894403,
+      "history": [
+        {
+          "time": "09:00",
+          "price": 29.5
+        },
+        {
+          "time": "09:15",
+          "price": 28.75
+        },
+        {
+          "time": "09:30",
+          "price": 28.95
+        },
+        {
+          "time": "09:45",
+          "price": 29.5
+        },
+        {
+          "time": "10:00",
+          "price": 29.7
+        },
+        {
+          "time": "10:15",
+          "price": 29.85
+        },
+        {
+          "time": "10:30",
+          "price": 29.8
+        },
+        {
+          "time": "10:45",
+          "price": 30.0
+        },
+        {
+          "time": "11:00",
+          "price": 29.9
+        },
+        {
+          "time": "11:15",
+          "price": 29.95
+        },
+        {
+          "time": "11:30",
+          "price": 30.15
+        },
+        {
+          "time": "11:45",
+          "price": 30.05
+        },
+        {
+          "time": "12:00",
+          "price": 30.0
+        },
+        {
+          "time": "12:15",
+          "price": 29.9
+        },
+        {
+          "time": "12:30",
+          "price": 29.95
+        },
+        {
+          "time": "12:45",
+          "price": 30.05
+        },
+        {
+          "time": "13:00",
+          "price": 30.0
+        },
+        {
+          "time": "13:15",
+          "price": 30.15
         }
       ]
     },
@@ -142,7 +671,7 @@
       "basePrice": 19.3,
       "change": -0.65,
       "changePercent": -3.37,
-      "volume": 55600069,
+      "volume": 112943175,
       "history": [
         {
           "time": "09:00",
@@ -159,114 +688,145 @@
         {
           "time": "09:45",
           "price": 18.65
+        },
+        {
+          "time": "10:00",
+          "price": 18.65
+        },
+        {
+          "time": "10:15",
+          "price": 18.7
+        },
+        {
+          "time": "10:30",
+          "price": 18.7
+        },
+        {
+          "time": "10:45",
+          "price": 18.7
+        },
+        {
+          "time": "11:00",
+          "price": 18.65
+        },
+        {
+          "time": "11:15",
+          "price": 18.65
+        },
+        {
+          "time": "11:30",
+          "price": 18.75
+        },
+        {
+          "time": "11:45",
+          "price": 18.75
+        },
+        {
+          "time": "12:00",
+          "price": 18.7
+        },
+        {
+          "time": "12:15",
+          "price": 18.7
+        },
+        {
+          "time": "12:30",
+          "price": 18.75
+        },
+        {
+          "time": "12:45",
+          "price": 18.65
+        },
+        {
+          "time": "13:00",
+          "price": 18.7
+        },
+        {
+          "time": "13:15",
+          "price": 18.65
         }
       ]
     },
     {
-      "symbol": "2890",
-      "name": "SINOPAC FINANCIAL HLDGS CO LTD",
-      "price": 31.55,
-      "basePrice": 32.7,
-      "change": -1.15,
-      "changePercent": -3.52,
-      "volume": 17245807,
+      "symbol": "2603",
+      "name": "EVERGREEN MARINE CORP(TAIWAN)",
+      "price": 224.0,
+      "basePrice": 232.0,
+      "change": -8.0,
+      "changePercent": -3.45,
+      "volume": 22428317,
       "history": [
         {
           "time": "09:00",
-          "price": 32.15
+          "price": 227.0
         },
         {
           "time": "09:15",
-          "price": 31.65
+          "price": 225.0
         },
         {
           "time": "09:30",
-          "price": 31.6
+          "price": 227.5
         },
         {
           "time": "09:45",
-          "price": 31.55
-        }
-      ]
-    },
-    {
-      "symbol": "2881",
-      "name": "FUBON FINANCIAL HLDG CO LTD",
-      "price": 113.0,
-      "basePrice": 118.0,
-      "change": -5.0,
-      "changePercent": -4.24,
-      "volume": 16985249,
-      "history": [
-        {
-          "time": "09:00",
-          "price": 114.0
+          "price": 226.5
         },
         {
-          "time": "09:15",
-          "price": 112.0
+          "time": "10:00",
+          "price": 226.5
         },
         {
-          "time": "09:30",
-          "price": 112.5
+          "time": "10:15",
+          "price": 227.0
         },
         {
-          "time": "09:45",
-          "price": 113.0
-        }
-      ]
-    },
-    {
-      "symbol": "2609",
-      "name": "YANG MING MARINE TRANSPORT CORP",
-      "price": 51.8,
-      "basePrice": 54.5,
-      "change": -2.7,
-      "changePercent": -4.95,
-      "volume": 20415746,
-      "history": [
-        {
-          "time": "09:00",
-          "price": 51.9
+          "time": "10:30",
+          "price": 225.5
         },
         {
-          "time": "09:15",
-          "price": 51.2
+          "time": "10:45",
+          "price": 225.0
         },
         {
-          "time": "09:30",
-          "price": 51.8
+          "time": "11:00",
+          "price": 225.0
         },
         {
-          "time": "09:45",
-          "price": 51.8
-        }
-      ]
-    },
-    {
-      "symbol": "2882",
-      "name": "CATHAY FINANCIAL HLDG CO",
-      "price": 95.0,
-      "basePrice": 100.0,
-      "change": -5.0,
-      "changePercent": -5.0,
-      "volume": 23169704,
-      "history": [
-        {
-          "time": "09:00",
-          "price": 96.5
+          "time": "11:15",
+          "price": 225.0
         },
         {
-          "time": "09:15",
-          "price": 94.5
+          "time": "11:30",
+          "price": 225.0
         },
         {
-          "time": "09:30",
-          "price": 94.6
+          "time": "11:45",
+          "price": 224.0
         },
         {
-          "time": "09:45",
-          "price": 95.0
+          "time": "12:00",
+          "price": 224.0
+        },
+        {
+          "time": "12:15",
+          "price": 224.5
+        },
+        {
+          "time": "12:30",
+          "price": 224.0
+        },
+        {
+          "time": "12:45",
+          "price": 224.5
+        },
+        {
+          "time": "13:00",
+          "price": 225.0
+        },
+        {
+          "time": "13:15",
+          "price": 225.0
         }
       ]
     }
@@ -279,7 +839,7 @@
       "basePrice": 53.7,
       "change": -5.35,
       "changePercent": -9.96,
-      "volume": 43433975,
+      "volume": 88193946,
       "history": [
         {
           "time": "09:00",
@@ -295,6 +855,62 @@
         },
         {
           "time": "09:45",
+          "price": 48.35
+        },
+        {
+          "time": "10:00",
+          "price": 48.35
+        },
+        {
+          "time": "10:15",
+          "price": 48.35
+        },
+        {
+          "time": "10:30",
+          "price": 48.35
+        },
+        {
+          "time": "10:45",
+          "price": 48.35
+        },
+        {
+          "time": "11:00",
+          "price": 48.35
+        },
+        {
+          "time": "11:15",
+          "price": 48.35
+        },
+        {
+          "time": "11:30",
+          "price": 48.35
+        },
+        {
+          "time": "11:45",
+          "price": 48.35
+        },
+        {
+          "time": "12:00",
+          "price": 48.35
+        },
+        {
+          "time": "12:15",
+          "price": 48.35
+        },
+        {
+          "time": "12:30",
+          "price": 48.35
+        },
+        {
+          "time": "12:45",
+          "price": 48.35
+        },
+        {
+          "time": "13:00",
+          "price": 48.35
+        },
+        {
+          "time": "13:15",
           "price": 48.35
         }
       ]
@@ -306,7 +922,7 @@
       "basePrice": 27.1,
       "change": -2.7,
       "changePercent": -9.96,
-      "volume": 40888192,
+      "volume": 67646152,
       "history": [
         {
           "time": "09:00",
@@ -323,17 +939,156 @@
         {
           "time": "09:45",
           "price": 24.4
+        },
+        {
+          "time": "10:00",
+          "price": 24.4
+        },
+        {
+          "time": "10:15",
+          "price": 24.4
+        },
+        {
+          "time": "10:30",
+          "price": 24.4
+        },
+        {
+          "time": "10:45",
+          "price": 24.4
+        },
+        {
+          "time": "11:00",
+          "price": 24.4
+        },
+        {
+          "time": "11:15",
+          "price": 24.4
+        },
+        {
+          "time": "11:30",
+          "price": 24.4
+        },
+        {
+          "time": "11:45",
+          "price": 24.4
+        },
+        {
+          "time": "12:00",
+          "price": 24.4
+        },
+        {
+          "time": "12:15",
+          "price": 24.4
+        },
+        {
+          "time": "12:30",
+          "price": 24.4
+        },
+        {
+          "time": "12:45",
+          "price": 24.4
+        },
+        {
+          "time": "13:00",
+          "price": 24.4
+        },
+        {
+          "time": "13:15",
+          "price": 24.4
+        }
+      ]
+    },
+    {
+      "symbol": "2303",
+      "name": "UNITED MICRO ELECTRONICS",
+      "price": 121.0,
+      "basePrice": 131.5,
+      "change": -10.5,
+      "changePercent": -7.98,
+      "volume": 318113451,
+      "history": [
+        {
+          "time": "09:00",
+          "price": 120.5
+        },
+        {
+          "time": "09:15",
+          "price": 119.5
+        },
+        {
+          "time": "09:30",
+          "price": 122.5
+        },
+        {
+          "time": "09:45",
+          "price": 123.5
+        },
+        {
+          "time": "10:00",
+          "price": 124.0
+        },
+        {
+          "time": "10:15",
+          "price": 124.0
+        },
+        {
+          "time": "10:30",
+          "price": 122.0
+        },
+        {
+          "time": "10:45",
+          "price": 121.5
+        },
+        {
+          "time": "11:00",
+          "price": 121.0
+        },
+        {
+          "time": "11:15",
+          "price": 121.5
+        },
+        {
+          "time": "11:30",
+          "price": 122.0
+        },
+        {
+          "time": "11:45",
+          "price": 121.0
+        },
+        {
+          "time": "12:00",
+          "price": 121.0
+        },
+        {
+          "time": "12:15",
+          "price": 120.0
+        },
+        {
+          "time": "12:30",
+          "price": 120.5
+        },
+        {
+          "time": "12:45",
+          "price": 121.0
+        },
+        {
+          "time": "13:00",
+          "price": 121.0
+        },
+        {
+          "time": "13:15",
+          "price": 121.0
         }
       ]
     },
     {
       "symbol": "2324",
       "name": "COMPAL ELECTRONICS INC",
-      "price": 37.3,
+      "price": 38.6,
       "basePrice": 41.4,
-      "change": -4.1,
-      "changePercent": -9.9,
-      "volume": 67248154,
+      "change": -2.8,
+      "changePercent": -6.76,
+      "volume": 152077957,
       "history": [
         {
           "time": "09:00",
@@ -349,72 +1104,74 @@
         },
         {
           "time": "09:45",
-          "price": 37.3
-        }
-      ]
-    },
-    {
-      "symbol": "3711",
-      "name": "ASE TECHNOLOGY HOLDING CO LTD",
-      "price": 525.0,
-      "basePrice": 577.0,
-      "change": -52.0,
-      "changePercent": -9.01,
-      "volume": 11279239,
-      "history": [
-        {
-          "time": "09:00",
-          "price": 525.0
+          "price": 37.4
         },
         {
-          "time": "09:15",
-          "price": 520.0
+          "time": "10:00",
+          "price": 37.5
         },
         {
-          "time": "09:30",
-          "price": 524.0
+          "time": "10:15",
+          "price": 37.6
         },
         {
-          "time": "09:45",
-          "price": 525.0
-        }
-      ]
-    },
-    {
-      "symbol": "2357",
-      "name": "ASUSTEK COMPUTER INC",
-      "price": 824.0,
-      "basePrice": 900.0,
-      "change": -76.0,
-      "changePercent": -8.44,
-      "volume": 2995232,
-      "history": [
-        {
-          "time": "09:00",
-          "price": 831.0
+          "time": "10:30",
+          "price": 37.7
         },
         {
-          "time": "09:15",
-          "price": 820.0
+          "time": "10:45",
+          "price": 37.85
         },
         {
-          "time": "09:30",
-          "price": 822.0
+          "time": "11:00",
+          "price": 37.95
         },
         {
-          "time": "09:45",
-          "price": 824.0
+          "time": "11:15",
+          "price": 38.2
+        },
+        {
+          "time": "11:30",
+          "price": 38.3
+        },
+        {
+          "time": "11:45",
+          "price": 38.35
+        },
+        {
+          "time": "12:00",
+          "price": 38.35
+        },
+        {
+          "time": "12:15",
+          "price": 38.3
+        },
+        {
+          "time": "12:30",
+          "price": 38.35
+        },
+        {
+          "time": "12:45",
+          "price": 38.6
+        },
+        {
+          "time": "13:00",
+          "price": 38.85
+        },
+        {
+          "time": "13:15",
+          "price": 38.85
         }
       ]
     },
     {
       "symbol": "1303",
       "name": "NAN YA PLASTIC",
-      "price": 96.2,
+      "price": 97.5,
       "basePrice": 104.5,
-      "change": -8.3,
-      "changePercent": -7.94,
-      "volume": 23678307,
+      "change": -7.0,
+      "changePercent": -6.7,
+      "volume": 55565224,
       "history": [
         {
           "time": "09:00",
@@ -430,99 +1187,157 @@
         },
         {
           "time": "09:45",
-          "price": 96.2
+          "price": 97.0
+        },
+        {
+          "time": "10:00",
+          "price": 97.9
+        },
+        {
+          "time": "10:15",
+          "price": 98.2
+        },
+        {
+          "time": "10:30",
+          "price": 98.0
+        },
+        {
+          "time": "10:45",
+          "price": 97.6
+        },
+        {
+          "time": "11:00",
+          "price": 97.4
+        },
+        {
+          "time": "11:15",
+          "price": 98.0
+        },
+        {
+          "time": "11:30",
+          "price": 98.5
+        },
+        {
+          "time": "11:45",
+          "price": 98.0
+        },
+        {
+          "time": "12:00",
+          "price": 98.1
+        },
+        {
+          "time": "12:15",
+          "price": 97.6
+        },
+        {
+          "time": "12:30",
+          "price": 97.5
+        },
+        {
+          "time": "12:45",
+          "price": 97.5
+        },
+        {
+          "time": "13:00",
+          "price": 97.5
+        },
+        {
+          "time": "13:15",
+          "price": 97.7
         }
       ]
     },
     {
-      "symbol": "2454",
-      "name": "MEDIATEK INC",
-      "price": 3990.0,
-      "basePrice": 4300.0,
-      "change": -310.0,
-      "changePercent": -7.21,
-      "volume": 7746784,
+      "symbol": "3711",
+      "name": "ASE TECHNOLOGY HOLDING CO LTD",
+      "price": 540.0,
+      "basePrice": 577.0,
+      "change": -37.0,
+      "changePercent": -6.41,
+      "volume": 26373019,
       "history": [
         {
           "time": "09:00",
-          "price": 4035.0
+          "price": 525.0
         },
         {
           "time": "09:15",
-          "price": 3950.0
+          "price": 520.0
         },
         {
           "time": "09:30",
-          "price": 3990.0
+          "price": 524.0
         },
         {
           "time": "09:45",
-          "price": 3990.0
-        }
-      ]
-    },
-    {
-      "symbol": "3008",
-      "name": "LARGAN PRECISION CO",
-      "price": 3415.0,
-      "basePrice": 3680.0,
-      "change": -265.0,
-      "changePercent": -7.2,
-      "volume": 1287549,
-      "history": [
-        {
-          "time": "09:00",
-          "price": 3420.0
+          "price": 528.0
         },
         {
-          "time": "09:15",
-          "price": 3360.0
+          "time": "10:00",
+          "price": 528.0
         },
         {
-          "time": "09:30",
-          "price": 3390.0
+          "time": "10:15",
+          "price": 529.0
         },
         {
-          "time": "09:45",
-          "price": 3415.0
-        }
-      ]
-    },
-    {
-      "symbol": "2382",
-      "name": "QUANTA COMPUTER",
-      "price": 362.5,
-      "basePrice": 390.5,
-      "change": -28.0,
-      "changePercent": -7.17,
-      "volume": 24689146,
-      "history": [
-        {
-          "time": "09:00",
-          "price": 366.0
+          "time": "10:30",
+          "price": 528.0
         },
         {
-          "time": "09:15",
-          "price": 360.5
+          "time": "10:45",
+          "price": 534.0
         },
         {
-          "time": "09:30",
-          "price": 362.5
+          "time": "11:00",
+          "price": 533.0
         },
         {
-          "time": "09:45",
-          "price": 362.5
+          "time": "11:15",
+          "price": 536.0
+        },
+        {
+          "time": "11:30",
+          "price": 538.0
+        },
+        {
+          "time": "11:45",
+          "price": 536.0
+        },
+        {
+          "time": "12:00",
+          "price": 536.0
+        },
+        {
+          "time": "12:15",
+          "price": 536.0
+        },
+        {
+          "time": "12:30",
+          "price": 537.0
+        },
+        {
+          "time": "12:45",
+          "price": 537.0
+        },
+        {
+          "time": "13:00",
+          "price": 542.0
+        },
+        {
+          "time": "13:15",
+          "price": 542.0
         }
       ]
     },
     {
       "symbol": "1301",
       "name": "FORMOSA PLASTIC",
-      "price": 45.45,
+      "price": 45.85,
       "basePrice": 48.9,
-      "change": -3.45,
-      "changePercent": -7.06,
-      "volume": 18892686,
+      "change": -3.05,
+      "changePercent": -6.24,
+      "volume": 32789165,
       "history": [
         {
           "time": "09:00",
@@ -538,7 +1353,312 @@
         },
         {
           "time": "09:45",
-          "price": 45.45
+          "price": 45.5
+        },
+        {
+          "time": "10:00",
+          "price": 45.65
+        },
+        {
+          "time": "10:15",
+          "price": 45.65
+        },
+        {
+          "time": "10:30",
+          "price": 45.7
+        },
+        {
+          "time": "10:45",
+          "price": 45.65
+        },
+        {
+          "time": "11:00",
+          "price": 45.6
+        },
+        {
+          "time": "11:15",
+          "price": 45.7
+        },
+        {
+          "time": "11:30",
+          "price": 45.8
+        },
+        {
+          "time": "11:45",
+          "price": 45.6
+        },
+        {
+          "time": "12:00",
+          "price": 45.6
+        },
+        {
+          "time": "12:15",
+          "price": 45.55
+        },
+        {
+          "time": "12:30",
+          "price": 45.55
+        },
+        {
+          "time": "12:45",
+          "price": 45.6
+        },
+        {
+          "time": "13:00",
+          "price": 45.7
+        },
+        {
+          "time": "13:15",
+          "price": 45.8
+        }
+      ]
+    },
+    {
+      "symbol": "2357",
+      "name": "ASUSTEK COMPUTER INC",
+      "price": 844.0,
+      "basePrice": 900.0,
+      "change": -56.0,
+      "changePercent": -6.22,
+      "volume": 7297506,
+      "history": [
+        {
+          "time": "09:00",
+          "price": 831.0
+        },
+        {
+          "time": "09:15",
+          "price": 820.0
+        },
+        {
+          "time": "09:30",
+          "price": 822.0
+        },
+        {
+          "time": "09:45",
+          "price": 830.0
+        },
+        {
+          "time": "10:00",
+          "price": 835.0
+        },
+        {
+          "time": "10:15",
+          "price": 842.0
+        },
+        {
+          "time": "10:30",
+          "price": 844.0
+        },
+        {
+          "time": "10:45",
+          "price": 844.0
+        },
+        {
+          "time": "11:00",
+          "price": 838.0
+        },
+        {
+          "time": "11:15",
+          "price": 845.0
+        },
+        {
+          "time": "11:30",
+          "price": 851.0
+        },
+        {
+          "time": "11:45",
+          "price": 848.0
+        },
+        {
+          "time": "12:00",
+          "price": 846.0
+        },
+        {
+          "time": "12:15",
+          "price": 840.0
+        },
+        {
+          "time": "12:30",
+          "price": 838.0
+        },
+        {
+          "time": "12:45",
+          "price": 844.0
+        },
+        {
+          "time": "13:00",
+          "price": 847.0
+        },
+        {
+          "time": "13:15",
+          "price": 849.0
+        }
+      ]
+    },
+    {
+      "symbol": "2454",
+      "name": "MEDIATEK INC",
+      "price": 4070.0,
+      "basePrice": 4300.0,
+      "change": -230.0,
+      "changePercent": -5.35,
+      "volume": 15785453,
+      "history": [
+        {
+          "time": "09:00",
+          "price": 4035.0
+        },
+        {
+          "time": "09:15",
+          "price": 3950.0
+        },
+        {
+          "time": "09:30",
+          "price": 3990.0
+        },
+        {
+          "time": "09:45",
+          "price": 4005.0
+        },
+        {
+          "time": "10:00",
+          "price": 4045.0
+        },
+        {
+          "time": "10:15",
+          "price": 4050.0
+        },
+        {
+          "time": "10:30",
+          "price": 4020.0
+        },
+        {
+          "time": "10:45",
+          "price": 4055.0
+        },
+        {
+          "time": "11:00",
+          "price": 4040.0
+        },
+        {
+          "time": "11:15",
+          "price": 4060.0
+        },
+        {
+          "time": "11:30",
+          "price": 4065.0
+        },
+        {
+          "time": "11:45",
+          "price": 4050.0
+        },
+        {
+          "time": "12:00",
+          "price": 4035.0
+        },
+        {
+          "time": "12:15",
+          "price": 4045.0
+        },
+        {
+          "time": "12:30",
+          "price": 4035.0
+        },
+        {
+          "time": "12:45",
+          "price": 4050.0
+        },
+        {
+          "time": "13:00",
+          "price": 4065.0
+        },
+        {
+          "time": "13:15",
+          "price": 4070.0
+        }
+      ]
+    },
+    {
+      "symbol": "2317",
+      "name": "HON HAI PRECISION INDUSTRY",
+      "price": 269.5,
+      "basePrice": 284.5,
+      "change": -15.0,
+      "changePercent": -5.27,
+      "volume": 116829921,
+      "history": [
+        {
+          "time": "09:00",
+          "price": 266.5
+        },
+        {
+          "time": "09:15",
+          "price": 261.5
+        },
+        {
+          "time": "09:30",
+          "price": 263.0
+        },
+        {
+          "time": "09:45",
+          "price": 265.0
+        },
+        {
+          "time": "10:00",
+          "price": 267.5
+        },
+        {
+          "time": "10:15",
+          "price": 269.0
+        },
+        {
+          "time": "10:30",
+          "price": 270.0
+        },
+        {
+          "time": "10:45",
+          "price": 270.0
+        },
+        {
+          "time": "11:00",
+          "price": 268.5
+        },
+        {
+          "time": "11:15",
+          "price": 269.0
+        },
+        {
+          "time": "11:30",
+          "price": 270.5
+        },
+        {
+          "time": "11:45",
+          "price": 269.5
+        },
+        {
+          "time": "12:00",
+          "price": 269.0
+        },
+        {
+          "time": "12:15",
+          "price": 268.0
+        },
+        {
+          "time": "12:30",
+          "price": 267.5
+        },
+        {
+          "time": "12:45",
+          "price": 268.5
+        },
+        {
+          "time": "13:00",
+          "price": 269.5
+        },
+        {
+          "time": "13:15",
+          "price": 270.0
         }
       ]
     }
@@ -1814,11 +2934,11 @@
     "2330": {
       "symbol": "2330",
       "name": "TAIWAN SEMICONDUCTOR MANUFACTUR",
-      "price": 2290.0,
+      "price": 2295.0,
       "basePrice": 2365.0,
-      "change": -75.0,
-      "changePercent": -3.17,
-      "volume": 22733962,
+      "change": -70.0,
+      "changePercent": -2.96,
+      "volume": 51824183,
       "history": [
         {
           "time": "09:00",
@@ -1835,17 +2955,73 @@
         {
           "time": "09:45",
           "price": 2290.0
+        },
+        {
+          "time": "10:00",
+          "price": 2315.0
+        },
+        {
+          "time": "10:15",
+          "price": 2310.0
+        },
+        {
+          "time": "10:30",
+          "price": 2300.0
+        },
+        {
+          "time": "10:45",
+          "price": 2310.0
+        },
+        {
+          "time": "11:00",
+          "price": 2305.0
+        },
+        {
+          "time": "11:15",
+          "price": 2305.0
+        },
+        {
+          "time": "11:30",
+          "price": 2310.0
+        },
+        {
+          "time": "11:45",
+          "price": 2305.0
+        },
+        {
+          "time": "12:00",
+          "price": 2310.0
+        },
+        {
+          "time": "12:15",
+          "price": 2305.0
+        },
+        {
+          "time": "12:30",
+          "price": 2305.0
+        },
+        {
+          "time": "12:45",
+          "price": 2305.0
+        },
+        {
+          "time": "13:00",
+          "price": 2305.0
+        },
+        {
+          "time": "13:15",
+          "price": 2305.0
         }
       ]
     },
     "2454": {
       "symbol": "2454",
       "name": "MEDIATEK INC",
-      "price": 3990.0,
+      "price": 4070.0,
       "basePrice": 4300.0,
-      "change": -310.0,
-      "changePercent": -7.21,
-      "volume": 7746784,
+      "change": -230.0,
+      "changePercent": -5.35,
+      "volume": 15785453,
       "history": [
         {
           "time": "09:00",
@@ -1861,18 +3037,74 @@
         },
         {
           "time": "09:45",
-          "price": 3990.0
+          "price": 4005.0
+        },
+        {
+          "time": "10:00",
+          "price": 4045.0
+        },
+        {
+          "time": "10:15",
+          "price": 4050.0
+        },
+        {
+          "time": "10:30",
+          "price": 4020.0
+        },
+        {
+          "time": "10:45",
+          "price": 4055.0
+        },
+        {
+          "time": "11:00",
+          "price": 4040.0
+        },
+        {
+          "time": "11:15",
+          "price": 4060.0
+        },
+        {
+          "time": "11:30",
+          "price": 4065.0
+        },
+        {
+          "time": "11:45",
+          "price": 4050.0
+        },
+        {
+          "time": "12:00",
+          "price": 4035.0
+        },
+        {
+          "time": "12:15",
+          "price": 4045.0
+        },
+        {
+          "time": "12:30",
+          "price": 4035.0
+        },
+        {
+          "time": "12:45",
+          "price": 4050.0
+        },
+        {
+          "time": "13:00",
+          "price": 4065.0
+        },
+        {
+          "time": "13:15",
+          "price": 4070.0
         }
       ]
     },
     "2317": {
       "symbol": "2317",
       "name": "HON HAI PRECISION INDUSTRY",
-      "price": 264.5,
+      "price": 269.5,
       "basePrice": 284.5,
-      "change": -20.0,
-      "changePercent": -7.03,
-      "volume": 55971055,
+      "change": -15.0,
+      "changePercent": -5.27,
+      "volume": 116829921,
       "history": [
         {
           "time": "09:00",
@@ -1888,18 +3120,74 @@
         },
         {
           "time": "09:45",
-          "price": 264.5
+          "price": 265.0
+        },
+        {
+          "time": "10:00",
+          "price": 267.5
+        },
+        {
+          "time": "10:15",
+          "price": 269.0
+        },
+        {
+          "time": "10:30",
+          "price": 270.0
+        },
+        {
+          "time": "10:45",
+          "price": 270.0
+        },
+        {
+          "time": "11:00",
+          "price": 268.5
+        },
+        {
+          "time": "11:15",
+          "price": 269.0
+        },
+        {
+          "time": "11:30",
+          "price": 270.5
+        },
+        {
+          "time": "11:45",
+          "price": 269.5
+        },
+        {
+          "time": "12:00",
+          "price": 269.0
+        },
+        {
+          "time": "12:15",
+          "price": 268.0
+        },
+        {
+          "time": "12:30",
+          "price": 267.5
+        },
+        {
+          "time": "12:45",
+          "price": 268.5
+        },
+        {
+          "time": "13:00",
+          "price": 269.5
+        },
+        {
+          "time": "13:15",
+          "price": 270.0
         }
       ]
     },
     "2603": {
       "symbol": "2603",
       "name": "EVERGREEN MARINE CORP(TAIWAN)",
-      "price": 226.5,
+      "price": 224.0,
       "basePrice": 232.0,
-      "change": -5.5,
-      "changePercent": -2.37,
-      "volume": 9016081,
+      "change": -8.0,
+      "changePercent": -3.45,
+      "volume": 22428317,
       "history": [
         {
           "time": "09:00",
@@ -1916,17 +3204,73 @@
         {
           "time": "09:45",
           "price": 226.5
+        },
+        {
+          "time": "10:00",
+          "price": 226.5
+        },
+        {
+          "time": "10:15",
+          "price": 227.0
+        },
+        {
+          "time": "10:30",
+          "price": 225.5
+        },
+        {
+          "time": "10:45",
+          "price": 225.0
+        },
+        {
+          "time": "11:00",
+          "price": 225.0
+        },
+        {
+          "time": "11:15",
+          "price": 225.0
+        },
+        {
+          "time": "11:30",
+          "price": 225.0
+        },
+        {
+          "time": "11:45",
+          "price": 224.0
+        },
+        {
+          "time": "12:00",
+          "price": 224.0
+        },
+        {
+          "time": "12:15",
+          "price": 224.5
+        },
+        {
+          "time": "12:30",
+          "price": 224.0
+        },
+        {
+          "time": "12:45",
+          "price": 224.5
+        },
+        {
+          "time": "13:00",
+          "price": 225.0
+        },
+        {
+          "time": "13:15",
+          "price": 225.0
         }
       ]
     },
     "2308": {
       "symbol": "2308",
       "name": "DELTA ELECTRONIC",
-      "price": 2170.0,
+      "price": 2255.0,
       "basePrice": 2300.0,
-      "change": -130.0,
-      "changePercent": -5.65,
-      "volume": 7514825,
+      "change": -45.0,
+      "changePercent": -1.96,
+      "volume": 14887146,
       "history": [
         {
           "time": "09:00",
@@ -1942,18 +3286,74 @@
         },
         {
           "time": "09:45",
-          "price": 2170.0
+          "price": 2165.0
+        },
+        {
+          "time": "10:00",
+          "price": 2185.0
+        },
+        {
+          "time": "10:15",
+          "price": 2200.0
+        },
+        {
+          "time": "10:30",
+          "price": 2175.0
+        },
+        {
+          "time": "10:45",
+          "price": 2200.0
+        },
+        {
+          "time": "11:00",
+          "price": 2195.0
+        },
+        {
+          "time": "11:15",
+          "price": 2210.0
+        },
+        {
+          "time": "11:30",
+          "price": 2215.0
+        },
+        {
+          "time": "11:45",
+          "price": 2220.0
+        },
+        {
+          "time": "12:00",
+          "price": 2215.0
+        },
+        {
+          "time": "12:15",
+          "price": 2225.0
+        },
+        {
+          "time": "12:30",
+          "price": 2220.0
+        },
+        {
+          "time": "12:45",
+          "price": 2230.0
+        },
+        {
+          "time": "13:00",
+          "price": 2240.0
+        },
+        {
+          "time": "13:15",
+          "price": 2255.0
         }
       ]
     },
     "2382": {
       "symbol": "2382",
       "name": "QUANTA COMPUTER",
-      "price": 362.5,
+      "price": 376.5,
       "basePrice": 390.5,
-      "change": -28.0,
-      "changePercent": -7.17,
-      "volume": 24689146,
+      "change": -14.0,
+      "changePercent": -3.59,
+      "volume": 63336111,
       "history": [
         {
           "time": "09:00",
@@ -1969,18 +3369,74 @@
         },
         {
           "time": "09:45",
-          "price": 362.5
+          "price": 363.0
+        },
+        {
+          "time": "10:00",
+          "price": 368.0
+        },
+        {
+          "time": "10:15",
+          "price": 366.5
+        },
+        {
+          "time": "10:30",
+          "price": 371.0
+        },
+        {
+          "time": "10:45",
+          "price": 372.5
+        },
+        {
+          "time": "11:00",
+          "price": 371.0
+        },
+        {
+          "time": "11:15",
+          "price": 373.0
+        },
+        {
+          "time": "11:30",
+          "price": 374.0
+        },
+        {
+          "time": "11:45",
+          "price": 372.5
+        },
+        {
+          "time": "12:00",
+          "price": 371.5
+        },
+        {
+          "time": "12:15",
+          "price": 369.5
+        },
+        {
+          "time": "12:30",
+          "price": 371.0
+        },
+        {
+          "time": "12:45",
+          "price": 372.5
+        },
+        {
+          "time": "13:00",
+          "price": 373.5
+        },
+        {
+          "time": "13:15",
+          "price": 373.0
         }
       ]
     },
     "2881": {
       "symbol": "2881",
       "name": "FUBON FINANCIAL HLDG CO LTD",
-      "price": 113.0,
+      "price": 116.0,
       "basePrice": 118.0,
-      "change": -5.0,
-      "changePercent": -4.24,
-      "volume": 16985249,
+      "change": -2.0,
+      "changePercent": -1.69,
+      "volume": 104667315,
       "history": [
         {
           "time": "09:00",
@@ -1996,7 +3452,63 @@
         },
         {
           "time": "09:45",
-          "price": 113.0
+          "price": 113.5
+        },
+        {
+          "time": "10:00",
+          "price": 113.5
+        },
+        {
+          "time": "10:15",
+          "price": 113.5
+        },
+        {
+          "time": "10:30",
+          "price": 116.0
+        },
+        {
+          "time": "10:45",
+          "price": 117.0
+        },
+        {
+          "time": "11:00",
+          "price": 117.0
+        },
+        {
+          "time": "11:15",
+          "price": 117.0
+        },
+        {
+          "time": "11:30",
+          "price": 117.5
+        },
+        {
+          "time": "11:45",
+          "price": 117.0
+        },
+        {
+          "time": "12:00",
+          "price": 116.5
+        },
+        {
+          "time": "12:15",
+          "price": 115.5
+        },
+        {
+          "time": "12:30",
+          "price": 115.0
+        },
+        {
+          "time": "12:45",
+          "price": 115.0
+        },
+        {
+          "time": "13:00",
+          "price": 116.5
+        },
+        {
+          "time": "13:15",
+          "price": 116.0
         }
       ]
     },
@@ -2007,7 +3519,7 @@
       "basePrice": 100.0,
       "change": -5.0,
       "changePercent": -5.0,
-      "volume": 23169704,
+      "volume": 56974719,
       "history": [
         {
           "time": "09:00",
@@ -2023,6 +3535,62 @@
         },
         {
           "time": "09:45",
+          "price": 94.9
+        },
+        {
+          "time": "10:00",
+          "price": 94.4
+        },
+        {
+          "time": "10:15",
+          "price": 95.1
+        },
+        {
+          "time": "10:30",
+          "price": 96.2
+        },
+        {
+          "time": "10:45",
+          "price": 95.9
+        },
+        {
+          "time": "11:00",
+          "price": 95.6
+        },
+        {
+          "time": "11:15",
+          "price": 95.6
+        },
+        {
+          "time": "11:30",
+          "price": 95.7
+        },
+        {
+          "time": "11:45",
+          "price": 95.5
+        },
+        {
+          "time": "12:00",
+          "price": 94.7
+        },
+        {
+          "time": "12:15",
+          "price": 94.5
+        },
+        {
+          "time": "12:30",
+          "price": 94.4
+        },
+        {
+          "time": "12:45",
+          "price": 94.6
+        },
+        {
+          "time": "13:00",
+          "price": 95.3
+        },
+        {
+          "time": "13:15",
           "price": 95.0
         }
       ]
@@ -2030,11 +3598,11 @@
     "3008": {
       "symbol": "3008",
       "name": "LARGAN PRECISION CO",
-      "price": 3415.0,
+      "price": 3535.0,
       "basePrice": 3680.0,
-      "change": -265.0,
-      "changePercent": -7.2,
-      "volume": 1287549,
+      "change": -145.0,
+      "changePercent": -3.94,
+      "volume": 2674188,
       "history": [
         {
           "time": "09:00",
@@ -2050,18 +3618,74 @@
         },
         {
           "time": "09:45",
-          "price": 3415.0
+          "price": 3430.0
+        },
+        {
+          "time": "10:00",
+          "price": 3450.0
+        },
+        {
+          "time": "10:15",
+          "price": 3465.0
+        },
+        {
+          "time": "10:30",
+          "price": 3470.0
+        },
+        {
+          "time": "10:45",
+          "price": 3490.0
+        },
+        {
+          "time": "11:00",
+          "price": 3460.0
+        },
+        {
+          "time": "11:15",
+          "price": 3480.0
+        },
+        {
+          "time": "11:30",
+          "price": 3485.0
+        },
+        {
+          "time": "11:45",
+          "price": 3470.0
+        },
+        {
+          "time": "12:00",
+          "price": 3470.0
+        },
+        {
+          "time": "12:15",
+          "price": 3485.0
+        },
+        {
+          "time": "12:30",
+          "price": 3500.0
+        },
+        {
+          "time": "12:45",
+          "price": 3520.0
+        },
+        {
+          "time": "13:00",
+          "price": 3540.0
+        },
+        {
+          "time": "13:15",
+          "price": 3545.0
         }
       ]
     },
     "3711": {
       "symbol": "3711",
       "name": "ASE TECHNOLOGY HOLDING CO LTD",
-      "price": 525.0,
+      "price": 540.0,
       "basePrice": 577.0,
-      "change": -52.0,
-      "changePercent": -9.01,
-      "volume": 11279239,
+      "change": -37.0,
+      "changePercent": -6.41,
+      "volume": 26373019,
       "history": [
         {
           "time": "09:00",
@@ -2077,18 +3701,74 @@
         },
         {
           "time": "09:45",
-          "price": 525.0
+          "price": 528.0
+        },
+        {
+          "time": "10:00",
+          "price": 528.0
+        },
+        {
+          "time": "10:15",
+          "price": 529.0
+        },
+        {
+          "time": "10:30",
+          "price": 528.0
+        },
+        {
+          "time": "10:45",
+          "price": 534.0
+        },
+        {
+          "time": "11:00",
+          "price": 533.0
+        },
+        {
+          "time": "11:15",
+          "price": 536.0
+        },
+        {
+          "time": "11:30",
+          "price": 538.0
+        },
+        {
+          "time": "11:45",
+          "price": 536.0
+        },
+        {
+          "time": "12:00",
+          "price": 536.0
+        },
+        {
+          "time": "12:15",
+          "price": 536.0
+        },
+        {
+          "time": "12:30",
+          "price": 537.0
+        },
+        {
+          "time": "12:45",
+          "price": 537.0
+        },
+        {
+          "time": "13:00",
+          "price": 542.0
+        },
+        {
+          "time": "13:15",
+          "price": 542.0
         }
       ]
     },
     "2609": {
       "symbol": "2609",
       "name": "YANG MING MARINE TRANSPORT CORP",
-      "price": 51.8,
+      "price": 51.7,
       "basePrice": 54.5,
-      "change": -2.7,
-      "changePercent": -4.95,
-      "volume": 20415746,
+      "change": -2.8,
+      "changePercent": -5.14,
+      "volume": 66772280,
       "history": [
         {
           "time": "09:00",
@@ -2105,17 +3785,73 @@
         {
           "time": "09:45",
           "price": 51.8
+        },
+        {
+          "time": "10:00",
+          "price": 51.8
+        },
+        {
+          "time": "10:15",
+          "price": 51.8
+        },
+        {
+          "time": "10:30",
+          "price": 51.4
+        },
+        {
+          "time": "10:45",
+          "price": 51.4
+        },
+        {
+          "time": "11:00",
+          "price": 51.3
+        },
+        {
+          "time": "11:15",
+          "price": 51.4
+        },
+        {
+          "time": "11:30",
+          "price": 51.6
+        },
+        {
+          "time": "11:45",
+          "price": 51.4
+        },
+        {
+          "time": "12:00",
+          "price": 51.5
+        },
+        {
+          "time": "12:15",
+          "price": 51.2
+        },
+        {
+          "time": "12:30",
+          "price": 51.2
+        },
+        {
+          "time": "12:45",
+          "price": 51.6
+        },
+        {
+          "time": "13:00",
+          "price": 51.5
+        },
+        {
+          "time": "13:15",
+          "price": 51.7
         }
       ]
     },
     "2303": {
       "symbol": "2303",
       "name": "UNITED MICRO ELECTRONICS",
-      "price": 124.0,
+      "price": 121.0,
       "basePrice": 131.5,
-      "change": -7.5,
-      "changePercent": -5.7,
-      "volume": 119605437,
+      "change": -10.5,
+      "changePercent": -7.98,
+      "volume": 318113451,
       "history": [
         {
           "time": "09:00",
@@ -2131,7 +3867,63 @@
         },
         {
           "time": "09:45",
+          "price": 123.5
+        },
+        {
+          "time": "10:00",
           "price": 124.0
+        },
+        {
+          "time": "10:15",
+          "price": 124.0
+        },
+        {
+          "time": "10:30",
+          "price": 122.0
+        },
+        {
+          "time": "10:45",
+          "price": 121.5
+        },
+        {
+          "time": "11:00",
+          "price": 121.0
+        },
+        {
+          "time": "11:15",
+          "price": 121.5
+        },
+        {
+          "time": "11:30",
+          "price": 122.0
+        },
+        {
+          "time": "11:45",
+          "price": 121.0
+        },
+        {
+          "time": "12:00",
+          "price": 121.0
+        },
+        {
+          "time": "12:15",
+          "price": 120.0
+        },
+        {
+          "time": "12:30",
+          "price": 120.5
+        },
+        {
+          "time": "12:45",
+          "price": 121.0
+        },
+        {
+          "time": "13:00",
+          "price": 121.0
+        },
+        {
+          "time": "13:15",
+          "price": 121.0
         }
       ]
     },
@@ -2142,7 +3934,7 @@
       "basePrice": 53.7,
       "change": -5.35,
       "changePercent": -9.96,
-      "volume": 43433975,
+      "volume": 88193946,
       "history": [
         {
           "time": "09:00",
@@ -2158,6 +3950,62 @@
         },
         {
           "time": "09:45",
+          "price": 48.35
+        },
+        {
+          "time": "10:00",
+          "price": 48.35
+        },
+        {
+          "time": "10:15",
+          "price": 48.35
+        },
+        {
+          "time": "10:30",
+          "price": 48.35
+        },
+        {
+          "time": "10:45",
+          "price": 48.35
+        },
+        {
+          "time": "11:00",
+          "price": 48.35
+        },
+        {
+          "time": "11:15",
+          "price": 48.35
+        },
+        {
+          "time": "11:30",
+          "price": 48.35
+        },
+        {
+          "time": "11:45",
+          "price": 48.35
+        },
+        {
+          "time": "12:00",
+          "price": 48.35
+        },
+        {
+          "time": "12:15",
+          "price": 48.35
+        },
+        {
+          "time": "12:30",
+          "price": 48.35
+        },
+        {
+          "time": "12:45",
+          "price": 48.35
+        },
+        {
+          "time": "13:00",
+          "price": 48.35
+        },
+        {
+          "time": "13:15",
           "price": 48.35
         }
       ]
@@ -2169,7 +4017,7 @@
       "basePrice": 27.1,
       "change": -2.7,
       "changePercent": -9.96,
-      "volume": 40888192,
+      "volume": 67646152,
       "history": [
         {
           "time": "09:00",
@@ -2186,17 +4034,73 @@
         {
           "time": "09:45",
           "price": 24.4
+        },
+        {
+          "time": "10:00",
+          "price": 24.4
+        },
+        {
+          "time": "10:15",
+          "price": 24.4
+        },
+        {
+          "time": "10:30",
+          "price": 24.4
+        },
+        {
+          "time": "10:45",
+          "price": 24.4
+        },
+        {
+          "time": "11:00",
+          "price": 24.4
+        },
+        {
+          "time": "11:15",
+          "price": 24.4
+        },
+        {
+          "time": "11:30",
+          "price": 24.4
+        },
+        {
+          "time": "11:45",
+          "price": 24.4
+        },
+        {
+          "time": "12:00",
+          "price": 24.4
+        },
+        {
+          "time": "12:15",
+          "price": 24.4
+        },
+        {
+          "time": "12:30",
+          "price": 24.4
+        },
+        {
+          "time": "12:45",
+          "price": 24.4
+        },
+        {
+          "time": "13:00",
+          "price": 24.4
+        },
+        {
+          "time": "13:15",
+          "price": 24.4
         }
       ]
     },
     "2891": {
       "symbol": "2891",
       "name": "CTBC FINANCIAL HOLDINGS COMPANY",
-      "price": 65.3,
+      "price": 65.4,
       "basePrice": 66.6,
-      "change": -1.3,
-      "changePercent": -1.95,
-      "volume": 15964564,
+      "change": -1.2,
+      "changePercent": -1.8,
+      "volume": 46227602,
       "history": [
         {
           "time": "09:00",
@@ -2212,18 +4116,74 @@
         },
         {
           "time": "09:45",
+          "price": 65.4
+        },
+        {
+          "time": "10:00",
+          "price": 65.6
+        },
+        {
+          "time": "10:15",
+          "price": 65.9
+        },
+        {
+          "time": "10:30",
+          "price": 66.5
+        },
+        {
+          "time": "10:45",
+          "price": 66.3
+        },
+        {
+          "time": "11:00",
+          "price": 65.8
+        },
+        {
+          "time": "11:15",
+          "price": 65.8
+        },
+        {
+          "time": "11:30",
+          "price": 65.8
+        },
+        {
+          "time": "11:45",
+          "price": 65.5
+        },
+        {
+          "time": "12:00",
+          "price": 65.2
+        },
+        {
+          "time": "12:15",
+          "price": 65.1
+        },
+        {
+          "time": "12:30",
+          "price": 65.1
+        },
+        {
+          "time": "12:45",
           "price": 65.3
+        },
+        {
+          "time": "13:00",
+          "price": 65.6
+        },
+        {
+          "time": "13:15",
+          "price": 65.7
         }
       ]
     },
     "2892": {
       "symbol": "2892",
       "name": "FIRST FINANCIAL HOLDING CO LTD",
-      "price": 28.75,
+      "price": 29.1,
       "basePrice": 29.3,
-      "change": -0.55,
-      "changePercent": -1.88,
-      "volume": 22205531,
+      "change": -0.2,
+      "changePercent": -0.68,
+      "volume": 50936438,
       "history": [
         {
           "time": "09:00",
@@ -2239,7 +4199,63 @@
         },
         {
           "time": "09:45",
+          "price": 28.8
+        },
+        {
+          "time": "10:00",
+          "price": 28.7
+        },
+        {
+          "time": "10:15",
           "price": 28.75
+        },
+        {
+          "time": "10:30",
+          "price": 28.85
+        },
+        {
+          "time": "10:45",
+          "price": 28.85
+        },
+        {
+          "time": "11:00",
+          "price": 28.85
+        },
+        {
+          "time": "11:15",
+          "price": 28.85
+        },
+        {
+          "time": "11:30",
+          "price": 28.95
+        },
+        {
+          "time": "11:45",
+          "price": 28.95
+        },
+        {
+          "time": "12:00",
+          "price": 28.9
+        },
+        {
+          "time": "12:15",
+          "price": 28.85
+        },
+        {
+          "time": "12:30",
+          "price": 28.95
+        },
+        {
+          "time": "12:45",
+          "price": 28.9
+        },
+        {
+          "time": "13:00",
+          "price": 29.1
+        },
+        {
+          "time": "13:15",
+          "price": 29.05
         }
       ]
     },
@@ -2250,7 +4266,7 @@
       "basePrice": 19.3,
       "change": -0.65,
       "changePercent": -3.37,
-      "volume": 55600069,
+      "volume": 112943175,
       "history": [
         {
           "time": "09:00",
@@ -2267,17 +4283,73 @@
         {
           "time": "09:45",
           "price": 18.65
+        },
+        {
+          "time": "10:00",
+          "price": 18.65
+        },
+        {
+          "time": "10:15",
+          "price": 18.7
+        },
+        {
+          "time": "10:30",
+          "price": 18.7
+        },
+        {
+          "time": "10:45",
+          "price": 18.7
+        },
+        {
+          "time": "11:00",
+          "price": 18.65
+        },
+        {
+          "time": "11:15",
+          "price": 18.65
+        },
+        {
+          "time": "11:30",
+          "price": 18.75
+        },
+        {
+          "time": "11:45",
+          "price": 18.75
+        },
+        {
+          "time": "12:00",
+          "price": 18.7
+        },
+        {
+          "time": "12:15",
+          "price": 18.7
+        },
+        {
+          "time": "12:30",
+          "price": 18.75
+        },
+        {
+          "time": "12:45",
+          "price": 18.65
+        },
+        {
+          "time": "13:00",
+          "price": 18.7
+        },
+        {
+          "time": "13:15",
+          "price": 18.65
         }
       ]
     },
     "2352": {
       "symbol": "2352",
       "name": "QISDA CORPORATION",
-      "price": 29.1,
+      "price": 30.1,
       "basePrice": 31.1,
-      "change": -2.0,
-      "changePercent": -6.43,
-      "volume": 7961013,
+      "change": -1.0,
+      "changePercent": -3.22,
+      "volume": 15894403,
       "history": [
         {
           "time": "09:00",
@@ -2293,18 +4365,74 @@
         },
         {
           "time": "09:45",
-          "price": 29.1
+          "price": 29.5
+        },
+        {
+          "time": "10:00",
+          "price": 29.7
+        },
+        {
+          "time": "10:15",
+          "price": 29.85
+        },
+        {
+          "time": "10:30",
+          "price": 29.8
+        },
+        {
+          "time": "10:45",
+          "price": 30.0
+        },
+        {
+          "time": "11:00",
+          "price": 29.9
+        },
+        {
+          "time": "11:15",
+          "price": 29.95
+        },
+        {
+          "time": "11:30",
+          "price": 30.15
+        },
+        {
+          "time": "11:45",
+          "price": 30.05
+        },
+        {
+          "time": "12:00",
+          "price": 30.0
+        },
+        {
+          "time": "12:15",
+          "price": 29.9
+        },
+        {
+          "time": "12:30",
+          "price": 29.95
+        },
+        {
+          "time": "12:45",
+          "price": 30.05
+        },
+        {
+          "time": "13:00",
+          "price": 30.0
+        },
+        {
+          "time": "13:15",
+          "price": 30.15
         }
       ]
     },
     "2324": {
       "symbol": "2324",
       "name": "COMPAL ELECTRONICS INC",
-      "price": 37.3,
+      "price": 38.6,
       "basePrice": 41.4,
-      "change": -4.1,
-      "changePercent": -9.9,
-      "volume": 67248154,
+      "change": -2.8,
+      "changePercent": -6.76,
+      "volume": 152077957,
       "history": [
         {
           "time": "09:00",
@@ -2320,18 +4448,74 @@
         },
         {
           "time": "09:45",
-          "price": 37.3
+          "price": 37.4
+        },
+        {
+          "time": "10:00",
+          "price": 37.5
+        },
+        {
+          "time": "10:15",
+          "price": 37.6
+        },
+        {
+          "time": "10:30",
+          "price": 37.7
+        },
+        {
+          "time": "10:45",
+          "price": 37.85
+        },
+        {
+          "time": "11:00",
+          "price": 37.95
+        },
+        {
+          "time": "11:15",
+          "price": 38.2
+        },
+        {
+          "time": "11:30",
+          "price": 38.3
+        },
+        {
+          "time": "11:45",
+          "price": 38.35
+        },
+        {
+          "time": "12:00",
+          "price": 38.35
+        },
+        {
+          "time": "12:15",
+          "price": 38.3
+        },
+        {
+          "time": "12:30",
+          "price": 38.35
+        },
+        {
+          "time": "12:45",
+          "price": 38.6
+        },
+        {
+          "time": "13:00",
+          "price": 38.85
+        },
+        {
+          "time": "13:15",
+          "price": 38.85
         }
       ]
     },
     "2357": {
       "symbol": "2357",
       "name": "ASUSTEK COMPUTER INC",
-      "price": 824.0,
+      "price": 844.0,
       "basePrice": 900.0,
-      "change": -76.0,
-      "changePercent": -8.44,
-      "volume": 2995232,
+      "change": -56.0,
+      "changePercent": -6.22,
+      "volume": 7297506,
       "history": [
         {
           "time": "09:00",
@@ -2347,18 +4531,74 @@
         },
         {
           "time": "09:45",
-          "price": 824.0
+          "price": 830.0
+        },
+        {
+          "time": "10:00",
+          "price": 835.0
+        },
+        {
+          "time": "10:15",
+          "price": 842.0
+        },
+        {
+          "time": "10:30",
+          "price": 844.0
+        },
+        {
+          "time": "10:45",
+          "price": 844.0
+        },
+        {
+          "time": "11:00",
+          "price": 838.0
+        },
+        {
+          "time": "11:15",
+          "price": 845.0
+        },
+        {
+          "time": "11:30",
+          "price": 851.0
+        },
+        {
+          "time": "11:45",
+          "price": 848.0
+        },
+        {
+          "time": "12:00",
+          "price": 846.0
+        },
+        {
+          "time": "12:15",
+          "price": 840.0
+        },
+        {
+          "time": "12:30",
+          "price": 838.0
+        },
+        {
+          "time": "12:45",
+          "price": 844.0
+        },
+        {
+          "time": "13:00",
+          "price": 847.0
+        },
+        {
+          "time": "13:15",
+          "price": 849.0
         }
       ]
     },
     "2890": {
       "symbol": "2890",
       "name": "SINOPAC FINANCIAL HLDGS CO LTD",
-      "price": 31.55,
+      "price": 31.9,
       "basePrice": 32.7,
-      "change": -1.15,
-      "changePercent": -3.52,
-      "volume": 17245807,
+      "change": -0.8,
+      "changePercent": -2.45,
+      "volume": 45157880,
       "history": [
         {
           "time": "09:00",
@@ -2374,18 +4614,74 @@
         },
         {
           "time": "09:45",
-          "price": 31.55
+          "price": 31.6
+        },
+        {
+          "time": "10:00",
+          "price": 31.6
+        },
+        {
+          "time": "10:15",
+          "price": 31.5
+        },
+        {
+          "time": "10:30",
+          "price": 31.75
+        },
+        {
+          "time": "10:45",
+          "price": 31.7
+        },
+        {
+          "time": "11:00",
+          "price": 31.6
+        },
+        {
+          "time": "11:15",
+          "price": 31.65
+        },
+        {
+          "time": "11:30",
+          "price": 31.7
+        },
+        {
+          "time": "11:45",
+          "price": 31.7
+        },
+        {
+          "time": "12:00",
+          "price": 31.75
+        },
+        {
+          "time": "12:15",
+          "price": 31.7
+        },
+        {
+          "time": "12:30",
+          "price": 31.7
+        },
+        {
+          "time": "12:45",
+          "price": 31.75
+        },
+        {
+          "time": "13:00",
+          "price": 31.85
+        },
+        {
+          "time": "13:15",
+          "price": 31.95
         }
       ]
     },
     "2886": {
       "symbol": "2886",
       "name": "MEGA FINANCIAL HOLDING CO",
-      "price": 41.05,
+      "price": 41.2,
       "basePrice": 41.95,
-      "change": -0.9,
-      "changePercent": -2.15,
-      "volume": 8882243,
+      "change": -0.75,
+      "changePercent": -1.79,
+      "volume": 29323603,
       "history": [
         {
           "time": "09:00",
@@ -2401,18 +4697,74 @@
         },
         {
           "time": "09:45",
+          "price": 41.2
+        },
+        {
+          "time": "10:00",
+          "price": 41.15
+        },
+        {
+          "time": "10:15",
+          "price": 41.0
+        },
+        {
+          "time": "10:30",
+          "price": 41.15
+        },
+        {
+          "time": "10:45",
           "price": 41.05
+        },
+        {
+          "time": "11:00",
+          "price": 41.05
+        },
+        {
+          "time": "11:15",
+          "price": 40.95
+        },
+        {
+          "time": "11:30",
+          "price": 41.1
+        },
+        {
+          "time": "11:45",
+          "price": 41.15
+        },
+        {
+          "time": "12:00",
+          "price": 41.2
+        },
+        {
+          "time": "12:15",
+          "price": 41.15
+        },
+        {
+          "time": "12:30",
+          "price": 41.15
+        },
+        {
+          "time": "12:45",
+          "price": 41.25
+        },
+        {
+          "time": "13:00",
+          "price": 41.4
+        },
+        {
+          "time": "13:15",
+          "price": 41.4
         }
       ]
     },
     "1303": {
       "symbol": "1303",
       "name": "NAN YA PLASTIC",
-      "price": 96.2,
+      "price": 97.5,
       "basePrice": 104.5,
-      "change": -8.3,
-      "changePercent": -7.94,
-      "volume": 23678307,
+      "change": -7.0,
+      "changePercent": -6.7,
+      "volume": 55565224,
       "history": [
         {
           "time": "09:00",
@@ -2428,18 +4780,74 @@
         },
         {
           "time": "09:45",
-          "price": 96.2
+          "price": 97.0
+        },
+        {
+          "time": "10:00",
+          "price": 97.9
+        },
+        {
+          "time": "10:15",
+          "price": 98.2
+        },
+        {
+          "time": "10:30",
+          "price": 98.0
+        },
+        {
+          "time": "10:45",
+          "price": 97.6
+        },
+        {
+          "time": "11:00",
+          "price": 97.4
+        },
+        {
+          "time": "11:15",
+          "price": 98.0
+        },
+        {
+          "time": "11:30",
+          "price": 98.5
+        },
+        {
+          "time": "11:45",
+          "price": 98.0
+        },
+        {
+          "time": "12:00",
+          "price": 98.1
+        },
+        {
+          "time": "12:15",
+          "price": 97.6
+        },
+        {
+          "time": "12:30",
+          "price": 97.5
+        },
+        {
+          "time": "12:45",
+          "price": 97.5
+        },
+        {
+          "time": "13:00",
+          "price": 97.5
+        },
+        {
+          "time": "13:15",
+          "price": 97.7
         }
       ]
     },
     "1301": {
       "symbol": "1301",
       "name": "FORMOSA PLASTIC",
-      "price": 45.45,
+      "price": 45.85,
       "basePrice": 48.9,
-      "change": -3.45,
-      "changePercent": -7.06,
-      "volume": 18892686,
+      "change": -3.05,
+      "changePercent": -6.24,
+      "volume": 32789165,
       "history": [
         {
           "time": "09:00",
@@ -2455,10 +4863,66 @@
         },
         {
           "time": "09:45",
-          "price": 45.45
+          "price": 45.5
+        },
+        {
+          "time": "10:00",
+          "price": 45.65
+        },
+        {
+          "time": "10:15",
+          "price": 45.65
+        },
+        {
+          "time": "10:30",
+          "price": 45.7
+        },
+        {
+          "time": "10:45",
+          "price": 45.65
+        },
+        {
+          "time": "11:00",
+          "price": 45.6
+        },
+        {
+          "time": "11:15",
+          "price": 45.7
+        },
+        {
+          "time": "11:30",
+          "price": 45.8
+        },
+        {
+          "time": "11:45",
+          "price": 45.6
+        },
+        {
+          "time": "12:00",
+          "price": 45.6
+        },
+        {
+          "time": "12:15",
+          "price": 45.55
+        },
+        {
+          "time": "12:30",
+          "price": 45.55
+        },
+        {
+          "time": "12:45",
+          "price": 45.6
+        },
+        {
+          "time": "13:00",
+          "price": 45.7
+        },
+        {
+          "time": "13:15",
+          "price": 45.8
         }
       ]
     }
   },
-  "updatedAt": "2026-06-08T02:12:01.884324Z"
+  "updatedAt": "2026-06-08T07:02:20.303541Z"
 }

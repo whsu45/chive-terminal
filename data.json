@@ -1667,11 +1667,11 @@
     {
       "symbol": "NVDA",
       "name": "NVIDIA Corporation",
-      "price": 207.28,
+      "price": 208.1,
       "basePrice": 205.1,
-      "change": 2.18,
-      "changePercent": 1.06,
-      "volume": 42554259,
+      "change": 3.0,
+      "changePercent": 1.46,
+      "volume": 47897040,
       "history": [
         {
           "time": "09:30",
@@ -1687,18 +1687,22 @@
         },
         {
           "time": "10:15",
-          "price": 207.3
+          "price": 207.82
+        },
+        {
+          "time": "10:30",
+          "price": 208.09
         }
       ]
     },
     {
       "symbol": "AMD",
       "name": "Advanced Micro Devices, Inc.",
-      "price": 484.57,
+      "price": 488.35,
       "basePrice": 466.38,
-      "change": 18.19,
-      "changePercent": 3.9,
-      "volume": 7528044,
+      "change": 21.97,
+      "changePercent": 4.71,
+      "volume": 8635280,
       "history": [
         {
           "time": "09:30",
@@ -1714,18 +1718,22 @@
         },
         {
           "time": "10:15",
-          "price": 484.58
+          "price": 487.03
+        },
+        {
+          "time": "10:30",
+          "price": 488.35
         }
       ]
     },
     {
       "symbol": "MSFT",
       "name": "Microsoft Corporation",
-      "price": 412.73,
+      "price": 412.49,
       "basePrice": 416.67,
-      "change": -3.94,
-      "changePercent": -0.95,
-      "volume": 6559998,
+      "change": -4.18,
+      "changePercent": -1.0,
+      "volume": 7594460,
       "history": [
         {
           "time": "09:30",
@@ -1741,18 +1749,22 @@
         },
         {
           "time": "10:15",
-          "price": 412.67
+          "price": 412.73
+        },
+        {
+          "time": "10:30",
+          "price": 412.46
         }
       ]
     },
     {
       "symbol": "GOOGL",
       "name": "Alphabet Inc.",
-      "price": 361.22,
+      "price": 360.94,
       "basePrice": 368.53,
-      "change": -7.31,
-      "changePercent": -1.98,
-      "volume": 6333231,
+      "change": -7.59,
+      "changePercent": -2.06,
+      "volume": 7265811,
       "history": [
         {
           "time": "09:30",
@@ -1768,18 +1780,22 @@
         },
         {
           "time": "10:15",
-          "price": 361.22
+          "price": 361.61
+        },
+        {
+          "time": "10:30",
+          "price": 360.93
         }
       ]
     },
     {
       "symbol": "META",
       "name": "Meta Platforms, Inc.",
-      "price": 589.1,
+      "price": 587.88,
       "basePrice": 593.0,
-      "change": -3.9,
-      "changePercent": -0.66,
-      "volume": 4208406,
+      "change": -5.12,
+      "changePercent": -0.86,
+      "volume": 4884953,
       "history": [
         {
           "time": "09:30",
@@ -1795,18 +1811,22 @@
         },
         {
           "time": "10:15",
-          "price": 588.85
+          "price": 588.23
+        },
+        {
+          "time": "10:30",
+          "price": 587.88
         }
       ]
     },
     {
       "symbol": "AVGO",
       "name": "Broadcom Inc.",
-      "price": 394.54,
+      "price": 396.2,
       "basePrice": 385.73,
-      "change": 8.81,
-      "changePercent": 2.28,
-      "volume": 9040925,
+      "change": 10.47,
+      "changePercent": 2.71,
+      "volume": 10156171,
       "history": [
         {
           "time": "09:30",
@@ -1822,18 +1842,22 @@
         },
         {
           "time": "10:15",
-          "price": 394.52
+          "price": 395.16
+        },
+        {
+          "time": "10:30",
+          "price": 396.3
         }
       ]
     },
     {
       "symbol": "TSM",
       "name": "Taiwan Semiconductor Manufactur",
-      "price": 427.19,
+      "price": 429.68,
       "basePrice": 415.17,
-      "change": 12.02,
-      "changePercent": 2.9,
-      "volume": 4663640,
+      "change": 14.51,
+      "changePercent": 3.49,
+      "volume": 5212440,
       "history": [
         {
           "time": "09:30",
@@ -1849,18 +1873,22 @@
         },
         {
           "time": "10:15",
-          "price": 427.2
+          "price": 428.48
+        },
+        {
+          "time": "10:30",
+          "price": 429.68
         }
       ]
     },
     {
       "symbol": "SMCI",
       "name": "Super Micro Computer, Inc.",
-      "price": 42.68,
+      "price": 42.57,
       "basePrice": 41.64,
-      "change": 1.04,
-      "changePercent": 2.5,
-      "volume": 10230682,
+      "change": 0.93,
+      "changePercent": 2.23,
+      "volume": 11559161,
       "history": [
         {
           "time": "09:30",
@@ -1876,18 +1904,22 @@
         },
         {
           "time": "10:15",
-          "price": 42.68
+          "price": 42.53
+        },
+        {
+          "time": "10:30",
+          "price": 42.57
         }
       ]
     },
     {
       "symbol": "PLTR",
       "name": "Palantir Technologies Inc.",
-      "price": 137.1,
+      "price": 136.69,
       "basePrice": 135.53,
-      "change": 1.57,
-      "changePercent": 1.16,
-      "volume": 7574175,
+      "change": 1.16,
+      "changePercent": 0.85,
+      "volume": 8631362,
       "history": [
         {
           "time": "09:30",
@@ -1903,18 +1935,22 @@
         },
         {
           "time": "10:15",
-          "price": 137.08
+          "price": 137.13
+        },
+        {
+          "time": "10:30",
+          "price": 136.68
         }
       ]
     },
     {
       "symbol": "AMZN",
       "name": "Amazon.com, Inc.",
-      "price": 246.41,
+      "price": 246.57,
       "basePrice": 246.03,
-      "change": 0.38,
-      "changePercent": 0.15,
-      "volume": 7327661,
+      "change": 0.54,
+      "changePercent": 0.22,
+      "volume": 8730635,
       "history": [
         {
           "time": "09:30",
@@ -1930,7 +1966,11 @@
         },
         {
           "time": "10:15",
-          "price": 246.41
+          "price": 246.81
+        },
+        {
+          "time": "10:30",
+          "price": 246.57
         }
       ]
     }
@@ -1938,11 +1978,11 @@
   "nasdaq": {
     "symbol": "NASDAQ",
     "name": "NASDAQ Composite",
-    "price": 25979.43,
+    "price": 26040.52,
     "basePrice": 25709.43,
-    "change": 270.0,
-    "changePercent": 1.05,
-    "volume": 2728319000,
+    "change": 331.09,
+    "changePercent": 1.29,
+    "volume": 3191532000,
     "history": [
       {
         "time": "09:30",
@@ -1958,7 +1998,11 @@
       },
       {
         "time": "10:15",
-        "price": 25974.66
+        "price": 26017.04
+      },
+      {
+        "time": "10:30",
+        "price": 26040.52
       }
     ]
   },
@@ -3956,5 +4000,5 @@
       ]
     }
   },
-  "updatedAt": "2026-06-08T14:24:44.646863Z"
+  "updatedAt": "2026-06-08T14:42:33.717434Z"
 }

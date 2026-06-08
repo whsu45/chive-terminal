@@ -30,7 +30,7 @@
 
         <!-- Dynamic Clock Bar -->
         <div class="flex flex-wrap items-center gap-4 text-xs font-mono">
-          <!-- Dynamic Viewport Override Selector (Mobile View vs Desktop View) -->
+          <!-- Dynamic Viewport Override Selector -->
           <div class="bg-slate-900 border border-slate-800 rounded-lg p-1.5 flex items-center gap-1.5">
             <i data-lucide="monitor" class="h-4 w-4 text-slate-400"></i>
             <span id="view-label" class="text-slate-500 font-sans text-[11px] hidden sm:inline">版面配置:</span>
@@ -484,7 +484,6 @@
       document.getElementById('updating-label').innerText = dict.updating;
       document.getElementById('view-label').innerText = dict.viewLabel;
 
-      // Translate View mode selector options
       const viewSelector = document.getElementById('view-selector');
       viewSelector.options[0].text = dict.mobileView;
       viewSelector.options[1].text = dict.desktopView;
@@ -520,7 +519,6 @@
       document.getElementById('empty-msg').innerText = dict.emptyMsg;
       document.getElementById('watchlist-monitor-title').innerText = dict.watchlistMonitor;
 
-      // Update actual browser document title bar based on active state
       document.title = currentLang === 'zh' ? '全球量化金融分析儀表板' : 'Global Financial Analytics Dashboard';
 
       const renderHeaders = (elementId) => {
@@ -613,6 +611,49 @@
     let stateAI = [];
     let stateNasdaq = { name: "NASDAQ", history: [] };
     let selectedSymbols = ["2330", "2454", "2317", "2308", "2382"];
+
+    // --- High-Performance Cross-Browser Safe Timezone Core ---
+    function getTimezoneTime(tz) {
+      const options = {
+        timeZone: tz,
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        hour12: false
+      };
+      const formatter = new Intl.DateTimeFormat('en-US', options);
+      const parts = formatter.formatToParts(new Date());
+      const map = {};
+      parts.forEach(p => map[p.type] = p.value);
+
+      const year = parseInt(map.year, 10);
+      const month = parseInt(map.month, 10) - 1;
+      const dayVal = parseInt(map.day, 10);
+      const hour = parseInt(map.hour, 10);
+      const minute = parseInt(map.minute, 10);
+      const second = parseInt(map.second, 10);
+
+      const localDate = new Date(year, month, dayVal, hour, minute, second);
+      const dayOfWeek = localDate.getDay();
+
+      const pad = (n) => String(n).padStart(2, '0');
+      const timeString = `${pad(hour)}:${pad(minute)}:${pad(second)}`;
+
+      return { dayOfWeek, hour, minute, timeString };
+    }
+
+    function getTaiwanMarketStatus() {
+      const details = getTimezoneTime("Asia/Taipei");
+      const mins = details.hour * 60 + details.minute;
+      const isOpen = (details.dayOfWeek >= 1 && details.dayOfWeek <= 6) && (mins >= 540 && mins <= 900); // 8:00 AM - 15:00
+      return { isOpen, timeString: details.timeString };
+    }
+
+    function getUSMarketStatus() {
+      const details = getTimezoneTime("America/New_York");
+      const mins = details.hour * 60 + details.minute;
+      const isOpen = (details.dayOfWeek >= 1 && details.dayOfWeek <= 5) && (mins >= 570 && mins <= 960); // Mon-Fri 09:30 - 16:00
+      return { isOpen, timeString: details.timeString };
+    }
 
     function generateIntradayHistoryFromOHLC(open, high, low, close) {
       const p0 = open;
@@ -912,7 +953,6 @@
 
       const isDesktop = currentViewMode === 'desktop';
 
-      // Overriding UI grid classes on Mobile when user forces desktop layouts
       if (isDesktop) {
         grid.className = "grid grid-cols-5 gap-4 min-w-[1024px] pb-2";
         grid.parentElement.className = "overflow-x-auto scrollbar-thin";
@@ -921,7 +961,6 @@
         grid.parentElement.className = "";
       }
 
-      // Overriding standard responsive table scrolling classes
       const tableWrapper = tbody.closest('.overflow-x-auto');
       if (tableWrapper) {
         if (isDesktop) {
@@ -941,7 +980,6 @@
           const yfUrl = getYahooFinanceUrl(stock.symbol);
 
           const card = document.createElement('div');
-          // Clicking stock cards redirects safely to Yahoo Finance
           card.className = "bg-slate-800/40 border border-slate-700/30 rounded-xl p-4 flex flex-col justify-between hover:border-slate-500 hover:bg-slate-800/60 cursor-pointer transition-all duration-200";
           card.setAttribute('onclick', `window.open('${yfUrl}', '_blank')`);
 
@@ -1001,7 +1039,6 @@
         const yfUrl = getYahooFinanceUrl(stock.symbol);
 
         const tr = document.createElement('tr');
-        // Clicking table row triggers safe Yahoo Finance redirection
         tr.className = "hover:bg-slate-800/40 cursor-pointer transition-colors border-b border-slate-800/50";
         tr.setAttribute('onclick', `window.open('${yfUrl}', '_blank')`);
 
@@ -1168,10 +1205,14 @@
       lucide.createIcons();
       initLanguage();
       initViewMode();
-      await syncRealMarketPrices();
+
+      // Initialize current timezone clocks immediately on load to avoid temporary blank values
       runGlobalTimeTracker();
       launchPollingTickers();
       switchTab(1);
+
+      // Fetch network data asynchronously
+      await syncRealMarketPrices();
     }
 
     window.onload = boot;

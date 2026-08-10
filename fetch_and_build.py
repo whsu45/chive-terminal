@@ -55,6 +55,7 @@ def clean_float(text):
 
 
 def fetch_night_market_data(session, target_date_str):
+    """ 抓取夜盤行情 (marketCode = 1) """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '1', 'dateaddcnt': '',
@@ -78,6 +79,7 @@ def fetch_night_market_data(session, target_date_str):
 
 
 def fetch_day_market_volume(session, prev_date_str):
+    """ 抓取一般交易時段 (marketCode = 0) 的日盤成交量 """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '0', 'dateaddcnt': '',
@@ -110,13 +112,13 @@ def fetch_day_market_volume(session, prev_date_str):
 
 
 def fetch_all_institutional_positions(session, target_date_str):
+    """ 抓取三大法人 (外資, 投信, 自營商) 多空淨額 """
     url = "https://www.taifex.com.tw/cht/3/futContractsDate"
     payload = {
         'queryType': '1', 'goDay': '', 'doQuery': '1', 'dateaddcnt': '',
         'queryDate': target_date_str, 'commodityId': 'TXF', 'button': '送出查詢'
     }
     headers = {'User-Agent': 'Mozilla/5.0'}
-
     positions = {"foreign_net": None, "trust_net": None, "dealer_net": None}
 
     try:
@@ -141,6 +143,73 @@ def fetch_all_institutional_positions(session, target_date_str):
         print(f"[{target_date_str}] Institutional position error: {e}")
 
     return positions
+
+
+def fetch_us_indices(session):
+    """
+    抓取美股三大指數 (^DJI 道瓊, ^IXIC 那指, ^SOX 費半) 最近 2 個月的每日數據
+    """
+    symbols = {
+        'DJI': '^DJI',
+        'IXIC': '^IXIC',
+        'SOX': '^SOX'
+    }
+    us_data_by_date = {}
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+
+    for key, symbol in symbols.items():
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=2mo"
+        try:
+            resp = session.get(url, headers=headers, timeout=5)
+            if resp.status_code == 200:
+                res_json = resp.json()
+                result = res_json.get('chart', {}).get('result', [])[0]
+                timestamps = result.get('timestamp', [])
+                quote = result.get('indicators', {}).get('quote', [])[0]
+                closes = quote.get('close', [])
+                opens = quote.get('open', [])
+
+                for idx in range(len(timestamps)):
+                    if idx < len(closes) and closes[idx] is not None:
+                        ts = timestamps[idx]
+                        date_dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+                        date_str = date_dt.strftime("%Y/%m/%d")
+
+                        c_price = closes[idx]
+                        o_price = opens[idx] if idx < len(opens) and opens[idx] is not None else c_price
+                        prev_c = closes[idx - 1] if idx > 0 and closes[idx - 1] is not None else o_price
+
+                        pt_change = c_price - prev_c
+                        pct_change = (pt_change / prev_c) * 100 if prev_c else 0.0
+
+                        pt_str = f"+{pt_change:.0f}" if pt_change > 0 else f"{pt_change:.0f}"
+                        pct_str = f"+{pct_change:.2f}%" if pct_change > 0 else f"{pct_change:.2f}%"
+
+                        if date_str not in us_data_by_date:
+                            us_data_by_date[date_str] = {}
+
+                        us_data_by_date[date_str][key] = {
+                            "pct": pct_str,
+                            "pts": pt_str,
+                            "raw_pct": pct_change
+                        }
+        except Exception as e:
+            print(f"Fetch US index {symbol} error: {e}")
+
+    return us_data_by_date
+
+
+def get_us_info_for_date(us_data_by_date, prev_date_str):
+    """ 美股交易日對應台灣夜盤對應的日期 (即 prev_date_str) """
+    if prev_date_str in us_data_by_date:
+        return us_data_by_date[prev_date_str]
+
+    # 找尋最接近小於等於 prev_date_str 的美股交易日
+    avail = sorted([d for d in us_data_by_date.keys() if d <= prev_date_str], reverse=True)
+    if avail:
+        return us_data_by_date[avail[0]]
+
+    return {}
 
 
 def generate_svg_sparkline(prices):
@@ -205,7 +274,7 @@ def fetch_twse_intraday_taiex(session, target_date_str):
                         "open": open_p, "close": close_p, "high": high_p, "low": low_p,
                         "change_str": change_str,
                         "sparkline_svg": sparkline_svg,
-                        "prices": prices  # 保存完整序列用於計算時間點
+                        "prices": prices
                     }
     except Exception as e:
         print(f"[{target_date_str}] TWSE TAIEX fetch error: {e}")
@@ -219,9 +288,6 @@ def fetch_twse_intraday_taiex(session, target_date_str):
 
 
 def verify_match(scenario, actual_info):
-    """
-    結合開盤、最高、最低、收盤及最高/最低點發生的時間點進行型態驗證
-    """
     open_p = actual_info.get("open")
     close_p = actual_info.get("close")
     high_p = actual_info.get("high")
@@ -235,16 +301,13 @@ def verify_match(scenario, actual_info):
     idx_high = prices.index(high_p)
     idx_low = prices.index(low_p)
 
-    # 計算最高點與最低點出現的時間比例 (0.0 代表 09:00，1.0 代表 13:30)
     high_time_ratio = idx_high / total_pts
     low_time_ratio = idx_low / total_pts
 
     total_range = high_p - low_p if high_p != low_p else 1.0
-    close_position = (close_p - low_p) / total_range  # 收盤價在全天振幅的位置 (0.0 ~ 1.0)
+    close_position = (close_p - low_p) / total_range
+    change = close_p - open_p
 
-    change = close_p - open_p  # 當日漲跌點數 (收盤 - 開盤)
-
-    # 劇本一：漲勢紮實 (開高走高 / 一路走高，收相對高位)
     if scenario == "劇本一":
         if change > 0 and close_position >= 0.4:
             return "✅ 符合 (一路走高)", "bg-red-100 text-red-700 font-bold"
@@ -253,7 +316,6 @@ def verify_match(scenario, actual_info):
         else:
             return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
 
-    # 劇本二：力道不足 (開盤 -> 衝高出現最高點 -> 壓低走下坡，收黑)
     elif scenario == "劇本二":
         if change < 0 and high_time_ratio <= 0.6:
             return "✅ 符合 (開高走低)", "bg-green-100 text-green-700 font-bold"
@@ -262,7 +324,6 @@ def verify_match(scenario, actual_info):
         else:
             return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
 
-    # 劇本三：跌勢延續 (開低走低 / 一路走低，收相對低位)
     elif scenario == "劇本三":
         if change < 0 and close_position <= 0.6:
             return "✅ 符合 (跌勢延續)", "bg-green-100 text-green-700 font-bold"
@@ -271,7 +332,6 @@ def verify_match(scenario, actual_info):
         else:
             return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
 
-    # 劇本四：開低反彈 (開低/打底出現最低點 -> 買盤強勢拉高反彈)
     elif scenario == "劇本四":
         if change > 0 and low_time_ratio <= 0.6:
             return "✅ 符合 (開低反彈)", "bg-red-100 text-red-700 font-bold"
@@ -283,7 +343,7 @@ def verify_match(scenario, actual_info):
     return "NA", "bg-slate-100 text-slate-500"
 
 
-def process_single_date(session, target_date_str, prev_date_str):
+def process_single_date(session, target_date_str, prev_date_str, us_data_by_date):
     data = {
         "date": target_date_str,
         "prev_date": prev_date_str,
@@ -295,6 +355,9 @@ def process_single_date(session, target_date_str, prev_date_str):
         "foreign_net_contracts": "NA",
         "trust_net_contracts": "NA",
         "dealer_net_contracts": "NA",
+        "us_dji": "NA",
+        "us_ixic": "NA",
+        "us_sox": "NA",
         "scenario": "NA",
         "forecast_desc": "數據尚未準備就緒或目前為休市期間 (NA)",
         "trust_signal": "NA",
@@ -308,6 +371,7 @@ def process_single_date(session, target_date_str, prev_date_str):
     day_vol = fetch_day_market_volume(session, prev_date_str)
     inst_positions = fetch_all_institutional_positions(session, target_date_str)
     actual_info = fetch_twse_intraday_taiex(session, target_date_str)
+    us_info = get_us_info_for_date(us_data_by_date, prev_date_str)
 
     if night_vol is not None:
         data["night_vol"] = f"{night_vol:,}"
@@ -340,6 +404,14 @@ def process_single_date(session, target_date_str, prev_date_str):
         data["trust_net_contracts"] = trust_net
     if dealer_net is not None:
         data["dealer_net_contracts"] = dealer_net
+
+    # 填入美股三大指數數據
+    if "DJI" in us_info:
+        data["us_dji"] = us_info["DJI"]["pct"]
+    if "IXIC" in us_info:
+        data["us_ixic"] = us_info["IXIC"]["pct"]
+    if "SOX" in us_info:
+        data["us_sox"] = us_info["SOX"]["pct"]
 
     if night_price_change is not None and foreign_net is not None:
         is_up = night_price_change > 0
@@ -382,20 +454,30 @@ def update_history_json():
             print(f"載入 {JSON_FILE} 失敗: {e}")
 
     session = requests.Session()
+    us_data_by_date = fetch_us_indices(session)  # 抓取美股三大指數數據
     trading_days = get_past_trading_days(count=20)
 
     for target_date_str, prev_date_str in trading_days:
-        # 重新抓取並進行更精準的多點型態驗證
-        print(f"抓取與分析資料：{target_date_str}...")
-        new_record = process_single_date(session, target_date_str, prev_date_str)
-        existing_records[target_date_str] = new_record
+        rec = existing_records.get(target_date_str)
+
+        needs_update = (
+                rec is None or
+                rec.get("verify_status", "尚未驗證") == "尚未驗證" or
+                rec.get("scenario") == "NA" or
+                "us_dji" not in rec  # 補抓舊資料缺少的美股數據
+        )
+
+        if needs_update:
+            print(f"抓取與分析資料：{target_date_str}...")
+            new_record = process_single_date(session, target_date_str, prev_date_str, us_data_by_date)
+            existing_records[target_date_str] = new_record
 
     sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)
 
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(sorted_history, f, ensure_ascii=False, indent=2)
 
-    print(f"成功更新高精度型態驗證歷史紀錄至：{JSON_FILE}")
+    print(f"成功更新含美股三大指數之歷史紀錄至：{JSON_FILE}")
     return sorted_history
 
 
@@ -407,6 +489,16 @@ def format_signed_num(val):
         text = f"+{val:,}" if val > 0 else f"{val:,}"
         return text, color
     return str(val), "text-slate-400"
+
+
+def format_pct_str(val_str):
+    if not val_str or val_str == "NA":
+        return "NA", "text-slate-400"
+    if val_str.startswith("+"):
+        return val_str, "text-red-500 font-semibold"
+    elif val_str.startswith("-"):
+        return val_str, "text-green-500 font-semibold"
+    return val_str, "text-slate-600"
 
 
 def generate_html(history_records):
@@ -438,6 +530,11 @@ def generate_html(history_records):
     t_str, t_color = format_signed_num(latest_data.get('trust_net_contracts'))
     d_str, d_color = format_signed_num(latest_data.get('dealer_net_contracts'))
 
+    # 最新美股格式化
+    latest_dji, latest_dji_c = format_pct_str(latest_data.get('us_dji'))
+    latest_ixic, latest_ixic_c = format_pct_str(latest_data.get('us_ixic'))
+    latest_sox, latest_sox_c = format_pct_str(latest_data.get('us_sox'))
+
     history_rows_html = ""
     for item in history_records[:20]:
         change_str = str(item['night_price_change'])
@@ -450,6 +547,11 @@ def generate_html(history_records):
         hf_str, hf_color = format_signed_num(item.get('foreign_net_contracts'))
         ht_str, ht_color = format_signed_num(item.get('trust_net_contracts'))
         hd_str, hd_color = format_signed_num(item.get('dealer_net_contracts'))
+
+        # 歷史美股指數格式化
+        hdji, hdji_c = format_pct_str(item.get('us_dji'))
+        hixic, hixic_c = format_pct_str(item.get('us_ixic'))
+        hsox, hsox_c = format_pct_str(item.get('us_sox'))
 
         s_badge = "bg-slate-100 text-slate-600"
         if item['scenario'] == '劇本一':
@@ -480,6 +582,14 @@ def generate_html(history_records):
                     <div><span class="text-slate-400">自營:</span> <span class="{hd_color}">{hd_str}</span></div>
                 </div>
             </td>
+            <!-- 新增：美股三大指數歷史欄位 -->
+            <td class="py-3 px-4">
+                <div class="text-xs space-y-0.5">
+                    <div><span class="text-slate-400">道瓊:</span> <span class="{hdji_c}">{hdji}</span></div>
+                    <div><span class="text-slate-400">那指:</span> <span class="{hixic_c}">{hixic}</span></div>
+                    <div><span class="text-slate-400">費半:</span> <span class="{hsox_c}">{hsox}</span></div>
+                </div>
+            </td>
             <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {s_badge}">{item['scenario']}</span></td>
             <td class="py-3 px-4 text-center">{item.get('sparkline_svg', '')}<div class="text-[11px] {act_color} mt-0.5">{act_change}</div></td>
             <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {item.get('verify_badge_class', 'bg-slate-100')}">{item.get('verify_status', 'NA')}</span></td>
@@ -495,7 +605,7 @@ def generate_html(history_records):
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
-    <div class="max-w-6xl mx-auto space-y-6">
+    <div class="max-w-7xl mx-auto space-y-6">
 
         <!-- Header -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
@@ -511,16 +621,18 @@ def generate_html(history_records):
             </div>
         </div>
 
-        <!-- 三大指標數據卡片 -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- 四大核心指標卡片 Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- 1. 夜盤漲跌 -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">1. 夜盤漲跌點數</span>
                 <div class="text-3xl font-extrabold mt-2 {price_color_class}">
                     {latest_data['night_price_change']}
                 </div>
-                <p class="text-xs text-slate-400 mt-2">關鍵門檻：超過 ±300 點代表預期大變</p>
+                <p class="text-xs text-slate-400 mt-2">門檻：超過 ±300 點代表預期大變</p>
             </div>
 
+            <!-- 2. 夜盤量佔比 -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">2. 夜盤量佔比</span>
                 <div class="text-3xl font-extrabold text-slate-800 mt-2">
@@ -532,16 +644,37 @@ def generate_html(history_records):
                 </div>
             </div>
 
+            <!-- 3. 三大法人 -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">3. 三大法人多空淨額</span>
                 <div class="text-3xl font-extrabold text-slate-800 mt-2">
                     <span class="{f_color}">{f_str}</span> <span class="text-sm font-normal text-slate-500">口 (外資)</span>
                 </div>
-                <p class="text-xs text-slate-400 mt-1">劇本對照關鍵門檻：超過 ±1,000 口</p>
+                <p class="text-xs text-slate-400 mt-1">關鍵門檻：超過 ±1,000 口</p>
                 <div class="mt-2 pt-2 border-t border-slate-100 flex justify-between text-xs text-slate-500">
                     <div>投信: <span class="{t_color} font-medium">{t_str}</span></div>
                     <div>自營: <span class="{d_color} font-medium">{d_str}</span></div>
                 </div>
+            </div>
+
+            <!-- 4. 新增：美股三大指數卡片 -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">4. 美股三大指數 (對應夜盤)</span>
+                <div class="mt-2 space-y-1">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-500 font-medium">道瓊 (DJI):</span>
+                        <span class="{latest_dji_c}">{latest_dji}</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-500 font-medium">NASDAQ:</span>
+                        <span class="{latest_ixic_c}">{latest_ixic}</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-500 font-medium">費半 (SOX):</span>
+                        <span class="{latest_sox_c}">{latest_sox}</span>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-2">同夜盤時段美股收盤表現</p>
             </div>
         </div>
 
@@ -614,6 +747,7 @@ def generate_html(history_records):
                             <th class="py-3 px-4">夜盤漲跌</th>
                             <th class="py-3 px-4">夜盤量佔比 (算式)</th>
                             <th class="py-3 px-4">三大法人淨額</th>
+                            <th class="py-3 px-4">美股指數 (對應夜盤)</th>
                             <th class="py-3 px-4">預測劇本</th>
                             <th class="py-3 px-4 text-center">當日加權指數走勢 (09:00~13:30)</th>
                             <th class="py-3 px-4 rounded-r-lg">型態驗證</th>
@@ -628,7 +762,7 @@ def generate_html(history_records):
 
         <!-- Footer -->
         <footer class="text-center text-xs text-slate-400 py-4">
-            資料來源：台灣期貨交易所 (TAIFEX) & 台灣證券交易所 (TWSE) | 自動化分析與發布 via GitHub Actions & Pages
+            資料來源：台灣期貨交易所 (TAIFEX) & 台灣證券交易所 (TWSE) & Yahoo Finance | 自動化發布 via GitHub Actions & Pages
         </footer>
     </div>
 </body>
@@ -636,7 +770,7 @@ def generate_html(history_records):
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生高精度型態驗證的 index.html！")
+    print("成功產生含美股三大指數的 index.html！")
 
 
 if __name__ == "__main__":

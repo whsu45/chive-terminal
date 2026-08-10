@@ -7,11 +7,10 @@ on:
     # 第二次備援執行：台灣時間每週一至週五 08:30 AM (對應 UTC 00:30 Mon-Fri)
     - cron: '30 0 * * 1-5'
   
-  # 支援在 GitHub 介面上手動點擊執行
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write  # 開放寫入權限以 commit history.json 回 Git repo
   pages: write
   id-token: write
 
@@ -40,9 +39,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Fetch Market Data and Build HTML
+      - name: Fetch Market Data and Build
         run: |
           python fetch_and_build.py
+
+      # 將更新後的 data/history.json 推回 Git 儲存庫備份
+      - name: Commit and push updated history.json
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/history.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update history.json [skip ci]" && git push)
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -55,4 +62,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-

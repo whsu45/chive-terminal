@@ -55,7 +55,6 @@ def clean_float(text):
 
 
 def fetch_night_market_data(session, target_date_str):
-    """ 抓取夜盤行情 (marketCode = 1) """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '1', 'dateaddcnt': '',
@@ -79,7 +78,6 @@ def fetch_night_market_data(session, target_date_str):
 
 
 def fetch_day_market_volume(session, prev_date_str):
-    """ 抓取一般交易時段 (marketCode = 0) 的日盤成交量 """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '0', 'dateaddcnt': '',
@@ -112,7 +110,6 @@ def fetch_day_market_volume(session, prev_date_str):
 
 
 def fetch_all_institutional_positions(session, target_date_str):
-    """ 抓取三大法人 (外資, 投信, 自營商) 多空淨額 """
     url = "https://www.taifex.com.tw/cht/3/futContractsDate"
     payload = {
         'queryType': '1', 'goDay': '', 'doQuery': '1', 'dateaddcnt': '',
@@ -147,15 +144,11 @@ def fetch_all_institutional_positions(session, target_date_str):
 
 def fetch_us_indices(session):
     """
-    抓取美股三大指數 (^DJI 道瓊, ^IXIC 那指, ^SOX 費半) 最近 2 個月的每日數據
+    抓取美股三大指數 (^DJI 道瓊, ^IXIC 那指, ^SOX 費半) 的漲跌點數 (Points)
     """
-    symbols = {
-        'DJI': '^DJI',
-        'IXIC': '^IXIC',
-        'SOX': '^SOX'
-    }
+    symbols = {'DJI': '^DJI', 'IXIC': '^IXIC', 'SOX': '^SOX'}
     us_data_by_date = {}
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    headers = {'User-Agent': 'Mozilla/5.0'}
 
     for key, symbol in symbols.items():
         url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=2mo"
@@ -180,18 +173,14 @@ def fetch_us_indices(session):
                         prev_c = closes[idx - 1] if idx > 0 and closes[idx - 1] is not None else o_price
 
                         pt_change = c_price - prev_c
-                        pct_change = (pt_change / prev_c) * 100 if prev_c else 0.0
-
                         pt_str = f"+{pt_change:.0f}" if pt_change > 0 else f"{pt_change:.0f}"
-                        pct_str = f"+{pct_change:.2f}%" if pct_change > 0 else f"{pct_change:.2f}%"
 
                         if date_str not in us_data_by_date:
                             us_data_by_date[date_str] = {}
 
                         us_data_by_date[date_str][key] = {
-                            "pct": pct_str,
                             "pts": pt_str,
-                            "raw_pct": pct_change
+                            "raw_pts": pt_change
                         }
         except Exception as e:
             print(f"Fetch US index {symbol} error: {e}")
@@ -200,11 +189,9 @@ def fetch_us_indices(session):
 
 
 def get_us_info_for_date(us_data_by_date, prev_date_str):
-    """ 美股交易日對應台灣夜盤對應的日期 (即 prev_date_str) """
     if prev_date_str in us_data_by_date:
         return us_data_by_date[prev_date_str]
 
-    # 找尋最接近小於等於 prev_date_str 的美股交易日
     avail = sorted([d for d in us_data_by_date.keys() if d <= prev_date_str], reverse=True)
     if avail:
         return us_data_by_date[avail[0]]
@@ -405,13 +392,13 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
     if dealer_net is not None:
         data["dealer_net_contracts"] = dealer_net
 
-    # 填入美股三大指數數據
+    # 改為儲存漲跌點數 (Points)
     if "DJI" in us_info:
-        data["us_dji"] = us_info["DJI"]["pct"]
+        data["us_dji"] = us_info["DJI"]["pts"]
     if "IXIC" in us_info:
-        data["us_ixic"] = us_info["IXIC"]["pct"]
+        data["us_ixic"] = us_info["IXIC"]["pts"]
     if "SOX" in us_info:
-        data["us_sox"] = us_info["SOX"]["pct"]
+        data["us_sox"] = us_info["SOX"]["pts"]
 
     if night_price_change is not None and foreign_net is not None:
         is_up = night_price_change > 0
@@ -454,17 +441,18 @@ def update_history_json():
             print(f"載入 {JSON_FILE} 失敗: {e}")
 
     session = requests.Session()
-    us_data_by_date = fetch_us_indices(session)  # 抓取美股三大指數數據
+    us_data_by_date = fetch_us_indices(session)
     trading_days = get_past_trading_days(count=20)
 
     for target_date_str, prev_date_str in trading_days:
         rec = existing_records.get(target_date_str)
 
+        # 若為舊格式 (%) 則自動覆蓋重抓點數格式
         needs_update = (
                 rec is None or
                 rec.get("verify_status", "尚未驗證") == "尚未驗證" or
                 rec.get("scenario") == "NA" or
-                "us_dji" not in rec  # 補抓舊資料缺少的美股數據
+                "%" in str(rec.get("us_dji", ""))
         )
 
         if needs_update:
@@ -477,7 +465,7 @@ def update_history_json():
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(sorted_history, f, ensure_ascii=False, indent=2)
 
-    print(f"成功更新含美股三大指數之歷史紀錄至：{JSON_FILE}")
+    print(f"成功更新含美股漲跌點數之歷史紀錄至：{JSON_FILE}")
     return sorted_history
 
 
@@ -491,14 +479,19 @@ def format_signed_num(val):
     return str(val), "text-slate-400"
 
 
-def format_pct_str(val_str):
+def format_pts_str(val_str):
+    """ 格式化美股漲跌點數 (例如: +118點) """
     if not val_str or val_str == "NA":
         return "NA", "text-slate-400"
-    if val_str.startswith("+"):
-        return val_str, "text-red-500 font-semibold"
-    elif val_str.startswith("-"):
-        return val_str, "text-green-500 font-semibold"
-    return val_str, "text-slate-600"
+
+    val_s = str(val_str)
+    val_display = f"{val_s}點" if not val_s.endswith("點") else val_s
+
+    if val_s.startswith("+"):
+        return val_display, "text-red-500 font-semibold"
+    elif val_s.startswith("-"):
+        return val_display, "text-green-500 font-semibold"
+    return val_display, "text-slate-600"
 
 
 def generate_html(history_records):
@@ -530,10 +523,10 @@ def generate_html(history_records):
     t_str, t_color = format_signed_num(latest_data.get('trust_net_contracts'))
     d_str, d_color = format_signed_num(latest_data.get('dealer_net_contracts'))
 
-    # 最新美股格式化
-    latest_dji, latest_dji_c = format_pct_str(latest_data.get('us_dji'))
-    latest_ixic, latest_ixic_c = format_pct_str(latest_data.get('us_ixic'))
-    latest_sox, latest_sox_c = format_pct_str(latest_data.get('us_sox'))
+    # 美股點數格式化
+    latest_dji, latest_dji_c = format_pts_str(latest_data.get('us_dji'))
+    latest_ixic, latest_ixic_c = format_pts_str(latest_data.get('us_ixic'))
+    latest_sox, latest_sox_c = format_pts_str(latest_data.get('us_sox'))
 
     history_rows_html = ""
     for item in history_records[:20]:
@@ -548,10 +541,10 @@ def generate_html(history_records):
         ht_str, ht_color = format_signed_num(item.get('trust_net_contracts'))
         hd_str, hd_color = format_signed_num(item.get('dealer_net_contracts'))
 
-        # 歷史美股指數格式化
-        hdji, hdji_c = format_pct_str(item.get('us_dji'))
-        hixic, hixic_c = format_pct_str(item.get('us_ixic'))
-        hsox, hsox_c = format_pct_str(item.get('us_sox'))
+        # 歷史表格美股點數格式化
+        hdji, hdji_c = format_pts_str(item.get('us_dji'))
+        hixic, hixic_c = format_pts_str(item.get('us_ixic'))
+        hsox, hsox_c = format_pts_str(item.get('us_sox'))
 
         s_badge = "bg-slate-100 text-slate-600"
         if item['scenario'] == '劇本一':
@@ -582,7 +575,6 @@ def generate_html(history_records):
                     <div><span class="text-slate-400">自營:</span> <span class="{hd_color}">{hd_str}</span></div>
                 </div>
             </td>
-            <!-- 新增：美股三大指數歷史欄位 -->
             <td class="py-3 px-4">
                 <div class="text-xs space-y-0.5">
                     <div><span class="text-slate-400">道瓊:</span> <span class="{hdji_c}">{hdji}</span></div>
@@ -657,9 +649,9 @@ def generate_html(history_records):
                 </div>
             </div>
 
-            <!-- 4. 新增：美股三大指數卡片 -->
+            <!-- 4. 美股三大指數 (點數版) -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">4. 美股三大指數 (對應夜盤)</span>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">4. 美股三大指數 (點數)</span>
                 <div class="mt-2 space-y-1">
                     <div class="flex justify-between items-center text-sm">
                         <span class="text-slate-500 font-medium">道瓊 (DJI):</span>
@@ -674,7 +666,7 @@ def generate_html(history_records):
                         <span class="{latest_sox_c}">{latest_sox}</span>
                     </div>
                 </div>
-                <p class="text-[11px] text-slate-400 mt-2">同夜盤時段美股收盤表現</p>
+                <p class="text-[11px] text-slate-400 mt-2">同夜盤時段美股漲跌點數</p>
             </div>
         </div>
 
@@ -770,7 +762,7 @@ def generate_html(history_records):
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生含美股三大指數的 index.html！")
+    print("成功產生含美股漲跌點數的 index.html！")
 
 
 if __name__ == "__main__":

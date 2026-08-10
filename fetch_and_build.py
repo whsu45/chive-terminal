@@ -127,7 +127,6 @@ def fetch_foreign_net_position(session, target_date_str):
 
 
 def generate_svg_sparkline(prices):
-    """ 產生 09:00~13:30 當日走勢的輕量化 SVG Sparkline 迷你圖 """
     if not prices or len(prices) < 2:
         return '<span class="text-xs text-slate-400">無圖表</span>'
 
@@ -135,7 +134,6 @@ def generate_svg_sparkline(prices):
     close_price = prices[-1]
     is_up = close_price >= open_price
 
-    # 台股顏色慣例：漲紅跌綠
     color = "#ef4444" if is_up else "#22c55e"
 
     min_p, max_p = min(prices), max(prices)
@@ -159,9 +157,6 @@ def generate_svg_sparkline(prices):
 
 
 def fetch_twse_intraday_taiex(session, target_date_str):
-    """
-    從 TWSE 證交所 API 抓取當日加權指數 5 秒盤後統計，並計算實際表現與繪製走勢圖
-    """
     formatted_date = target_date_str.replace('/', '')
     url = f"https://www.twse.com.tw/exchangeReport/MI_5MINS_INDEX?response=json&date={formatted_date}"
     headers = {'User-Agent': 'Mozilla/5.0'}
@@ -173,7 +168,7 @@ def fetch_twse_intraday_taiex(session, target_date_str):
             if res_json.get('stat') == 'OK' and 'data' in res_json:
                 prices = []
                 for row in res_json['data']:
-                    val = clean_float(row[1])  # row[1] 為加權指數
+                    val = clean_float(row[1])
                     if val is not None:
                         prices.append(val)
 
@@ -183,7 +178,6 @@ def fetch_twse_intraday_taiex(session, target_date_str):
                     high_p = max(prices)
                     low_p = min(prices)
 
-                    # 採樣 (減小 SVG 大小)
                     sampled = prices[::15] if len(prices) > 30 else prices
                     sparkline_svg = generate_svg_sparkline(sampled)
 
@@ -206,7 +200,6 @@ def fetch_twse_intraday_taiex(session, target_date_str):
 
 
 def verify_match(scenario, actual_info):
-    """ 自動驗證預測劇本與當日大盤實際走勢是否符合 """
     open_p = actual_info.get("open")
     close_p = actual_info.get("close")
 
@@ -215,25 +208,25 @@ def verify_match(scenario, actual_info):
 
     change = close_p - open_p
 
-    if scenario == "劇本一":  # 漲勢紮實 (開高走高)
+    if scenario == "劇本一":
         if change > 0:
             return "✅ 符合預期", "bg-red-100 text-red-700 font-bold"
         else:
             return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
 
-    elif scenario == "劇本二":  # 開高走低
+    elif scenario == "劇本二":
         if change < 0:
             return "✅ 符合預期", "bg-green-100 text-green-700 font-bold"
         else:
             return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
 
-    elif scenario == "劇本三":  # 跌勢延續
+    elif scenario == "劇本三":
         if change < 0:
             return "✅ 符合預期", "bg-green-100 text-green-700 font-bold"
         else:
             return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
 
-    elif scenario == "劇本四":  # 開低反彈
+    elif scenario == "劇本四":
         if change > 0:
             return "✅ 符合預期", "bg-red-100 text-red-700 font-bold"
         else:
@@ -323,7 +316,7 @@ def update_history_json():
             with open(JSON_FILE, "r", encoding="utf-8") as f:
                 records_list = json.load(f)
                 existing_records = {item["date"]: item for item in records_list}
-            print(f"已載入 {len(existing_records)} 筆歷史 JSON 紀錄。")
+            print(f"已成功載入 {len(existing_records)} 筆歷史 JSON 紀錄。")
         except Exception as e:
             print(f"載入 {JSON_FILE} 失敗: {e}")
 
@@ -331,8 +324,15 @@ def update_history_json():
     trading_days = get_past_trading_days(count=20)
 
     for target_date_str, prev_date_str in trading_days:
-        # 當天缺資料或未完成驗證時重新抓取
-        if target_date_str not in existing_records or existing_records[target_date_str]["verify_status"] == "尚未驗證":
+        rec = existing_records.get(target_date_str)
+        # 安全讀取以避免舊 JSON 缺少 verify_status 欄位
+        needs_update = (
+                rec is None or
+                rec.get("verify_status", "尚未驗證") == "尚未驗證" or
+                rec.get("scenario") == "NA"
+        )
+
+        if needs_update:
             print(f"抓取與分析資料：{target_date_str}...")
             new_record = process_single_date(session, target_date_str, prev_date_str)
             existing_records[target_date_str] = new_record
@@ -411,7 +411,7 @@ def generate_html(history_records):
             <td class="py-3 px-4 font-medium text-slate-700">{item['night_volume_ratio']}</td>
             <td class="py-3 px-4 {f_color} font-medium">{f_val}</td>
             <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {s_badge}">{item['scenario']}</span></td>
-            <td class="py-3 px-4 text-center">{item['sparkline_svg']}<div class="text-[11px] {act_color} mt-0.5">{act_change}</div></td>
+            <td class="py-3 px-4 text-center">{item.get('sparkline_svg', '')}<div class="text-[11px] {act_color} mt-0.5">{act_change}</div></td>
             <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {item.get('verify_badge_class', 'bg-slate-100')}">{item.get('verify_status', 'NA')}</span></td>
         </tr>
         """

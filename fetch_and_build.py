@@ -55,7 +55,7 @@ def clean_float(text):
 
 
 def fetch_night_market_data(session, target_date_str):
-    """ 抓取夜盤行情 (marketCode = 1)，欄位 8 為夜盤成交量 """
+    """ 抓取夜盤行情 (marketCode = 1) """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '1', 'dateaddcnt': '',
@@ -79,10 +79,7 @@ def fetch_night_market_data(session, target_date_str):
 
 
 def fetch_day_market_volume(session, prev_date_str):
-    """
-    抓取一般交易時段 (marketCode = 0) 的日盤成交量
-    修正：欄位 8 為盤後量，欄位 9 才是真正的「一般交易時段成交量」
-    """
+    """ 抓取一般交易時段 (marketCode = 0) 的日盤成交量 (欄位 9) """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '0', 'dateaddcnt': '',
@@ -96,7 +93,6 @@ def fetch_day_market_volume(session, prev_date_str):
             soup = BeautifulSoup(resp.text, 'html.parser')
             tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
             for table in tables:
-                # 動態搜尋包含 "一般交易時段" 與 "成交量" 的表頭欄位索引 (預設為 9)
                 day_vol_idx = 9
                 headers_text = [th.text.strip() for th in table.find_all('th')]
                 for idx, h_text in enumerate(headers_text):
@@ -115,13 +111,23 @@ def fetch_day_market_volume(session, prev_date_str):
     return None
 
 
-def fetch_foreign_net_position(session, target_date_str):
+def fetch_all_institutional_positions(session, target_date_str):
+    """
+    抓取三大法人 (外資, 投信, 自營商) 台指期多空淨額 (口數)
+    """
     url = "https://www.taifex.com.tw/cht/3/futContractsDate"
     payload = {
         'queryType': '1', 'goDay': '', 'doQuery': '1', 'dateaddcnt': '',
         'queryDate': target_date_str, 'commodityId': 'TXF', 'button': '送出查詢'
     }
     headers = {'User-Agent': 'Mozilla/5.0'}
+
+    positions = {
+        "foreign_net": None,  # 外資
+        "trust_net": None,  # 投信
+        "dealer_net": None  # 自營商
+    }
+
     try:
         resp = session.post(url, data=payload, headers=headers, timeout=5)
         if resp.status_code == 200:
@@ -131,14 +137,19 @@ def fetch_foreign_net_position(session, target_date_str):
                 for row in table.find_all('tr'):
                     cols = [td.text.strip() for td in row.find_all('td')]
                     for idx, col in enumerate(cols):
-                        if '外資' in col:
+                        if '自營商' in col and positions["dealer_net"] is None:
                             if len(cols) > idx + 5:
-                                val = clean_int(cols[idx + 5])
-                                if val is not None:
-                                    return val
+                                positions["dealer_net"] = clean_int(cols[idx + 5])
+                        elif '投信' in col and positions["trust_net"] is None:
+                            if len(cols) > idx + 5:
+                                positions["trust_net"] = clean_int(cols[idx + 5])
+                        elif '外資' in col and positions["foreign_net"] is None:
+                            if len(cols) > idx + 5:
+                                positions["foreign_net"] = clean_int(cols[idx + 5])
     except Exception as e:
-        print(f"[{target_date_str}] Foreign position error: {e}")
-    return None
+        print(f"[{target_date_str}] Institutional position error: {e}")
+
+    return positions
 
 
 def generate_svg_sparkline(prices):
@@ -193,7 +204,6 @@ def fetch_twse_intraday_taiex(session, target_date_str):
                     high_p = max(prices)
                     low_p = min(prices)
 
-                    # 5 分鐘取樣一次 (5 秒 * 60 = 300 秒)
                     sampled = prices[::60] if len(prices) > 60 else prices
                     sparkline_svg = generate_svg_sparkline(sampled)
 
@@ -260,7 +270,9 @@ def process_single_date(session, target_date_str, prev_date_str):
         "day_vol": "NA",
         "night_volume_ratio": "NA",
         "vol_formula_str": "NA",
-        "foreign_net_contracts": "NA",
+        "foreign_net_contracts": "NA",  # 外資
+        "trust_net_contracts": "NA",  # 投信
+        "dealer_net_contracts": "NA",  # 自營商
         "scenario": "NA",
         "forecast_desc": "數據尚未準備就緒或目前為休市期間 (NA)",
         "trust_signal": "NA",
@@ -272,7 +284,7 @@ def process_single_date(session, target_date_str, prev_date_str):
 
     night_price_change, night_vol = fetch_night_market_data(session, target_date_str)
     day_vol = fetch_day_market_volume(session, prev_date_str)
-    foreign_net = fetch_foreign_net_position(session, target_date_str)
+    inst_positions = fetch_all_institutional_positions(session, target_date_str)
     actual_info = fetch_twse_intraday_taiex(session, target_date_str)
 
     if night_vol is not None:
@@ -296,8 +308,17 @@ def process_single_date(session, target_date_str, prev_date_str):
     if night_price_change is not None:
         data["night_price_change"] = f"+{night_price_change}" if night_price_change > 0 else str(night_price_change)
 
+    # 填入三大法人籌碼
+    foreign_net = inst_positions.get("foreign_net")
+    trust_net = inst_positions.get("trust_net")
+    dealer_net = inst_positions.get("dealer_net")
+
     if foreign_net is not None:
         data["foreign_net_contracts"] = foreign_net
+    if trust_net is not None:
+        data["trust_net_contracts"] = trust_net
+    if dealer_net is not None:
+        data["dealer_net_contracts"] = dealer_net
 
     if night_price_change is not None and foreign_net is not None:
         is_up = night_price_change > 0
@@ -345,13 +366,12 @@ def update_history_json():
     for target_date_str, prev_date_str in trading_days:
         rec = existing_records.get(target_date_str)
 
-        # 強制更新抓錯日盤量的紀錄 (如果日盤量不等於正解時自動修復)
         needs_update = (
                 rec is None or
                 rec.get("verify_status", "尚未驗證") == "尚未驗證" or
                 rec.get("scenario") == "NA" or
-                "vol_formula_str" not in rec or
-                (rec.get("day_vol") == "48,375" and target_date_str == "2026/08/10")  # 覆蓋舊抓錯數據
+                "trust_net_contracts" not in rec or  # 若舊資料缺少投信/自營商則自動重抓
+                "dealer_net_contracts" not in rec
         )
 
         if needs_update:
@@ -364,8 +384,18 @@ def update_history_json():
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(sorted_history, f, ensure_ascii=False, indent=2)
 
-    print(f"成功更新歷史紀錄與走勢圖至：{JSON_FILE}")
+    print(f"成功更新三大法人歷史紀錄至：{JSON_FILE}")
     return sorted_history
+
+
+def format_signed_num(val):
+    if val is None or val == "NA":
+        return "NA", "text-slate-400"
+    if isinstance(val, (int, float)):
+        color = "text-red-500 font-semibold" if val > 0 else "text-green-500 font-semibold" if val < 0 else "text-slate-600"
+        text = f"+{val:,}" if val > 0 else f"{val:,}"
+        return text, color
+    return str(val), "text-slate-400"
 
 
 def generate_html(history_records):
@@ -393,9 +423,10 @@ def generate_html(history_records):
     elif str(latest_data["night_price_change"]).startswith("-"):
         price_color_class = "text-green-500"
 
-    foreign_val_str = f"{latest_data['foreign_net_contracts']:,}" if isinstance(latest_data['foreign_net_contracts'],
-                                                                                int) else latest_data[
-        'foreign_net_contracts']
+    # 三大法人格式化 (最新)
+    f_str, f_color = format_signed_num(latest_data.get('foreign_net_contracts'))
+    t_str, t_color = format_signed_num(latest_data.get('trust_net_contracts'))
+    d_str, d_color = format_signed_num(latest_data.get('dealer_net_contracts'))
 
     history_rows_html = ""
     for item in history_records[:20]:
@@ -406,11 +437,10 @@ def generate_html(history_records):
         elif change_str.startswith("-"):
             c_color = "text-green-500 font-bold"
 
-        f_val = f"{item['foreign_net_contracts']:,}" if isinstance(item['foreign_net_contracts'], int) else item[
-            'foreign_net_contracts']
-        f_color = "text-slate-600"
-        if isinstance(item['foreign_net_contracts'], int):
-            f_color = "text-red-500" if item['foreign_net_contracts'] > 0 else "text-green-500"
+        # 歷史表格三大法人格式化
+        hf_str, hf_color = format_signed_num(item.get('foreign_net_contracts'))
+        ht_str, ht_color = format_signed_num(item.get('trust_net_contracts'))
+        hd_str, hd_color = format_signed_num(item.get('dealer_net_contracts'))
 
         s_badge = "bg-slate-100 text-slate-600"
         if item['scenario'] == '劇本一':
@@ -434,7 +464,14 @@ def generate_html(history_records):
                 <div class="font-semibold text-slate-700">{item['night_volume_ratio']}</div>
                 <div class="text-[11px] text-slate-400 mt-0.5">{item.get('vol_formula_str', '')}</div>
             </td>
-            <td class="py-3 px-4 {f_color} font-medium">{f_val}</td>
+            <!-- 三大法人資料欄 -->
+            <td class="py-3 px-4">
+                <div class="text-xs space-y-0.5">
+                    <div><span class="text-slate-400">外資:</span> <span class="{hf_color}">{hf_str}</span></div>
+                    <div><span class="text-slate-400">投信:</span> <span class="{ht_color}">{ht_str}</span></div>
+                    <div><span class="text-slate-400">自營:</span> <span class="{hd_color}">{hd_str}</span></div>
+                </div>
+            </td>
             <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {s_badge}">{item['scenario']}</span></td>
             <td class="py-3 px-4 text-center">{item.get('sparkline_svg', '')}<div class="text-[11px] {act_color} mt-0.5">{act_change}</div></td>
             <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {item.get('verify_badge_class', 'bg-slate-100')}">{item.get('verify_status', 'NA')}</span></td>
@@ -487,12 +524,17 @@ def generate_html(history_records):
                 </div>
             </div>
 
+            <!-- 包含三大法人的籌碼卡片 -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">3. 外資多空淨額</span>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">3. 三大法人多空淨額</span>
                 <div class="text-3xl font-extrabold text-slate-800 mt-2">
-                    {foreign_val_str} <span class="text-sm font-normal text-slate-500">口</span>
+                    <span class="{f_color}">{f_str}</span> <span class="text-sm font-normal text-slate-500">口 (外資)</span>
                 </div>
-                <p class="text-xs text-slate-400 mt-2">關鍵門檻：觀察是否超過 ±1,000 口</p>
+                <p class="text-xs text-slate-400 mt-1">劇本對照關鍵門檻：超過 ±1,000 口</p>
+                <div class="mt-2 pt-2 border-t border-slate-100 flex justify-between text-xs text-slate-500">
+                    <div>投信: <span class="{t_color} font-medium">{t_str}</span></div>
+                    <div>自營: <span class="{d_color} font-medium">{d_str}</span></div>
+                </div>
             </div>
         </div>
 
@@ -564,7 +606,7 @@ def generate_html(history_records):
                             <th class="py-3 px-4 rounded-l-lg">交易日期</th>
                             <th class="py-3 px-4">夜盤漲跌</th>
                             <th class="py-3 px-4">夜盤量佔比 (算式)</th>
-                            <th class="py-3 px-4">外資淨額</th>
+                            <th class="py-3 px-4">三大法人淨額</th>
                             <th class="py-3 px-4">預測劇本</th>
                             <th class="py-3 px-4 text-center">當日加權指數走勢 (09:00~13:30)</th>
                             <th class="py-3 px-4 rounded-r-lg">劇本驗證</th>
@@ -587,7 +629,7 @@ def generate_html(history_records):
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生修復日盤量與算式的 index.html！")
+    print("成功產生包含三大法人籌碼的 index.html！")
 
 
 if __name__ == "__main__":

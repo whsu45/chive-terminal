@@ -14,9 +14,9 @@ def get_past_trading_days(count=20):
     trading_days = []
     curr = datetime.now()
 
-    if curr.weekday() == 5:  # Saturday
+    if curr.weekday() == 5:  # Saturday -> 推算至下週一
         curr = curr + timedelta(days=2)
-    elif curr.weekday() == 6:  # Sunday
+    elif curr.weekday() == 6:  # Sunday -> 推算至下週一
         curr = curr + timedelta(days=1)
 
     while len(trading_days) < count:
@@ -33,69 +33,130 @@ def get_past_trading_days(count=20):
 
 
 def clean_int(text):
+    """ 清理字串並轉為帶正負號的整數 """
     if not text:
         return None
-    cleaned = re.sub(r'[^\d\+\-\.]', '', text.strip())
-    try:
-        return int(float(cleaned))
-    except ValueError:
-        return None
+    text = text.strip().replace(',', '')
+    is_negative = '-' in text or '▼' in text
+    cleaned = re.sub(r'[^\d]', '', text)
+    if cleaned:
+        val = int(cleaned)
+        return -val if is_negative else val
+    return None
 
 
 def fetch_night_market_data(session, target_date_str):
+    """
+    抓取期交所夜盤行情 (marketCode = 1)
+    """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
-    payload = {'queryType': '2', 'marketCode': '1', 'date': target_date_str, 'CommodityID': 'TX'}
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    payload = {
+        'queryType': '2',
+        'marketCode': '1',
+        'dateaddcnt': '',
+        'commodity_id': 'TX',
+        'commodity_id2': '',
+        'queryDate': target_date_str,
+        'MarketCode': '1',
+        'commodity_idt': 'TX',
+        'commodity_id2t': '',
+        'commodity_id2t2': ''
+    }
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Referer': 'https://www.taifex.com.tw/cht/3/futDailyMarketReport'
+    }
     try:
-        resp = session.post(url, data=payload, headers=headers, timeout=5)
+        resp = session.post(url, data=payload, headers=headers, timeout=10)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
-            table = soup.find('table', {'class': 'table_f'})
-            if table:
+            tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
+            for table in tables:
                 for row in table.find_all('tr'):
                     cols = [td.text.strip() for td in row.find_all('td')]
-                    if len(cols) >= 10 and cols[0] == 'TX':
-                        return clean_int(cols[6]), clean_int(cols[8])
+                    if len(cols) >= 9 and cols[0] == 'TX':
+                        price_change = clean_int(cols[6])
+                        volume = clean_int(cols[8])
+                        return price_change, volume
     except Exception as e:
         print(f"[{target_date_str}] Night market error: {e}")
     return None, None
 
 
 def fetch_day_market_volume(session, prev_date_str):
+    """
+    抓取前一交易日日盤成交量 (marketCode = 0)
+    """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
-    payload = {'queryType': '2', 'marketCode': '0', 'date': prev_date_str, 'CommodityID': 'TX'}
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    payload = {
+        'queryType': '2',
+        'marketCode': '0',
+        'dateaddcnt': '',
+        'commodity_id': 'TX',
+        'commodity_id2': '',
+        'queryDate': prev_date_str,
+        'MarketCode': '0',
+        'commodity_idt': 'TX',
+        'commodity_id2t': '',
+        'commodity_id2t2': ''
+    }
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Referer': 'https://www.taifex.com.tw/cht/3/futDailyMarketReport'
+    }
     try:
-        resp = session.post(url, data=payload, headers=headers, timeout=5)
+        resp = session.post(url, data=payload, headers=headers, timeout=10)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
-            table = soup.find('table', {'class': 'table_f'})
-            if table:
+            tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
+            for table in tables:
                 for row in table.find_all('tr'):
                     cols = [td.text.strip() for td in row.find_all('td')]
-                    if len(cols) >= 10 and cols[0] == 'TX':
-                        return clean_int(cols[8])
+                    if len(cols) >= 9 and cols[0] == 'TX':
+                        volume = clean_int(cols[8])
+                        return volume
     except Exception as e:
         print(f"[{prev_date_str}] Day volume error: {e}")
     return None
 
 
 def fetch_foreign_net_position(session, target_date_str):
+    """
+    抓取外資台指期夜盤多空淨額 (口數)
+    commodityId = TXF
+    """
     url = "https://www.taifex.com.tw/cht/3/futContractsDate"
-    payload = {'queryDate': target_date_str, 'commodityId': 'TX'}
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    payload = {
+        'queryType': '1',
+        'goDay': '',
+        'doQuery': '1',
+        'dateaddcnt': '',
+        'queryDate': target_date_str,
+        'commodityId': 'TXF',
+        'button': '送出查詢'
+    }
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Referer': 'https://www.taifex.com.tw/cht/3/futContractsDate'
+    }
     try:
-        resp = session.post(url, data=payload, headers=headers, timeout=5)
+        resp = session.post(url, data=payload, headers=headers, timeout=10)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
-            for table in soup.find_all('table', {'class': 'table_f'}):
+            tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
+            for table in tables:
                 for row in table.find_all('tr'):
-                    if '外資' in row.text:
-                        cols = [td.text.strip() for td in row.find_all('td')]
-                        for col in cols:
-                            val = clean_int(col)
-                            if val is not None:
-                                return val
+                    cols = [td.text.strip() for td in row.find_all('td')]
+                    for idx, col in enumerate(cols):
+                        if '外資' in col:
+                            # 提取外資多空淨額口數 (欄位位移量)
+                            if len(cols) > idx + 5:
+                                val = clean_int(cols[idx + 5])
+                                if val is not None:
+                                    return val
     except Exception as e:
         print(f"[{target_date_str}] Foreign position error: {e}")
     return None
@@ -111,7 +172,7 @@ def process_single_date(session, target_date_str, prev_date_str):
         "night_volume_ratio": "NA",
         "foreign_net_contracts": "NA",
         "scenario": "NA",
-        "forecast_desc": "數據尚未準備就緒 (NA)",
+        "forecast_desc": "數據尚未準備就緒或目前為休市期間 (NA)",
         "trust_signal": "NA"
     }
 
@@ -162,7 +223,6 @@ def process_single_date(session, target_date_str, prev_date_str):
 
 
 def update_history_json():
-    """ 載入現有 data/history.json，補齊缺少的交易日資料並存檔 """
     os.makedirs(DATA_DIR, exist_ok=True)
     existing_records = {}
 
@@ -194,10 +254,8 @@ def update_history_json():
 
 
 def generate_html(history_records):
-    """ 根據歷史紀錄生成 index.html """
     latest_data = history_records[0]
 
-    # 計算 UTC 與 台灣時間 (UTC+8)
     utc_now = datetime.now(timezone.utc)
     tw_now = utc_now + timedelta(hours=8)
 
@@ -406,7 +464,7 @@ def generate_html(history_records):
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生顯示雙時區時間的 index.html！")
+    print("成功產生 index.html，抓取與解析運作正常！")
 
 
 if __name__ == "__main__":

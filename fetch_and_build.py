@@ -55,6 +55,7 @@ def clean_float(text):
 
 
 def fetch_night_market_data(session, target_date_str):
+    """ 抓取夜盤行情 (marketCode = 1)，欄位 8 為夜盤成交量 """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '1', 'dateaddcnt': '',
@@ -78,6 +79,10 @@ def fetch_night_market_data(session, target_date_str):
 
 
 def fetch_day_market_volume(session, prev_date_str):
+    """
+    抓取一般交易時段 (marketCode = 0) 的日盤成交量
+    修正：欄位 8 為盤後量，欄位 9 才是真正的「一般交易時段成交量」
+    """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '0', 'dateaddcnt': '',
@@ -91,10 +96,20 @@ def fetch_day_market_volume(session, prev_date_str):
             soup = BeautifulSoup(resp.text, 'html.parser')
             tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
             for table in tables:
+                # 動態搜尋包含 "一般交易時段" 與 "成交量" 的表頭欄位索引 (預設為 9)
+                day_vol_idx = 9
+                headers_text = [th.text.strip() for th in table.find_all('th')]
+                for idx, h_text in enumerate(headers_text):
+                    if '一般交易時段' in h_text and '成交量' in h_text:
+                        day_vol_idx = idx
+                        break
+
                 for row in table.find_all('tr'):
                     cols = [td.text.strip() for td in row.find_all('td')]
-                    if len(cols) >= 9 and cols[0] == 'TX':
-                        return clean_int(cols[8])
+                    if len(cols) > day_vol_idx and cols[0] == 'TX':
+                        volume = clean_int(cols[day_vol_idx])
+                        if volume is not None:
+                            return volume
     except Exception as e:
         print(f"[{prev_date_str}] Day volume error: {e}")
     return None
@@ -178,7 +193,8 @@ def fetch_twse_intraday_taiex(session, target_date_str):
                     high_p = max(prices)
                     low_p = min(prices)
 
-                    sampled = prices[::60] if len(prices) > 30 else prices
+                    # 5 分鐘取樣一次 (5 秒 * 60 = 300 秒)
+                    sampled = prices[::60] if len(prices) > 60 else prices
                     sparkline_svg = generate_svg_sparkline(sampled)
 
                     actual_change = close_p - open_p
@@ -243,6 +259,7 @@ def process_single_date(session, target_date_str, prev_date_str):
         "night_vol": "NA",
         "day_vol": "NA",
         "night_volume_ratio": "NA",
+        "vol_formula_str": "NA",
         "foreign_net_contracts": "NA",
         "scenario": "NA",
         "forecast_desc": "數據尚未準備就緒或目前為休市期間 (NA)",
@@ -264,8 +281,10 @@ def process_single_date(session, target_date_str, prev_date_str):
         data["day_vol"] = f"{day_vol:,}"
 
     if night_vol is not None and day_vol is not None and (night_vol + day_vol) > 0:
-        ratio = (night_vol / (day_vol + night_vol)) * 100
+        total_vol = night_vol + day_vol
+        ratio = (night_vol / total_vol) * 100
         data["night_volume_ratio"] = f"{ratio:.1f}%"
+        data["vol_formula_str"] = f"{night_vol:,} ÷ ({day_vol:,} + {night_vol:,})"
 
         if ratio >= 40:
             data["trust_signal"] = "很強的訊號 (>40%)"
@@ -325,11 +344,14 @@ def update_history_json():
 
     for target_date_str, prev_date_str in trading_days:
         rec = existing_records.get(target_date_str)
-        # 安全讀取以避免舊 JSON 缺少 verify_status 欄位
+
+        # 強制更新抓錯日盤量的紀錄 (如果日盤量不等於正解時自動修復)
         needs_update = (
                 rec is None or
                 rec.get("verify_status", "尚未驗證") == "尚未驗證" or
-                rec.get("scenario") == "NA"
+                rec.get("scenario") == "NA" or
+                "vol_formula_str" not in rec or
+                (rec.get("day_vol") == "48,375" and target_date_str == "2026/08/10")  # 覆蓋舊抓錯數據
         )
 
         if needs_update:
@@ -408,7 +430,10 @@ def generate_html(history_records):
         <tr class="hover:bg-slate-50 transition-colors">
             <td class="py-3 px-4 font-semibold text-slate-700">{item['date']}</td>
             <td class="py-3 px-4 {c_color}">{item['night_price_change']}</td>
-            <td class="py-3 px-4 font-medium text-slate-700">{item['night_volume_ratio']}</td>
+            <td class="py-3 px-4">
+                <div class="font-semibold text-slate-700">{item['night_volume_ratio']}</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">{item.get('vol_formula_str', '')}</div>
+            </td>
             <td class="py-3 px-4 {f_color} font-medium">{f_val}</td>
             <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {s_badge}">{item['scenario']}</span></td>
             <td class="py-3 px-4 text-center">{item.get('sparkline_svg', '')}<div class="text-[11px] {act_color} mt-0.5">{act_change}</div></td>
@@ -458,7 +483,7 @@ def generate_html(history_records):
                 </div>
                 <p class="text-xs text-slate-500 mt-2">訊號強度：<span class="font-bold text-indigo-600">{latest_data['trust_signal']}</span></p>
                 <div class="mt-2 pt-2 border-t border-slate-100 text-[11px] text-slate-400">
-                    夜盤量: {latest_data['night_vol']} | 日盤量: {latest_data['day_vol']}
+                    計算算式：{latest_data.get('vol_formula_str', 'NA')}
                 </div>
             </div>
 
@@ -538,7 +563,7 @@ def generate_html(history_records):
                         <tr>
                             <th class="py-3 px-4 rounded-l-lg">交易日期</th>
                             <th class="py-3 px-4">夜盤漲跌</th>
-                            <th class="py-3 px-4">夜盤量佔比</th>
+                            <th class="py-3 px-4">夜盤量佔比 (算式)</th>
                             <th class="py-3 px-4">外資淨額</th>
                             <th class="py-3 px-4">預測劇本</th>
                             <th class="py-3 px-4 text-center">當日加權指數走勢 (09:00~13:30)</th>
@@ -562,7 +587,7 @@ def generate_html(history_records):
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生含當日走勢圖與驗證結果的 index.html！")
+    print("成功產生修復日盤量與算式的 index.html！")
 
 
 if __name__ == "__main__":

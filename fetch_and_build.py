@@ -14,9 +14,9 @@ def get_past_trading_days(count=20):
     trading_days = []
     curr = datetime.now()
 
-    if curr.weekday() == 5:  # Saturday -> 推算至下週一
+    if curr.weekday() == 5:  # Saturday
         curr = curr + timedelta(days=2)
-    elif curr.weekday() == 6:  # Sunday -> 推算至下週一
+    elif curr.weekday() == 6:  # Sunday
         curr = curr + timedelta(days=1)
 
     while len(trading_days) < count:
@@ -33,7 +33,6 @@ def get_past_trading_days(count=20):
 
 
 def clean_int(text):
-    """ 清理字串並轉為帶正負號的整數 """
     if not text:
         return None
     text = text.strip().replace(',', '')
@@ -45,30 +44,26 @@ def clean_int(text):
     return None
 
 
+def clean_float(text):
+    if not text:
+        return None
+    cleaned = text.strip().replace(',', '')
+    try:
+        return float(cleaned)
+    except ValueError:
+        return None
+
+
 def fetch_night_market_data(session, target_date_str):
-    """
-    抓取期交所夜盤行情 (marketCode = 1)
-    """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
-        'queryType': '2',
-        'marketCode': '1',
-        'dateaddcnt': '',
-        'commodity_id': 'TX',
-        'commodity_id2': '',
-        'queryDate': target_date_str,
-        'MarketCode': '1',
-        'commodity_idt': 'TX',
-        'commodity_id2t': '',
-        'commodity_id2t2': ''
+        'queryType': '2', 'marketCode': '1', 'dateaddcnt': '',
+        'commodity_id': 'TX', 'commodity_id2': '', 'queryDate': target_date_str,
+        'MarketCode': '1', 'commodity_idt': 'TX', 'commodity_id2t': '', 'commodity_id2t2': ''
     }
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Referer': 'https://www.taifex.com.tw/cht/3/futDailyMarketReport'
-    }
+    headers = {'User-Agent': 'Mozilla/5.0'}
     try:
-        resp = session.post(url, data=payload, headers=headers, timeout=10)
+        resp = session.post(url, data=payload, headers=headers, timeout=5)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
             tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
@@ -76,38 +71,22 @@ def fetch_night_market_data(session, target_date_str):
                 for row in table.find_all('tr'):
                     cols = [td.text.strip() for td in row.find_all('td')]
                     if len(cols) >= 9 and cols[0] == 'TX':
-                        price_change = clean_int(cols[6])
-                        volume = clean_int(cols[8])
-                        return price_change, volume
+                        return clean_int(cols[6]), clean_int(cols[8])
     except Exception as e:
         print(f"[{target_date_str}] Night market error: {e}")
     return None, None
 
 
 def fetch_day_market_volume(session, prev_date_str):
-    """
-    抓取前一交易日日盤成交量 (marketCode = 0)
-    """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
-        'queryType': '2',
-        'marketCode': '0',
-        'dateaddcnt': '',
-        'commodity_id': 'TX',
-        'commodity_id2': '',
-        'queryDate': prev_date_str,
-        'MarketCode': '0',
-        'commodity_idt': 'TX',
-        'commodity_id2t': '',
-        'commodity_id2t2': ''
+        'queryType': '2', 'marketCode': '0', 'dateaddcnt': '',
+        'commodity_id': 'TX', 'commodity_id2': '', 'queryDate': prev_date_str,
+        'MarketCode': '0', 'commodity_idt': 'TX', 'commodity_id2t': '', 'commodity_id2t2': ''
     }
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Referer': 'https://www.taifex.com.tw/cht/3/futDailyMarketReport'
-    }
+    headers = {'User-Agent': 'Mozilla/5.0'}
     try:
-        resp = session.post(url, data=payload, headers=headers, timeout=10)
+        resp = session.post(url, data=payload, headers=headers, timeout=5)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
             tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
@@ -115,35 +94,21 @@ def fetch_day_market_volume(session, prev_date_str):
                 for row in table.find_all('tr'):
                     cols = [td.text.strip() for td in row.find_all('td')]
                     if len(cols) >= 9 and cols[0] == 'TX':
-                        volume = clean_int(cols[8])
-                        return volume
+                        return clean_int(cols[8])
     except Exception as e:
         print(f"[{prev_date_str}] Day volume error: {e}")
     return None
 
 
 def fetch_foreign_net_position(session, target_date_str):
-    """
-    抓取外資台指期夜盤多空淨額 (口數)
-    commodityId = TXF
-    """
     url = "https://www.taifex.com.tw/cht/3/futContractsDate"
     payload = {
-        'queryType': '1',
-        'goDay': '',
-        'doQuery': '1',
-        'dateaddcnt': '',
-        'queryDate': target_date_str,
-        'commodityId': 'TXF',
-        'button': '送出查詢'
+        'queryType': '1', 'goDay': '', 'doQuery': '1', 'dateaddcnt': '',
+        'queryDate': target_date_str, 'commodityId': 'TXF', 'button': '送出查詢'
     }
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Referer': 'https://www.taifex.com.tw/cht/3/futContractsDate'
-    }
+    headers = {'User-Agent': 'Mozilla/5.0'}
     try:
-        resp = session.post(url, data=payload, headers=headers, timeout=10)
+        resp = session.post(url, data=payload, headers=headers, timeout=5)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
             tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
@@ -152,7 +117,6 @@ def fetch_foreign_net_position(session, target_date_str):
                     cols = [td.text.strip() for td in row.find_all('td')]
                     for idx, col in enumerate(cols):
                         if '外資' in col:
-                            # 提取外資多空淨額口數 (欄位位移量)
                             if len(cols) > idx + 5:
                                 val = clean_int(cols[idx + 5])
                                 if val is not None:
@@ -160,6 +124,122 @@ def fetch_foreign_net_position(session, target_date_str):
     except Exception as e:
         print(f"[{target_date_str}] Foreign position error: {e}")
     return None
+
+
+def generate_svg_sparkline(prices):
+    """ 產生 09:00~13:30 當日走勢的輕量化 SVG Sparkline 迷你圖 """
+    if not prices or len(prices) < 2:
+        return '<span class="text-xs text-slate-400">無圖表</span>'
+
+    open_price = prices[0]
+    close_price = prices[-1]
+    is_up = close_price >= open_price
+
+    # 台股顏色慣例：漲紅跌綠
+    color = "#ef4444" if is_up else "#22c55e"
+
+    min_p, max_p = min(prices), max(prices)
+    price_range = (max_p - min_p) if max_p != min_p else 1
+
+    width, height = 110, 28
+    points = []
+    for idx, p in enumerate(prices):
+        x = (idx / (len(prices) - 1)) * width
+        y = height - ((p - min_p) / price_range) * (height - 4) - 2
+        points.append(f"{x:.1f},{y:.1f}")
+
+    polyline_str = " ".join(points)
+
+    svg = f'''
+    <svg width="{width}" height="{height}" class="inline-block overflow-visible" title="開: {open_price:.0f} | 收: {close_price:.0f}">
+        <polyline fill="none" stroke="{color}" stroke-width="1.8" points="{polyline_str}" />
+    </svg>
+    '''
+    return svg
+
+
+def fetch_twse_intraday_taiex(session, target_date_str):
+    """
+    從 TWSE 證交所 API 抓取當日加權指數 5 秒盤後統計，並計算實際表現與繪製走勢圖
+    """
+    formatted_date = target_date_str.replace('/', '')
+    url = f"https://www.twse.com.tw/exchangeReport/MI_5MINS_INDEX?response=json&date={formatted_date}"
+    headers = {'User-Agent': 'Mozilla/5.0'}
+
+    try:
+        resp = session.get(url, headers=headers, timeout=5)
+        if resp.status_code == 200:
+            res_json = resp.json()
+            if res_json.get('stat') == 'OK' and 'data' in res_json:
+                prices = []
+                for row in res_json['data']:
+                    val = clean_float(row[1])  # row[1] 為加權指數
+                    if val is not None:
+                        prices.append(val)
+
+                if prices:
+                    open_p = prices[0]
+                    close_p = prices[-1]
+                    high_p = max(prices)
+                    low_p = min(prices)
+
+                    # 採樣 (減小 SVG 大小)
+                    sampled = prices[::15] if len(prices) > 30 else prices
+                    sparkline_svg = generate_svg_sparkline(sampled)
+
+                    actual_change = close_p - open_p
+                    change_str = f"+{actual_change:.0f}點" if actual_change > 0 else f"{actual_change:.0f}點"
+
+                    return {
+                        "open": open_p, "close": close_p, "high": high_p, "low": low_p,
+                        "change_str": change_str,
+                        "sparkline_svg": sparkline_svg
+                    }
+    except Exception as e:
+        print(f"[{target_date_str}] TWSE TAIEX fetch error: {e}")
+
+    return {
+        "open": None, "close": None, "high": None, "low": None,
+        "change_str": "NA",
+        "sparkline_svg": '<span class="text-xs text-slate-400">未收盤</span>'
+    }
+
+
+def verify_match(scenario, actual_info):
+    """ 自動驗證預測劇本與當日大盤實際走勢是否符合 """
+    open_p = actual_info.get("open")
+    close_p = actual_info.get("close")
+
+    if not scenario or scenario == "NA" or open_p is None or close_p is None:
+        return "尚未驗證", "bg-slate-100 text-slate-500"
+
+    change = close_p - open_p
+
+    if scenario == "劇本一":  # 漲勢紮實 (開高走高)
+        if change > 0:
+            return "✅ 符合預期", "bg-red-100 text-red-700 font-bold"
+        else:
+            return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
+
+    elif scenario == "劇本二":  # 開高走低
+        if change < 0:
+            return "✅ 符合預期", "bg-green-100 text-green-700 font-bold"
+        else:
+            return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
+
+    elif scenario == "劇本三":  # 跌勢延續
+        if change < 0:
+            return "✅ 符合預期", "bg-green-100 text-green-700 font-bold"
+        else:
+            return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
+
+    elif scenario == "劇本四":  # 開低反彈
+        if change > 0:
+            return "✅ 符合預期", "bg-red-100 text-red-700 font-bold"
+        else:
+            return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
+
+    return "NA", "bg-slate-100 text-slate-500"
 
 
 def process_single_date(session, target_date_str, prev_date_str):
@@ -173,12 +253,17 @@ def process_single_date(session, target_date_str, prev_date_str):
         "foreign_net_contracts": "NA",
         "scenario": "NA",
         "forecast_desc": "數據尚未準備就緒或目前為休市期間 (NA)",
-        "trust_signal": "NA"
+        "trust_signal": "NA",
+        "actual_change": "NA",
+        "sparkline_svg": '<span class="text-xs text-slate-400">未收盤</span>',
+        "verify_status": "尚未驗證",
+        "verify_badge_class": "bg-slate-100 text-slate-500"
     }
 
     night_price_change, night_vol = fetch_night_market_data(session, target_date_str)
     day_vol = fetch_day_market_volume(session, prev_date_str)
     foreign_net = fetch_foreign_net_position(session, target_date_str)
+    actual_info = fetch_twse_intraday_taiex(session, target_date_str)
 
     if night_vol is not None:
         data["night_vol"] = f"{night_vol:,}"
@@ -219,6 +304,13 @@ def process_single_date(session, target_date_str, prev_date_str):
             data["scenario"] = "劇本四"
             data["forecast_desc"] = "開低反彈，外資未跟著殺盤，反彈機率高。"
 
+    data["actual_change"] = actual_info["change_str"]
+    data["sparkline_svg"] = actual_info["sparkline_svg"]
+
+    v_status, v_badge = verify_match(data["scenario"], actual_info)
+    data["verify_status"] = v_status
+    data["verify_badge_class"] = v_badge
+
     return data
 
 
@@ -231,7 +323,7 @@ def update_history_json():
             with open(JSON_FILE, "r", encoding="utf-8") as f:
                 records_list = json.load(f)
                 existing_records = {item["date"]: item for item in records_list}
-            print(f"已成功載入 {len(existing_records)} 筆歷史 JSON 紀錄。")
+            print(f"已載入 {len(existing_records)} 筆歷史 JSON 紀錄。")
         except Exception as e:
             print(f"載入 {JSON_FILE} 失敗: {e}")
 
@@ -239,8 +331,9 @@ def update_history_json():
     trading_days = get_past_trading_days(count=20)
 
     for target_date_str, prev_date_str in trading_days:
-        if target_date_str not in existing_records or existing_records[target_date_str]["scenario"] == "NA":
-            print(f"抓取最新資料：{target_date_str}...")
+        # 當天缺資料或未完成驗證時重新抓取
+        if target_date_str not in existing_records or existing_records[target_date_str]["verify_status"] == "尚未驗證":
+            print(f"抓取與分析資料：{target_date_str}...")
             new_record = process_single_date(session, target_date_str, prev_date_str)
             existing_records[target_date_str] = new_record
 
@@ -249,7 +342,7 @@ def update_history_json():
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(sorted_history, f, ensure_ascii=False, indent=2)
 
-    print(f"成功更新並儲存 JSON 歷史檔案至：{JSON_FILE}")
+    print(f"成功更新歷史紀錄與走勢圖至：{JSON_FILE}")
     return sorted_history
 
 
@@ -307,6 +400,10 @@ def generate_html(history_records):
         elif item['scenario'] == '劇本四':
             s_badge = "bg-blue-100 text-blue-700 font-bold"
 
+        act_change = str(item.get('actual_change', 'NA'))
+        act_color = "text-red-500 font-semibold" if act_change.startswith(
+            "+") else "text-green-500 font-semibold" if act_change.startswith("-") else "text-slate-400"
+
         history_rows_html += f"""
         <tr class="hover:bg-slate-50 transition-colors">
             <td class="py-3 px-4 font-semibold text-slate-700">{item['date']}</td>
@@ -314,7 +411,8 @@ def generate_html(history_records):
             <td class="py-3 px-4 font-medium text-slate-700">{item['night_volume_ratio']}</td>
             <td class="py-3 px-4 {f_color} font-medium">{f_val}</td>
             <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {s_badge}">{item['scenario']}</span></td>
-            <td class="py-3 px-4 text-xs text-slate-500">{item['trust_signal']}</td>
+            <td class="py-3 px-4 text-center">{item['sparkline_svg']}<div class="text-[11px] {act_color} mt-0.5">{act_change}</div></td>
+            <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {item.get('verify_badge_class', 'bg-slate-100')}">{item.get('verify_status', 'NA')}</span></td>
         </tr>
         """
 
@@ -327,7 +425,7 @@ def generate_html(history_records):
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
-    <div class="max-w-5xl mx-auto space-y-6">
+    <div class="max-w-6xl mx-auto space-y-6">
 
         <!-- Header -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
@@ -336,7 +434,6 @@ def generate_html(history_records):
                     <h1 class="text-2xl font-bold text-slate-800">📊 台指期夜盤三大數據走勢預測</h1>
                     <p class="text-slate-500 text-sm mt-1">分析目標交易日：<span class="font-bold text-slate-800">{latest_data['date']}</span> （對應前一日盤：{latest_data['prev_date']}）</p>
                 </div>
-                <!-- 雙時區時間顯示 -->
                 <div class="text-xs text-slate-500 md:text-right space-y-1">
                     <div>頁面產生時間：<span class="font-semibold text-slate-700">{tw_time_str}</span> <span class="text-slate-400">(UTC+8)</span></div>
                     <div>頁面產生時間：<span class="font-semibold text-slate-700">{utc_time_str}</span> <span class="text-slate-400">(UTC)</span></div>
@@ -429,10 +526,10 @@ def generate_html(history_records):
             </div>
         </div>
 
-        <!-- 過去 20 個交易日歷史紀錄表格 -->
+        <!-- 過去 20 個交易日歷史紀錄與當日走勢比對表格 -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-bold text-slate-800">🗓️ 過去 20 個交易日歷史紀錄</h2>
+                <h2 class="text-lg font-bold text-slate-800">🗓️ 過去 20 個交易日歷史紀錄與實測比對</h2>
                 <a href="./data/history.json" target="_blank" class="text-xs text-indigo-600 hover:underline">📥 下載完整 history.json</a>
             </div>
             <div class="overflow-x-auto">
@@ -442,9 +539,10 @@ def generate_html(history_records):
                             <th class="py-3 px-4 rounded-l-lg">交易日期</th>
                             <th class="py-3 px-4">夜盤漲跌</th>
                             <th class="py-3 px-4">夜盤量佔比</th>
-                            <th class="py-3 px-4">外資淨額 (口)</th>
-                            <th class="py-3 px-4">判定劇本</th>
-                            <th class="py-3 px-4 rounded-r-lg">訊號強度</th>
+                            <th class="py-3 px-4">外資淨額</th>
+                            <th class="py-3 px-4">預測劇本</th>
+                            <th class="py-3 px-4 text-center">當日加權指數走勢 (09:00~13:30)</th>
+                            <th class="py-3 px-4 rounded-r-lg">劇本驗證</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -456,7 +554,7 @@ def generate_html(history_records):
 
         <!-- Footer -->
         <footer class="text-center text-xs text-slate-400 py-4">
-            資料來源：台灣期貨交易所 (TAIFEX) | 自動化分析與發布 via GitHub Actions & Pages
+            資料來源：台灣期貨交易所 (TAIFEX) & 台灣證券交易所 (TWSE) | 自動化分析與發布 via GitHub Actions & Pages
         </footer>
     </div>
 </body>
@@ -464,7 +562,7 @@ def generate_html(history_records):
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生 index.html，抓取與解析運作正常！")
+    print("成功產生含當日走勢圖與驗證結果的 index.html！")
 
 
 if __name__ == "__main__":

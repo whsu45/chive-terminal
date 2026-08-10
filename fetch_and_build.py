@@ -3,7 +3,7 @@ import re
 import json
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 DATA_DIR = "data"
 JSON_FILE = os.path.join(DATA_DIR, "history.json")
@@ -166,7 +166,6 @@ def update_history_json():
     os.makedirs(DATA_DIR, exist_ok=True)
     existing_records = {}
 
-    # 若 JSON 已存在則載入
     if os.path.exists(JSON_FILE):
         try:
             with open(JSON_FILE, "r", encoding="utf-8") as f:
@@ -177,19 +176,16 @@ def update_history_json():
             print(f"載入 {JSON_FILE} 失敗: {e}")
 
     session = requests.Session()
-    trading_days = get_past_trading_days(count=20)  # 預設維持最近 20 天
+    trading_days = get_past_trading_days(count=20)
 
     for target_date_str, prev_date_str in trading_days:
-        # 如果當天資料不存在，或者是 NA（代表之前抓取時尚未出爐），則重新抓取
         if target_date_str not in existing_records or existing_records[target_date_str]["scenario"] == "NA":
             print(f"抓取最新資料：{target_date_str}...")
             new_record = process_single_date(session, target_date_str, prev_date_str)
             existing_records[target_date_str] = new_record
 
-    # 依照日期由新到舊排序
     sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)
 
-    # 寫入 data/history.json
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(sorted_history, f, ensure_ascii=False, indent=2)
 
@@ -200,6 +196,13 @@ def update_history_json():
 def generate_html(history_records):
     """ 根據歷史紀錄生成 index.html """
     latest_data = history_records[0]
+
+    # 計算 UTC 與 台灣時間 (UTC+8)
+    utc_now = datetime.now(timezone.utc)
+    tw_now = utc_now + timedelta(hours=8)
+
+    utc_time_str = utc_now.strftime('%Y/%m/%d %H:%M:%S')
+    tw_time_str = tw_now.strftime('%Y/%m/%d %H:%M:%S')
 
     scenario_badge_class = "bg-slate-100 text-slate-700 border-slate-200"
     if latest_data["scenario"] == "劇本一":
@@ -221,7 +224,6 @@ def generate_html(history_records):
                                                                                 int) else latest_data[
         'foreign_net_contracts']
 
-    # 建立歷史表格 Rows (取最近 20 筆)
     history_rows_html = ""
     for item in history_records[:20]:
         change_str = str(item['night_price_change'])
@@ -276,8 +278,10 @@ def generate_html(history_records):
                     <h1 class="text-2xl font-bold text-slate-800">📊 台指期夜盤三大數據走勢預測</h1>
                     <p class="text-slate-500 text-sm mt-1">分析目標交易日：<span class="font-bold text-slate-800">{latest_data['date']}</span> （對應前一日盤：{latest_data['prev_date']}）</p>
                 </div>
-                <div class="text-xs text-slate-400">
-                    頁面產生時間：{datetime.now().strftime('%Y/%m/%d %H:%M:%S')} (CST)
+                <!-- 雙時區時間顯示 -->
+                <div class="text-xs text-slate-500 md:text-right space-y-1">
+                    <div>頁面產生時間：<span class="font-semibold text-slate-700">{tw_time_str}</span> <span class="text-slate-400">(UTC+8)</span></div>
+                    <div>頁面產生時間：<span class="font-semibold text-slate-700">{utc_time_str}</span> <span class="text-slate-400">(UTC)</span></div>
                 </div>
             </div>
         </div>
@@ -402,7 +406,7 @@ def generate_html(history_records):
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生 index.html 及寫入歷史 JSON！")
+    print("成功產生顯示雙時區時間的 index.html！")
 
 
 if __name__ == "__main__":

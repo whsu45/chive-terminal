@@ -178,7 +178,7 @@ def fetch_twse_intraday_taiex(session, target_date_str):
                     high_p = max(prices)
                     low_p = min(prices)
 
-                    sampled = prices[::15] if len(prices) > 30 else prices
+                    sampled = prices[::60] if len(prices) > 30 else prices
                     sparkline_svg = generate_svg_sparkline(sampled)
 
                     actual_change = close_p - open_p

@@ -41,4 +41,7 @@ GitHub Actions 會在台灣時間每週一至週五開盤前執行兩次（備�
 3. 將 **Build and deployment > Source** 切換為 **`GitHub Actions`**。
 4. 到 **Actions** 頁籤點擊 **Update Taiwan Futures Forecast Page** -> **Run workflow** 即可完成首次發布。
 
+## Github Pages
+* https://whsu45.github.io/chive-terminal/
+
 

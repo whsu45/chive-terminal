@@ -51,7 +51,6 @@ def clean_float(text):
         return None
 
 def fetch_night_market_data(session, target_date_str):
-    """ 抓取夜盤行情 (marketCode = 1) """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '1', 'dateaddcnt': '',
@@ -74,7 +73,6 @@ def fetch_night_market_data(session, target_date_str):
     return None, None
 
 def fetch_day_market_volume(session, prev_date_str):
-    """ 抓取一般交易時段 (marketCode = 0) 的日盤成交量 """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '0', 'dateaddcnt': '',
@@ -105,22 +103,19 @@ def fetch_day_market_volume(session, prev_date_str):
         print(f"[{prev_date_str}] Day volume error: {e}")
     return None
 
-def fetch_all_institutional_positions_ah(session, target_date_str):
-    """
-    抓取三大法人 (外資, 投信, 自營商) 夜盤多空淨額 (口數)
-    【關鍵修正】：改用 futContractsDateAh (盤後交易時段專用 API)
-    """
+def fetch_institutional_positions_ah(session, target_date_str):
+    """ 抓取夜盤專用三大法人多空淨額 (futContractsDateAh) """
     url = "https://www.taifex.com.tw/cht/3/futContractsDateAh"
     payload = {
         'queryType': '1', 'goDay': '', 'doQuery': '1', 'dateaddcnt': '',
         'queryDate': target_date_str, 'commodityId': 'TXF', 'button': '送出查詢'
     }
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'User-Agent': 'Mozilla/5.0',
         'Content-Type': 'application/x-www-form-urlencoded',
         'Referer': 'https://www.taifex.com.tw/cht/3/futContractsDateAh'
     }
-    positions = {"foreign_net": None, "trust_net": None, "dealer_net": None}
+    positions = {"foreign": None, "trust": None, "dealer": None}
     
     try:
         resp = session.post(url, data=payload, headers=headers, timeout=5)
@@ -131,17 +126,54 @@ def fetch_all_institutional_positions_ah(session, target_date_str):
                 for row in table.find_all('tr'):
                     cols = [td.text.strip() for td in row.find_all('td')]
                     for idx, col in enumerate(cols):
-                        if '自營商' in col and positions["dealer_net"] is None:
+                        if '自營商' in col and positions["dealer"] is None:
                             if len(cols) > idx + 5:
-                                positions["dealer_net"] = clean_int(cols[idx + 5])
-                        elif '投信' in col and positions["trust_net"] is None:
+                                positions["dealer"] = clean_int(cols[idx + 5])
+                        elif '投信' in col and positions["trust"] is None:
                             if len(cols) > idx + 5:
-                                positions["trust_net"] = clean_int(cols[idx + 5])
-                        elif '外資' in col and positions["foreign_net"] is None:
+                                positions["trust"] = clean_int(cols[idx + 5])
+                        elif '外資' in col and positions["foreign"] is None:
                             if len(cols) > idx + 5:
-                                positions["foreign_net"] = clean_int(cols[idx + 5])
+                                positions["foreign"] = clean_int(cols[idx + 5])
     except Exception as e:
         print(f"[{target_date_str}] Institutional AH position error: {e}")
+        
+    return positions
+
+def fetch_institutional_positions_full(session, target_date_str):
+    """ 抓取全日三大法人多空淨額 (futContractsDate) """
+    url = "https://www.taifex.com.tw/cht/3/futContractsDate"
+    payload = {
+        'queryType': '1', 'goDay': '', 'doQuery': '1', 'dateaddcnt': '',
+        'queryDate': target_date_str, 'commodityId': 'TXF', 'button': '送出查詢'
+    }
+    headers = {
+        'User-Agent': 'Mozilla/5.0',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Referer': 'https://www.taifex.com.tw/cht/3/futContractsDate'
+    }
+    positions = {"foreign": None, "trust": None, "dealer": None}
+    
+    try:
+        resp = session.post(url, data=payload, headers=headers, timeout=5)
+        if resp.status_code == 200:
+            soup = BeautifulSoup(resp.text, 'html.parser')
+            tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
+            for table in tables:
+                for row in table.find_all('tr'):
+                    cols = [td.text.strip() for td in row.find_all('td')]
+                    for idx, col in enumerate(cols):
+                        if '自營商' in col and positions["dealer"] is None:
+                            if len(cols) > idx + 5:
+                                positions["dealer"] = clean_int(cols[idx + 5])
+                        elif '投信' in col and positions["trust"] is None:
+                            if len(cols) > idx + 5:
+                                positions["trust"] = clean_int(cols[idx + 5])
+                        elif '外資' in col and positions["foreign"] is None:
+                            if len(cols) > idx + 5:
+                                positions["foreign"] = clean_int(cols[idx + 5])
+    except Exception as e:
+        print(f"[{target_date_str}] Institutional Full position error: {e}")
         
     return positions
 
@@ -334,9 +366,17 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
         "day_vol": "NA",
         "night_volume_ratio": "NA",
         "vol_formula_str": "NA",
-        "foreign_net_contracts": "NA",
-        "trust_net_contracts": "NA",
-        "dealer_net_contracts": "NA",
+        
+        # 夜盤籌碼 (Ah)
+        "foreign_net_ah": "NA",
+        "trust_net_ah": "NA",
+        "dealer_net_ah": "NA",
+        
+        # 全日籌碼 (Full)
+        "foreign_net_full": "NA",
+        "trust_net_full": "NA",
+        "dealer_net_full": "NA",
+        
         "us_dji": "NA",
         "us_ixic": "NA",
         "us_sox": "NA",
@@ -346,13 +386,15 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
         "actual_change": "NA",
         "sparkline_svg": '<span class="text-xs text-slate-400">未收盤</span>',
         "verify_status": "尚未驗證",
-        "verify_badge_class": "bg-slate-100 text-slate-500",
-        "data_source": "AH" # 標示為夜盤專用數據源
+        "verify_badge_class": "bg-slate-100 text-slate-500"
     }
 
     night_price_change, night_vol = fetch_night_market_data(session, target_date_str)
     day_vol = fetch_day_market_volume(session, prev_date_str)
-    inst_positions = fetch_all_institutional_positions_ah(session, target_date_str)
+    
+    ah_pos = fetch_institutional_positions_ah(session, target_date_str)
+    full_pos = fetch_institutional_positions_full(session, target_date_str)
+    
     actual_info = fetch_twse_intraday_taiex(session, target_date_str)
     us_info = get_us_info_for_date(us_data_by_date, prev_date_str)
 
@@ -377,16 +419,21 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
     if night_price_change is not None:
         data["night_price_change"] = f"+{night_price_change}" if night_price_change > 0 else str(night_price_change)
     
-    foreign_net = inst_positions.get("foreign_net")
-    trust_net = inst_positions.get("trust_net")
-    dealer_net = inst_positions.get("dealer_net")
+    # 填入夜盤籌碼
+    if ah_pos.get("foreign") is not None:
+        data["foreign_net_ah"] = ah_pos["foreign"]
+    if ah_pos.get("trust") is not None:
+        data["trust_net_ah"] = ah_pos["trust"]
+    if ah_pos.get("dealer") is not None:
+        data["dealer_net_ah"] = ah_pos["dealer"]
 
-    if foreign_net is not None:
-        data["foreign_net_contracts"] = foreign_net
-    if trust_net is not None:
-        data["trust_net_contracts"] = trust_net
-    if dealer_net is not None:
-        data["dealer_net_contracts"] = dealer_net
+    # 填入全日籌碼
+    if full_pos.get("foreign") is not None:
+        data["foreign_net_full"] = full_pos["foreign"]
+    if full_pos.get("trust") is not None:
+        data["trust_net_full"] = full_pos["trust"]
+    if full_pos.get("dealer") is not None:
+        data["dealer_net_full"] = full_pos["dealer"]
 
     if "DJI" in us_info:
         data["us_dji"] = us_info["DJI"]["pts"]
@@ -395,9 +442,10 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
     if "SOX" in us_info:
         data["us_sox"] = us_info["SOX"]["pts"]
 
-    if night_price_change is not None and foreign_net is not None:
+    foreign_ah = data["foreign_net_ah"]
+    if night_price_change is not None and isinstance(foreign_ah, int):
         is_up = night_price_change > 0
-        is_foreign_bullish = foreign_net > 0
+        is_foreign_bullish = foreign_ah > 0
 
         if is_up and is_foreign_bullish:
             data["scenario"] = "劇本一"
@@ -441,16 +489,16 @@ def update_history_json():
     for target_date_str, prev_date_str in trading_days:
         rec = existing_records.get(target_date_str)
         
-        # 強制修復為 futContractsDateAh 純夜盤資料源
         needs_update = (
             rec is None or 
             rec.get("verify_status", "尚未驗證") == "尚未驗證" or 
             rec.get("scenario") == "NA" or
-            rec.get("data_source") != "AH"
+            rec.get("foreign_net_full") == "NA" or
+            "foreign_net_ah" not in rec
         )
         
         if needs_update:
-            print(f"抓取與分析資料 (futContractsDateAh 夜盤)：{target_date_str}...")
+            print(f"抓取與分析資料：{target_date_str}...")
             new_record = process_single_date(session, target_date_str, prev_date_str, us_data_by_date)
             existing_records[target_date_str] = new_record
 
@@ -459,7 +507,7 @@ def update_history_json():
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(sorted_history, f, ensure_ascii=False, indent=2)
         
-    print(f"成功更新 futContractsDateAh 夜盤專用歷史紀錄至：{JSON_FILE}")
+    print(f"成功更新歷史紀錄至：{JSON_FILE}")
     return sorted_history
 
 def format_signed_num(val):
@@ -509,9 +557,11 @@ def generate_html(history_records):
     elif str(latest_data["night_price_change"]).startswith("-"):
         price_color_class = "text-green-500"
 
-    f_str, f_color = format_signed_num(latest_data.get('foreign_net_contracts'))
-    t_str, t_color = format_signed_num(latest_data.get('trust_net_contracts'))
-    d_str, d_color = format_signed_num(latest_data.get('dealer_net_contracts'))
+    f_ah_str, f_ah_color = format_signed_num(latest_data.get('foreign_net_ah'))
+    t_ah_str, t_ah_color = format_signed_num(latest_data.get('trust_net_ah'))
+    d_ah_str, d_ah_color = format_signed_num(latest_data.get('dealer_net_ah'))
+
+    f_full_str, f_full_color = format_signed_num(latest_data.get('foreign_net_full'))
 
     latest_dji, latest_dji_c = format_pts_str(latest_data.get('us_dji'))
     latest_ixic, latest_ixic_c = format_pts_str(latest_data.get('us_ixic'))
@@ -526,9 +576,13 @@ def generate_html(history_records):
         elif change_str.startswith("-"):
             c_color = "text-green-500 font-bold"
 
-        hf_str, hf_color = format_signed_num(item.get('foreign_net_contracts'))
-        ht_str, ht_color = format_signed_num(item.get('trust_net_contracts'))
-        hd_str, hd_color = format_signed_num(item.get('dealer_net_contracts'))
+        haf_str, haf_color = format_signed_num(item.get('foreign_net_ah'))
+        hat_str, hat_color = format_signed_num(item.get('trust_net_ah'))
+        had_str, had_color = format_signed_num(item.get('dealer_net_ah'))
+
+        hff_str, hff_color = format_signed_num(item.get('foreign_net_full'))
+        hft_str, hft_color = format_signed_num(item.get('trust_net_full'))
+        hfd_str, hfd_color = format_signed_num(item.get('dealer_net_full'))
 
         hdji, hdji_c = format_pts_str(item.get('us_dji'))
         hixic, hixic_c = format_pts_str(item.get('us_ixic'))
@@ -555,11 +609,20 @@ def generate_html(history_records):
                 <div class="font-semibold text-slate-700">{item['night_volume_ratio']}</div>
                 <div class="text-[11px] text-slate-400 mt-0.5">{item.get('vol_formula_str', '')}</div>
             </td>
+            <!-- 夜盤三大法人 -->
             <td class="py-3 px-4">
                 <div class="text-xs space-y-0.5">
-                    <div><span class="text-slate-400">外資:</span> <span class="{hf_color}">{hf_str}</span></div>
-                    <div><span class="text-slate-400">投信:</span> <span class="{ht_color}">{ht_str}</span></div>
-                    <div><span class="text-slate-400">自營:</span> <span class="{hd_color}">{hd_str}</span></div>
+                    <div><span class="text-slate-400">外資:</span> <span class="{haf_color}">{haf_str}</span></div>
+                    <div><span class="text-slate-400">投信:</span> <span class="{hat_color}">{hat_str}</span></div>
+                    <div><span class="text-slate-400">自營:</span> <span class="{had_color}">{had_str}</span></div>
+                </div>
+            </td>
+            <!-- 全日三大法人 -->
+            <td class="py-3 px-4">
+                <div class="text-xs space-y-0.5">
+                    <div><span class="text-slate-400">外資:</span> <span class="{hff_color}">{hff_str}</span></div>
+                    <div><span class="text-slate-400">投信:</span> <span class="{hft_color}">{hft_str}</span></div>
+                    <div><span class="text-slate-400">自營:</span> <span class="{hfd_color}">{hfd_str}</span></div>
                 </div>
             </td>
             <td class="py-3 px-4">
@@ -584,7 +647,7 @@ def generate_html(history_records):
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
-    <div class="max-w-7xl mx-auto space-y-6">
+    <div class="max-w-[1400px] mx-auto space-y-6">
         
         <!-- Header -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
@@ -596,6 +659,85 @@ def generate_html(history_records):
                 <div class="text-xs text-slate-500 md:text-right space-y-1">
                     <div>頁面產生時間：<span class="font-semibold text-slate-700">{tw_time_str}</span> <span class="text-slate-400">(UTC+8)</span></div>
                     <div>頁面產生時間：<span class="font-semibold text-slate-700">{utc_time_str}</span> <span class="text-slate-400">(UTC)</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3個月台股與美股 TradingView K 線走勢圖區塊 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- 1. 台股加權指數 3M K線圖 -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-sm font-bold text-slate-800">🇹🇼 台股加權指數 (TAIEX) 近 3 個月 K 線圖</h2>
+                    <span class="text-xs text-slate-400">TradingView</span>
+                </div>
+                <div class="tradingview-widget-container" style="height: 300px;">
+                    <div class="tradingview-widget-container__widget"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" async>
+                    {{
+                        "symbols": [["台股加權指數", "TWSE:TAIEX|3M"]],
+                        "chartOnly": false,
+                        "width": "100%",
+                        "height": "100%",
+                        "locale": "zh_TW",
+                        "colorTheme": "light",
+                        "autosize": true,
+                        "showVolume": false,
+                        "showMA": false,
+                        "hideDateRanges": false,
+                        "hideMarketStatus": false,
+                        "hideSymbolLogo": false,
+                        "scalePosition": "right",
+                        "scaleMode": "Normal",
+                        "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
+                        "fontSize": "10",
+                        "noTimeScale": false,
+                        "valuesTracking": "1",
+                        "changeMode": "price-and-percent",
+                        "chartType": "candlesticks",
+                        "gridLineColor": "rgba(240, 243, 246, 0.6)",
+                        "headerFontSize": "medium",
+                        "dateFormat": "yyyy-MM-dd"
+                    }}
+                    </script>
+                </div>
+            </div>
+
+            <!-- 2. 美股 NASDAQ 指數 3M K線圖 -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-sm font-bold text-slate-800">🇺🇸 美股 NASDAQ 指數 (IXIC) 近 3 個月 K 線圖</h2>
+                    <span class="text-xs text-slate-400">TradingView</span>
+                </div>
+                <div class="tradingview-widget-container" style="height: 300px;">
+                    <div class="tradingview-widget-container__widget"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" async>
+                    {{
+                        "symbols": [["NASDAQ 指數", "NASDAQ:IXIC|3M"]],
+                        "chartOnly": false,
+                        "width": "100%",
+                        "height": "100%",
+                        "locale": "zh_TW",
+                        "colorTheme": "light",
+                        "autosize": true,
+                        "showVolume": false,
+                        "showMA": false,
+                        "hideDateRanges": false,
+                        "hideMarketStatus": false,
+                        "hideSymbolLogo": false,
+                        "scalePosition": "right",
+                        "scaleMode": "Normal",
+                        "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
+                        "fontSize": "10",
+                        "noTimeScale": false,
+                        "valuesTracking": "1",
+                        "changeMode": "price-and-percent",
+                        "chartType": "candlesticks",
+                        "gridLineColor": "rgba(240, 243, 246, 0.6)",
+                        "headerFontSize": "medium",
+                        "dateFormat": "yyyy-MM-dd"
+                    }}
+                    </script>
                 </div>
             </div>
         </div>
@@ -623,20 +765,20 @@ def generate_html(history_records):
                 </div>
             </div>
 
-            <!-- 3. 三大法人 (夜盤) -->
+            <!-- 3. 三大法人 (夜盤 / 全日) -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">3. 三大法人多空淨額 (夜盤)</span>
                 <div class="text-3xl font-extrabold text-slate-800 mt-2">
-                    <span class="{f_color}">{f_str}</span> <span class="text-sm font-normal text-slate-500">口 (外資)</span>
+                    <span class="{f_ah_color}">{f_ah_str}</span> <span class="text-sm font-normal text-slate-500">口 (外資夜盤)</span>
                 </div>
-                <p class="text-xs text-slate-400 mt-1">劇本對照關鍵門檻：超過 ±1,000 口</p>
+                <p class="text-xs text-slate-400 mt-1">劇本對照門檻：超過 ±1,000 口</p>
                 <div class="mt-2 pt-2 border-t border-slate-100 flex justify-between text-xs text-slate-500">
-                    <div>投信: <span class="{t_color} font-medium">{t_str}</span></div>
-                    <div>自營: <span class="{d_color} font-medium">{d_str}</span></div>
+                    <div>投信(夜): <span class="{t_ah_color} font-medium">{t_ah_str}</span></div>
+                    <div>外資(全): <span class="{f_full_color} font-medium">{f_full_str}</span></div>
                 </div>
             </div>
 
-            <!-- 4. 美股三大指數 (點數版) -->
+            <!-- 4. 美股三大指數 -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">4. 美股三大指數 (點數)</span>
                 <div class="mt-2 space-y-1">
@@ -677,7 +819,7 @@ def generate_html(history_records):
                             <tr>
                                 <th class="py-3 px-4 rounded-l-lg">劇本</th>
                                 <th class="py-3 px-4">夜盤漲跌</th>
-                                <th class="py-3 px-4">外資多空淨額</th>
+                                <th class="py-3 px-4">外資多空淨額 (夜盤)</th>
                                 <th class="py-3 px-4 rounded-r-lg">預期走勢</th>
                             </tr>
                         </thead>
@@ -702,7 +844,7 @@ def generate_html(history_records):
                             </tr>
                             <tr class="hover:bg-slate-50 {'bg-blue-50/60 font-medium' if latest_data['scenario'] == '劇本四' else ''}">
                                 <td class="py-3 px-4 font-bold text-blue-600">劇本四</td>
-                                <td class="py-3 px-4 text-red-500">下跌</td>
+                                <td class="py-3 px-4 text-green-500">下跌</td>
                                 <td class="py-3 px-4 text-red-500">正數（看多）</td>
                                 <td class="py-3 px-4">開低反彈，外資未跟著殺盤，反彈機率高。</td>
                             </tr>
@@ -726,6 +868,7 @@ def generate_html(history_records):
                             <th class="py-3 px-4">夜盤漲跌</th>
                             <th class="py-3 px-4">夜盤量佔比 (算式)</th>
                             <th class="py-3 px-4">三大法人淨額 (夜盤)</th>
+                            <th class="py-3 px-4">三大法人淨額 (全日)</th>
                             <th class="py-3 px-4">美股指數 (對應夜盤)</th>
                             <th class="py-3 px-4">預測劇本</th>
                             <th class="py-3 px-4 text-center">當日加權指數走勢 (09:00~13:30)</th>
@@ -749,7 +892,7 @@ def generate_html(history_records):
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生採用 futContractsDateAh 夜盤專用資料的 index.html！")
+    print("成功產生包含近 3 個月台美股 K 線圖與全日/夜盤雙法人欄位的 index.html！")
 
 if __name__ == "__main__":
     history_records = update_history_json()

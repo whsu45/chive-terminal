@@ -51,6 +51,7 @@ def clean_float(text):
         return None
 
 def fetch_night_market_data(session, target_date_str):
+    """ 抓取夜盤行情 (marketCode = 1) """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '1', 'dateaddcnt': '',
@@ -73,6 +74,7 @@ def fetch_night_market_data(session, target_date_str):
     return None, None
 
 def fetch_day_market_volume(session, prev_date_str):
+    """ 抓取一般交易時段 (marketCode = 0) 的日盤成交量 """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '0', 'dateaddcnt': '',
@@ -104,7 +106,7 @@ def fetch_day_market_volume(session, prev_date_str):
     return None
 
 def fetch_institutional_positions_ah(session, target_date_str):
-    """ 抓取夜盤專用三大法人多空淨額 (futContractsDateAh) """
+    """ 抓取三大法人夜盤專用多空淨額 (futContractsDateAh) """
     url = "https://www.taifex.com.tw/cht/3/futContractsDateAh"
     payload = {
         'queryType': '1', 'goDay': '', 'doQuery': '1', 'dateaddcnt': '',
@@ -218,6 +220,45 @@ def fetch_us_indices(session):
             print(f"Fetch US index {symbol} error: {e}")
             
     return us_data_by_date
+
+def fetch_ohlc_3m(session, symbol):
+    """
+    抓取 3 個月的每日 K 線 OHLC (Open, High, Low, Close) 數據
+    """
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=3mo"
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    ohlc_list = []
+    try:
+        resp = session.get(url, headers=headers, timeout=5)
+        if resp.status_code == 200:
+            data = resp.json()
+            result = data.get('chart', {}).get('result', [])[0]
+            timestamps = result.get('timestamp', [])
+            quote = result.get('indicators', {}).get('quote', [])[0]
+            opens = quote.get('open', [])
+            highs = quote.get('high', [])
+            lows = quote.get('low', [])
+            closes = quote.get('close', [])
+            
+            for i in range(len(timestamps)):
+                if (i < len(opens) and opens[i] is not None and
+                    i < len(highs) and highs[i] is not None and
+                    i < len(lows) and lows[i] is not None and
+                    i < len(closes) and closes[i] is not None):
+                    
+                    ts = timestamps[i]
+                    date_str = datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d")
+                    
+                    ohlc_list.append({
+                        "time": date_str,
+                        "open": round(opens[i], 2),
+                        "high": round(highs[i], 2),
+                        "low": round(lows[i], 2),
+                        "close": round(closes[i], 2)
+                    })
+    except Exception as e:
+        print(f"Error fetching OHLC for {symbol}: {e}")
+    return ohlc_list
 
 def get_us_info_for_date(us_data_by_date, prev_date_str):
     if prev_date_str in us_data_by_date:
@@ -367,12 +408,10 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
         "night_volume_ratio": "NA",
         "vol_formula_str": "NA",
         
-        # 夜盤籌碼 (Ah)
         "foreign_net_ah": "NA",
         "trust_net_ah": "NA",
         "dealer_net_ah": "NA",
         
-        # 全日籌碼 (Full)
         "foreign_net_full": "NA",
         "trust_net_full": "NA",
         "dealer_net_full": "NA",
@@ -419,7 +458,6 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
     if night_price_change is not None:
         data["night_price_change"] = f"+{night_price_change}" if night_price_change > 0 else str(night_price_change)
     
-    # 填入夜盤籌碼
     if ah_pos.get("foreign") is not None:
         data["foreign_net_ah"] = ah_pos["foreign"]
     if ah_pos.get("trust") is not None:
@@ -427,7 +465,6 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
     if ah_pos.get("dealer") is not None:
         data["dealer_net_ah"] = ah_pos["dealer"]
 
-    # 填入全日籌碼
     if full_pos.get("foreign") is not None:
         data["foreign_net_full"] = full_pos["foreign"]
     if full_pos.get("trust") is not None:
@@ -508,7 +545,7 @@ def update_history_json():
         json.dump(sorted_history, f, ensure_ascii=False, indent=2)
         
     print(f"成功更新歷史紀錄至：{JSON_FILE}")
-    return sorted_history
+    return sorted_history, session
 
 def format_signed_num(val):
     if val is None or val == "NA":
@@ -532,7 +569,7 @@ def format_pts_str(val_str):
         return val_display, "text-green-500 font-semibold"
     return val_display, "text-slate-600"
 
-def generate_html(history_records):
+def generate_html(history_records, tw_kline_data, us_kline_data):
     latest_data = history_records[0]
     
     utc_now = datetime.now(timezone.utc)
@@ -540,6 +577,9 @@ def generate_html(history_records):
     
     utc_time_str = utc_now.strftime('%Y/%m/%d %H:%M:%S')
     tw_time_str = tw_now.strftime('%Y/%m/%d %H:%M:%S')
+
+    tw_kline_json = json.dumps(tw_kline_data)
+    us_kline_json = json.dumps(us_kline_data)
 
     scenario_badge_class = "bg-slate-100 text-slate-700 border-slate-200"
     if latest_data["scenario"] == "劇本一":
@@ -609,7 +649,6 @@ def generate_html(history_records):
                 <div class="font-semibold text-slate-700">{item['night_volume_ratio']}</div>
                 <div class="text-[11px] text-slate-400 mt-0.5">{item.get('vol_formula_str', '')}</div>
             </td>
-            <!-- 夜盤三大法人 -->
             <td class="py-3 px-4">
                 <div class="text-xs space-y-0.5">
                     <div><span class="text-slate-400">外資:</span> <span class="{haf_color}">{haf_str}</span></div>
@@ -617,7 +656,6 @@ def generate_html(history_records):
                     <div><span class="text-slate-400">自營:</span> <span class="{had_color}">{had_str}</span></div>
                 </div>
             </td>
-            <!-- 全日三大法人 -->
             <td class="py-3 px-4">
                 <div class="text-xs space-y-0.5">
                     <div><span class="text-slate-400">外資:</span> <span class="{hff_color}">{hff_str}</span></div>
@@ -645,6 +683,8 @@ def generate_html(history_records):
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>台指期開盤走勢預測儀表板</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- TradingView 官方原生開源 Lightweight Charts 引擎 -->
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
     <div class="max-w-[1400px] mx-auto space-y-6">
@@ -663,82 +703,24 @@ def generate_html(history_records):
             </div>
         </div>
 
-        <!-- 3個月台股與美股 TradingView K 線走勢圖區塊 -->
+        <!-- 3個月台股與美股原生 K 線走勢圖區塊 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- 1. 台股加權指數 3M K線圖 -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
                 <div class="flex items-center justify-between mb-2">
                     <h2 class="text-sm font-bold text-slate-800">🇹🇼 台股加權指數 (TAIEX) 近 3 個月 K 線圖</h2>
-                    <span class="text-xs text-slate-400">TradingView</span>
+                    <span class="text-xs text-slate-400">TradingView Engine</span>
                 </div>
-                <div class="tradingview-widget-container" style="height: 300px;">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" async>
-                    {{
-                        "symbols": [["台股加權指數", "TWSE:TAIEX|3M"]],
-                        "chartOnly": false,
-                        "width": "100%",
-                        "height": "100%",
-                        "locale": "zh_TW",
-                        "colorTheme": "light",
-                        "autosize": true,
-                        "showVolume": false,
-                        "showMA": false,
-                        "hideDateRanges": false,
-                        "hideMarketStatus": false,
-                        "hideSymbolLogo": false,
-                        "scalePosition": "right",
-                        "scaleMode": "Normal",
-                        "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
-                        "fontSize": "10",
-                        "noTimeScale": false,
-                        "valuesTracking": "1",
-                        "changeMode": "price-and-percent",
-                        "chartType": "candlesticks",
-                        "gridLineColor": "rgba(240, 243, 246, 0.6)",
-                        "headerFontSize": "medium",
-                        "dateFormat": "yyyy-MM-dd"
-                    }}
-                    </script>
-                </div>
+                <div id="tw-kline-chart" class="w-full h-[290px]"></div>
             </div>
 
             <!-- 2. 美股 NASDAQ 指數 3M K線圖 -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
                 <div class="flex items-center justify-between mb-2">
                     <h2 class="text-sm font-bold text-slate-800">🇺🇸 美股 NASDAQ 指數 (IXIC) 近 3 個月 K 線圖</h2>
-                    <span class="text-xs text-slate-400">TradingView</span>
+                    <span class="text-xs text-slate-400">TradingView Engine</span>
                 </div>
-                <div class="tradingview-widget-container" style="height: 300px;">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" async>
-                    {{
-                        "symbols": [["NASDAQ 指數", "NASDAQ:IXIC|3M"]],
-                        "chartOnly": false,
-                        "width": "100%",
-                        "height": "100%",
-                        "locale": "zh_TW",
-                        "colorTheme": "light",
-                        "autosize": true,
-                        "showVolume": false,
-                        "showMA": false,
-                        "hideDateRanges": false,
-                        "hideMarketStatus": false,
-                        "hideSymbolLogo": false,
-                        "scalePosition": "right",
-                        "scaleMode": "Normal",
-                        "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
-                        "fontSize": "10",
-                        "noTimeScale": false,
-                        "valuesTracking": "1",
-                        "changeMode": "price-and-percent",
-                        "chartType": "candlesticks",
-                        "gridLineColor": "rgba(240, 243, 246, 0.6)",
-                        "headerFontSize": "medium",
-                        "dateFormat": "yyyy-MM-dd"
-                    }}
-                    </script>
-                </div>
+                <div id="us-kline-chart" class="w-full h-[290px]"></div>
             </div>
         </div>
 
@@ -887,13 +869,77 @@ def generate_html(history_records):
             資料來源：台灣期貨交易所 (TAIFEX) & 台灣證券交易所 (TWSE) & Yahoo Finance | 自動化發布 via GitHub Actions & Pages
         </footer>
     </div>
+
+    <!-- 前端渲染 K 線圖腳本 -->
+    <script>
+        const twData = {tw_kline_json};
+        const usData = {us_kline_json};
+
+        function createKLineChart(containerId, data) {{
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (!data || data.length === 0) {{
+                container.innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 text-xs">暫無 K 線數據</div>';
+                return;
+            }}
+
+            const chart = LightweightCharts.createChart(container, {{
+                width: container.clientWidth,
+                height: 290,
+                layout: {{
+                    backgroundColor: '#ffffff',
+                    textColor: '#64748b',
+                }},
+                grid: {{
+                    vertLines: {{ color: '#f1f5f9' }},
+                    horzLines: {{ color: '#f1f5f9' }},
+                }},
+                crosshair: {{
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                }},
+                rightPriceScale: {{
+                    borderColor: '#e2e8f0',
+                }},
+                timeScale: {{
+                    borderColor: '#e2e8f0',
+                    timeVisible: true,
+                }},
+            }});
+
+            const candlestickSeries = chart.addCandlestickSeries({{
+                upColor: '#ef4444',       // 上漲 (紅 K)
+                downColor: '#22c55e',     // 下跌 (綠 K)
+                borderUpColor: '#ef4444',
+                borderDownColor: '#22c55e',
+                wickUpColor: '#ef4444',
+                wickDownColor: '#22c55e',
+            }});
+
+            candlestickSeries.setData(data);
+
+            window.addEventListener('resize', () => {{
+                chart.applyOptions({{ width: container.clientWidth }});
+            }});
+        }}
+
+        document.addEventListener('DOMContentLoaded', () => {{
+            createKLineChart('tw-kline-chart', twData);
+            createKLineChart('us-kline-chart', usData);
+        }});
+    </script>
 </body>
 </html>
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生包含近 3 個月台美股 K 線圖與全日/夜盤雙法人欄位的 index.html！")
+    print("成功產生採用 Native TradingView Canvas K線圖的 index.html！")
 
 if __name__ == "__main__":
-    history_records = update_history_json()
-    generate_html(history_records)
+    history_records, session = update_history_json()
+    
+    print("正在抓取近 3 個月台股與美股 K 線 OHLC 數據...")
+    tw_kline_data = fetch_ohlc_3m(session, "^TWII")
+    us_kline_data = fetch_ohlc_3m(session, "^IXIC")
+    
+    generate_html(history_records, tw_kline_data, us_kline_data)

@@ -1,4 +1,4 @@
-# 📈 台指期每日/每週走勢預測儀表板 (Taiwan Futures Forecast Dashboard)
+# 📈 Taiwan Futures Forecast Dashboard
 
 本專案利用 Python 自動爬取台灣期貨交易所（TAIFEX）官方數據，計算夜盤三大關鍵指標，並透過 **GitHub Actions** 與 **GitHub Pages** 實現每日自動更新與靜態網站發布。
 

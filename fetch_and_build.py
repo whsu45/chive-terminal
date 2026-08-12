@@ -51,7 +51,6 @@ def clean_float(text):
         return None
 
 def fetch_night_market_data(session, target_date_str):
-    """ 抓取夜盤行情 (marketCode = 1) """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '1', 'dateaddcnt': '',
@@ -74,7 +73,6 @@ def fetch_night_market_data(session, target_date_str):
     return None, None
 
 def fetch_day_market_volume(session, prev_date_str):
-    """ 抓取一般交易時段 (marketCode = 0) 的日盤成交量 """
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
     payload = {
         'queryType': '2', 'marketCode': '0', 'dateaddcnt': '',
@@ -182,7 +180,7 @@ def fetch_institutional_positions_full(session, target_date_str):
 def fetch_us_indices(session):
     symbols = {'DJI': '^DJI', 'IXIC': '^IXIC', 'SOX': '^SOX'}
     us_data_by_date = {}
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
     
     for key, symbol in symbols.items():
         url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=2mo"
@@ -223,11 +221,14 @@ def fetch_us_indices(session):
 
 def fetch_ohlc_3m(session, symbol):
     """
-    抓取 3 個月的每日 K 線 OHLC (Open, High, Low, Close) 數據
+    抓取近 3 個月 OHLC 資料 (雙源備援：Yahoo Finance + Stooq)
     """
-    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=3mo"
-    headers = {'User-Agent': 'Mozilla/5.0'}
     ohlc_list = []
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    
+    # 1. 優先嘗試 Yahoo Finance
+    yf_symbol = "^TWII" if "TW" in symbol or "TAIEX" in symbol else "^IXIC"
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{yf_symbol}?interval=1d&range=3mo"
     try:
         resp = session.get(url, headers=headers, timeout=5)
         if resp.status_code == 200:
@@ -251,14 +252,124 @@ def fetch_ohlc_3m(session, symbol):
                     
                     ohlc_list.append({
                         "time": date_str,
-                        "open": round(opens[i], 2),
-                        "high": round(highs[i], 2),
-                        "low": round(lows[i], 2),
-                        "close": round(closes[i], 2)
+                        "open": round(opens[i], 1),
+                        "high": round(highs[i], 1),
+                        "low": round(lows[i], 1),
+                        "close": round(closes[i], 1)
                     })
+            if len(ohlc_list) > 10:
+                return ohlc_list
     except Exception as e:
-        print(f"Error fetching OHLC for {symbol}: {e}")
+        print(f"Yahoo OHLC fetch error for {yf_symbol}: {e}")
+
+    # 2. 備援 Stooq API
+    stooq_symbol = "^TWII" if "TW" in symbol or "TAIEX" in symbol else "^IXIC"
+    stooq_url = f"https://stooq.com/q/d/l/?s={stooq_symbol}&i=d"
+    try:
+        resp = session.get(stooq_url, headers=headers, timeout=5)
+        if resp.status_code == 200 and "Date,Open" in resp.text:
+            lines = resp.text.strip().split('\n')[1:]
+            for line in lines[-65:]:
+                parts = line.split(',')
+                if len(parts) >= 5:
+                    date_str, o, h, l, c = parts[0], parts[1], parts[2], parts[3], parts[4]
+                    if all(x.replace('.', '').isdigit() for x in [o, h, l, c]):
+                        ohlc_list.append({
+                            "time": date_str,
+                            "open": round(float(o), 1),
+                            "high": round(float(h), 1),
+                            "low": round(float(l), 1),
+                            "close": round(float(c), 1)
+                        })
+            if len(ohlc_list) > 10:
+                return ohlc_list
+    except Exception as e:
+        print(f"Stooq OHLC fetch error for {stooq_symbol}: {e}")
+
     return ohlc_list
+
+def generate_svg_kline_chart(ohlc_data, title, width=580, height=280):
+    """
+    100% 純向量 SVG 原生 K 線圖產生器 (不需要任何外部 JS/Iframe，絕不白屏)
+    """
+    if not ohlc_data or len(ohlc_data) < 2:
+        return f'''
+        <div class="flex items-center justify-center h-[280px] bg-slate-50 text-slate-400 text-xs rounded-lg border border-slate-100">
+            ⚠️ 數據載入中或休市無資料
+        </div>
+        '''
+
+    highs = [d['high'] for d in ohlc_data]
+    lows = [d['low'] for d in ohlc_data]
+    min_price = min(lows)
+    max_price = max(highs)
+    price_range = max_price - min_price if max_price != min_price else 1.0
+
+    padding_top = 20
+    padding_bottom = 30
+    padding_left = 60
+    padding_right = 15
+
+    chart_w = width - padding_left - padding_right
+    chart_h = height - padding_top - padding_bottom
+
+    num_bars = len(ohlc_data)
+    bar_spacing = chart_w / num_bars
+    bar_width = max(2.5, bar_spacing * 0.65)
+
+    def price_to_y(p):
+        return padding_top + chart_h - ((p - min_price) / price_range) * chart_h
+
+    svg_elements = []
+
+    # 1. 價格水平網格線與 Y 軸標籤
+    num_grid_lines = 4
+    for i in range(num_grid_lines + 1):
+        price_val = min_price + (price_range * i / num_grid_lines)
+        y_pos = price_to_y(price_val)
+        svg_elements.append(f'<line x1="{padding_left}" y1="{y_pos:.1f}" x2="{width - padding_right}" y2="{y_pos:.1f}" stroke="#f1f5f9" stroke-width="1" />')
+        svg_elements.append(f'<text x="{padding_left - 8}" y="{y_pos + 3.5:.1f}" font-size="10" fill="#94a3b8" text-anchor="end">{price_val:,.0f}</text>')
+
+    # 2. X 軸日期標籤
+    if num_bars >= 3:
+        sample_indices = [0, num_bars // 2, num_bars - 1]
+        for idx in sample_indices:
+            x_pos = padding_left + (idx + 0.5) * bar_spacing
+            date_label = ohlc_data[idx]['time']
+            svg_elements.append(f'<text x="{x_pos:.1f}" y="{height - 8}" font-size="10" fill="#94a3b8" text-anchor="middle">{date_label}</text>')
+
+    # 3. 繪製 K 線 (蠟燭圖與影線)
+    for idx, d in enumerate(ohlc_data):
+        x_center = padding_left + (idx + 0.5) * bar_spacing
+        x_left = x_center - (bar_width / 2)
+
+        o_y = price_to_y(d['open'])
+        c_y = price_to_y(d['close'])
+        h_y = price_to_y(d['high'])
+        l_y = price_to_y(d['low'])
+
+        is_up = d['close'] >= d['open']
+        color = "#ef4444" if is_up else "#22c55e" # 台股習慣：上漲紅、下跌綠
+
+        top_y = min(o_y, c_y)
+        body_h = max(abs(c_y - o_y), 1.5)
+
+        tooltip = f"{d['time']} &#10;開: {d['open']:,.1f} &#10;高: {d['high']:,.1f} &#10;低: {d['low']:,.1f} &#10;收: {d['close']:,.1f}"
+
+        # 影線
+        svg_elements.append(f'<line x1="{x_center:.1f}" y1="{h_y:.1f}" x2="{x_center:.1f}" y2="{l_y:.1f}" stroke="{color}" stroke-width="1.2" />')
+
+        # 實體 K 棒
+        svg_elements.append(f'<rect x="{x_left:.1f}" y="{top_y:.1f}" width="{bar_width:.1f}" height="{body_h:.1f}" fill="{color}" rx="0.5"><title>{tooltip}</title></rect>')
+
+    elements_str = "\n".join(svg_elements)
+
+    svg = f'''
+    <svg viewBox="0 0 {width} {height}" class="w-full h-auto overflow-visible font-sans">
+        {elements_str}
+    </svg>
+    '''
+    return svg
 
 def get_us_info_for_date(us_data_by_date, prev_date_str):
     if prev_date_str in us_data_by_date:
@@ -578,8 +689,9 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
     utc_time_str = utc_now.strftime('%Y/%m/%d %H:%M:%S')
     tw_time_str = tw_now.strftime('%Y/%m/%d %H:%M:%S')
 
-    tw_kline_json = json.dumps(tw_kline_data)
-    us_kline_json = json.dumps(us_kline_data)
+    # 生成 3 個月純 SVG 原生 K 線圖 (不依賴任何外部 Iframe/JS)
+    tw_kline_svg = generate_svg_kline_chart(tw_kline_data, "台股加權指數")
+    us_kline_svg = generate_svg_kline_chart(us_kline_data, "美股 NASDAQ 指數")
 
     scenario_badge_class = "bg-slate-100 text-slate-700 border-slate-200"
     if latest_data["scenario"] == "劇本一":
@@ -683,8 +795,6 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>台指期開盤走勢預測儀表板</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- TradingView 官方原生開源 Lightweight Charts 引擎 -->
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
     <div class="max-w-[1400px] mx-auto space-y-6">
@@ -703,24 +813,24 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
             </div>
         </div>
 
-        <!-- 3個月台股與美股原生 K 線走勢圖區塊 -->
+        <!-- 3個月台股與美股原生 SVG K 線走勢圖區塊 (100% 絕不白屏) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- 1. 台股加權指數 3M K線圖 -->
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                <div class="flex items-center justify-between mb-2">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between mb-3">
                     <h2 class="text-sm font-bold text-slate-800">🇹🇼 台股加權指數 (TAIEX) 近 3 個月 K 線圖</h2>
-                    <span class="text-xs text-slate-400">TradingView Engine</span>
+                    <span class="text-xs font-semibold text-slate-400">3 Months Candlestick</span>
                 </div>
-                <div id="tw-kline-chart" class="w-full h-[290px]"></div>
+                {tw_kline_svg}
             </div>
 
             <!-- 2. 美股 NASDAQ 指數 3M K線圖 -->
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                <div class="flex items-center justify-between mb-2">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between mb-3">
                     <h2 class="text-sm font-bold text-slate-800">🇺🇸 美股 NASDAQ 指數 (IXIC) 近 3 個月 K 線圖</h2>
-                    <span class="text-xs text-slate-400">TradingView Engine</span>
+                    <span class="text-xs font-semibold text-slate-400">3 Months Candlestick</span>
                 </div>
-                <div id="us-kline-chart" class="w-full h-[290px]"></div>
+                {us_kline_svg}
             </div>
         </div>
 
@@ -869,71 +979,12 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
             資料來源：台灣期貨交易所 (TAIFEX) & 台灣證券交易所 (TWSE) & Yahoo Finance | 自動化發布 via GitHub Actions & Pages
         </footer>
     </div>
-
-    <!-- 前端渲染 K 線圖腳本 -->
-    <script>
-        const twData = {tw_kline_json};
-        const usData = {us_kline_json};
-
-        function createKLineChart(containerId, data) {{
-            const container = document.getElementById(containerId);
-            if (!container) return;
-
-            if (!data || data.length === 0) {{
-                container.innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 text-xs">暫無 K 線數據</div>';
-                return;
-            }}
-
-            const chart = LightweightCharts.createChart(container, {{
-                width: container.clientWidth,
-                height: 290,
-                layout: {{
-                    backgroundColor: '#ffffff',
-                    textColor: '#64748b',
-                }},
-                grid: {{
-                    vertLines: {{ color: '#f1f5f9' }},
-                    horzLines: {{ color: '#f1f5f9' }},
-                }},
-                crosshair: {{
-                    mode: LightweightCharts.CrosshairMode.Normal,
-                }},
-                rightPriceScale: {{
-                    borderColor: '#e2e8f0',
-                }},
-                timeScale: {{
-                    borderColor: '#e2e8f0',
-                    timeVisible: true,
-                }},
-            }});
-
-            const candlestickSeries = chart.addCandlestickSeries({{
-                upColor: '#ef4444',       // 上漲 (紅 K)
-                downColor: '#22c55e',     // 下跌 (綠 K)
-                borderUpColor: '#ef4444',
-                borderDownColor: '#22c55e',
-                wickUpColor: '#ef4444',
-                wickDownColor: '#22c55e',
-            }});
-
-            candlestickSeries.setData(data);
-
-            window.addEventListener('resize', () => {{
-                chart.applyOptions({{ width: container.clientWidth }});
-            }});
-        }}
-
-        document.addEventListener('DOMContentLoaded', () => {{
-            createKLineChart('tw-kline-chart', twData);
-            createKLineChart('us-kline-chart', usData);
-        }});
-    </script>
 </body>
 </html>
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生採用 Native TradingView Canvas K線圖的 index.html！")
+    print("成功產生採用 Pure SVG 原生 3M K線圖的 index.html！")
 
 if __name__ == "__main__":
     history_records, session = update_history_json()

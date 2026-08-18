@@ -62,6 +62,21 @@ def clean_float(text):
     except ValueError:
         return None
 
+def is_etf(stock_text):
+    """
+    判斷代號或名稱是否為 ETF
+    台股 ETF 代號皆以 '00' 開頭 (如 0050, 0056, 00878, 00991A, 00981A)
+    或是名稱包含 ETF, 正2, 反1, 主動 等關鍵字
+    """
+    text = stock_text.strip()
+    if text.startswith('00'):
+        return True
+    etf_keywords = ['ETF', '正2', '反1', '主動']
+    for kw in etf_keywords:
+        if kw in text:
+            return True
+    return False
+
 # ==============================================================================
 # 期貨與籌碼爬蟲 (Futures & Institutional Scrapers)
 # ==============================================================================
@@ -436,23 +451,17 @@ def verify_match(scenario, actual_info):
     return "NA", "bg-slate-100 text-slate-500"
 
 # ==============================================================================
-# 新增：7 大主力券商買超分點爬蟲 (Broker Buy List Scraper)
+# 7 大主力券商買超個股與 ETF 獨立分流爬蟲
 # ==============================================================================
 
 def fetch_single_broker_buy(session, broker_info, date_str):
-    """
-    爬取單一券商分點當日買超名細 (DJ MoneyDJ zgb0.djhtm)
-    """
     dt = datetime.strptime(date_str, "%Y/%m/%d")
-    formatted_date = f"{dt.year}-{dt.month}-{dt.day}" # YYYY-M-D
+    formatted_date = f"{dt.year}-{dt.month}-{dt.day}"
     
     url = f"https://fubon-ebrokerdj.fbs.com.tw/z/zg/zgb/zgb0.djhtm?a={broker_info['a']}&b={broker_info['b']}&c={broker_info['c']}&e={formatted_date}&f={formatted_date}"
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Referer': 'https://fubon-ebrokerdj.fbs.com.tw/'
-    }
+    headers = {'User-Agent': 'Mozilla/5.0', 'Referer': 'https://fubon-ebrokerdj.fbs.com.tw/'}
     
-    buy_map = {} # { "2330台積電": 2144 }
+    buy_map = {}
     try:
         resp = session.get(url, headers=headers, timeout=6)
         resp.encoding = 'big5'
@@ -465,7 +474,6 @@ def fetch_single_broker_buy(session, broker_info, date_str):
                 stk_text = cols[0].text.strip()
                 net_str = cols[3].text.strip().replace(',', '')
                 
-                # 過濾標頭列，留存個股與淨買超值
                 if stk_text and "名稱" not in stk_text and net_str.replace('-', '').isdigit():
                     net_val = int(net_str)
                     if net_val > 0:
@@ -477,30 +485,29 @@ def fetch_single_broker_buy(session, broker_info, date_str):
 
 def aggregate_broker_buys_for_date(session, target_date_str):
     """
-    聚合 7 大主力分點當日買超明細，計算排行榜 (以買超券商數優先，張數為輔)
+    分別聚合「個股 Top 10」與「ETF Top 10」 (以券商重複數優先，總張數為輔)
     """
-    stocks_summary = {} # { "2330台積電": { "count": 2, "total_net_buy": 4000, "brokers": ["摩根大通", "美林"] } }
+    stocks_summary = {}
+    etf_summary = {}
     
     for broker in BROKER_TARGETS:
         buy_map = fetch_single_broker_buy(session, broker, target_date_str)
         for stk, net_buy in buy_map.items():
-            if stk not in stocks_summary:
-                stocks_summary[stk] = {"stock": stk, "count": 0, "total_net_buy": 0, "brokers": []}
-            stocks_summary[stk]["count"] += 1
-            stocks_summary[stk]["total_net_buy"] += net_buy
-            stocks_summary[stk]["brokers"].append(broker["name"])
+            target_dict = etf_summary if is_etf(stk) else stocks_summary
+            
+            if stk not in target_dict:
+                target_dict[stk] = {"stock": stk, "count": 0, "total_net_buy": 0, "brokers": []}
+            target_dict[stk]["count"] += 1
+            target_dict[stk]["total_net_buy"] += net_buy
+            target_dict[stk]["brokers"].append(broker["name"])
 
-    # 排序邏輯：1. 券商數 (desc), 2. 總張數 (desc)
-    sorted_stocks = sorted(
-        stocks_summary.values(),
-        key=lambda x: (x["count"], x["total_net_buy"]),
-        reverse=True
-    )
+    # 排序：1. 券商數 (desc), 2. 總張數 (desc)
+    sorted_stocks = sorted(stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
+    sorted_etfs = sorted(etf_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
     
-    return sorted_stocks[:10] # 取前 10 名
+    return sorted_stocks[:10], sorted_etfs[:10]
 
 def update_broker_history_json(session, trading_days):
-    """ 更新並維護 data/broker_history.json """
     os.makedirs(DATA_DIR, exist_ok=True)
     existing_records = {}
     
@@ -514,12 +521,17 @@ def update_broker_history_json(session, trading_days):
             print(f"載入 {BROKER_JSON_FILE} 失敗: {e}")
 
     for target_date_str, _ in trading_days:
-        if target_date_str not in existing_records or not existing_records[target_date_str].get("top_stocks"):
-            print(f"抓取 7 大主力券商買超資料：{target_date_str}...")
-            top_10 = aggregate_broker_buys_for_date(session, target_date_str)
+        rec = existing_records.get(target_date_str)
+        # 若舊資料未獨立分流 top_etfs，自動重新抓取與分類
+        needs_update = rec is None or "top_etfs" not in rec
+        
+        if needs_update:
+            print(f"抓取 7 大主力券商（個股與 ETF 分流）：{target_date_str}...")
+            top_stocks, top_etfs = aggregate_broker_buys_for_date(session, target_date_str)
             existing_records[target_date_str] = {
                 "date": target_date_str,
-                "top_stocks": top_10
+                "top_stocks": top_stocks,
+                "top_etfs": top_etfs
             }
 
     sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)
@@ -566,10 +578,8 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
 
     night_price_change, night_vol = fetch_night_market_data(session, target_date_str)
     day_vol = fetch_day_market_volume(session, prev_date_str)
-    
     ah_pos = fetch_institutional_positions_ah(session, target_date_str)
     full_pos = fetch_institutional_positions_full(session, target_date_str)
-    
     actual_info = fetch_twse_intraday_taiex(session, target_date_str)
     us_info = get_us_info_for_date(us_data_by_date, prev_date_str)
 
@@ -710,7 +720,6 @@ def format_pts_str(val_str):
 # ==============================================================================
 
 def generate_index_html(history_records, tw_kline_data, us_kline_data):
-    """ 生成主頁面 index.html """
     latest_data = history_records[0]
     
     utc_now = datetime.now(timezone.utc)
@@ -1013,27 +1022,22 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
         f.write(html_content)
     print("成功產生 index.html！")
 
-def generate_broker_html(broker_records):
-    """ 生成新分頁 broker.html (主力券商買超分析) """
-    latest_data = broker_records[0] if broker_records else {"date": "NA", "top_stocks": []}
+def render_top_cards(items_list, category_label):
+    """ 輔助函數：渲染 Top 10 網格卡片 HTML """
+    if not items_list:
+        return f'<div class="col-span-full p-8 text-center bg-white rounded-xl text-slate-400 text-sm">今日無{category_label}買超紀錄或目前為休市期間 (NA)</div>'
     
-    utc_now = datetime.now(timezone.utc)
-    tw_now = utc_now + timedelta(hours=8)
-    utc_time_str = utc_now.strftime('%Y/%m/%d %H:%M:%S')
-    tw_time_str = tw_now.strftime('%Y/%m/%d %H:%M:%S')
-
-    # 生成今日 Top 10 個股卡片 HTML
-    top_cards_html = ""
-    for rank, item in enumerate(latest_data.get("top_stocks", []), start=1):
+    cards_html = ""
+    for rank, item in enumerate(items_list, start=1):
         brokers_badge = "".join([f'<span class="px-2 py-0.5 text-[11px] bg-indigo-50 text-indigo-700 rounded border border-indigo-100 font-medium">{b}</span>' for b in item["brokers"]])
-        top_cards_html += f"""
+        cards_html += f"""
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between mb-2">
                     <span class="px-2.5 py-0.5 text-xs font-bold bg-slate-800 text-white rounded-full">第 {rank} 名</span>
-                    <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">{item['count']} 家主力券商聯合買超</span>
+                    <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">{item['count']} 家主力券商</span>
                 </div>
-                <h3 class="text-xl font-extrabold text-slate-800 my-1">{item['stock']}</h3>
+                <h3 class="text-lg font-extrabold text-slate-800 my-1">{item['stock']}</h3>
                 <div class="flex flex-wrap gap-1 my-3">
                     {brokers_badge}
                 </div>
@@ -1044,24 +1048,41 @@ def generate_broker_html(broker_records):
             </div>
         </div>
         """
+    return cards_html
 
-    if not top_cards_html:
-        top_cards_html = '<div class="col-span-full p-8 text-center bg-white rounded-xl text-slate-400 text-sm">今日主力券商買超資料尚未發布或休市中 (NA)</div>'
+def generate_broker_html(broker_records):
+    """ 生成獨立分流個股與 ETF 的 broker.html """
+    latest_data = broker_records[0] if broker_records else {"date": "NA", "top_stocks": [], "top_etfs": []}
+    
+    utc_now = datetime.now(timezone.utc)
+    tw_now = utc_now + timedelta(hours=8)
+    utc_time_str = utc_now.strftime('%Y/%m/%d %H:%M:%S')
+    tw_time_str = tw_now.strftime('%Y/%m/%d %H:%M:%S')
+
+    # 生成個股與 ETF 的 Top 10 卡片
+    top_stocks_html = render_top_cards(latest_data.get("top_stocks", []), "個股")
+    top_etfs_html = render_top_cards(latest_data.get("top_etfs", []), "ETF")
 
     # 生成歷史 20 日表格 HTML
     history_broker_rows = ""
     for record in broker_records[:20]:
-        stocks_str_list = []
-        for s in record.get("top_stocks", [])[:5]: # 表格摘要列出前 5 名
-            b_names = ",".join(s["brokers"])
-            stocks_str_list.append(f'<span class="inline-block bg-slate-50 border border-slate-200 px-2 py-1 rounded text-xs mr-1 mb-1"><b>{s["stock"]}</b> ({s["count"]}家: +{s["total_net_buy"]:,}張)</span>')
-            
-        stocks_display = "".join(stocks_str_list) if stocks_str_list else '<span class="text-slate-400 text-xs">無買超紀錄</span>'
+        # 個股前 5 名
+        stock_str_list = []
+        for s in record.get("top_stocks", [])[:5]:
+            stock_str_list.append(f'<span class="inline-block bg-slate-50 border border-slate-200 px-2 py-1 rounded text-xs mr-1 mb-1"><b>{s["stock"]}</b> ({s["count"]}家: +{s["total_net_buy"]:,}張)</span>')
+        stocks_display = "".join(stock_str_list) if stock_str_list else '<span class="text-slate-400 text-xs">無紀錄</span>'
+
+        # ETF 前 5 名
+        etf_str_list = []
+        for e in record.get("top_etfs", [])[:5]:
+            etf_str_list.append(f'<span class="inline-block bg-indigo-50/50 border border-indigo-100 px-2 py-1 rounded text-xs mr-1 mb-1 text-indigo-900"><b>{e["stock"]}</b> ({e["count"]}家: +{e["total_net_buy"]:,}張)</span>')
+        etfs_display = "".join(etf_str_list) if etf_str_list else '<span class="text-slate-400 text-xs">無紀錄</span>'
 
         history_broker_rows += f"""
         <tr class="hover:bg-slate-50 transition-colors">
             <td class="py-3 px-4 font-semibold text-slate-700 whitespace-nowrap">{record['date']}</td>
             <td class="py-3 px-4">{stocks_display}</td>
+            <td class="py-3 px-4">{etfs_display}</td>
         </tr>
         """
 
@@ -1070,7 +1091,7 @@ def generate_broker_html(broker_records):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>主力券商買超個股分析</title>
+    <title>主力券商買超個股與 ETF 分析</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
@@ -1096,25 +1117,36 @@ def generate_broker_html(broker_records):
             </div>
         </div>
 
-        <!-- 當日 Top 10 主力券商買超個股區塊 -->
+        <!-- 區塊一：今日 Top 10 主力券商買超個股 (不含 ETF) -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800">🔥 今日 7 大主力券商聯合買超 Top 10 個股</h2>
-                    <p class="text-xs text-slate-400 mt-0.5">資料日期：{latest_data['date']} | 優先比對「買超券商數」，數量相同時比對「總買超張數」</p>
+                    <p class="text-xs text-slate-400 mt-0.5">資料日期：{latest_data['date']} | 排除 ETF | 優先比對「買超券商數」，數量相同時比對「總買超張數」</p>
                 </div>
             </div>
-
-            <!-- Top 10 網格卡片 -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                {top_cards_html}
+                {top_stocks_html}
             </div>
         </div>
 
-        <!-- 歷史紀錄表格區塊 -->
+        <!-- 區塊二：今日 Top 10 主力券商買超 ETF -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-bold text-slate-800">🗓️ 過去 20 個交易日主力買超歷史紀錄</h2>
+                <div>
+                    <h2 class="text-lg font-bold text-indigo-900">📊 今日 7 大主力券商聯合買超 Top 10 ETF</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">資料日期：{latest_data['date']} | 專屬 ETF 排名 | 優先比對「買超券商數」，數量相同時比對「總買超張數」</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                {top_etfs_html}
+            </div>
+        </div>
+
+        <!-- 區塊三：歷史紀錄表格 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold text-slate-800">🗓️ 過去 20 個交易日主力買超歷史紀錄 (個股與 ETF 分流)</h2>
                 <a href="./data/broker_history.json" target="_blank" class="text-xs text-indigo-600 hover:underline">📥 下載完整 broker_history.json</a>
             </div>
             <div class="overflow-x-auto">
@@ -1122,7 +1154,8 @@ def generate_broker_html(broker_records):
                     <thead class="text-xs text-slate-700 uppercase bg-slate-100">
                         <tr>
                             <th class="py-3 px-4 rounded-l-lg whitespace-nowrap">交易日期</th>
-                            <th class="py-3 px-4 rounded-r-lg">主力券商聯合買超前 5 名摘要 (個股 / 買超券商數 / 總張數)</th>
+                            <th class="py-3 px-4">主力買超個股 Top 5 (個股名稱 / 買超券商數 / 總張數)</th>
+                            <th class="py-3 px-4 rounded-r-lg">主力買超 ETF Top 5 (ETF 名稱 / 買超券商數 / 總張數)</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -1142,7 +1175,7 @@ def generate_broker_html(broker_records):
 """
     with open("broker.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生 broker.html！")
+    print("成功產生獨立分流個股與 ETF 的 broker.html！")
 
 # ==============================================================================
 # 主程式 (Main)
@@ -1151,7 +1184,7 @@ def generate_broker_html(broker_records):
 if __name__ == "__main__":
     history_records, session, trading_days = update_history_json()
     
-    print("正在抓取與更新 7 大主力券商買超歷史紀錄...")
+    print("正在抓取與更新 7 大主力券商買超歷史紀錄 (獨立分流個股與 ETF)...")
     broker_records = update_broker_history_json(session, trading_days)
     
     print("正在抓取近 3 個月台股與美股 K 線 OHLC 數據...")

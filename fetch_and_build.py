@@ -64,7 +64,7 @@ def clean_float(text):
 
 def is_etf(stock_text):
     """
-    台股 ETF 判定規則：代號為 '00' 開頭即為 ETF
+    台股 ETF 判定規則：代號以 '00' 開頭即為 ETF
     例如: 0050, 0056, 00878, 00991A, 00981A
     """
     text = stock_text.replace('\xa0', '').strip()
@@ -272,7 +272,6 @@ def fetch_ohlc_3m(session, symbol):
     except Exception as e:
         print(f"Yahoo OHLC fetch error for {yf_symbol}: {e}")
 
-    # 備援 Stooq API
     stooq_symbol = "^TWII" if "TW" in symbol or "TAIEX" in symbol else "^IXIC"
     stooq_url = f"https://stooq.com/q/d/l/?s={stooq_symbol}&i=d"
     try:
@@ -444,7 +443,7 @@ def verify_match(scenario, actual_info):
     return "NA", "bg-slate-100 text-slate-500"
 
 # ==============================================================================
-# 7 大主力券商買超個股與 ETF 獨立分流爬蟲 (已修復 \xa0 不可見字元問題)
+# 7 大主力券商買超個股與 ETF 獨立分流爬蟲 (已強化 4 位數股票代號動態過濾)
 # ==============================================================================
 
 def fetch_single_broker_buy(session, broker_info, date_str):
@@ -463,24 +462,25 @@ def fetch_single_broker_buy(session, broker_info, date_str):
         resp.encoding = 'big5'
         soup = BeautifulSoup(resp.text, 'html.parser')
         
-        rows = soup.find_all('tr')
-        for row in rows:
-            cols = row.find_all('td')
-            if len(cols) >= 4:
-                # 徹底清除 \xa0 (non-breaking space) 與空白
-                stk_raw = cols[0].text.replace('\xa0', '').replace('&nbsp;', '').strip()
-                net_raw = cols[3].text.replace('\xa0', '').replace('&nbsp;', '').replace(',', '').strip()
-                
-                # 採用正規表達式完全萃取帶號與數值
-                cleaned_net = re.sub(r'[^\d\-]', '', net_raw)
-                
-                if stk_raw and "名稱" not in stk_raw and "買超" not in stk_raw and "賣超" not in stk_raw and cleaned_net:
-                    try:
-                        net_val = int(cleaned_net)
-                        if net_val > 0:
-                            buy_map[stk_raw] = net_val
-                    except ValueError:
-                        pass
+        # 遍歷頁面中的表格，精準匹配台股/ETF 欄位
+        tables = soup.find_all('table')
+        for table in tables:
+            for row in table.find_all('tr'):
+                cols = row.find_all('td')
+                if len(cols) >= 4:
+                    stk_raw = cols[0].text.replace('\xa0', '').replace('&nbsp;', '').strip()
+                    net_raw = cols[3].text.replace('\xa0', '').replace('&nbsp;', '').replace(',', '').strip()
+                    
+                    # 核心過濾：名稱必須以 4 位數字開頭（台股或 ETF 的標準代號）
+                    if stk_raw and re.match(r'^\d{4}', stk_raw):
+                        cleaned_net = re.sub(r'[^\d\-]', '', net_raw)
+                        if cleaned_net:
+                            try:
+                                net_val = int(cleaned_net)
+                                if net_val > 0:
+                                    buy_map[stk_raw] = net_val
+                            except ValueError:
+                                pass
     except Exception as e:
         print(f"[{date_str}] Broker {broker_info['name']} fetch error: {e}")
         
@@ -525,20 +525,23 @@ def update_broker_history_json(session, trading_days):
 
     for target_date_str, _ in trading_days:
         rec = existing_records.get(target_date_str)
-        # 強制修復：如果個股或 ETF 列表為空，強制覆蓋重新抓取
+        
+        # 強制版本控制版本 v2：重新解析 MoneyDJ 資料並徹底分流個股與 ETF
         needs_update = (
             rec is None or 
             not rec.get("top_stocks") or 
-            not rec.get("top_etfs")
+            not rec.get("top_etfs") or
+            rec.get("version") != "v2"
         )
         
         if needs_update:
-            print(f"抓取 7 大主力券商（修復個股與 ETF 分流）：{target_date_str}...")
+            print(f"抓取 7 大主力券商（全數據動態解析）：{target_date_str}...")
             top_stocks, top_etfs = aggregate_broker_buys_for_date(session, target_date_str)
             existing_records[target_date_str] = {
                 "date": target_date_str,
                 "top_stocks": top_stocks,
-                "top_etfs": top_etfs
+                "top_etfs": top_etfs,
+                "version": "v2"
             }
 
     sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)
@@ -758,6 +761,7 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
     f_ah_str, f_ah_color = format_signed_num(latest_data.get('foreign_net_ah'))
     t_ah_str, t_ah_color = format_signed_num(latest_data.get('trust_net_ah'))
     d_ah_str, d_ah_color = format_signed_num(latest_data.get('dealer_net_ah'))
+
     f_full_str, f_full_color = format_signed_num(latest_data.get('foreign_net_full'))
 
     latest_dji, latest_dji_c = format_pts_str(latest_data.get('us_dji'))
@@ -1185,7 +1189,7 @@ def generate_broker_html(broker_records):
 if __name__ == "__main__":
     history_records, session, trading_days = update_history_json()
     
-    print("正在抓取與更新 7 大主力券商買超歷史紀錄 (修復字元解析與分流)...")
+    print("正在抓取與更新 7 大主力券商買超歷史紀錄 (動態過濾個股與 ETF)...")
     broker_records = update_broker_history_json(session, trading_days)
     
     print("正在抓取近 3 個月台股與美股 K 線 OHLC 數據...")

@@ -443,7 +443,7 @@ def verify_match(scenario, actual_info):
     return "NA", "bg-slate-100 text-slate-500"
 
 # ==============================================================================
-# 7 大主力券商買超個股與 ETF 獨立分流爬蟲 (使用 cp950 防呆解碼)
+# 7 大主力券商買超個股與 ETF 獨立分流爬蟲 (使用 Regex 解析 JS 腳本)
 # ==============================================================================
 
 def fetch_single_broker_buy(session, broker_info, date_str):
@@ -459,33 +459,35 @@ def fetch_single_broker_buy(session, broker_info, date_str):
     buy_map = {}
     try:
         resp = session.get(url, headers=headers, timeout=6)
-        # 關鍵修復：改用 cp950 並忽略特殊無法解析字元，確保完整解碼不截斷！
+        # 解碼 CP950
         html_content = resp.content.decode('cp950', errors='ignore')
         soup = BeautifulSoup(html_content, 'html.parser')
         
-        tables = soup.find_all('table')
-        for table in tables:
-            for row in table.find_all('tr'):
+        rows = soup.find_all('tr')
+        for row in rows:
+            row_html = str(row)
+            # 使用精準 Regex 萃取 MoneyDJ 的 GenLink2stk('ASxxxx','股票名稱') 結構
+            match = re.search(r"GenLink2stk\('AS([0-9A-Z]{4,6})','([^']+)'\)", row_html)
+            if match:
+                stk_code = match.group(1)
+                stk_name = match.group(2)
+                full_stk = f"{stk_code}{stk_name}"
+                
                 cols = row.find_all('td')
                 if len(cols) >= 4:
-                    stk_raw = cols[0].text.replace('\xa0', '').replace('&nbsp;', '').strip()
-                    net_raw = cols[3].text.replace('\xa0', '').replace('&nbsp;', '').replace(',', '').strip()
-                    cleaned_net = re.sub(r'[^\d\-]', '', net_raw)
-                    
-                    # 匹配 4 位數字開頭之台股/ETF 代號
-                    if stk_raw and re.match(r'^\d{4}', stk_raw) and cleaned_net:
-                        try:
-                            net_val = int(cleaned_net)
-                            if net_val > 0:
-                                buy_map[stk_raw] = net_val
-                        except ValueError:
-                            pass
+                    net_text = cols[3].text
+                    net_val = clean_int(net_text)
+                    if net_val is not None and net_val > 0:
+                        buy_map[full_stk] = net_val
     except Exception as e:
         print(f"[{date_str}] Broker {broker_info['name']} fetch error: {e}")
         
     return buy_map
 
 def aggregate_broker_buys_for_date(session, target_date_str):
+    """
+    分別聚合「個股 Top 10」與「ETF Top 10」
+    """
     stocks_summary = {}
     etf_summary = {}
     
@@ -500,6 +502,7 @@ def aggregate_broker_buys_for_date(session, target_date_str):
             target_dict[stk]["total_net_buy"] += net_buy
             target_dict[stk]["brokers"].append(broker["name"])
 
+    # 排序：1. 券商數 (desc), 2. 總張數 (desc)
     sorted_stocks = sorted(stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
     sorted_etfs = sorted(etf_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
     
@@ -520,22 +523,22 @@ def update_broker_history_json(session, trading_days):
 
     for target_date_str, _ in trading_days:
         rec = existing_records.get(target_date_str)
-        # 強制版本 v3：全解碼重新更新個股與 ETF 分流資料
+        # 強制版本 v4：全 JS Regex 精準萃取
         needs_update = (
             rec is None or 
             not rec.get("top_stocks") or 
             not rec.get("top_etfs") or
-            rec.get("version") != "v3"
+            rec.get("version") != "v4"
         )
         
         if needs_update:
-            print(f"抓取 7 大主力券商（CP950 編碼修復與個股 ETF 分流）：{target_date_str}...")
+            print(f"抓取 7 大主力券商（JS Regex 精準解析個股與 ETF）：{target_date_str}...")
             top_stocks, top_etfs = aggregate_broker_buys_for_date(session, target_date_str)
             existing_records[target_date_str] = {
                 "date": target_date_str,
                 "top_stocks": top_stocks,
                 "top_etfs": top_etfs,
-                "version": "v3"
+                "version": "v4"
             }
 
     sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)
@@ -755,6 +758,7 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
     f_ah_str, f_ah_color = format_signed_num(latest_data.get('foreign_net_ah'))
     t_ah_str, t_ah_color = format_signed_num(latest_data.get('trust_net_ah'))
     d_ah_str, d_ah_color = format_signed_num(latest_data.get('dealer_net_ah'))
+
     f_full_str, f_full_color = format_signed_num(latest_data.get('foreign_net_full'))
 
     latest_dji, latest_dji_c = format_pts_str(latest_data.get('us_dji'))
@@ -1182,7 +1186,7 @@ def generate_broker_html(broker_records):
 if __name__ == "__main__":
     history_records, session, trading_days = update_history_json()
     
-    print("正在抓取與更新 7 大主力券商買超歷史紀錄 (CP950 編碼解碼與分流)...")
+    print("正在抓取與更新 7 大主力券商買超歷史紀錄 (JS Regex 精準解析與分流)...")
     broker_records = update_broker_history_json(session, trading_days)
     
     print("正在抓取近 3 個月台股與美股 K 線 OHLC 數據...")
@@ -1191,4 +1195,4 @@ if __name__ == "__main__":
     
     generate_index_html(history_records, tw_kline_data, us_kline_data)
     generate_broker_html(broker_records)
-    print("所有頁面 (index.html, broker.html) 與 JSON 數據頁面皆已產生完成！")
+    print("所有頁面 (index.html, broker.html) 與 JSON 數據頁面皆已更新產生完成！")

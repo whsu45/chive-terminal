@@ -7,6 +7,18 @@ from datetime import datetime, timezone, timedelta
 
 DATA_DIR = "data"
 JSON_FILE = os.path.join(DATA_DIR, "history.json")
+BROKER_JSON_FILE = os.path.join(DATA_DIR, "broker_history.json")
+
+# 指定監控的 7 大關鍵主力券商分點
+BROKER_TARGETS = [
+    {"name": "摩根大通", "a": "8440", "b": "8440", "c": "E"},
+    {"name": "凱基-台北", "a": "9200", "b": "9268", "c": "E"},
+    {"name": "元大-土城永寧", "a": "9800", "b": "9875", "c": "E"},
+    {"name": "富邦-建國", "a": "9600", "b": "9658", "c": "E"},
+    {"name": "美商高盛", "a": "1480", "b": "1480", "c": "E"},
+    {"name": "新加坡商瑞銀", "a": "1650", "b": "1650", "c": "B"},
+    {"name": "美林", "a": "1440", "b": "1440", "c": "E"}
+]
 
 def get_past_trading_days(count=20):
     """ 計算過去 N 個交易日的 (目標交易日, 前一交易日) """
@@ -49,6 +61,10 @@ def clean_float(text):
         return float(cleaned)
     except ValueError:
         return None
+
+# ==============================================================================
+# 期貨與籌碼爬蟲 (Futures & Institutional Scrapers)
+# ==============================================================================
 
 def fetch_night_market_data(session, target_date_str):
     url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
@@ -104,17 +120,12 @@ def fetch_day_market_volume(session, prev_date_str):
     return None
 
 def fetch_institutional_positions_ah(session, target_date_str):
-    """ 抓取三大法人夜盤專用多空淨額 (futContractsDateAh) """
     url = "https://www.taifex.com.tw/cht/3/futContractsDateAh"
     payload = {
         'queryType': '1', 'goDay': '', 'doQuery': '1', 'dateaddcnt': '',
         'queryDate': target_date_str, 'commodityId': 'TXF', 'button': '送出查詢'
     }
-    headers = {
-        'User-Agent': 'Mozilla/5.0',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Referer': 'https://www.taifex.com.tw/cht/3/futContractsDateAh'
-    }
+    headers = {'User-Agent': 'Mozilla/5.0', 'Content-Type': 'application/x-www-form-urlencoded'}
     positions = {"foreign": None, "trust": None, "dealer": None}
     
     try:
@@ -141,17 +152,12 @@ def fetch_institutional_positions_ah(session, target_date_str):
     return positions
 
 def fetch_institutional_positions_full(session, target_date_str):
-    """ 抓取全日三大法人多空淨額 (futContractsDate) """
     url = "https://www.taifex.com.tw/cht/3/futContractsDate"
     payload = {
         'queryType': '1', 'goDay': '', 'doQuery': '1', 'dateaddcnt': '',
         'queryDate': target_date_str, 'commodityId': 'TXF', 'button': '送出查詢'
     }
-    headers = {
-        'User-Agent': 'Mozilla/5.0',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Referer': 'https://www.taifex.com.tw/cht/3/futContractsDate'
-    }
+    headers = {'User-Agent': 'Mozilla/5.0', 'Content-Type': 'application/x-www-form-urlencoded'}
     positions = {"foreign": None, "trust": None, "dealer": None}
     
     try:
@@ -180,7 +186,7 @@ def fetch_institutional_positions_full(session, target_date_str):
 def fetch_us_indices(session):
     symbols = {'DJI': '^DJI', 'IXIC': '^IXIC', 'SOX': '^SOX'}
     us_data_by_date = {}
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    headers = {'User-Agent': 'Mozilla/5.0'}
     
     for key, symbol in symbols.items():
         url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=2mo"
@@ -220,13 +226,9 @@ def fetch_us_indices(session):
     return us_data_by_date
 
 def fetch_ohlc_3m(session, symbol):
-    """
-    抓取近 3 個月 OHLC 資料 (雙源備援：Yahoo Finance + Stooq)
-    """
     ohlc_list = []
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    headers = {'User-Agent': 'Mozilla/5.0'}
     
-    # 1. 優先嘗試 Yahoo Finance
     yf_symbol = "^TWII" if "TW" in symbol or "TAIEX" in symbol else "^IXIC"
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{yf_symbol}?interval=1d&range=3mo"
     try:
@@ -262,7 +264,7 @@ def fetch_ohlc_3m(session, symbol):
     except Exception as e:
         print(f"Yahoo OHLC fetch error for {yf_symbol}: {e}")
 
-    # 2. 備援 Stooq API
+    # 備援 Stooq API
     stooq_symbol = "^TWII" if "TW" in symbol or "TAIEX" in symbol else "^IXIC"
     stooq_url = f"https://stooq.com/q/d/l/?s={stooq_symbol}&i=d"
     try:
@@ -289,9 +291,6 @@ def fetch_ohlc_3m(session, symbol):
     return ohlc_list
 
 def generate_svg_kline_chart(ohlc_data, title, width=580, height=280):
-    """
-    100% 純向量 SVG 原生 K 線圖產生器 (不需要任何外部 JS/Iframe，絕不白屏)
-    """
     if not ohlc_data or len(ohlc_data) < 2:
         return f'''
         <div class="flex items-center justify-center h-[280px] bg-slate-50 text-slate-400 text-xs rounded-lg border border-slate-100">
@@ -305,11 +304,7 @@ def generate_svg_kline_chart(ohlc_data, title, width=580, height=280):
     max_price = max(highs)
     price_range = max_price - min_price if max_price != min_price else 1.0
 
-    padding_top = 20
-    padding_bottom = 30
-    padding_left = 60
-    padding_right = 15
-
+    padding_top, padding_bottom, padding_left, padding_right = 20, 30, 60, 15
     chart_w = width - padding_left - padding_right
     chart_h = height - padding_top - padding_bottom
 
@@ -321,8 +316,6 @@ def generate_svg_kline_chart(ohlc_data, title, width=580, height=280):
         return padding_top + chart_h - ((p - min_price) / price_range) * chart_h
 
     svg_elements = []
-
-    # 1. 價格水平網格線與 Y 軸標籤
     num_grid_lines = 4
     for i in range(num_grid_lines + 1):
         price_val = min_price + (price_range * i / num_grid_lines)
@@ -330,7 +323,6 @@ def generate_svg_kline_chart(ohlc_data, title, width=580, height=280):
         svg_elements.append(f'<line x1="{padding_left}" y1="{y_pos:.1f}" x2="{width - padding_right}" y2="{y_pos:.1f}" stroke="#f1f5f9" stroke-width="1" />')
         svg_elements.append(f'<text x="{padding_left - 8}" y="{y_pos + 3.5:.1f}" font-size="10" fill="#94a3b8" text-anchor="end">{price_val:,.0f}</text>')
 
-    # 2. X 軸日期標籤
     if num_bars >= 3:
         sample_indices = [0, num_bars // 2, num_bars - 1]
         for idx in sample_indices:
@@ -338,7 +330,6 @@ def generate_svg_kline_chart(ohlc_data, title, width=580, height=280):
             date_label = ohlc_data[idx]['time']
             svg_elements.append(f'<text x="{x_pos:.1f}" y="{height - 8}" font-size="10" fill="#94a3b8" text-anchor="middle">{date_label}</text>')
 
-    # 3. 繪製 K 線 (蠟燭圖與影線)
     for idx, d in enumerate(ohlc_data):
         x_center = padding_left + (idx + 0.5) * bar_spacing
         x_left = x_center - (bar_width / 2)
@@ -349,51 +340,36 @@ def generate_svg_kline_chart(ohlc_data, title, width=580, height=280):
         l_y = price_to_y(d['low'])
 
         is_up = d['close'] >= d['open']
-        color = "#ef4444" if is_up else "#22c55e" # 台股習慣：上漲紅、下跌綠
+        color = "#ef4444" if is_up else "#22c55e"
 
         top_y = min(o_y, c_y)
         body_h = max(abs(c_y - o_y), 1.5)
 
         tooltip = f"{d['time']} &#10;開: {d['open']:,.1f} &#10;高: {d['high']:,.1f} &#10;低: {d['low']:,.1f} &#10;收: {d['close']:,.1f}"
 
-        # 影線
         svg_elements.append(f'<line x1="{x_center:.1f}" y1="{h_y:.1f}" x2="{x_center:.1f}" y2="{l_y:.1f}" stroke="{color}" stroke-width="1.2" />')
-
-        # 實體 K 棒
         svg_elements.append(f'<rect x="{x_left:.1f}" y="{top_y:.1f}" width="{bar_width:.1f}" height="{body_h:.1f}" fill="{color}" rx="0.5"><title>{tooltip}</title></rect>')
 
     elements_str = "\n".join(svg_elements)
-
-    svg = f'''
-    <svg viewBox="0 0 {width} {height}" class="w-full h-auto overflow-visible font-sans">
-        {elements_str}
-    </svg>
-    '''
-    return svg
+    return f'<svg viewBox="0 0 {width} {height}" class="w-full h-auto overflow-visible font-sans">{elements_str}</svg>'
 
 def get_us_info_for_date(us_data_by_date, prev_date_str):
     if prev_date_str in us_data_by_date:
         return us_data_by_date[prev_date_str]
-    
     avail = sorted([d for d in us_data_by_date.keys() if d <= prev_date_str], reverse=True)
     if avail:
         return us_data_by_date[avail[0]]
-        
     return {}
 
 def generate_svg_sparkline(prices):
     if not prices or len(prices) < 2:
         return '<span class="text-xs text-slate-400">無圖表</span>'
-    
-    open_price = prices[0]
-    close_price = prices[-1]
+    open_price, close_price = prices[0], prices[-1]
     is_up = close_price >= open_price
-    
     color = "#ef4444" if is_up else "#22c55e"
     
     min_p, max_p = min(prices), max(prices)
     price_range = (max_p - min_p) if max_p != min_p else 1
-    
     width, height = 110, 28
     points = []
     for idx, p in enumerate(prices):
@@ -402,13 +378,7 @@ def generate_svg_sparkline(prices):
         points.append(f"{x:.1f},{y:.1f}")
         
     polyline_str = " ".join(points)
-    
-    svg = f'''
-    <svg width="{width}" height="{height}" class="inline-block overflow-visible" title="開: {open_price:.0f} | 收: {close_price:.0f}">
-        <polyline fill="none" stroke="{color}" stroke-width="1.8" points="{polyline_str}" />
-    </svg>
-    '''
-    return svg
+    return f'<svg width="{width}" height="{height}" class="inline-block overflow-visible" title="開: {open_price:.0f} | 收: {close_price:.0f}"><polyline fill="none" stroke="{color}" stroke-width="1.8" points="{polyline_str}" /></svg>'
 
 def fetch_twse_intraday_taiex(session, target_date_str):
     formatted_date = target_date_str.replace('/', '')
@@ -427,87 +397,142 @@ def fetch_twse_intraday_taiex(session, target_date_str):
                         prices.append(val)
                 
                 if prices:
-                    open_p = prices[0]
-                    close_p = prices[-1]
-                    high_p = max(prices)
-                    low_p = min(prices)
-                    
+                    open_p, close_p = prices[0], prices[-1]
+                    high_p, low_p = max(prices), min(prices)
                     sampled = prices[::60] if len(prices) > 60 else prices
                     sparkline_svg = generate_svg_sparkline(sampled)
-                    
                     actual_change = close_p - open_p
                     change_str = f"+{actual_change:.0f}點" if actual_change > 0 else f"{actual_change:.0f}點"
-                    
-                    return {
-                        "open": open_p, "close": close_p, "high": high_p, "low": low_p,
-                        "change_str": change_str,
-                        "sparkline_svg": sparkline_svg,
-                        "prices": prices
-                    }
+                    return {"open": open_p, "close": close_p, "high": high_p, "low": low_p, "change_str": change_str, "sparkline_svg": sparkline_svg, "prices": prices}
     except Exception as e:
         print(f"[{target_date_str}] TWSE TAIEX fetch error: {e}")
         
-    return {
-        "open": None, "close": None, "high": None, "low": None,
-        "change_str": "NA",
-        "sparkline_svg": '<span class="text-xs text-slate-400">未收盤</span>',
-        "prices": []
-    }
+    return {"open": None, "close": None, "high": None, "low": None, "change_str": "NA", "sparkline_svg": '<span class="text-xs text-slate-400">未收盤</span>', "prices": []}
 
 def verify_match(scenario, actual_info):
-    open_p = actual_info.get("open")
-    close_p = actual_info.get("close")
-    high_p = actual_info.get("high")
-    low_p = actual_info.get("low")
+    open_p, close_p = actual_info.get("open"), actual_info.get("close")
+    high_p, low_p = actual_info.get("high"), actual_info.get("low")
     prices = actual_info.get("prices", [])
     
     if not scenario or scenario == "NA" or None in [open_p, close_p, high_p, low_p] or len(prices) < 2:
         return "尚未驗證", "bg-slate-100 text-slate-500"
         
     total_pts = len(prices)
-    idx_high = prices.index(high_p)
-    idx_low = prices.index(low_p)
-    
-    high_time_ratio = idx_high / total_pts
-    low_time_ratio = idx_low / total_pts
-    
+    idx_high, idx_low = prices.index(high_p), prices.index(low_p)
+    high_time_ratio, low_time_ratio = idx_high / total_pts, idx_low / total_pts
     total_range = high_p - low_p if high_p != low_p else 1.0
     close_position = (close_p - low_p) / total_range
     change = close_p - open_p
     
     if scenario == "劇本一":
-        if change > 0 and close_position >= 0.4:
-            return "✅ 符合 (一路走高)", "bg-red-100 text-red-700 font-bold"
-        elif change > 0:
-            return "✅ 符合 (收紅上漲)", "bg-red-50 text-red-600"
-        else:
-            return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
-            
+        return ("✅ 符合 (一路走高)", "bg-red-100 text-red-700 font-bold") if (change > 0 and close_position >= 0.4) else (("✅ 符合 (收紅上漲)", "bg-red-50 text-red-600") if change > 0 else ("❌ 走勢分歧", "bg-slate-100 text-slate-600"))
     elif scenario == "劇本二":
-        if change < 0 and high_time_ratio <= 0.6:
-            return "✅ 符合 (開高走低)", "bg-green-100 text-green-700 font-bold"
-        elif change < 0:
-            return "✅ 符合 (收黑走低)", "bg-green-50 text-green-600"
-        else:
-            return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
-            
+        return ("✅ 符合 (開高走低)", "bg-green-100 text-green-700 font-bold") if (change < 0 and high_time_ratio <= 0.6) else (("✅ 符合 (收黑走低)", "bg-green-50 text-green-600") if change < 0 else ("❌ 走勢分歧", "bg-slate-100 text-slate-600"))
     elif scenario == "劇本三":
-        if change < 0 and close_position <= 0.6:
-            return "✅ 符合 (跌勢延續)", "bg-green-100 text-green-700 font-bold"
-        elif change < 0:
-            return "✅ 符合 (收黑下跌)", "bg-green-50 text-green-600"
-        else:
-            return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
-            
+        return ("✅ 符合 (跌勢延續)", "bg-green-100 text-green-700 font-bold") if (change < 0 and close_position <= 0.6) else (("✅ 符合 (收黑下跌)", "bg-green-50 text-green-600") if change < 0 else ("❌ 走勢分歧", "bg-slate-100 text-slate-600"))
     elif scenario == "劇本四":
-        if change > 0 and low_time_ratio <= 0.6:
-            return "✅ 符合 (開低反彈)", "bg-red-100 text-red-700 font-bold"
-        elif change > 0:
-            return "✅ 符合 (收紅反彈)", "bg-red-50 text-red-600"
-        else:
-            return "❌ 走勢分歧", "bg-slate-100 text-slate-600"
+        return ("✅ 符合 (開低反彈)", "bg-red-100 text-red-700 font-bold") if (change > 0 and low_time_ratio <= 0.6) else (("✅ 符合 (收紅反彈)", "bg-red-50 text-red-600") if change > 0 else ("❌ 走勢分歧", "bg-slate-100 text-slate-600"))
             
     return "NA", "bg-slate-100 text-slate-500"
+
+# ==============================================================================
+# 新增：7 大主力券商買超分點爬蟲 (Broker Buy List Scraper)
+# ==============================================================================
+
+def fetch_single_broker_buy(session, broker_info, date_str):
+    """
+    爬取單一券商分點當日買超名細 (DJ MoneyDJ zgb0.djhtm)
+    """
+    dt = datetime.strptime(date_str, "%Y/%m/%d")
+    formatted_date = f"{dt.year}-{dt.month}-{dt.day}" # YYYY-M-D
+    
+    url = f"https://fubon-ebrokerdj.fbs.com.tw/z/zg/zgb/zgb0.djhtm?a={broker_info['a']}&b={broker_info['b']}&c={broker_info['c']}&e={formatted_date}&f={formatted_date}"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Referer': 'https://fubon-ebrokerdj.fbs.com.tw/'
+    }
+    
+    buy_map = {} # { "2330台積電": 2144 }
+    try:
+        resp = session.get(url, headers=headers, timeout=6)
+        resp.encoding = 'big5'
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        
+        rows = soup.find_all('tr')
+        for row in rows:
+            cols = row.find_all('td')
+            if len(cols) >= 4:
+                stk_text = cols[0].text.strip()
+                net_str = cols[3].text.strip().replace(',', '')
+                
+                # 過濾標頭列，留存個股與淨買超值
+                if stk_text and "名稱" not in stk_text and net_str.replace('-', '').isdigit():
+                    net_val = int(net_str)
+                    if net_val > 0:
+                        buy_map[stk_text] = net_val
+    except Exception as e:
+        print(f"[{date_str}] Broker {broker_info['name']} fetch error: {e}")
+        
+    return buy_map
+
+def aggregate_broker_buys_for_date(session, target_date_str):
+    """
+    聚合 7 大主力分點當日買超明細，計算排行榜 (以買超券商數優先，張數為輔)
+    """
+    stocks_summary = {} # { "2330台積電": { "count": 2, "total_net_buy": 4000, "brokers": ["摩根大通", "美林"] } }
+    
+    for broker in BROKER_TARGETS:
+        buy_map = fetch_single_broker_buy(session, broker, target_date_str)
+        for stk, net_buy in buy_map.items():
+            if stk not in stocks_summary:
+                stocks_summary[stk] = {"stock": stk, "count": 0, "total_net_buy": 0, "brokers": []}
+            stocks_summary[stk]["count"] += 1
+            stocks_summary[stk]["total_net_buy"] += net_buy
+            stocks_summary[stk]["brokers"].append(broker["name"])
+
+    # 排序邏輯：1. 券商數 (desc), 2. 總張數 (desc)
+    sorted_stocks = sorted(
+        stocks_summary.values(),
+        key=lambda x: (x["count"], x["total_net_buy"]),
+        reverse=True
+    )
+    
+    return sorted_stocks[:10] # 取前 10 名
+
+def update_broker_history_json(session, trading_days):
+    """ 更新並維護 data/broker_history.json """
+    os.makedirs(DATA_DIR, exist_ok=True)
+    existing_records = {}
+    
+    if os.path.exists(BROKER_JSON_FILE):
+        try:
+            with open(BROKER_JSON_FILE, "r", encoding="utf-8") as f:
+                records_list = json.load(f)
+                existing_records = {item["date"]: item for item in records_list}
+            print(f"已成功載入 {len(existing_records)} 筆歷史券商 JSON 紀錄。")
+        except Exception as e:
+            print(f"載入 {BROKER_JSON_FILE} 失敗: {e}")
+
+    for target_date_str, _ in trading_days:
+        if target_date_str not in existing_records or not existing_records[target_date_str].get("top_stocks"):
+            print(f"抓取 7 大主力券商買超資料：{target_date_str}...")
+            top_10 = aggregate_broker_buys_for_date(session, target_date_str)
+            existing_records[target_date_str] = {
+                "date": target_date_str,
+                "top_stocks": top_10
+            }
+
+    sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)
+
+    with open(BROKER_JSON_FILE, "w", encoding="utf-8") as f:
+        json.dump(sorted_history, f, ensure_ascii=False, indent=2)
+        
+    print(f"成功更新券商買超歷史紀錄至：{BROKER_JSON_FILE}")
+    return sorted_history
+
+# ==============================================================================
+# 期貨與盤勢處理流程
+# ==============================================================================
 
 def process_single_date(session, target_date_str, prev_date_str, us_data_by_date):
     data = {
@@ -626,7 +651,7 @@ def update_history_json():
             with open(JSON_FILE, "r", encoding="utf-8") as f:
                 records_list = json.load(f)
                 existing_records = {item["date"]: item for item in records_list}
-            print(f"已成功載入 {len(existing_records)} 筆歷史 JSON 紀錄。")
+            print(f"已成功載入 {len(existing_records)} 筆歷史期貨 JSON 紀錄。")
         except Exception as e:
             print(f"載入 {JSON_FILE} 失敗: {e}")
 
@@ -655,8 +680,8 @@ def update_history_json():
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(sorted_history, f, ensure_ascii=False, indent=2)
         
-    print(f"成功更新歷史紀錄至：{JSON_FILE}")
-    return sorted_history, session
+    print(f"成功更新期貨歷史紀錄至：{JSON_FILE}")
+    return sorted_history, session, trading_days
 
 def format_signed_num(val):
     if val is None or val == "NA":
@@ -680,16 +705,19 @@ def format_pts_str(val_str):
         return val_display, "text-green-500 font-semibold"
     return val_display, "text-slate-600"
 
-def generate_html(history_records, tw_kline_data, us_kline_data):
+# ==============================================================================
+# HTML 網頁生成器 (index.html & broker.html)
+# ==============================================================================
+
+def generate_index_html(history_records, tw_kline_data, us_kline_data):
+    """ 生成主頁面 index.html """
     latest_data = history_records[0]
     
     utc_now = datetime.now(timezone.utc)
     tw_now = utc_now + timedelta(hours=8)
-    
     utc_time_str = utc_now.strftime('%Y/%m/%d %H:%M:%S')
     tw_time_str = tw_now.strftime('%Y/%m/%d %H:%M:%S')
 
-    # 生成 3 個月純 SVG 原生 K 線圖 (不依賴任何外部 Iframe/JS)
     tw_kline_svg = generate_svg_kline_chart(tw_kline_data, "台股加權指數")
     us_kline_svg = generate_svg_kline_chart(us_kline_data, "美股 NASDAQ 指數")
 
@@ -712,7 +740,6 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
     f_ah_str, f_ah_color = format_signed_num(latest_data.get('foreign_net_ah'))
     t_ah_str, t_ah_color = format_signed_num(latest_data.get('trust_net_ah'))
     d_ah_str, d_ah_color = format_signed_num(latest_data.get('dealer_net_ah'))
-
     f_full_str, f_full_color = format_signed_num(latest_data.get('foreign_net_full'))
 
     latest_dji, latest_dji_c = format_pts_str(latest_data.get('us_dji'))
@@ -799,9 +826,9 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
 <body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
     <div class="max-w-[1400px] mx-auto space-y-6">
         
-        <!-- Header -->
+        <!-- Header & Nav Tabs -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-2xl font-bold text-slate-800">📊 台指期夜盤三大數據走勢預測</h1>
                     <p class="text-slate-500 text-sm mt-1">分析目標交易日：<span class="font-bold text-slate-800">{latest_data['date']}</span> （對應前一日盤：{latest_data['prev_date']}）</p>
@@ -811,11 +838,16 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
                     <div>頁面產生時間：<span class="font-semibold text-slate-700">{utc_time_str}</span> <span class="text-slate-400">(UTC)</span></div>
                 </div>
             </div>
+            
+            <!-- 選單切換按鈕 -->
+            <div class="flex space-x-2 mt-6 border-b border-slate-100 pb-2">
+                <a href="./index.html" class="px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 rounded-lg border border-indigo-100">📊 台指期夜盤預測</a>
+                <a href="./broker.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🏦 主力券商買超分析</a>
+            </div>
         </div>
 
-        <!-- 3個月台股與美股原生 SVG K 線走勢圖區塊 (100% 絕不白屏) -->
+        <!-- 3個月台股與美股原生 SVG K 線走勢圖區塊 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- 1. 台股加權指數 3M K線圖 -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="text-sm font-bold text-slate-800">🇹🇼 台股加權指數 (TAIEX) 近 3 個月 K 線圖</h2>
@@ -824,7 +856,6 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
                 {tw_kline_svg}
             </div>
 
-            <!-- 2. 美股 NASDAQ 指數 3M K線圖 -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="text-sm font-bold text-slate-800">🇺🇸 美股 NASDAQ 指數 (IXIC) 近 3 個月 K 線圖</h2>
@@ -836,7 +867,6 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
 
         <!-- 四大核心指標卡片 Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- 1. 夜盤漲跌 -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">1. 夜盤漲跌點數</span>
                 <div class="text-3xl font-extrabold mt-2 {price_color_class}">
@@ -845,7 +875,6 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
                 <p class="text-xs text-slate-400 mt-2">門檻：超過 ±300 點代表預期大變</p>
             </div>
 
-            <!-- 2. 夜盤量佔比 -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">2. 夜盤量佔比</span>
                 <div class="text-3xl font-extrabold text-slate-800 mt-2">
@@ -857,7 +886,6 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
                 </div>
             </div>
 
-            <!-- 3. 三大法人 (夜盤 / 全日) -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">3. 三大法人多空淨額 (夜盤)</span>
                 <div class="text-3xl font-extrabold text-slate-800 mt-2">
@@ -870,7 +898,6 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
                 </div>
             </div>
 
-            <!-- 4. 美股三大指數 -->
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">4. 美股三大指數 (點數)</span>
                 <div class="mt-2 space-y-1">
@@ -984,13 +1011,153 @@ def generate_html(history_records, tw_kline_data, us_kline_data):
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生採用 Pure SVG 原生 3M K線圖的 index.html！")
+    print("成功產生 index.html！")
+
+def generate_broker_html(broker_records):
+    """ 生成新分頁 broker.html (主力券商買超分析) """
+    latest_data = broker_records[0] if broker_records else {"date": "NA", "top_stocks": []}
+    
+    utc_now = datetime.now(timezone.utc)
+    tw_now = utc_now + timedelta(hours=8)
+    utc_time_str = utc_now.strftime('%Y/%m/%d %H:%M:%S')
+    tw_time_str = tw_now.strftime('%Y/%m/%d %H:%M:%S')
+
+    # 生成今日 Top 10 個股卡片 HTML
+    top_cards_html = ""
+    for rank, item in enumerate(latest_data.get("top_stocks", []), start=1):
+        brokers_badge = "".join([f'<span class="px-2 py-0.5 text-[11px] bg-indigo-50 text-indigo-700 rounded border border-indigo-100 font-medium">{b}</span>' for b in item["brokers"]])
+        top_cards_html += f"""
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="px-2.5 py-0.5 text-xs font-bold bg-slate-800 text-white rounded-full">第 {rank} 名</span>
+                    <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">{item['count']} 家主力券商聯合買超</span>
+                </div>
+                <h3 class="text-xl font-extrabold text-slate-800 my-1">{item['stock']}</h3>
+                <div class="flex flex-wrap gap-1 my-3">
+                    {brokers_badge}
+                </div>
+            </div>
+            <div class="pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                <span class="text-slate-400">總買超淨張數:</span>
+                <span class="text-base font-extrabold text-red-500">+{item['total_net_buy']:,} 張</span>
+            </div>
+        </div>
+        """
+
+    if not top_cards_html:
+        top_cards_html = '<div class="col-span-full p-8 text-center bg-white rounded-xl text-slate-400 text-sm">今日主力券商買超資料尚未發布或休市中 (NA)</div>'
+
+    # 生成歷史 20 日表格 HTML
+    history_broker_rows = ""
+    for record in broker_records[:20]:
+        stocks_str_list = []
+        for s in record.get("top_stocks", [])[:5]: # 表格摘要列出前 5 名
+            b_names = ",".join(s["brokers"])
+            stocks_str_list.append(f'<span class="inline-block bg-slate-50 border border-slate-200 px-2 py-1 rounded text-xs mr-1 mb-1"><b>{s["stock"]}</b> ({s["count"]}家: +{s["total_net_buy"]:,}張)</span>')
+            
+        stocks_display = "".join(stocks_str_list) if stocks_str_list else '<span class="text-slate-400 text-xs">無買超紀錄</span>'
+
+        history_broker_rows += f"""
+        <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-3 px-4 font-semibold text-slate-700 whitespace-nowrap">{record['date']}</td>
+            <td class="py-3 px-4">{stocks_display}</td>
+        </tr>
+        """
+
+    html_content = f"""<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主力券商買超個股分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
+    <div class="max-w-[1400px] mx-auto space-y-6">
+        
+        <!-- Header & Nav Tabs -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">🏦 7 大主力券商分點聯合買超分析</h1>
+                    <p class="text-slate-500 text-sm mt-1">監控分點：摩根大通、凱基台北、元大土城永寧、富邦建國、高盛、瑞銀、美林</p>
+                </div>
+                <div class="text-xs text-slate-500 md:text-right space-y-1">
+                    <div>頁面產生時間：<span class="font-semibold text-slate-700">{tw_time_str}</span> <span class="text-slate-400">(UTC+8)</span></div>
+                    <div>頁面產生時間：<span class="font-semibold text-slate-700">{utc_time_str}</span> <span class="text-slate-400">(UTC)</span></div>
+                </div>
+            </div>
+            
+            <!-- 選單切換按鈕 -->
+            <div class="flex space-x-2 mt-6 border-b border-slate-100 pb-2">
+                <a href="./index.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">📊 台指期夜盤預測</a>
+                <a href="./broker.html" class="px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 rounded-lg border border-indigo-100">🏦 主力券商買超分析</a>
+            </div>
+        </div>
+
+        <!-- 當日 Top 10 主力券商買超個股區塊 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">🔥 今日 7 大主力券商聯合買超 Top 10 個股</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">資料日期：{latest_data['date']} | 優先比對「買超券商數」，數量相同時比對「總買超張數」</p>
+                </div>
+            </div>
+
+            <!-- Top 10 網格卡片 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                {top_cards_html}
+            </div>
+        </div>
+
+        <!-- 歷史紀錄表格區塊 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold text-slate-800">🗓️ 過去 20 個交易日主力買超歷史紀錄</h2>
+                <a href="./data/broker_history.json" target="_blank" class="text-xs text-indigo-600 hover:underline">📥 下載完整 broker_history.json</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-600 border-collapse">
+                    <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                        <tr>
+                            <th class="py-3 px-4 rounded-l-lg whitespace-nowrap">交易日期</th>
+                            <th class="py-3 px-4 rounded-r-lg">主力券商聯合買超前 5 名摘要 (個股 / 買超券商數 / 總張數)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {history_broker_rows}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center text-xs text-slate-400 py-4">
+            資料來源：富邦證券 MoneyDJ 分點明細查詢 | 自動化發布 via GitHub Actions & Pages
+        </footer>
+    </div>
+</body>
+</html>
+"""
+    with open("broker.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+    print("成功產生 broker.html！")
+
+# ==============================================================================
+# 主程式 (Main)
+# ==============================================================================
 
 if __name__ == "__main__":
-    history_records, session = update_history_json()
+    history_records, session, trading_days = update_history_json()
+    
+    print("正在抓取與更新 7 大主力券商買超歷史紀錄...")
+    broker_records = update_broker_history_json(session, trading_days)
     
     print("正在抓取近 3 個月台股與美股 K 線 OHLC 數據...")
     tw_kline_data = fetch_ohlc_3m(session, "^TWII")
     us_kline_data = fetch_ohlc_3m(session, "^IXIC")
     
-    generate_html(history_records, tw_kline_data, us_kline_data)
+    generate_index_html(history_records, tw_kline_data, us_kline_data)
+    generate_broker_html(broker_records)
+    print("所有頁面 (index.html, broker.html) 與 JSON 數據皆已更新完成！")

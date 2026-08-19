@@ -1,4 +1,4 @@
-# 📈 Chive Terminal / Taiwan Stock Follow-up
+# 📈 Taiwan Stock Follow-up
 
 本專案是一個以 **Python + GitHub Actions + GitHub Pages** 建置的台股追蹤與靜態發布專案，會自動抓取市場資料、整理歷史紀錄，並將結果發布到 GitHub Pages，方便快速查看每日觀察重點。
 

@@ -215,4 +215,4 @@ python fetch_and_build.py
 - **GitHub Pages**：前端靜態網站託管
 
 ---
-
+https://whsu45.github.io/chive-terminal/index.html

@@ -9,14 +9,14 @@ DATA_DIR = "data"
 JSON_FILE = os.path.join(DATA_DIR, "history.json")
 BROKER_JSON_FILE = os.path.join(DATA_DIR, "broker_history.json")
 
-# 指定監控的 7 大關鍵主力券商分點
+# 指定監控的 7 大關鍵主力券商分點 (全數統一採用 c='E' 抓取「張數」)
 BROKER_TARGETS = [
     {"name": "摩根大通", "a": "8440", "b": "8440", "c": "E", "group": "foreign"},
     {"name": "凱基-台北", "a": "9200", "b": "9268", "c": "E", "group": "domestic"},
     {"name": "元大-土城永寧", "a": "9800", "b": "9875", "c": "E", "group": "domestic"},
     {"name": "富邦-建國", "a": "9600", "b": "9658", "c": "E", "group": "domestic"},
     {"name": "美商高盛", "a": "1480", "b": "1480", "c": "E", "group": "foreign"},
-    {"name": "新加坡商瑞銀", "a": "1650", "b": "1650", "c": "B", "group": "foreign"},
+    {"name": "新加坡商瑞銀", "a": "1650", "b": "1650", "c": "E", "group": "foreign"}, # 修正：c="E" 確保為張數
     {"name": "美林", "a": "1440", "b": "1440", "c": "E", "group": "foreign"}
 ]
 
@@ -484,14 +484,15 @@ def verify_match(scenario, actual_info):
     return "NA", "bg-slate-100 text-slate-500"
 
 # ==============================================================================
-# 7 大主力券商買超個股與 ETF 獨立分流爬蟲
+# 7 大主力券商買超個股與 ETF 獨立分流爬蟲 (使用 Regex 解析 JS 腳本)
 # ==============================================================================
 
 def fetch_single_broker_buy(session, broker_info, date_str):
     dt = datetime.strptime(date_str, "%Y/%m/%d")
     formatted_date = f"{dt.year}-{dt.month}-{dt.day}"
     
-    url = f"https://fubon-ebrokerdj.fbs.com.tw/z/zg/zgb/zgb0.djhtm?a={broker_info['a']}&b={broker_info['b']}&c={broker_info['c']}&e={formatted_date}&f={formatted_date}"
+    # 確保 c="E" 抓取純「張數」
+    url = f"https://fubon-ebrokerdj.fbs.com.tw/z/zg/zgb/zgb0.djhtm?a={broker_info['a']}&b={broker_info['b']}&c=E&e={formatted_date}&f={formatted_date}"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Referer': 'https://fubon-ebrokerdj.fbs.com.tw/'
@@ -596,18 +597,18 @@ def update_broker_history_json(session, trading_days):
     for target_date_str, _ in trading_days:
         rec = existing_records.get(target_date_str)
         
-        # 強制版本控制 v6：寫入內資與外資獨立 Top 10 榜單
+        # 強制版本控制 v7：修正 c="E" 純張數，並聚合內資與外資 Top 10
         needs_update = (
             rec is None or 
             not rec.get("top_stocks") or 
             not rec.get("top_etfs") or
             "top_domestic_stocks" not in rec or
             "top_foreign_stocks" not in rec or
-            rec.get("version") != "v6"
+            rec.get("version") != "v7"
         )
         
         if needs_update:
-            print(f"抓取 7 大主力券商（全分流內資/外資/個股/ETF）：{target_date_str}...")
+            print(f"抓取 7 大主力券商（修正純張數單位 c=E 並重新計算）：{target_date_str}...")
             top_stocks, top_etfs, top_dom, top_for = aggregate_broker_buys_for_date(session, target_date_str, price_cache)
             existing_records[target_date_str] = {
                 "date": target_date_str,
@@ -615,7 +616,7 @@ def update_broker_history_json(session, trading_days):
                 "top_etfs": top_etfs,
                 "top_domestic_stocks": top_dom,
                 "top_foreign_stocks": top_for,
-                "version": "v6"
+                "version": "v7"
             }
 
     sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)
@@ -1154,7 +1155,6 @@ def generate_broker_html(broker_records):
     top_stocks_html = render_top_cards(latest_data.get("top_stocks", []), "個股", "indigo")
     top_etfs_html = render_top_cards(latest_data.get("top_etfs", []), "ETF", "indigo")
     
-    # 兩個新區塊卡片
     top_dom_stocks_html = render_top_cards(latest_data.get("top_domestic_stocks", []), "隔日沖內資個股", "purple")
     top_for_stocks_html = render_top_cards(latest_data.get("top_foreign_stocks", []), "隔日沖外資個股", "blue")
 
@@ -1172,14 +1172,12 @@ def generate_broker_html(broker_records):
             etf_str_list.append(f'<span class="inline-block bg-indigo-50/50 border border-indigo-100 px-2 py-1 rounded text-xs mr-1 mb-1 text-indigo-900"><b>{e["stock"]}</b><span class="text-slate-500 font-normal">{ep_str}</span> ({e["count"]}家: +{e["total_net_buy"]:,}張)</span>')
         etfs_display = "".join(etf_str_list) if etf_str_list else '<span class="text-slate-400 text-xs">無紀錄</span>'
 
-        # 內資隔日沖前 3 名
         dom_str_list = []
         for d in record.get("top_domestic_stocks", [])[:3]:
             dp_str = f" (${d['price']})" if d.get("price") is not None else ""
             dom_str_list.append(f'<span class="inline-block bg-purple-50/50 border border-purple-100 px-2 py-1 rounded text-xs mr-1 mb-1 text-purple-900"><b>{d["stock"]}</b> ({d["count"]}家: +{d["total_net_buy"]:,}張)</span>')
         dom_display = "".join(dom_str_list) if dom_str_list else '<span class="text-slate-400 text-xs">無紀錄</span>'
 
-        # 外資隔日沖前 3 名
         for_str_list = []
         for f_stk in record.get("top_foreign_stocks", [])[:3]:
             fp_str = f" (${f_stk['price']})" if f_stk.get("price") is not None else ""
@@ -1252,7 +1250,7 @@ def generate_broker_html(broker_records):
             </div>
         </div>
 
-        <!-- 【箭頭處新增區塊 1】：隔日沖內資分點聯合買超 Top 10 個股 -->
+        <!-- 區塊三：隔日沖內資分點聯合買超 Top 10 個股 -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-purple-200">
             <div class="flex items-center justify-between mb-4">
                 <div>
@@ -1265,7 +1263,7 @@ def generate_broker_html(broker_records):
             </div>
         </div>
 
-        <!-- 【箭頭處新增區塊 2】：隔日沖外資分點聯合買超 Top 10 個股 -->
+        <!-- 區塊四：隔日沖外資分點聯合買超 Top 10 個股 -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-blue-200">
             <div class="flex items-center justify-between mb-4">
                 <div>
@@ -1321,7 +1319,7 @@ def generate_broker_html(broker_records):
 if __name__ == "__main__":
     history_records, session, trading_days = update_history_json()
     
-    print("正在抓取與更新 7 大主力券商買超歷史紀錄 (新增內資/外資隔日沖分流)...")
+    print("正在抓取與更新 7 大主力券商買超歷史紀錄 (全純張數單位 c=E)...")
     broker_records = update_broker_history_json(session, trading_days)
     
     print("正在抓取近 3 個月台股與美股 K 線 OHLC 數據...")

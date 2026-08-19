@@ -102,6 +102,58 @@ chive-terminal/
 
 ---
 
+## 🧾 資料欄位說明
+
+### `data/history.json`
+此檔案主要保存每日市場觀察與預測結果的歷史紀錄，可用於前端展示、回測觀察與每日盤勢追蹤。
+
+常見欄位包含：
+- `date`：目標交易日
+- `prev_date`：前一個交易日
+- `night_price_change`：夜盤漲跌點數
+- `night_vol`：夜盤成交量
+- `day_vol`：前一日日盤成交量
+- `night_volume_ratio`：夜盤量佔比
+- `vol_formula_str`：夜盤量比計算公式字串
+- `foreign_net_ah` / `trust_net_ah` / `dealer_net_ah`：盤後法人淨口數
+- `foreign_net_full` / `trust_net_full` / `dealer_net_full`：完整法人淨口數
+- `us_dji` / `us_ixic` / `us_sox`：美股相關指數變化
+- `scenario`：系統判定的開盤劇本
+- `forecast_desc`：預測說明文字
+- `trust_signal`：訊號可信度提示
+- `actual_change`：實際盤勢變化
+- `sparkline_svg`：走勢火花線 SVG 字串
+- `verify_status`：預測驗證結果
+- `verify_badge_class`：前端顯示用 badge 樣式
+
+用途整理：
+- 提供每日市場摘要與預測結果
+- 支援 GitHub Pages 前端頁面展示
+- 作為歷史資料比對與回顧依據
+
+### `data/broker_history.json`
+此檔案主要保存特定券商分點的歷史買超整理結果，並將個股與 ETF 分開統計。
+
+常見欄位包含：
+- `date`：資料日期
+- `top_stocks`：當日主要券商買超個股清單
+- `top_etfs`：當日主要券商買超 ETF 清單
+- `version`：資料格式版本（目前程式中為 `v5`）
+
+其中 `top_stocks` / `top_etfs` 的清單項目通常會包含：
+- `stock`：股票或 ETF 名稱 / 代碼
+- `count`：被目標券商買進的出現次數
+- `total_net_buy`：加總後的淨買超數量
+- `brokers`：參與買超的券商名稱列表
+- `price`：對應股票 / ETF 的最新價格（近期版本已補強）
+
+用途整理：
+- 追蹤 7 大關鍵券商的買超偏好
+- 區分個股與 ETF 的資金流向
+- 作為前端排行榜、主力觀察與歷史分析基礎
+
+---
+
 ## 🚀 Local Development
 
 ### 1. Clone repository

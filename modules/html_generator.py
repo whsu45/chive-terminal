@@ -33,6 +33,7 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
     f_ah_str, f_ah_color = format_signed_num(latest_data.get('foreign_net_ah'))
     t_ah_str, t_ah_color = format_signed_num(latest_data.get('trust_net_ah'))
     d_ah_str, d_ah_color = format_signed_num(latest_data.get('dealer_net_ah'))
+
     f_full_str, f_full_color = format_signed_num(latest_data.get('foreign_net_full'))
 
     latest_dji, latest_dji_c = format_pts_str(latest_data.get('us_dji'))
@@ -347,7 +348,8 @@ def render_top_cards(items_list, category_label, theme="indigo"):
 
 def generate_broker_html(broker_records):
     latest_data = broker_records[0] if broker_records else {"date": "NA", "top_stocks": [], "top_etfs": [],
-                                                            "top_domestic_stocks": [], "top_foreign_stocks": []}
+                                                            "top_domestic_stocks": [], "top_domestic_volume_stocks": [],
+                                                            "top_foreign_stocks": []}
 
     utc_now = datetime.now(timezone.utc)
     tw_now = utc_now + timedelta(hours=8)
@@ -356,7 +358,13 @@ def generate_broker_html(broker_records):
 
     top_stocks_html = render_top_cards(latest_data.get("top_stocks", []), "個股", "indigo")
     top_etfs_html = render_top_cards(latest_data.get("top_etfs", []), "ETF", "indigo")
-    top_dom_stocks_html = render_top_cards(latest_data.get("top_domestic_stocks", []), "隔日沖內資個股", "purple")
+    top_dom_stocks_html = render_top_cards(latest_data.get("top_domestic_stocks", []), "隔日沖內資個股 (家數)",
+                                           "purple")
+
+    # 箭頭處新增區塊：內資三大分點「總買超張數」排行榜
+    top_dom_vol_stocks_html = render_top_cards(latest_data.get("top_domestic_volume_stocks", []), "內資總買超張數個股",
+                                               "emerald")
+
     top_for_stocks_html = render_top_cards(latest_data.get("top_foreign_stocks", []), "隔日沖外資個股", "blue")
 
     history_broker_rows = ""
@@ -456,16 +464,29 @@ def generate_broker_html(broker_records):
             </div>
         </div>
 
-        <!-- 區塊三：隔日沖內資分點聯合買超 Top 10 個股 -->
+        <!-- 區塊三：隔日沖內資分點聯合買超 Top 10 個股 (依聯合家數排名) -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-purple-200">
             <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h2 class="text-lg font-bold text-purple-900">⚡ 隔日沖內資分點聯合買超 Top 10 個股分析</h2>
-                    <p class="text-xs text-slate-400 mt-0.5">資料日期：{latest_data['date']} | 監控分點：<b>凱基台北、元大土城永寧、富邦建國</b> | 排除 ETF</p>
+                    <h2 class="text-lg font-bold text-purple-900">⚡ 隔日沖內資分點聯合買超 Top 10 個股分析 (共買家數)</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">資料日期：{latest_data['date']} | 監控分點：<b>凱基台北、元大土城永寧、富邦建國</b> | 優先比對「買超券商數」</p>
                 </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                 {top_dom_stocks_html}
+            </div>
+        </div>
+
+        <!-- 【箭頭處新增區塊】：內資三大分點總買超張數 Top 10 個股 (依合計總張數排名) -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-emerald-200">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-emerald-900">📈 內資三大分點 (凱基台北、元大土城永寧、富邦建國) 總買超張數 Top 10</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">資料日期：{latest_data['date']} | 依 3 大內資分點「合計總買超張數」高低直接排名 | 排除 ETF</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                {top_dom_vol_stocks_html}
             </div>
         </div>
 
@@ -516,4 +537,4 @@ def generate_broker_html(broker_records):
 """
     with open("broker.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("成功產生新增內資/外資隔日沖雙區塊的 broker.html！")
+    print("成功產生新增內資總買超張數區塊的 broker.html！")

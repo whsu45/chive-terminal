@@ -1,7 +1,9 @@
+import os
 import re
+import json
 from datetime import datetime
 from bs4 import BeautifulSoup
-from .utils import clean_int, is_etf, extract_stock_code
+from .utils import clean_int, is_etf, extract_stock_code, BROKER_JSON_FILE, DATA_DIR
 from .market_scraper import get_stock_price
 
 BROKER_TARGETS = [
@@ -56,6 +58,14 @@ def fetch_single_broker_buy(session, broker_info, date_str):
 
 
 def aggregate_broker_buys_for_date(session, target_date_str, price_cache):
+    """
+    分別聚合：
+    1. 全 7 大券商個股 Top 10
+    2. 全 7 大券商 ETF Top 10
+    3. 隔日沖內資分點 Top 10 個股 (依券商數優先)
+    4. 內資三大分點總買超張數 Top 10 個股 (純依買超張數高低)
+    5. 隔日沖外資分點 Top 10 個股 (依券商數優先)
+    """
     stocks_summary = {}
     etf_summary = {}
     domestic_stocks_summary = {}
@@ -97,11 +107,68 @@ def aggregate_broker_buys_for_date(session, target_date_str, price_cache):
                     foreign_stocks_summary[stk]["total_net_buy"] += net_buy
                     foreign_stocks_summary[stk]["brokers"].append(b_name)
 
+    # 排序：1. 預設依券商數與總張數
     sorted_stocks = sorted(stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
     sorted_etfs = sorted(etf_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
     sorted_domestic = sorted(domestic_stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]),
                              reverse=True)
+
+    # 內資三大分點純依「總買超張數」排序
+    sorted_domestic_volume = sorted(domestic_stocks_summary.values(), key=lambda x: x["total_net_buy"], reverse=True)
+
     sorted_foreign = sorted(foreign_stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]),
                             reverse=True)
 
-    return sorted_stocks[:10], sorted_etfs[:10], sorted_domestic[:10], sorted_foreign[:10]
+    return sorted_stocks[:10], sorted_etfs[:10], sorted_domestic[:10], sorted_domestic_volume[:10], sorted_foreign[:10]
+
+
+def update_broker_history_json(session, trading_days):
+    os.makedirs(DATA_DIR, exist_ok=True)
+    existing_records = {}
+    price_cache = {}
+
+    if os.path.exists(BROKER_JSON_FILE):
+        try:
+            with open(BROKER_JSON_FILE, "r", encoding="utf-8") as f:
+                records_list = json.load(f)
+                existing_records = {item["date"]: item for item in records_list}
+            print(f"已成功載入 {len(existing_records)} 筆歷史券商 JSON 紀錄。")
+        except Exception as e:
+            print(f"載入 {BROKER_JSON_FILE} 失敗: {e}")
+
+    for target_date_str, _ in trading_days:
+        rec = existing_records.get(target_date_str)
+
+        # 強制版本控制 v8：加入內資總買超張數獨立排名
+        needs_update = (
+                rec is None or
+                not rec.get("top_stocks") or
+                not rec.get("top_etfs") or
+                "top_domestic_stocks" not in rec or
+                "top_domestic_volume_stocks" not in rec or
+                "top_foreign_stocks" not in rec or
+                rec.get("version") != "v8"
+        )
+
+        if needs_update:
+            print(f"抓取 7 大主力券商（新增內資純張數排行榜）：{target_date_str}...")
+            top_stocks, top_etfs, top_dom, top_dom_vol, top_for = aggregate_broker_buys_for_date(session,
+                                                                                                 target_date_str,
+                                                                                                 price_cache)
+            existing_records[target_date_str] = {
+                "date": target_date_str,
+                "top_stocks": top_stocks,
+                "top_etfs": top_etfs,
+                "top_domestic_stocks": top_dom,
+                "top_domestic_volume_stocks": top_dom_vol,
+                "top_foreign_stocks": top_for,
+                "version": "v8"
+            }
+
+    sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)
+
+    with open(BROKER_JSON_FILE, "w", encoding="utf-8") as f:
+        json.dump(sorted_history, f, ensure_ascii=False, indent=2)
+
+    print(f"成功更新券商買超歷史紀錄至：{BROKER_JSON_FILE}")
+    return sorted_history

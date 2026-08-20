@@ -63,11 +63,6 @@ def extract_stock_code(stock_text):
 
 
 def is_etf(stock_text):
-    """
-    台股 ETF 判定規則：
-    1. 代號開頭為 '00'
-    2. 或名稱包含 ETF 關鍵字 (正2, 反1, 主動, 高息, 美債)
-    """
     text = stock_text.replace('\xa0', '').strip()
     code = extract_stock_code(text)
     if code.startswith('00'):

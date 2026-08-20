@@ -1,5 +1,12 @@
+import os
 import re
 from datetime import datetime, timedelta
+
+MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(MODULE_DIR)
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+JSON_FILE = os.path.join(DATA_DIR, "history.json")
+BROKER_JSON_FILE = os.path.join(DATA_DIR, "broker_history.json")
 
 
 def get_past_trading_days(count=20):

@@ -3,7 +3,7 @@ import re
 import json
 from datetime import datetime
 from bs4 import BeautifulSoup
-from .utils import clean_int, is_etf, extract_stock_code, BROKER_JSON_FILE, DATA_DIR
+from .utils import clean_int, is_etf, extract_stock_code, BROKER_JSON_FILE, DATA_DIR, get_broker_trading_days
 from .market_scraper import get_stock_price
 
 BROKER_TARGETS = [
@@ -58,14 +58,6 @@ def fetch_single_broker_buy(session, broker_info, date_str):
 
 
 def aggregate_broker_buys_for_date(session, target_date_str, price_cache):
-    """
-    分別聚合 5 種分類（回傳 5 個清單）：
-    1. 全 7 大券商個股 Top 10
-    2. 全 7 大券商 ETF Top 10
-    3. 隔日沖內資分點 Top 10 個股 (依券商數優先)
-    4. 內資三大分點總買超張數 Top 10 個股 (純依買超張數高低)
-    5. 隔日沖外資分點 Top 10 個股 (依券商數優先)
-    """
     stocks_summary = {}
     etf_summary = {}
     domestic_stocks_summary = {}
@@ -118,10 +110,13 @@ def aggregate_broker_buys_for_date(session, target_date_str, price_cache):
     return sorted_stocks[:10], sorted_etfs[:10], sorted_domestic[:10], sorted_domestic_volume[:10], sorted_foreign[:10]
 
 
-def update_broker_history_json(session, trading_days):
+def update_broker_history_json(session, unused_days=None):
     os.makedirs(DATA_DIR, exist_ok=True)
     existing_records = {}
     price_cache = {}
+
+    # 改用專屬的券商交易日計算 (中午 12:00 前自動回推昨日)
+    broker_trading_days = get_broker_trading_days(count=20)
 
     if os.path.exists(BROKER_JSON_FILE):
         try:
@@ -132,7 +127,7 @@ def update_broker_history_json(session, trading_days):
         except Exception as e:
             print(f"載入 {BROKER_JSON_FILE} 失敗: {e}")
 
-    for target_date_str, _ in trading_days:
+    for target_date_str, _ in broker_trading_days:
         rec = existing_records.get(target_date_str)
 
         needs_update = (
@@ -146,8 +141,7 @@ def update_broker_history_json(session, trading_days):
         )
 
         if needs_update:
-            print(f"抓取 7 大主力券商（全分流解析）：{target_date_str}...")
-            # 解包修正為 5 個變數
+            print(f"抓取 7 大主力券商：{target_date_str}...")
             top_stocks, top_etfs, top_dom, top_dom_vol, top_for = aggregate_broker_buys_for_date(session,
                                                                                                  target_date_str,
                                                                                                  price_cache)
@@ -161,6 +155,7 @@ def update_broker_history_json(session, trading_days):
                 "version": "v8"
             }
 
+    # 依照日期排序，並取最新 20 個交易日
     sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)
 
     with open(BROKER_JSON_FILE, "w", encoding="utf-8") as f:

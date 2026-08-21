@@ -1,6 +1,6 @@
 import os
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(MODULE_DIR)
@@ -10,7 +10,7 @@ BROKER_JSON_FILE = os.path.join(DATA_DIR, "broker_history.json")
 
 
 def get_past_trading_days(count=20):
-    """ 計算過去 N 個交易日的 (目標交易日, 前一交易日) """
+    """ 期貨預測專用交易日計算 """
     trading_days = []
     curr = datetime.now()
 
@@ -21,6 +21,35 @@ def get_past_trading_days(count=20):
 
     while len(trading_days) < count:
         if curr.weekday() < 5:
+            target_date_str = curr.strftime("%Y/%m/%d")
+            prev = curr - timedelta(days=1)
+            while prev.weekday() >= 5:
+                prev -= timedelta(days=1)
+            prev_date_str = prev.strftime("%Y/%m/%d")
+            trading_days.append((target_date_str, prev_date_str))
+        curr -= timedelta(days=1)
+
+    return trading_days
+
+
+def get_broker_trading_days(count=20):
+    """
+    券商買超專用交易日計算：
+    由於盤後分點籌碼於下午才發布，若在台灣時間中午 12:00 前執行，
+    則最新交易日自動回推至前一個交易日（如：週五早上 08:30 自動看週四 2026/08/20 的完整籌碼）。
+    """
+    utc_now = datetime.now(timezone.utc)
+    tw_now = utc_now + timedelta(hours=8)
+
+    # 台灣時間中午 12:00 前，自動回推 1 天
+    if tw_now.hour < 12:
+        curr = tw_now - timedelta(days=1)
+    else:
+        curr = tw_now
+
+    trading_days = []
+    while len(trading_days) < count:
+        if curr.weekday() < 5:  # 週一至週五
             target_date_str = curr.strftime("%Y/%m/%d")
             prev = curr - timedelta(days=1)
             while prev.weekday() >= 5:

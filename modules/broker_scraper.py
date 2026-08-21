@@ -59,7 +59,7 @@ def fetch_single_broker_buy(session, broker_info, date_str):
 
 def aggregate_broker_buys_for_date(session, target_date_str, price_cache):
     """
-    分別聚合：
+    分別聚合 5 種分類（回傳 5 個清單）：
     1. 全 7 大券商個股 Top 10
     2. 全 7 大券商 ETF Top 10
     3. 隔日沖內資分點 Top 10 個股 (依券商數優先)
@@ -107,15 +107,11 @@ def aggregate_broker_buys_for_date(session, target_date_str, price_cache):
                     foreign_stocks_summary[stk]["total_net_buy"] += net_buy
                     foreign_stocks_summary[stk]["brokers"].append(b_name)
 
-    # 排序：1. 預設依券商數與總張數
     sorted_stocks = sorted(stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
     sorted_etfs = sorted(etf_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
     sorted_domestic = sorted(domestic_stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]),
                              reverse=True)
-
-    # 內資三大分點純依「總買超張數」排序
     sorted_domestic_volume = sorted(domestic_stocks_summary.values(), key=lambda x: x["total_net_buy"], reverse=True)
-
     sorted_foreign = sorted(foreign_stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]),
                             reverse=True)
 
@@ -139,7 +135,6 @@ def update_broker_history_json(session, trading_days):
     for target_date_str, _ in trading_days:
         rec = existing_records.get(target_date_str)
 
-        # 強制版本控制 v8：加入內資總買超張數獨立排名
         needs_update = (
                 rec is None or
                 not rec.get("top_stocks") or
@@ -151,7 +146,8 @@ def update_broker_history_json(session, trading_days):
         )
 
         if needs_update:
-            print(f"抓取 7 大主力券商（新增內資純張數排行榜）：{target_date_str}...")
+            print(f"抓取 7 大主力券商（全分流解析）：{target_date_str}...")
+            # 解包修正為 5 個變數
             top_stocks, top_etfs, top_dom, top_dom_vol, top_for = aggregate_broker_buys_for_date(session,
                                                                                                  target_date_str,
                                                                                                  price_cache)

@@ -10,7 +10,7 @@ from modules.taifex_scraper import (
 )
 from modules.twse_scraper import fetch_twse_intraday_taiex, verify_match
 from modules.market_scraper import fetch_us_indices, get_us_info_for_date, fetch_ohlc_3m
-from modules.broker_scraper import aggregate_broker_buys_for_date
+from modules.broker_scraper import update_broker_history_json
 from modules.html_generator import generate_index_html, generate_broker_html
 
 
@@ -163,54 +163,6 @@ def update_history_json():
 
     print(f"成功更新歷史紀錄至：{JSON_FILE}")
     return sorted_history, session, trading_days
-
-
-def update_broker_history_json(session, trading_days):
-    os.makedirs(DATA_DIR, exist_ok=True)
-    existing_records = {}
-    price_cache = {}
-
-    if os.path.exists(BROKER_JSON_FILE):
-        try:
-            with open(BROKER_JSON_FILE, "r", encoding="utf-8") as f:
-                records_list = json.load(f)
-                existing_records = {item["date"]: item for item in records_list}
-            print(f"已成功載入 {len(existing_records)} 筆歷史券商 JSON 紀錄。")
-        except Exception as e:
-            print(f"載入 {BROKER_JSON_FILE} 失敗: {e}")
-
-    for target_date_str, _ in trading_days:
-        rec = existing_records.get(target_date_str)
-
-        needs_update = (
-                rec is None or
-                not rec.get("top_stocks") or
-                not rec.get("top_etfs") or
-                "top_domestic_stocks" not in rec or
-                "top_foreign_stocks" not in rec or
-                rec.get("version") != "v7"
-        )
-
-        if needs_update:
-            print(f"抓取 7 大主力券商（全模組化解析）：{target_date_str}...")
-            top_stocks, top_etfs, top_dom, top_for = aggregate_broker_buys_for_date(session, target_date_str,
-                                                                                    price_cache)
-            existing_records[target_date_str] = {
-                "date": target_date_str,
-                "top_stocks": top_stocks,
-                "top_etfs": top_etfs,
-                "top_domestic_stocks": top_dom,
-                "top_foreign_stocks": top_for,
-                "version": "v7"
-            }
-
-    sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)
-
-    with open(BROKER_JSON_FILE, "w", encoding="utf-8") as f:
-        json.dump(sorted_history, f, ensure_ascii=False, indent=2)
-
-    print(f"成功更新券商買超歷史紀錄至：{BROKER_JSON_FILE}")
-    return sorted_history
 
 
 if __name__ == "__main__":

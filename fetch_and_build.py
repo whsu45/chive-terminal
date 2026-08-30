@@ -13,7 +13,6 @@ from modules.market_scraper import fetch_us_indices, get_us_info_for_date, fetch
 from modules.broker_scraper import update_broker_history_json
 from modules.html_generator import generate_index_html, generate_broker_html
 
-
 def process_single_date(session, target_date_str, prev_date_str, us_data_by_date):
     data = {
         "date": target_date_str,
@@ -23,15 +22,15 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
         "day_vol": "NA",
         "night_volume_ratio": "NA",
         "vol_formula_str": "NA",
-
+        
         "foreign_net_ah": "NA",
         "trust_net_ah": "NA",
         "dealer_net_ah": "NA",
-
+        
         "foreign_net_full": "NA",
         "trust_net_full": "NA",
         "dealer_net_full": "NA",
-
+        
         "us_dji": "NA",
         "us_ixic": "NA",
         "us_sox": "NA",
@@ -41,15 +40,17 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
         "actual_change": "NA",
         "sparkline_svg": '<span class="text-xs text-slate-400">未收盤</span>',
         "verify_status": "尚未驗證",
-        "verify_badge_class": "bg-slate-100 text-slate-500"
+        "verify_badge_class": "bg-slate-100 text-slate-500",
+        "version": "v10"
     }
 
+    # 夜盤向 TAIFEX 查詢 target_date_str，對應日盤向 TAIFEX 查詢 prev_date_str
     night_price_change, night_vol = fetch_night_market_data(session, target_date_str)
     day_vol = fetch_day_market_volume(session, prev_date_str)
-
+    
     ah_pos = fetch_institutional_positions_ah(session, target_date_str)
     full_pos = fetch_institutional_positions_full(session, target_date_str)
-
+    
     actual_info = fetch_twse_intraday_taiex(session, target_date_str)
     us_info = get_us_info_for_date(us_data_by_date, prev_date_str)
 
@@ -63,7 +64,7 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
         ratio = (night_vol / total_vol) * 100
         data["night_volume_ratio"] = f"{ratio:.1f}%"
         data["vol_formula_str"] = f"{night_vol:,} ÷ ({day_vol:,} + {night_vol:,})"
-
+        
         if ratio >= 40:
             data["trust_signal"] = "很強的訊號 (>40%)"
         elif ratio < 30:
@@ -73,7 +74,7 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
 
     if night_price_change is not None:
         data["night_price_change"] = f"+{night_price_change}" if night_price_change > 0 else str(night_price_change)
-
+    
     if ah_pos.get("foreign") is not None:
         data["foreign_net_ah"] = ah_pos["foreign"]
     if ah_pos.get("trust") is not None:
@@ -115,18 +116,17 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
 
     data["actual_change"] = actual_info["change_str"]
     data["sparkline_svg"] = actual_info["sparkline_svg"]
-
+    
     v_status, v_badge = verify_match(data["scenario"], actual_info)
     data["verify_status"] = v_status
     data["verify_badge_class"] = v_badge
 
     return data
 
-
 def update_history_json():
     os.makedirs(DATA_DIR, exist_ok=True)
     existing_records = {}
-
+    
     if os.path.exists(JSON_FILE):
         try:
             with open(JSON_FILE, "r", encoding="utf-8") as f:
@@ -142,17 +142,17 @@ def update_history_json():
 
     for target_date_str, prev_date_str in trading_days:
         rec = existing_records.get(target_date_str)
-
+        
+        # 強制 v10 版本刷新，確保依 TAIFEX 官方日期規則對齊週五夜盤
         needs_update = (
-                rec is None or
-                rec.get("verify_status", "尚未驗證") == "尚未驗證" or
-                rec.get("scenario") == "NA" or
-                rec.get("foreign_net_full") == "NA" or
-                "foreign_net_ah" not in rec
+            rec is None or 
+            rec.get("verify_status", "尚未驗證") == "尚未驗證" or 
+            rec.get("scenario") == "NA" or
+            rec.get("version") != "v10"
         )
-
+        
         if needs_update:
-            print(f"抓取與分析資料：{target_date_str}...")
+            print(f"抓取與分析資料 (TAIFEX 官方日 v10)：{target_date_str}...")
             new_record = process_single_date(session, target_date_str, prev_date_str, us_data_by_date)
             existing_records[target_date_str] = new_record
 
@@ -160,21 +160,20 @@ def update_history_json():
 
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(sorted_history, f, ensure_ascii=False, indent=2)
-
+        
     print(f"成功更新歷史紀錄至：{JSON_FILE}")
     return sorted_history, session, trading_days
 
-
 if __name__ == "__main__":
     history_records, session, trading_days = update_history_json()
-
+    
     print("正在抓取與更新 7 大主力券商買超歷史紀錄...")
     broker_records = update_broker_history_json(session, trading_days)
-
+    
     print("正在抓取近 3 個月台股與美股 K 線 OHLC 數據...")
     tw_kline_data = fetch_ohlc_3m(session, "^TWII")
     us_kline_data = fetch_ohlc_3m(session, "^IXIC")
-
+    
     generate_index_html(history_records, tw_kline_data, us_kline_data)
     generate_broker_html(broker_records)
-    print("所有頁面 (index.html, broker.html) 與模組已順利執行完成！")
+    print("所有頁面與 TAIFEX 官方對齊已順利執行完成！")

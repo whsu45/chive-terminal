@@ -215,5 +215,5 @@ python fetch_and_build.py
 - **GitHub Pages**：前端靜態網站託管
 
 ---
-https://whsu45.github.io/chive-terminal/index.html
-https://fubon-ebrokerdj.fbs.com.tw/z/zg/zgb/zgb0.djhtm
+- https://whsu45.github.io/chive-terminal/index.html
+- https://fubon-ebrokerdj.fbs.com.tw/z/zg/zgb/zgb0.djhtm

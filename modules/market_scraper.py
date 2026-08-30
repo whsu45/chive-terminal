@@ -1,13 +1,15 @@
 from datetime import datetime, timezone
+from .utils import DATA_SOURCES
 
 
 def fetch_us_indices(session):
     symbols = {'DJI': '^DJI', 'IXIC': '^IXIC', 'SOX': '^SOX'}
     us_data_by_date = {}
     headers = {'User-Agent': 'Mozilla/5.0'}
+    base_url = DATA_SOURCES["yahoo_finance"]["chart_api_url"]
 
     for key, symbol in symbols.items():
-        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=2mo"
+        url = f"{base_url.format(symbol=symbol)}?interval=1d&range=2mo"
         try:
             resp = session.get(url, headers=headers, timeout=5)
             if resp.status_code == 200:
@@ -58,7 +60,8 @@ def fetch_ohlc_3m(session, symbol):
     headers = {'User-Agent': 'Mozilla/5.0'}
 
     yf_symbol = "^TWII" if "TW" in symbol or "TAIEX" in symbol else "^IXIC"
-    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{yf_symbol}?interval=1d&range=3mo"
+    base_url = DATA_SOURCES["yahoo_finance"]["chart_api_url"]
+    url = f"{base_url.format(symbol=yf_symbol)}?interval=1d&range=3mo"
     try:
         resp = session.get(url, headers=headers, timeout=5)
         if resp.status_code == 200:
@@ -91,9 +94,9 @@ def fetch_ohlc_3m(session, symbol):
     except Exception as e:
         print(f"Yahoo OHLC fetch error for {yf_symbol}: {e}")
 
-    # 備援 Stooq API
     stooq_symbol = "^TWII" if "TW" in symbol or "TAIEX" in symbol else "^IXIC"
-    stooq_url = f"https://stooq.com/q/d/l/?s={stooq_symbol}&i=d"
+    stooq_base_url = DATA_SOURCES["stooq"]["daily_csv_url"]
+    stooq_url = f"{stooq_base_url}?s={stooq_symbol}&i=d"
     try:
         resp = session.get(stooq_url, headers=headers, timeout=5)
         if resp.status_code == 200 and "Date,Open" in resp.text:
@@ -122,10 +125,12 @@ def get_stock_price(session, code, price_cache):
     if not code or code in price_cache:
         return price_cache.get(code)
 
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    base_url = DATA_SOURCES["yahoo_finance"]["chart_api_url"]
+
     for suffix in ['.TW', '.TWO']:
         sym = f"{code}{suffix}"
-        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}?interval=1d&range=1d"
+        url = f"{base_url.format(symbol=sym)}?interval=1d&range=1d"
         try:
             resp = session.get(url, headers=headers, timeout=3)
             if resp.status_code == 200:

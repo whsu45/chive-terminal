@@ -1,5 +1,6 @@
 import os
 import re
+import json
 from datetime import datetime, timezone, timedelta
 
 MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -7,8 +8,44 @@ PROJECT_ROOT = os.path.dirname(MODULE_DIR)
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 JSON_FILE = os.path.join(DATA_DIR, "history.json")
 BROKER_JSON_FILE = os.path.join(DATA_DIR, "broker_history.json")
+SOURCES_JSON_FILE = os.path.join(DATA_DIR, "sources.json")
+
+
+def load_data_sources():
+    """ 載入 data/sources.json 資料來源網址設定檔 (帶防呆備援) """
+    if os.path.exists(SOURCES_JSON_FILE):
+        try:
+            with open(SOURCES_JSON_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading sources.json: {e}")
+
+    # 預設備援網址
+    return {
+        "taifex": {
+            "daily_market_report_url": "https://www.taifex.com.tw/cht/3/futDailyMarketReport",
+            "institutional_positions_ah_url": "https://www.taifex.com.tw/cht/3/futContractsDateAh",
+            "institutional_positions_full_url": "https://www.taifex.com.tw/cht/3/futContractsDate"
+        },
+        "twse": {
+            "intraday_taiex_url": "https://www.twse.com.tw/exchangeReport/MI_5MINS_INDEX"
+        },
+        "yahoo_finance": {
+            "chart_api_url": "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+        },
+        "stooq": {
+            "daily_csv_url": "https://stooq.com/q/d/l/"
+        },
+        "moneydj": {
+            "broker_detail_url": "https://fubon-ebrokerdj.fbs.com.tw/z/zg/zgb/zgb0.djhtm"
+        }
+    }
+
+
+DATA_SOURCES = load_data_sources()
 
 def get_past_trading_days(count=20):
+<<<<<<< Updated upstream
     """
     計算期貨預測專用交易日對 (target_date_str, prev_date_str)
     期交所 (TAIFEX) 官方帳務日規則：
@@ -16,10 +53,13 @@ def get_past_trading_days(count=20):
     因此在週末 (週六/週日) 時，目標交易日推算至週一 (例如 2026/08/31)，
     向 TAIFEX POST queryDate = 2026/08/31 即可直接取得官網週五夜盤數據 (35,867口 / -457點)！
     """
+=======
+>>>>>>> Stashed changes
     utc_now = datetime.now(timezone.utc)
     tw_now = utc_now + timedelta(hours=8)
     curr = tw_now
 
+<<<<<<< Updated upstream
     # 週末 (週六/週日) 自動推算至下週一 (期交所官方夜盤歸屬交易日)
     if curr.weekday() == 5:   # Saturday -> Monday (+2 天)
         curr = curr + timedelta(days=2)
@@ -53,6 +93,14 @@ def get_broker_trading_days(count=20):
         curr = tw_now
 
     trading_days = []
+=======
+    if curr.weekday() == 5:  # Saturday
+        curr = curr - timedelta(days=1)
+    elif curr.weekday() == 6:  # Sunday
+        curr = curr - timedelta(days=2)
+
+    trading_days = []
+>>>>>>> Stashed changes
     while len(trading_days) < count:
         if curr.weekday() < 5:
             target_date_str = curr.strftime("%Y/%m/%d")
@@ -65,6 +113,33 @@ def get_broker_trading_days(count=20):
         
     return trading_days
 
+<<<<<<< Updated upstream
+=======
+
+def get_broker_trading_days(count=20):
+    utc_now = datetime.now(timezone.utc)
+    tw_now = utc_now + timedelta(hours=8)
+
+    if tw_now.hour < 12:
+        curr = tw_now - timedelta(days=1)
+    else:
+        curr = tw_now
+
+    trading_days = []
+    while len(trading_days) < count:
+        if curr.weekday() < 5:
+            target_date_str = curr.strftime("%Y/%m/%d")
+            prev = curr - timedelta(days=1)
+            while prev.weekday() >= 5:
+                prev -= timedelta(days=1)
+            prev_date_str = prev.strftime("%Y/%m/%d")
+            trading_days.append((target_date_str, prev_date_str))
+        curr -= timedelta(days=1)
+
+    return trading_days
+
+
+>>>>>>> Stashed changes
 def clean_int(text):
     if not text:
         return None

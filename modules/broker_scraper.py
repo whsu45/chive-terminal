@@ -3,7 +3,8 @@ import re
 import json
 from datetime import datetime
 from bs4 import BeautifulSoup
-from .utils import clean_int, is_etf, extract_stock_code, BROKER_JSON_FILE, DATA_DIR, get_broker_trading_days
+from .utils import clean_int, is_etf, extract_stock_code, BROKER_JSON_FILE, DATA_DIR, get_broker_trading_days, \
+    DATA_SOURCES
 from .market_scraper import get_stock_price
 
 BROKER_TARGETS = [
@@ -24,10 +25,11 @@ def fetch_single_broker_buy(session, broker_info, date_str):
     dt = datetime.strptime(date_str, "%Y/%m/%d")
     formatted_date = f"{dt.year}-{dt.month}-{dt.day}"
 
-    url = f"https://fubon-ebrokerdj.fbs.com.tw/z/zg/zgb/zgb0.djhtm?a={broker_info['a']}&b={broker_info['b']}&c=E&e={formatted_date}&f={formatted_date}"
+    base_url = DATA_SOURCES["moneydj"]["broker_detail_url"]
+    url = f"{base_url}?a={broker_info['a']}&b={broker_info['b']}&c=E&e={formatted_date}&f={formatted_date}"
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Referer': 'https://fubon-ebrokerdj.fbs.com.tw/'
+        'User-Agent': 'Mozilla/5.0',
+        'Referer': base_url
     }
 
     buy_map = {}
@@ -115,7 +117,6 @@ def update_broker_history_json(session, unused_days=None):
     existing_records = {}
     price_cache = {}
 
-    # 改用專屬的券商交易日計算 (中午 12:00 前自動回推昨日)
     broker_trading_days = get_broker_trading_days(count=20)
 
     if os.path.exists(BROKER_JSON_FILE):
@@ -141,7 +142,7 @@ def update_broker_history_json(session, unused_days=None):
         )
 
         if needs_update:
-            print(f"抓取 7 大主力券商：{target_date_str}...")
+            print(f"抓取 7 大主力券商（資料源集中設定）：{target_date_str}...")
             top_stocks, top_etfs, top_dom, top_dom_vol, top_for = aggregate_broker_buys_for_date(session,
                                                                                                  target_date_str,
                                                                                                  price_cache)
@@ -155,7 +156,6 @@ def update_broker_history_json(session, unused_days=None):
                 "version": "v8"
             }
 
-    # 依照日期排序，並取最新 20 個交易日
     sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)
 
     with open(BROKER_JSON_FILE, "w", encoding="utf-8") as f:

@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
-from .utils import clean_int
+from .utils import clean_int, DATA_SOURCES
 
 
 def fetch_night_market_data(session, target_date_str):
-    url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
+    url = DATA_SOURCES["taifex"]["daily_market_report_url"]
     payload = {
         'queryType': '2', 'marketCode': '1', 'dateaddcnt': '',
         'commodity_id': 'TX', 'commodity_id2': '', 'queryDate': target_date_str,
@@ -26,7 +26,7 @@ def fetch_night_market_data(session, target_date_str):
 
 
 def fetch_day_market_volume(session, prev_date_str):
-    url = "https://www.taifex.com.tw/cht/3/futDailyMarketReport"
+    url = DATA_SOURCES["taifex"]["daily_market_report_url"]
     payload = {
         'queryType': '2', 'marketCode': '0', 'dateaddcnt': '',
         'commodity_id': 'TX', 'commodity_id2': '', 'queryDate': prev_date_str,
@@ -58,12 +58,16 @@ def fetch_day_market_volume(session, prev_date_str):
 
 
 def fetch_institutional_positions_ah(session, target_date_str):
-    url = "https://www.taifex.com.tw/cht/3/futContractsDateAh"
+    url = DATA_SOURCES["taifex"]["institutional_positions_ah_url"]
     payload = {
         'queryType': '1', 'goDay': '', 'doQuery': '1', 'dateaddcnt': '',
         'queryDate': target_date_str, 'commodityId': 'TXF', 'button': '送出查詢'
     }
-    headers = {'User-Agent': 'Mozilla/5.0', 'Content-Type': 'application/x-www-form-urlencoded'}
+    headers = {
+        'User-Agent': 'Mozilla/5.0',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Referer': url
+    }
     positions = {"foreign": None, "trust": None, "dealer": None}
 
     try:
@@ -91,12 +95,16 @@ def fetch_institutional_positions_ah(session, target_date_str):
 
 
 def fetch_institutional_positions_full(session, target_date_str):
-    url = "https://www.taifex.com.tw/cht/3/futContractsDate"
+    url = DATA_SOURCES["taifex"]["institutional_positions_full_url"]
     payload = {
         'queryType': '1', 'goDay': '', 'doQuery': '1', 'dateaddcnt': '',
         'queryDate': target_date_str, 'commodityId': 'TXF', 'button': '送出查詢'
     }
-    headers = {'User-Agent': 'Mozilla/5.0', 'Content-Type': 'application/x-www-form-urlencoded'}
+    headers = {
+        'User-Agent': 'Mozilla/5.0',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Referer': url
+    }
     positions = {"foreign": None, "trust": None, "dealer": None}
 
     try:

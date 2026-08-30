@@ -1,10 +1,11 @@
-from .utils import clean_float
+from .utils import clean_float, DATA_SOURCES
 from .chart_generator import generate_svg_sparkline
 
 
 def fetch_twse_intraday_taiex(session, target_date_str):
     formatted_date = target_date_str.replace('/', '')
-    url = f"https://www.twse.com.tw/exchangeReport/MI_5MINS_INDEX?response=json&date={formatted_date}"
+    base_url = DATA_SOURCES["twse"]["intraday_taiex_url"]
+    url = f"{base_url}?response=json&date={formatted_date}"
     headers = {'User-Agent': 'Mozilla/5.0'}
 
     try:

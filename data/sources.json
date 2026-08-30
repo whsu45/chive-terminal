@@ -1,0 +1,19 @@
+{
+  "taifex": {
+    "daily_market_report_url": "https://www.taifex.com.tw/cht/3/futDailyMarketReport",
+    "institutional_positions_ah_url": "https://www.taifex.com.tw/cht/3/futContractsDateAh",
+    "institutional_positions_full_url": "https://www.taifex.com.tw/cht/3/futContractsDate"
+  },
+  "twse": {
+    "intraday_taiex_url": "https://www.twse.com.tw/exchangeReport/MI_5MINS_INDEX"
+  },
+  "yahoo_finance": {
+    "chart_api_url": "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+  },
+  "stooq": {
+    "daily_csv_url": "https://stooq.com/q/d/l/"
+  },
+  "moneydj": {
+    "broker_detail_url": "https://fubon-ebrokerdj.fbs.com.tw/z/zg/zgb/zgb0.djhtm"
+  }
+}

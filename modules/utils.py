@@ -8,17 +8,51 @@ DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 JSON_FILE = os.path.join(DATA_DIR, "history.json")
 BROKER_JSON_FILE = os.path.join(DATA_DIR, "broker_history.json")
 
-
 def get_past_trading_days(count=20):
-    """ 期貨預測專用交易日計算 """
-    trading_days = []
-    curr = datetime.now()
+    """
+    計算期貨預測專用交易日對 (target_date_str, prev_date_str)
+    期交所 (TAIFEX) 官方帳務日規則：
+    週五夜盤 (週五 15:00 ~ 週六 05:00) 在期交所官網查詢系統中，歸屬於「下週一的交易日」。
+    因此在週末 (週六/週日) 時，目標交易日推算至週一 (例如 2026/08/31)，
+    向 TAIFEX POST queryDate = 2026/08/31 即可直接取得官網週五夜盤數據 (35,867口 / -457點)！
+    """
+    utc_now = datetime.now(timezone.utc)
+    tw_now = utc_now + timedelta(hours=8)
+    curr = tw_now
 
-    if curr.weekday() == 5:  # Saturday
+    # 週末 (週六/週日) 自動推算至下週一 (期交所官方夜盤歸屬交易日)
+    if curr.weekday() == 5:   # Saturday -> Monday (+2 天)
         curr = curr + timedelta(days=2)
-    elif curr.weekday() == 6:  # Sunday
+    elif curr.weekday() == 6: # Sunday -> Monday (+1 天)
         curr = curr + timedelta(days=1)
 
+    trading_days = []
+    while len(trading_days) < count:
+        if curr.weekday() < 5: # 週一至週五
+            target_date_str = curr.strftime("%Y/%m/%d")
+            prev = curr - timedelta(days=1)
+            while prev.weekday() >= 5:
+                prev -= timedelta(days=1)
+            prev_date_str = prev.strftime("%Y/%m/%d")
+            trading_days.append((target_date_str, prev_date_str))
+        curr -= timedelta(days=1)
+        
+    return trading_days
+
+def get_broker_trading_days(count=20):
+    """
+    券商買超專用交易日計算：
+    台灣時間中午 12:00 前自動回推至前一交易日。
+    """
+    utc_now = datetime.now(timezone.utc)
+    tw_now = utc_now + timedelta(hours=8)
+    
+    if tw_now.hour < 12:
+        curr = tw_now - timedelta(days=1)
+    else:
+        curr = tw_now
+
+    trading_days = []
     while len(trading_days) < count:
         if curr.weekday() < 5:
             target_date_str = curr.strftime("%Y/%m/%d")
@@ -28,38 +62,8 @@ def get_past_trading_days(count=20):
             prev_date_str = prev.strftime("%Y/%m/%d")
             trading_days.append((target_date_str, prev_date_str))
         curr -= timedelta(days=1)
-
+        
     return trading_days
-
-
-def get_broker_trading_days(count=20):
-    """
-    券商買超專用交易日計算：
-    由於盤後分點籌碼於下午才發布，若在台灣時間中午 12:00 前執行，
-    則最新交易日自動回推至前一個交易日（如：週五早上 08:30 自動看週四 2026/08/20 的完整籌碼）。
-    """
-    utc_now = datetime.now(timezone.utc)
-    tw_now = utc_now + timedelta(hours=8)
-
-    # 台灣時間中午 12:00 前，自動回推 1 天
-    if tw_now.hour < 12:
-        curr = tw_now - timedelta(days=1)
-    else:
-        curr = tw_now
-
-    trading_days = []
-    while len(trading_days) < count:
-        if curr.weekday() < 5:  # 週一至週五
-            target_date_str = curr.strftime("%Y/%m/%d")
-            prev = curr - timedelta(days=1)
-            while prev.weekday() >= 5:
-                prev -= timedelta(days=1)
-            prev_date_str = prev.strftime("%Y/%m/%d")
-            trading_days.append((target_date_str, prev_date_str))
-        curr -= timedelta(days=1)
-
-    return trading_days
-
 
 def clean_int(text):
     if not text:
@@ -72,7 +76,6 @@ def clean_int(text):
         return -val if is_negative else val
     return None
 
-
 def clean_float(text):
     if not text:
         return None
@@ -82,14 +85,12 @@ def clean_float(text):
     except ValueError:
         return None
 
-
 def extract_stock_code(stock_text):
     text = stock_text.replace('\xa0', '').strip()
     match = re.match(r'^([0-9A-Z]{4,6})', text)
     if match:
         return match.group(1)
     return ""
-
 
 def is_etf(stock_text):
     text = stock_text.replace('\xa0', '').strip()
@@ -100,7 +101,6 @@ def is_etf(stock_text):
         return True
     return False
 
-
 def format_signed_num(val):
     if val is None or val == "NA":
         return "NA", "text-slate-400"
@@ -110,14 +110,13 @@ def format_signed_num(val):
         return text, color
     return str(val), "text-slate-400"
 
-
 def format_pts_str(val_str):
     if not val_str or val_str == "NA":
         return "NA", "text-slate-400"
-
+    
     val_s = str(val_str)
     val_display = f"{val_s}點" if not val_s.endswith("點") else val_s
-
+    
     if val_s.startswith("+"):
         return val_display, "text-red-500 font-semibold"
     elif val_s.startswith("-"):

@@ -1,5 +1,34 @@
+import re
 from bs4 import BeautifulSoup
 from .utils import clean_int, DATA_SOURCES
+
+
+def _is_response_date_matched(soup, target_date_str):
+    """
+    檢查期交所回傳的頁面是否真正屬於 target_date_str。
+    若日期尚未結算，期交所會自動退回顯示前一日資料或顯示查無資料。
+    """
+    page_text = soup.get_text()
+    if "查無資料" in page_text or "查無相關資料" in page_text:
+        return False
+
+    # target_date_str 格式如 "2026/09/10" 或 "2026/9/10"
+    parts = target_date_str.split('/')
+    if len(parts) == 3:
+        y, m, d = parts[0], str(int(parts[1])), str(int(parts[2]))
+        # 匹配 "2026/09/10" 或 "2026/9/10" 或 "2026年9月10日"
+        patterns = [
+            f"{y}/{parts[1]}/{parts[2]}",
+            f"{y}/{m}/{d}",
+            f"{y}年{m}月{d}日"
+        ]
+        # 只要頁面標題/資訊區有出現對應日期即算相符
+        for pat in patterns:
+            if pat in page_text:
+                return True
+        return False
+
+    return target_date_str in page_text
 
 
 def fetch_night_market_data(session, target_date_str):
@@ -14,6 +43,9 @@ def fetch_night_market_data(session, target_date_str):
         resp = session.post(url, data=payload, headers=headers, timeout=5)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
+            if not _is_response_date_matched(soup, target_date_str):
+                return None, None
+
             tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
             for table in tables:
                 for row in table.find_all('tr'):
@@ -37,6 +69,9 @@ def fetch_day_market_volume(session, prev_date_str):
         resp = session.post(url, data=payload, headers=headers, timeout=5)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
+            if not _is_response_date_matched(soup, prev_date_str):
+                return None
+
             tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
             for table in tables:
                 day_vol_idx = 9
@@ -74,6 +109,10 @@ def fetch_institutional_positions_ah(session, target_date_str):
         resp = session.post(url, data=payload, headers=headers, timeout=5)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
+            # 檢查回傳網頁的日期是否相符，若不符代表期交所尚未公布當日資料
+            if not _is_response_date_matched(soup, target_date_str):
+                return positions
+
             tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
             for table in tables:
                 for row in table.find_all('tr'):
@@ -111,6 +150,10 @@ def fetch_institutional_positions_full(session, target_date_str):
         resp = session.post(url, data=payload, headers=headers, timeout=5)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
+            # 核心防呆：若期交所回傳的日期非 target_date_str（表示當日尚未收盤產出），直接回傳 None
+            if not _is_response_date_matched(soup, target_date_str):
+                return positions
+
             tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
             for table in tables:
                 for row in table.find_all('tr'):

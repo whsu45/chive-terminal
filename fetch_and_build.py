@@ -148,11 +148,11 @@ def update_history_json():
             rec is None or 
             rec.get("verify_status", "尚未驗證") == "尚未驗證" or 
             rec.get("scenario") == "NA" or
-            rec.get("version") != "v10"
+            rec.get("version") != "v12"
         )
         
         if needs_update:
-            print(f"抓取與分析資料 (TAIFEX 官方日 v10)：{target_date_str}...")
+            print(f"抓取與分析資料 (TAIFEX 官方日 v12)：{target_date_str}...")
             new_record = process_single_date(session, target_date_str, prev_date_str, us_data_by_date)
             existing_records[target_date_str] = new_record
 

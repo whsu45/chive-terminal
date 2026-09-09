@@ -20,7 +20,6 @@ def load_data_sources():
         except Exception as e:
             print(f"Error loading sources.json: {e}")
 
-    # 預設備援網址
     return {
         "taifex": {
             "daily_market_report_url": "https://www.taifex.com.tw/cht/3/futDailyMarketReport",
@@ -44,31 +43,24 @@ def load_data_sources():
 
 DATA_SOURCES = load_data_sources()
 
+
 def get_past_trading_days(count=20):
-<<<<<<< Updated upstream
     """
     計算期貨預測專用交易日對 (target_date_str, prev_date_str)
-    期交所 (TAIFEX) 官方帳務日規則：
-    週五夜盤 (週五 15:00 ~ 週六 05:00) 在期交所官網查詢系統中，歸屬於「下週一的交易日」。
-    因此在週末 (週六/週日) 時，目標交易日推算至週一 (例如 2026/08/31)，
-    向 TAIFEX POST queryDate = 2026/08/31 即可直接取得官網週五夜盤數據 (35,867口 / -457點)！
+    期交所官方規則：週末時推算至週一對齊夜盤帳務日。
     """
-=======
->>>>>>> Stashed changes
     utc_now = datetime.now(timezone.utc)
     tw_now = utc_now + timedelta(hours=8)
     curr = tw_now
 
-<<<<<<< Updated upstream
-    # 週末 (週六/週日) 自動推算至下週一 (期交所官方夜盤歸屬交易日)
-    if curr.weekday() == 5:   # Saturday -> Monday (+2 天)
+    if curr.weekday() == 5:  # Saturday -> Monday
         curr = curr + timedelta(days=2)
-    elif curr.weekday() == 6: # Sunday -> Monday (+1 天)
+    elif curr.weekday() == 6:  # Sunday -> Monday
         curr = curr + timedelta(days=1)
 
     trading_days = []
     while len(trading_days) < count:
-        if curr.weekday() < 5: # 週一至週五
+        if curr.weekday() < 5:
             target_date_str = curr.strftime("%Y/%m/%d")
             prev = curr - timedelta(days=1)
             while prev.weekday() >= 5:
@@ -76,8 +68,9 @@ def get_past_trading_days(count=20):
             prev_date_str = prev.strftime("%Y/%m/%d")
             trading_days.append((target_date_str, prev_date_str))
         curr -= timedelta(days=1)
-        
+
     return trading_days
+
 
 def get_broker_trading_days(count=20):
     """
@@ -86,39 +79,6 @@ def get_broker_trading_days(count=20):
     """
     utc_now = datetime.now(timezone.utc)
     tw_now = utc_now + timedelta(hours=8)
-    
-    if tw_now.hour < 12:
-        curr = tw_now - timedelta(days=1)
-    else:
-        curr = tw_now
-
-    trading_days = []
-=======
-    if curr.weekday() == 5:  # Saturday
-        curr = curr - timedelta(days=1)
-    elif curr.weekday() == 6:  # Sunday
-        curr = curr - timedelta(days=2)
-
-    trading_days = []
->>>>>>> Stashed changes
-    while len(trading_days) < count:
-        if curr.weekday() < 5:
-            target_date_str = curr.strftime("%Y/%m/%d")
-            prev = curr - timedelta(days=1)
-            while prev.weekday() >= 5:
-                prev -= timedelta(days=1)
-            prev_date_str = prev.strftime("%Y/%m/%d")
-            trading_days.append((target_date_str, prev_date_str))
-        curr -= timedelta(days=1)
-        
-    return trading_days
-
-<<<<<<< Updated upstream
-=======
-
-def get_broker_trading_days(count=20):
-    utc_now = datetime.now(timezone.utc)
-    tw_now = utc_now + timedelta(hours=8)
 
     if tw_now.hour < 12:
         curr = tw_now - timedelta(days=1)
@@ -139,7 +99,6 @@ def get_broker_trading_days(count=20):
     return trading_days
 
 
->>>>>>> Stashed changes
 def clean_int(text):
     if not text:
         return None
@@ -151,6 +110,7 @@ def clean_int(text):
         return -val if is_negative else val
     return None
 
+
 def clean_float(text):
     if not text:
         return None
@@ -160,12 +120,14 @@ def clean_float(text):
     except ValueError:
         return None
 
+
 def extract_stock_code(stock_text):
     text = stock_text.replace('\xa0', '').strip()
     match = re.match(r'^([0-9A-Z]{4,6})', text)
     if match:
         return match.group(1)
     return ""
+
 
 def is_etf(stock_text):
     text = stock_text.replace('\xa0', '').strip()
@@ -176,6 +138,7 @@ def is_etf(stock_text):
         return True
     return False
 
+
 def format_signed_num(val):
     if val is None or val == "NA":
         return "NA", "text-slate-400"
@@ -185,13 +148,14 @@ def format_signed_num(val):
         return text, color
     return str(val), "text-slate-400"
 
+
 def format_pts_str(val_str):
     if not val_str or val_str == "NA":
         return "NA", "text-slate-400"
-    
+
     val_s = str(val_str)
     val_display = f"{val_s}點" if not val_s.endswith("點") else val_s
-    
+
     if val_s.startswith("+"):
         return val_display, "text-red-500 font-semibold"
     elif val_s.startswith("-"):

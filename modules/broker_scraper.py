@@ -3,22 +3,33 @@ import re
 import json
 from datetime import datetime
 from bs4 import BeautifulSoup
-from .utils import clean_int, is_etf, extract_stock_code, BROKER_JSON_FILE, DATA_DIR, get_broker_trading_days, \
-    DATA_SOURCES
+from .utils import (
+    clean_int, is_etf, extract_stock_code, BROKER_JSON_FILE,
+    DATA_DIR, get_broker_trading_days, DATA_SOURCES
+)
 from .market_scraper import get_stock_price
 
+# 12 大關鍵主力券商分點設定清單
 BROKER_TARGETS = [
+    # --- 外資主力 (5 家) ---
     {"name": "摩根大通", "a": "8440", "b": "8440", "c": "E", "group": "foreign"},
+    {"name": "美商高盛", "a": "1480", "b": "1480", "c": "E", "group": "foreign"},
+    {"name": "新加坡商瑞銀", "a": "1650", "b": "1650", "c": "E", "group": "foreign"},
+    {"name": "美林", "a": "1440", "b": "1440", "c": "E", "group": "foreign"},
+    {"name": "港商野村", "a": "1560", "b": "1560", "c": "E", "group": "foreign"},
+
+    # --- 隔日沖內資主力 (7 家) ---
     {"name": "凱基-台北", "a": "9200", "b": "9268", "c": "E", "group": "domestic"},
     {"name": "元大-土城永寧", "a": "9800", "b": "9875", "c": "E", "group": "domestic"},
     {"name": "富邦-建國", "a": "9600", "b": "9658", "c": "E", "group": "domestic"},
-    {"name": "美商高盛", "a": "1480", "b": "1480", "c": "E", "group": "foreign"},
-    {"name": "新加坡商瑞銀", "a": "1650", "b": "1650", "c": "E", "group": "foreign"},
-    {"name": "美林", "a": "1440", "b": "1440", "c": "E", "group": "foreign"}
+    {"name": "凱基-市政", "a": "9200", "b": "9239", "c": "E", "group": "domestic"},
+    {"name": "凱基-虎尾", "a": "9200", "b": "9236", "c": "E", "group": "domestic"},
+    {"name": "富邦-虎尾", "a": "9600", "b": "9697", "c": "E", "group": "domestic"},
+    {"name": "凱基-松山", "a": "9200", "b": "9217", "c": "E", "group": "domestic"}
 ]
 
-DOMESTIC_NAMES = {"凱基-台北", "元大-土城永寧", "富邦-建國"}
-FOREIGN_NAMES = {"摩根大通", "美商高盛", "新加坡商瑞銀", "美林"}
+DOMESTIC_NAMES = {b["name"] for b in BROKER_TARGETS if b["group"] == "domestic"}
+FOREIGN_NAMES = {b["name"] for b in BROKER_TARGETS if b["group"] == "foreign"}
 
 
 def fetch_single_broker_buy(session, broker_info, date_str):
@@ -78,8 +89,10 @@ def aggregate_broker_buys_for_date(session, target_date_str, price_cache):
 
             target_dict = etf_summary if stk_is_etf else stocks_summary
             if stk not in target_dict:
-                target_dict[stk] = {"stock": stk, "code": code, "price": price, "count": 0, "total_net_buy": 0,
-                                    "brokers": []}
+                target_dict[stk] = {
+                    "stock": stk, "code": code, "price": price,
+                    "count": 0, "total_net_buy": 0, "brokers": []
+                }
             target_dict[stk]["count"] += 1
             target_dict[stk]["total_net_buy"] += net_buy
             target_dict[stk]["brokers"].append(b_name)
@@ -87,27 +100,29 @@ def aggregate_broker_buys_for_date(session, target_date_str, price_cache):
             if not stk_is_etf:
                 if is_domestic:
                     if stk not in domestic_stocks_summary:
-                        domestic_stocks_summary[stk] = {"stock": stk, "code": code, "price": price, "count": 0,
-                                                        "total_net_buy": 0, "brokers": []}
+                        domestic_stocks_summary[stk] = {
+                            "stock": stk, "code": code, "price": price,
+                            "count": 0, "total_net_buy": 0, "brokers": []
+                        }
                     domestic_stocks_summary[stk]["count"] += 1
                     domestic_stocks_summary[stk]["total_net_buy"] += net_buy
                     domestic_stocks_summary[stk]["brokers"].append(b_name)
 
                 if is_foreign:
                     if stk not in foreign_stocks_summary:
-                        foreign_stocks_summary[stk] = {"stock": stk, "code": code, "price": price, "count": 0,
-                                                       "total_net_buy": 0, "brokers": []}
+                        foreign_stocks_summary[stk] = {
+                            "stock": stk, "code": code, "price": price,
+                            "count": 0, "total_net_buy": 0, "brokers": []
+                        }
                     foreign_stocks_summary[stk]["count"] += 1
                     foreign_stocks_summary[stk]["total_net_buy"] += net_buy
                     foreign_stocks_summary[stk]["brokers"].append(b_name)
 
     sorted_stocks = sorted(stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
     sorted_etfs = sorted(etf_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
-    sorted_domestic = sorted(domestic_stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]),
-                             reverse=True)
+    sorted_domestic = sorted(domestic_stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
     sorted_domestic_volume = sorted(domestic_stocks_summary.values(), key=lambda x: x["total_net_buy"], reverse=True)
-    sorted_foreign = sorted(foreign_stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]),
-                            reverse=True)
+    sorted_foreign = sorted(foreign_stocks_summary.values(), key=lambda x: (x["count"], x["total_net_buy"]), reverse=True)
 
     return sorted_stocks[:10], sorted_etfs[:10], sorted_domestic[:10], sorted_domestic_volume[:10], sorted_foreign[:10]
 
@@ -128,24 +143,27 @@ def update_broker_history_json(session, unused_days=None):
         except Exception as e:
             print(f"載入 {BROKER_JSON_FILE} 失敗: {e}")
 
+    # 版本升級至 v9，確保歷史快取自動以新分點名單全面重抓重算
+    CURRENT_VERSION = "v9"
+
     for target_date_str, _ in broker_trading_days:
         rec = existing_records.get(target_date_str)
 
         needs_update = (
-                rec is None or
-                not rec.get("top_stocks") or
-                not rec.get("top_etfs") or
-                "top_domestic_stocks" not in rec or
-                "top_domestic_volume_stocks" not in rec or
-                "top_foreign_stocks" not in rec or
-                rec.get("version") != "v8"
+            rec is None or
+            not rec.get("top_stocks") or
+            not rec.get("top_etfs") or
+            "top_domestic_stocks" not in rec or
+            "top_domestic_volume_stocks" not in rec or
+            "top_foreign_stocks" not in rec or
+            rec.get("version") != CURRENT_VERSION
         )
 
         if needs_update:
-            print(f"抓取 7 大主力券商（資料源集中設定）：{target_date_str}...")
-            top_stocks, top_etfs, top_dom, top_dom_vol, top_for = aggregate_broker_buys_for_date(session,
-                                                                                                 target_date_str,
-                                                                                                 price_cache)
+            print(f"抓取 12 大關鍵主力券商（全分點買超）：{target_date_str}...")
+            top_stocks, top_etfs, top_dom, top_dom_vol, top_for = aggregate_broker_buys_for_date(
+                session, target_date_str, price_cache
+            )
             existing_records[target_date_str] = {
                 "date": target_date_str,
                 "top_stocks": top_stocks,
@@ -153,7 +171,7 @@ def update_broker_history_json(session, unused_days=None):
                 "top_domestic_stocks": top_dom,
                 "top_domestic_volume_stocks": top_dom_vol,
                 "top_foreign_stocks": top_for,
-                "version": "v8"
+                "version": CURRENT_VERSION
             }
 
     sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)

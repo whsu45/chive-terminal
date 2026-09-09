@@ -3,6 +3,7 @@ import re
 import json
 from datetime import datetime, timezone, timedelta
 
+# 專案絕對路徑設定
 MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(MODULE_DIR)
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
@@ -47,15 +48,16 @@ DATA_SOURCES = load_data_sources()
 def get_past_trading_days(count=20):
     """
     計算期貨預測專用交易日對 (target_date_str, prev_date_str)
-    期交所官方規則：週末時推算至週一對齊夜盤帳務日。
+    期交所 (TAIFEX) 官方帳務日規則：
+    週末時推算至週一對齊夜盤帳務日 (週五夜盤在期交所系統歸屬於下週一的交易日)。
     """
     utc_now = datetime.now(timezone.utc)
     tw_now = utc_now + timedelta(hours=8)
     curr = tw_now
 
-    if curr.weekday() == 5:  # Saturday -> Monday
+    if curr.weekday() == 5:   # Saturday -> Monday (+2 天)
         curr = curr + timedelta(days=2)
-    elif curr.weekday() == 6:  # Sunday -> Monday
+    elif curr.weekday() == 6:  # Sunday -> Monday (+1 天)
         curr = curr + timedelta(days=1)
 
     trading_days = []

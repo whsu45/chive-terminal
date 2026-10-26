@@ -52,6 +52,8 @@
         date: p.date,
         open: p.open * f, high: p.max * f, low: p.min * f, close: p.close * f,
         rawClose: p.close,
+        // 當日成交均價（成交金額 ÷ 成交股數），同樣做除權息還原
+        vwap: p.Trading_Volume > 0 && p.Trading_money > 0 ? (p.Trading_money / p.Trading_Volume) * f : p.close * f,
         volume: p.Trading_Volume / 1000,
         foreign: io ? io.foreign : null,
         trust: io ? io.trust : null,
@@ -127,10 +129,21 @@
     const mf = bars.map(b => (b.mf == null ? 0 : b.mf));
     const mfCum = []; { let s = 0; for (let i = 0; i < n; i++) { s += mf[i]; mfCum.push(s); } }
     const volCum = []; { let s = 0; for (let i = 0; i < n; i++) { s += vol[i]; volCum.push(s); } }
+    // 主力成本線：近 N 日主力(法人)買超日，以買超張數加權的成交均價
+    const mfCost = N => bars.map((_, i) => {
+      if (i < N - 1) return null;
+      let amt = 0, qty = 0;
+      for (let k = i - N + 1; k <= i; k++) {
+        const m = bars[k].mf;
+        if (m != null && m > 0) { amt += m * (bars[k].vwap ?? bars[k].close); qty += m; }
+      }
+      return qty > 0 ? amt / qty : null;
+    });
+    const mfCost20 = mfCost(20), mfCost60 = mfCost(60);
     return {
       close, vol, ma5, ma10, ma20, ma60, std20, upper, lower, floor95: lower, floor99, bw,
       upperSlope, lowerSlope, ma20Slope, ma20Slope5, ma60Slope5, bias, volMa20Prev,
-      biasP01, biasP05, biasP95, biasP99, mf, mfCum, volCum,
+      biasP01, biasP05, biasP95, biasP99, mf, mfCum, volCum, mfCost20, mfCost60,
     };
   }
 
@@ -942,6 +955,7 @@
       recent, trend: ts, quadrant, mf: { d1: b.mf, d5: h.mfSum(i, 5), d10: mf10, d20: h.mfSum(i, 20), foreign: b.foreign, trust: b.trust, dealer: b.dealer },
       margin: { marginBal: b.marginBal, shortBal: b.shortBal, ratio, marginChg5: b.marginBal != null && bars[i - 5].marginBal != null ? b.marginBal - bars[i - 5].marginBal : null, shortChg5: b.shortBal != null && bars[i - 5].shortBal != null ? b.shortBal - bars[i - 5].shortBal : null },
       bb: { upper: ind.upper[i], mid: ind.ma20[i], lower: ind.lower[i], bw: bwv, regime: bbRegime, upperSlope: ind.upperSlope[i], lowerSlope: ind.lowerSlope[i], ma20Slope: ind.ma20Slope[i], riding, strongTrend },
+      mfCost: { c20: ind.mfCost20[i], c60: ind.mfCost60[i] },
       floor: { f95: ind.floor95[i], f99: ind.floor99[i], bias: ind.bias[i], p01: ind.biasP01[i], p05: ind.biasP05[i], p95: ind.biasP95[i], p99: ind.biasP99[i] },
       deduct: deductInfo(ctx, i), perSignal, baseline, composite, startIdx,
     };

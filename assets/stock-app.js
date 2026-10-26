@@ -473,7 +473,7 @@
     }).join('');
     el.innerHTML = `
       <h2 class="text-lg font-bold text-slate-800">🧪 跨個股策略驗證（${v.stocks} 檔 × ${esc(v.start)} 起，離線回測）</h2>
-      <p class="text-xs text-slate-400 mt-0.5 mb-4">以與本頁相同的引擎，對權值股、中小型股與策略文件案例股（倉和、晶彩科、凱衛、銘旺科、亞光、撼訊、麗清…）逐一回測。前期／後期以 ${esc(v.split)} 切分，用來檢驗規則的穩定度。所有門檻皆取自策略文件，未依回測結果調整參數。產生時間 ${esc(v.generatedAt.slice(0, 10))}</p>
+      <p class="text-xs text-slate-400 mt-0.5 mb-4">以與本頁相同的引擎，對權值股、中小型股與策略文件案例股（倉和、晶彩科、凱衛、銘旺科、亞光、撼訊、麗清…）及光通訊股（華星光、聯亞）逐一回測。前期／後期以 ${esc(v.split)} 切分，用來檢驗規則的穩定度。所有門檻皆取自策略文件，未依回測結果調整參數。產生時間 ${esc(v.generatedAt.slice(0, 10))}</p>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
         <div class="p-4 rounded-xl bg-slate-50 border border-slate-100"><div class="text-[11px] font-semibold text-slate-400">綜合策略報酬（中位數）</div><div class="text-2xl font-extrabold ${signCls(sum.medianRet)}">${pct(sum.medianRet, 0, true)}</div><div class="text-[11px] text-slate-400">買進持有 ${pct(sum.medianBuyHold, 0, true)}</div></div>
         <div class="p-4 rounded-xl bg-slate-50 border border-slate-100"><div class="text-[11px] font-semibold text-slate-400">最大回撤（中位數）</div><div class="text-2xl font-extrabold text-green-600">${pct(sum.medianMdd, 0)}</div><div class="text-[11px] text-slate-400">買進持有 ${pct(sum.medianBuyHoldMdd, 0)}</div></div>
@@ -490,7 +490,7 @@
       </div>
       <div class="mt-4 p-4 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800 leading-relaxed">
         <b>驗證結論：</b>此期間台股為長多格局，持股時間僅約三分之一的綜合策略，總報酬普遍落後買進持有，但多數個股的最大回撤較小。
-        多方戰法中，<b>主力由賣轉買點火、軋空火箭、大帶寬回測下軌、光頭大紅棒</b>在前後兩期都維持正期望值（矩陣4 低檔反轉也是正的，但樣本少）；<b>窄帶寬開布林</b>與<b>地板線搶反彈</b>全期扣除成本後為負。
+        多方戰法中，<b>主力由賣轉買點火、軋空火箭、光頭大紅棒</b>在前後兩期都維持正期望值（矩陣4 低檔反轉也是正的，但樣本少）；<b>大帶寬回測下軌</b>前期略虧、後期轉正，不夠穩定；<b>窄帶寬開布林</b>與<b>地板線搶反彈</b>全期扣除成本後為負。
         賣出戰法的預測力普遍有限（多數接近基準），比較適合當作持股的出場紀律，不宜單獨作為放空依據。每個訊號旁都標示了在該股的歷史表現，請一併參考。
       </div>`;
   }

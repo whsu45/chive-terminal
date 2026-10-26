@@ -63,6 +63,21 @@ chive-terminal/
 
 ---
 
+---
+
+## 🎯 個股策略分析（stock.html）
+
+在 `stock.html` 輸入單一個股代號，瀏覽器會直接向 FinMind API 抓取日 K、三大法人、融資融券與除權息資料。接著依策略文件（哥有籌必爆／權證小哥）的規則判斷買進或賣出，並用該股的歷史資料回測每一條戰法。
+
+- `assets/strategy-engine.js`：策略引擎（光頭大紅棒、吊首線、均線扣抵、布林開口／帶寬、葛蘭碧八法、地板線搶反彈 SOP、籌碼×扣抵矩陣、軋空模型）與回測。瀏覽器與 Node 共用同一份程式碼。
+- `assets/stock-app.js`：頁面呈現與 K 線／權益曲線圖。
+- `scripts/test_strategy_engine.mjs`：單元測試，執行 `node --test scripts/test_strategy_engine.mjs`。
+- `scripts/validate_strategy.mjs`：多檔個股離線回測，執行 `node scripts/validate_strategy.mjs`，輸出 `data/strategy_validation.json` 供頁面顯示。
+
+> 免費資料等級拿不到券商分點與集保資料，因此「主力買賣超」以三大法人合計買賣超代理；集保、分點、試撮等條件在頁面上標示為需人工確認。
+
+---
+
 ## ⚙️ Workflow 說明
 
 主要 workflow 位於：

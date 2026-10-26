@@ -1,9 +1,11 @@
 import os
 import json
 import requests
+from datetime import datetime, timezone, timedelta
 from modules.utils import get_past_trading_days, DATA_DIR, JSON_FILE, BROKER_JSON_FILE
 from modules.taifex_scraper import (
-    fetch_night_market_data,
+    find_night_session,
+    is_taifex_trading_day,
     fetch_day_market_volume,
     fetch_institutional_positions_ah,
     fetch_institutional_positions_full
@@ -14,7 +16,11 @@ from modules.broker_scraper import update_broker_history_json
 from modules.html_generator import generate_index_html, generate_broker_html
 from modules.themes_scraper import update_themes_json
 
-def process_single_date(session, target_date_str, prev_date_str, us_data_by_date):
+# 資料結構版本：變更判讀邏輯時遞增，強制重新計算歷史紀錄
+DATA_VERSION = "v13"
+
+
+def process_single_date(session, target_date_str, prev_date_str, us_data_by_date, today_str):
     data = {
         "date": target_date_str,
         "prev_date": prev_date_str,
@@ -42,15 +48,27 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
         "sparkline_svg": '<span class="text-xs text-slate-400">未收盤</span>',
         "verify_status": "尚未驗證",
         "verify_badge_class": "bg-slate-100 text-slate-500",
-        "version": "v10"
+        "version": DATA_VERSION
     }
 
-    # 夜盤向 TAIFEX 查詢 target_date_str，對應日盤向 TAIFEX 查詢 prev_date_str
-    night_price_change, night_vol = fetch_night_market_data(session, target_date_str)
+    # 夜盤：找出 prev_date_str 15:00 開盤的夜盤。期交所遇休市會把夜盤歸到之後的營業日，
+    # 因此以夜盤實際開盤日比對，而非直接用 target_date_str 查詢（否則連假後會拿到數天前的夜盤）
+    night = find_night_session(session, target_date_str, prev_date_str, today_str)
+    night_price_change = night["price_change"] if night else None
+    night_vol = night["volume"] if night else None
     day_vol = fetch_day_market_volume(session, prev_date_str)
-    
-    ah_pos = fetch_institutional_positions_ah(session, target_date_str)
+
+    # 夜盤三大法人與夜盤行情同屬期交所交易日 night["trade_date"]
+    ah_pos = fetch_institutional_positions_ah(session, night["trade_date"]) if night else {}
     full_pos = fetch_institutional_positions_full(session, target_date_str)
+
+    # 已過去的日期若期交所查無日盤行情 → 休市
+    is_past = target_date_str < today_str
+    target_closed = is_past and not is_taifex_trading_day(session, target_date_str)
+    prev_closed = night is None and not is_taifex_trading_day(session, prev_date_str)
+    if prev_closed:
+        data["forecast_desc"] = f"前一日 ({prev_date_str}) 休市，沒有夜盤交易，無法預測。"
+
     
     actual_info = fetch_twse_intraday_taiex(session, target_date_str)
     us_info = get_us_info_for_date(us_data_by_date, prev_date_str)
@@ -115,12 +133,24 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
             data["scenario"] = "劇本四"
             data["forecast_desc"] = "開低反彈，外資未跟著殺盤，反彈機率高。"
 
+    if target_closed:
+        data["actual_change"] = "NA"
+        data["sparkline_svg"] = '<span class="text-xs text-slate-400">休市</span>'
+        data["verify_status"] = "休市 (無日盤可驗證)"
+        data["verify_badge_class"] = "bg-slate-100 text-slate-500"
+        return data
+
     data["actual_change"] = actual_info["change_str"]
     data["sparkline_svg"] = actual_info["sparkline_svg"]
     
     v_status, v_badge = verify_match(data["scenario"], actual_info)
     data["verify_status"] = v_status
     data["verify_badge_class"] = v_badge
+
+    # 前一日休市沒有夜盤：當日收盤後即為最終狀態，不需再重抓
+    if prev_closed and data["scenario"] == "NA" and actual_info.get("close") is not None:
+        data["verify_status"] = "無夜盤 (前日休市)"
+        data["verify_badge_class"] = "bg-slate-100 text-slate-500"
 
     return data
 
@@ -140,21 +170,22 @@ def update_history_json():
     session = requests.Session()
     us_data_by_date = fetch_us_indices(session)
     trading_days = get_past_trading_days(count=20)
+    today_str = (datetime.now(timezone.utc) + timedelta(hours=8)).strftime("%Y/%m/%d")
 
     for target_date_str, prev_date_str in trading_days:
         rec = existing_records.get(target_date_str)
         
-        # 強制 v10 版本刷新，確保依 TAIFEX 官方日期規則對齊週五夜盤
+        # 版本不符、尚未驗證或尚無劇本的紀錄重新計算（休市紀錄為最終狀態）
         needs_update = (
             rec is None or 
             rec.get("verify_status", "尚未驗證") == "尚未驗證" or 
-            rec.get("scenario") == "NA" or
-            rec.get("version") != "v12"
+            (rec.get("scenario") == "NA" and not rec.get("verify_status", "").startswith(("休市", "無夜盤"))) or
+            rec.get("version") != DATA_VERSION
         )
         
         if needs_update:
-            print(f"抓取與分析資料 (TAIFEX 官方日 v12)：{target_date_str}...")
-            new_record = process_single_date(session, target_date_str, prev_date_str, us_data_by_date)
+            print(f"抓取與分析資料 (TAIFEX {DATA_VERSION})：{target_date_str}...")
+            new_record = process_single_date(session, target_date_str, prev_date_str, us_data_by_date, today_str)
             existing_records[target_date_str] = new_record
 
     sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)

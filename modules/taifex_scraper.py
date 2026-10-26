@@ -1,4 +1,5 @@
 import re
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 from .utils import clean_int, DATA_SOURCES
 
@@ -31,30 +32,87 @@ def _is_response_date_matched(soup, target_date_str):
     return target_date_str in page_text
 
 
-def fetch_night_market_data(session, target_date_str):
+def _post_daily_market_report(session, query_date_str, market_code):
     url = DATA_SOURCES["taifex"]["daily_market_report_url"]
     payload = {
-        'queryType': '2', 'marketCode': '1', 'dateaddcnt': '',
-        'commodity_id': 'TX', 'commodity_id2': '', 'queryDate': target_date_str,
-        'MarketCode': '1', 'commodity_idt': 'TX', 'commodity_id2t': '', 'commodity_id2t2': ''
+        'queryType': '2', 'marketCode': market_code, 'dateaddcnt': '',
+        'commodity_id': 'TX', 'commodity_id2': '', 'queryDate': query_date_str,
+        'MarketCode': market_code, 'commodity_idt': 'TX', 'commodity_id2t': '', 'commodity_id2t2': ''
     }
     headers = {'User-Agent': 'Mozilla/5.0'}
-    try:
-        resp = session.post(url, data=payload, headers=headers, timeout=5)
-        if resp.status_code == 200:
-            soup = BeautifulSoup(resp.text, 'html.parser')
-            if not _is_response_date_matched(soup, target_date_str):
-                return None, None
+    resp = session.post(url, data=payload, headers=headers, timeout=5)
+    if resp.status_code != 200:
+        return None
+    return BeautifulSoup(resp.text, 'html.parser')
 
-            tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
-            for table in tables:
-                for row in table.find_all('tr'):
-                    cols = [td.text.strip() for td in row.find_all('td')]
-                    if len(cols) >= 9 and cols[0] == 'TX':
-                        return clean_int(cols[6]), clean_int(cols[8])
+
+def _parse_night_session_start(soup):
+    """ 夜盤行情表標題「2026/10/22 15:00~次日05:00 盤後交易時段行情表」→ '2026/10/22' """
+    m = re.search(r'(\d{4})/(\d{1,2})/(\d{1,2})\s*15:00\s*~\s*次日\s*05:00', soup.get_text(' '))
+    if not m:
+        return None
+    return f"{m.group(1)}/{int(m.group(2)):02d}/{int(m.group(3)):02d}"
+
+
+def fetch_night_market_data(session, query_date_str):
+    """
+    以期交所「交易日」查詢夜盤行情。
+    回傳 {"price_change", "volume", "session_start"}；查無資料時回傳 None。
+    注意：期交所將夜盤歸屬於「下一個營業日」，遇休市時交易日會晚於夜盤實際開盤日的隔天。
+    """
+    try:
+        soup = _post_daily_market_report(session, query_date_str, '1')
+        if soup is None or not _is_response_date_matched(soup, query_date_str):
+            return None
+
+        tables = soup.find_all('table', {'class': ['table_f', 'table_a']})
+        for table in tables:
+            for row in table.find_all('tr'):
+                cols = [td.text.strip() for td in row.find_all('td')]
+                if len(cols) >= 9 and cols[0] == 'TX':
+                    return {
+                        "price_change": clean_int(cols[6]),
+                        "volume": clean_int(cols[8]),
+                        "session_start": _parse_night_session_start(soup),
+                    }
     except Exception as e:
-        print(f"[{target_date_str}] Night market error: {e}")
-    return None, None
+        print(f"[{query_date_str}] Night market error: {e}")
+    return None
+
+
+def find_night_session(session, target_date_str, prev_date_str, today_str):
+    """
+    找出「前一個平日 (prev_date_str) 15:00 開盤」的那盤夜盤，作為 target_date_str 的開盤預測依據。
+    一般情況期交所交易日 = target_date_str；若 target_date_str 休市，該夜盤會被歸到之後的營業日，
+    因此往後逐日查詢（不超過今天），並以頁面上的夜盤開始日期比對。
+    回傳 {"trade_date", "price_change", "volume"}；前一個平日休市（沒有夜盤）時回傳 None。
+    """
+    curr = datetime.strptime(target_date_str, "%Y/%m/%d")
+    today = datetime.strptime(today_str, "%Y/%m/%d")
+    for _ in range(8):
+        if curr > today:
+            break
+        if curr.weekday() < 5:
+            q = curr.strftime("%Y/%m/%d")
+            night = fetch_night_market_data(session, q)
+            if night is not None:
+                start = night["session_start"]
+                if start is None or start == prev_date_str:
+                    return {"trade_date": q, "price_change": night["price_change"], "volume": night["volume"]}
+                # 該交易日的夜盤並非 prev_date_str 開盤 → prev_date_str 當天沒有夜盤
+                return None
+        curr += timedelta(days=1)
+    return None
+
+
+def is_taifex_trading_day(session, date_str):
+    """ 期交所一般交易時段是否有該日行情（休市日回傳 False） """
+    try:
+        soup = _post_daily_market_report(session, date_str, '0')
+        return soup is not None and _is_response_date_matched(soup, date_str)
+    except Exception as e:
+        print(f"[{date_str}] Trading day check error: {e}")
+        return True
 
 
 def fetch_day_market_volume(session, prev_date_str):

@@ -10,6 +10,7 @@ DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 JSON_FILE = os.path.join(DATA_DIR, "history.json")
 BROKER_JSON_FILE = os.path.join(DATA_DIR, "broker_history.json")
 SOURCES_JSON_FILE = os.path.join(DATA_DIR, "sources.json")
+THEMES_JSON_FILE = os.path.join(DATA_DIR, "themes.json")
 
 
 def load_data_sources():
@@ -28,7 +29,14 @@ def load_data_sources():
             "institutional_positions_full_url": "https://www.taifex.com.tw/cht/3/futContractsDate"
         },
         "twse": {
-            "intraday_taiex_url": "https://www.twse.com.tw/exchangeReport/MI_5MINS_INDEX"
+            "intraday_taiex_url": "https://www.twse.com.tw/exchangeReport/MI_5MINS_INDEX",
+            "daily_all_url": "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
+        },
+        "tpex": {
+            "daily_close_quotes_url": "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes"
+        },
+        "finlab": {
+            "themes_url": "https://finlab.finance/stocks/themes"
         },
         "yahoo_finance": {
             "chart_api_url": "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"

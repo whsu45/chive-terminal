@@ -12,6 +12,7 @@ from modules.twse_scraper import fetch_twse_intraday_taiex, verify_match
 from modules.market_scraper import fetch_us_indices, get_us_info_for_date, fetch_ohlc_3m
 from modules.broker_scraper import update_broker_history_json
 from modules.html_generator import generate_index_html, generate_broker_html
+from modules.themes_scraper import update_themes_json
 
 def process_single_date(session, target_date_str, prev_date_str, us_data_by_date):
     data = {
@@ -174,6 +175,12 @@ if __name__ == "__main__":
     tw_kline_data = fetch_ohlc_3m(session, "^TWII")
     us_kline_data = fetch_ohlc_3m(session, "^IXIC")
     
+    print("正在抓取 FinLab 族群名單與上市櫃收盤行情...")
+    try:
+        update_themes_json(session)
+    except Exception as e:
+        print(f"族群漲跌更新失敗: {e}")
+
     generate_index_html(history_records, tw_kline_data, us_kline_data)
     generate_broker_html(broker_records)
     print("所有頁面與 TAIFEX 官方對齊已順利執行完成！")

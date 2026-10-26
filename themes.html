@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>族群漲跌排行</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        details > summary { cursor: pointer; list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] .chev { transform: rotate(90deg); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
+    <div class="max-w-[1400px] mx-auto space-y-6">
+
+        <!-- Header & Nav Tabs -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">🧩 族群漲跌排行</h1>
+                    <p class="text-slate-500 text-sm mt-1">族群與成分股名單取自 FinLab 族群頁，漲跌來自證交所／櫃買中心官方收盤行情；強弱勢個股以本站策略引擎判讀並回測驗證</p>
+                </div>
+                <div id="meta" class="text-xs text-slate-500 md:text-right space-y-1"></div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mt-6 border-b border-slate-100 pb-2">
+                <a href="./index.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">📊 台指期夜盤預測</a>
+                <a href="./broker.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🏦 主力券商買超分析</a>
+                <a href="./stock.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🎯 個股策略分析</a>
+                <a href="./themes.html" class="px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 rounded-lg border border-indigo-100">🧩 族群漲跌排行</a>
+            </div>
+        </div>
+
+        <div id="status" class="hidden"></div>
+
+        <!-- 強弱勢個股 -->
+        <div id="picks" class="grid grid-cols-1 xl:grid-cols-5 gap-6"></div>
+
+        <!-- 族群列表 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">📋 族群漲跌排行</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">依族群成分股「當日平均漲跌幅」由強到弱排序；點擊族群展開成分股（依漲跌幅排序）</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input id="filter" type="search" placeholder="搜尋族群、代號或名稱" class="px-3 py-2 rounded-lg border border-slate-300 text-sm w-56 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                    <button id="expandAll" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm">全部展開</button>
+                    <button id="collapseAll" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm">全部收合</button>
+                </div>
+            </div>
+            <div id="themes" class="space-y-2"></div>
+        </div>
+
+        <div id="method" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 text-sm text-slate-600 space-y-2"></div>
+
+        <footer class="text-center text-xs text-slate-400 py-4">
+            族群名單：<a href="https://finlab.finance/stocks/themes" target="_blank" rel="noopener" class="hover:underline">FinLab 族群</a> ｜ 行情：證交所 OpenAPI、櫃買中心 OpenAPI ｜ 策略回測：FinMind | 自動化發布 via GitHub Actions & Pages
+        </footer>
+    </div>
+
+    <script src="./assets/themes-app.js"></script>
+</body>
+</html>

@@ -78,6 +78,14 @@ chive-terminal/
 
 ---
 
+## 🧩 族群漲跌排行（themes.html）
+
+- `modules/themes_scraper.py`：每天抓一次 [FinLab 族群頁](https://finlab.finance/stocks/themes) 的族群與成分股名單，每次請求間隔 1.2 秒。漲跌幅取自證交所與櫃買中心 OpenAPI，輸出到 `data/themes.json`。族群依成分股平均漲跌幅排序，族群內個股依漲跌幅排序。
+- `scripts/build_theme_picks.mjs`：從當日漲跌前段的成分股中挑出候選，用策略引擎判讀並回測，輸出 `data/theme_picks.json`，包含「近日高機率強勢個股」與「前三弱勢個股」，並附理由與可信度。
+- GitHub Actions 每次排程都會更新這兩個檔案。可以設定 `FINMIND_TOKEN` secret 來提高 API 次數上限。
+
+---
+
 ## ⚙️ Workflow 說明
 
 主要 workflow 位於：

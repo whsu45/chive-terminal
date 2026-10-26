@@ -49,12 +49,25 @@ jobs:
         run: |
           python fetch_and_build.py
 
-      # 將更新後的 data/history.json 推回 Git 儲存庫備份
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 族群強弱勢個股：以策略引擎判讀當日漲跌前段候選股（失敗不影響其他頁面部署）
+      - name: Build theme strong/weak picks
+        continue-on-error: true
+        env:
+          FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
+        run: |
+          node scripts/build_theme_picks.mjs
+
+      # 將更新後的 data/history.json 與族群資料推回 Git 儲存庫備份
       - name: Commit and push updated history.json
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/history.json
+          git add data/history.json data/themes.json data/theme_picks.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update history.json [skip ci]" && git push)
 
       - name: Setup Pages

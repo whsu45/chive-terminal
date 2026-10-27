@@ -96,9 +96,10 @@
     const ps = res.perSignal[s.id];
     if (!ps) return { label: '—', cls: 'text-slate-400', text: '' };
     if (ps.side === 'buy') {
-      const st = ps.stats;
+      // 建議以個股期操作的訊號（VCB）以個股期成本判斷，並附上現股成本的結果
+      const st = ps.futuresStats || ps.stats;
       if (!st.n) return { label: '無歷史樣本', cls: 'bg-slate-100 text-slate-500', text: '本股回測期間未曾觸發' };
-      const text = `本股 ${st.n} 次：勝率 ${pct(st.winRate, 0)}、平均 ${pct(st.avgRet, 2, true)}、PF ${isFinite(st.profitFactor) ? st.profitFactor.toFixed(2) : '∞'}`;
+      const text = `本股 ${st.n} 次${ps.futuresStats ? '（個股期成本）' : ''}：勝率 ${pct(st.winRate, 0)}、平均 ${pct(st.avgRet, 2, true)}、PF ${isFinite(st.profitFactor) ? st.profitFactor.toFixed(2) : '∞'}${ps.futuresStats ? `；現股成本平均 ${pct(ps.stats.avgRet, 2, true)}` : ''}`;
       if (st.n < 5) return { label: '樣本不足', cls: 'bg-slate-100 text-slate-500', text };
       if (st.profitFactor >= 1.2) return { label: '歷史有效', cls: 'bg-red-100 text-red-700', text };
       if (st.profitFactor < 1) return { label: '歷史無效', cls: 'bg-amber-100 text-amber-700', text };
@@ -276,7 +277,7 @@
         <td class="py-2 px-3 text-right ${signCls(s.compound)}">${s.n ? pct(s.compound, 1, true) : '—'}</td>
         <td class="py-2 px-3 text-right">${s.n ? (isFinite(s.profitFactor) ? s.profitFactor.toFixed(2) : '∞') : '—'}</td>
         <td class="py-2 px-3 text-right text-green-600">${s.n ? pct(s.mdd, 1) : '—'}</td>
-        <td class="py-2 px-3 text-right">${s.n ? s.avgHold.toFixed(1) : '—'}</td></tr>`;
+        <td class="py-2 px-3 text-right">${s.n ? s.avgHold.toFixed(1) : '—'}</td></tr>${v.futuresStats && v.futuresStats.n ? (f => `<tr class="text-slate-500 hover:bg-slate-50"><td class="py-2 px-3 text-xs">　└ 改用個股期成本（約 ${pct(E.FUTURES_COST, 2)}）</td><td class="py-2 px-3 text-right">${f.n}</td><td class="py-2 px-3 text-right">${pct(f.winRate, 0)}</td><td class="py-2 px-3 text-right ${signCls(f.avgRet)}">${pct(f.avgRet, 2, true)}</td><td class="py-2 px-3 text-right ${signCls(f.compound)}">${pct(f.compound, 1, true)}</td><td class="py-2 px-3 text-right">${isFinite(f.profitFactor) ? f.profitFactor.toFixed(2) : '∞'}</td><td class="py-2 px-3 text-right text-green-600">${pct(f.mdd, 1)}</td><td class="py-2 px-3 text-right">${f.avgHold.toFixed(1)}</td></tr>`)(v.futuresStats) : ''}`;
     }).join('');
     const base = res.baseline;
     const sellRows = Object.entries(res.perSignal).filter(([, v]) => v.side === 'sell').map(([sid, v]) => {
@@ -500,11 +501,15 @@
         多方戰法中，<b>主力由賣轉買點火、軋空火箭、光頭大紅棒</b>在前後兩期都維持正期望值（矩陣4 低檔反轉也是正的，但樣本少）；<b>大帶寬回測下軌</b>前期略虧、後期轉正，不夠穩定；<b>窄帶寬開布林</b>與<b>地板線搶反彈</b>全期扣除成本後為負。
         賣出戰法的預測力普遍有限（多數接近基準），比較適合當作持股的出場紀律，不宜單獨作為放空依據。每個訊號旁都標示了在該股的歷史表現，請一併參考。
       </div>
-      ${v.buySignals.VCB ? `<div class="mt-3 p-4 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed">
-        <b>Larry Williams 波動收斂突破（VCB）：</b>跨 ${v.stocks} 檔共 ${v.buySignals.VCB.all.n.toLocaleString()} 筆，勝率 ${pct(v.buySignals.VCB.all.winRate, 0)}、平均每筆 ${pct(v.buySignals.VCB.all.avgRet, 2, true)}、PF ${v.buySignals.VCB.all.profitFactor.toFixed(2)}，前後兩期都一樣是負值；拿掉投信／大盤輔助濾網後結果幾乎相同。
-        原因是進場本身的優勢太小：突破後 5 日平均上漲幅度只比任意一天多約 0.1 個百分點，遠低於來回交易成本 0.585%；停損設在收斂日低點又很近，約三分之二的交易以停損出場。
-        因此 VCB 以<b>獨立策略</b>顯示訊號與回測，<b>不計入</b>綜合策略與買賣評分（加入的話，綜合策略報酬中位數會從 +28% 降到 +19%）。
-      </div>` : ''}`;
+      ${v.buySignals.VCB && v.variants?.VCB_FUT ? (() => {
+        const st = v.buySignals.VCB.all, fu = v.variants.VCB_FUT, gr = v.variants.VCB_GROSS.all;
+        const f = x => `勝率 ${pct(x.winRate, 0)}、平均每筆 ${pct(x.avgRet, 2, true)}、PF ${x.profitFactor.toFixed(2)}`;
+        return `<div class="mt-3 p-4 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed">
+        <b>Larry Williams 波動收斂突破（VCB）：</b>跨 ${v.stocks} 檔共 ${st.n.toLocaleString()} 筆。扣成本前平均每筆 ${pct(gr.avgRet, 2, true)}，有小幅優勢；但現股來回成本 0.585% 幾乎全部吃掉：<b>現股成本</b> ${f(st)}，<b>個股期成本</b>（約 ${pct(v.futuresCost, 2)}）${f(fu.all)}，前期 ${pct(fu.early.avgRet, 2, true)}、後期 ${pct(fu.late.avgRet, 2, true)} 都為正。
+        Williams 原本是為交易成本極低的期貨設計，因此本頁建議以<b>個股期</b>操作；收斂採 NR4、進場採「開盤價 + 0.5 × 真實區間」，比規格書原版（真實區間縮小、突破 5 日高）扣成本前優勢較大（對照列見上表）。
+        VCB 仍為<b>獨立策略</b>，<b>不計入</b>綜合策略與買賣評分。注意：並非每檔股票都有個股期，部分契約流動性低，實際手續費依券商而異，且未計滑價。
+      </div>`;
+      })() : ''}`;
   }
 
   // ---------- 初始化 ----------

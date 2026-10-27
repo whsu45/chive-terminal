@@ -1,18 +1,18 @@
 {
- "generatedAt": "2026-10-27T04:09:58.223Z",
+ "generatedAt": "2026-10-27T04:12:45.734Z",
  "quote_date": "2026-10-22",
  "method": {
-  "strongPool": 15,
-  "weakPool": 12,
-  "minVolume": 500,
+  "strongPool": 10,
+  "weakPool": 10,
+  "minVolume": 1000,
   "historyYears": 3,
-  "strongRule": "族群成分股當日漲幅前 15 名（量 ≥ 500 張）中，策略綜合分數 ≥ 1.5（買進以上），依分數取前 5",
-  "weakRule": "族群成分股當日跌幅前 12 名（量 ≥ 500 張）中，策略綜合分數最低的 3 檔",
+  "strongRule": "族群成分股當日漲幅前 10 名（量 ≥ 1000 張）中，策略綜合分數 ≥ 1.5（買進以上），依分數取前 5",
+  "weakRule": "族群成分股當日跌幅前 10 名（量 ≥ 1000 張）中，策略綜合分數最低的 3 檔",
   "confidenceRule": "高：觸發訊號在本股（≥5 次）或跨個股驗證中具統計優勢（買訊 PF ≥1.2／1.5，賣訊下跌機率高於基準 5pp）；中：略優於基準；低：無統計優勢或樣本不足"
  },
  "evaluated": {
-  "strong": 15,
-  "weak": 12
+  "strong": 10,
+  "weak": 10
  },
  "strong": [
   {
@@ -68,58 +68,6 @@
    "confidenceLabel": "低"
   },
   {
-   "code": "6214",
-   "name": "精誠",
-   "market": "上市",
-   "close": 201,
-   "pct": 1.01,
-   "volume": 2275,
-   "themes": [
-    "資安概念股"
-   ],
-   "asOf": "2026-10-22",
-   "verdict": "買進",
-   "verdictKey": "BUY",
-   "score": 3,
-   "trend": "RECOVERY",
-   "reasons": [
-    "今日 +1.01%，量 2,275 張；所屬族群：資安概念股（平均 +2.21%）",
-    "策略綜合判斷「買進」（分數 +3.00）",
-    "回升架構：月線上揚且股價站上月線（多頭，回檔不破月線可續抱）",
-    "主力(法人)買＋月線上揚：順勢攻擊（近 10 日 +2,449 張）",
-    "股價沿布林上軌推升（山的左邊，空單禁入）",
-    "策略部位持有中（2026-09-29 依「葛蘭碧③ 回測上揚月線支撐」進場，停損 190.95）"
-   ],
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
-   "code": "2031",
-   "name": "新光鋼",
-   "market": "上市",
-   "close": 48.2,
-   "pct": 0.84,
-   "volume": 1021,
-   "themes": [
-    "風電概念股"
-   ],
-   "asOf": "2026-10-22",
-   "verdict": "買進",
-   "verdictKey": "BUY",
-   "score": 3,
-   "trend": "RECOVERY",
-   "reasons": [
-    "今日 +0.84%，量 1,021 張；所屬族群：風電概念股（平均 +0.34%）",
-    "策略綜合判斷「買進」（分數 +3.00）",
-    "回升架構：月線上揚且股價站上月線（多頭，回檔不破月線可續抱）",
-    "主力(法人)買＋月線上揚：順勢攻擊（近 10 日 +2,434 張）",
-    "股價沿布林上軌推升（山的左邊，空單禁入）",
-    "策略部位持有中（2026-10-07 依「葛蘭碧③ 回測上揚月線支撐」進場，停損 45.84）"
-   ],
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
    "code": "2465",
    "name": "麗臺",
    "market": "上市",
@@ -144,6 +92,30 @@
    ],
    "confidence": 2,
    "confidenceLabel": "高"
+  },
+  {
+   "code": "3029",
+   "name": "零壹",
+   "market": "上市",
+   "close": 122.5,
+   "pct": 2.94,
+   "volume": 2306,
+   "themes": [
+    "資安概念股"
+   ],
+   "asOf": "2026-10-22",
+   "verdict": "買進",
+   "verdictKey": "BUY",
+   "score": 2,
+   "trend": "RECOVERY",
+   "reasons": [
+    "今日 +2.94%，量 2,306 張；所屬族群：資安概念股（平均 +2.21%）",
+    "策略綜合判斷「買進」（分數 +2.00）",
+    "回升架構：月線上揚且股價站上月線（多頭，回檔不破月線可續抱）",
+    "主力(法人)買＋月線上揚：順勢攻擊（近 10 日 +4,688 張）"
+   ],
+   "confidence": 0,
+   "confidenceLabel": "低"
   }
  ],
  "weak": [
@@ -400,96 +372,6 @@
    "volume": 1131,
    "themes": [
     "風電概念股"
-   ],
-   "asOf": "2026-10-22",
-   "verdict": "強力賣出",
-   "verdictKey": "STRONG_SELL",
-   "score": -4.1,
-   "trend": "REBOUND",
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
-   "code": "6214",
-   "name": "精誠",
-   "market": "上市",
-   "close": 201,
-   "pct": 1.01,
-   "volume": 2275,
-   "themes": [
-    "資安概念股"
-   ],
-   "asOf": "2026-10-22",
-   "verdict": "買進",
-   "verdictKey": "BUY",
-   "score": 3,
-   "trend": "RECOVERY",
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
-   "code": "2031",
-   "name": "新光鋼",
-   "market": "上市",
-   "close": 48.2,
-   "pct": 0.84,
-   "volume": 1021,
-   "themes": [
-    "風電概念股"
-   ],
-   "asOf": "2026-10-22",
-   "verdict": "買進",
-   "verdictKey": "BUY",
-   "score": 3,
-   "trend": "RECOVERY",
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
-   "code": "4967",
-   "name": "十銓",
-   "market": "上市",
-   "close": 250,
-   "pct": 0.4,
-   "volume": 867,
-   "themes": [
-    "記憶體概念股"
-   ],
-   "asOf": "2026-10-22",
-   "verdict": "強力賣出",
-   "verdictKey": "STRONG_SELL",
-   "score": -4.1,
-   "trend": "REBOUND",
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
-   "code": "2451",
-   "name": "創見",
-   "market": "上市",
-   "close": 275,
-   "pct": 0.36,
-   "volume": 1512,
-   "themes": [
-    "記憶體概念股"
-   ],
-   "asOf": "2026-10-22",
-   "verdict": "賣出",
-   "verdictKey": "SELL",
-   "score": -2.1,
-   "trend": "REBOUND",
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
-   "code": "6770",
-   "name": "力積電",
-   "market": "上市",
-   "close": 66.4,
-   "pct": 0.3,
-   "volume": 113091,
-   "themes": [
-    "HBM 概念股"
    ],
    "asOf": "2026-10-22",
    "verdict": "強力賣出",

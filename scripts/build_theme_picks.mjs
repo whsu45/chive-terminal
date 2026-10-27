@@ -12,9 +12,9 @@ const Engine = require(path.join(ROOT, 'assets/strategy-engine.js'));
 const API = 'https://api.finmindtrade.com/api/v4/data';
 const TOKEN = process.env.FINMIND_TOKEN || '';
 
-const STRONG_POOL = 15; // 當日漲幅前 N 名進入強勢候選
-const WEAK_POOL = 12; // 當日跌幅前 N 名進入弱勢候選
-const MIN_VOLUME = 500; // 成交量門檻（張），排除流動性不足個股
+const STRONG_POOL = 10; // 當日漲幅前 N 名進入強勢候選
+const WEAK_POOL = 10; // 當日跌幅前 N 名進入弱勢候選
+const MIN_VOLUME = 1000; // 成交量門檻（張），排除流動性不足個股
 const STRONG_PICKS = 5;
 const WEAK_PICKS = 3;
 const HISTORY_YEARS = 3;
@@ -174,8 +174,8 @@ const out = {
   quote_date: themes.quote_date,
   method: {
     strongPool: STRONG_POOL, weakPool: WEAK_POOL, minVolume: MIN_VOLUME, historyYears: HISTORY_YEARS,
-    strongRule: '族群成分股當日漲幅前 15 名（量 ≥ 500 張）中，策略綜合分數 ≥ 1.5（買進以上），依分數取前 5',
-    weakRule: '族群成分股當日跌幅前 12 名（量 ≥ 500 張）中，策略綜合分數最低的 3 檔',
+    strongRule: `族群成分股當日漲幅前 ${STRONG_POOL} 名（量 ≥ ${MIN_VOLUME} 張）中，策略綜合分數 ≥ 1.5（買進以上），依分數取前 5`,
+    weakRule: `族群成分股當日跌幅前 ${WEAK_POOL} 名（量 ≥ ${MIN_VOLUME} 張）中，策略綜合分數最低的 3 檔`,
     confidenceRule: '高：觸發訊號在本股（≥5 次）或跨個股驗證中具統計優勢（買訊 PF ≥1.2／1.5，賣訊下跌機率高於基準 5pp）；中：略優於基準；低：無統計優勢或樣本不足',
   },
   evaluated: { strong: strongEval.length, weak: weakEval.length },

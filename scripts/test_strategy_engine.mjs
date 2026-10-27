@@ -156,3 +156,30 @@ test('除權息還原：除息日前價格乘上 after/before', () => {
   assert.equal(bars[1].mf, null);
   assert.equal(bars[0].volume, 1000);
 });
+
+test('主力成本線：近 20 日買超日以買超張數加權成交均價，賣超日不計', () => {
+  const rows = Array.from({ length: 25 }, (_, i) => ({ c: 100 + i, mf: 0 }));
+  rows[3].mf = 300; // 視窗外（i=24 的 20 日視窗為 5~24）
+  rows[20].mf = 100; rows[22].mf = 300; rows[23].mf = -500; // 賣超日不計入
+  const bars = mkBars(rows);
+  bars.forEach(b => { b.vwap = b.close + 0.5; });
+  const ind = E.computeIndicators(bars);
+  const expected = (100 * 120.5 + 300 * 122.5) / 400;
+  assert.ok(Math.abs(ind.mfCost20[24] - expected) < 1e-9);
+  assert.equal(ind.mfCost20[18], null); // 不足 20 日
+  // 近 20 日皆無買超 → 無成本線
+  const flatBars = mkBars(Array.from({ length: 25 }, () => ({ c: 100, mf: -10 })));
+  assert.equal(E.computeIndicators(flatBars).mfCost20[24], null);
+});
+
+test('成交均價：成交金額 ÷ 成交股數並套用除權息還原', () => {
+  const bars = E.buildBars({
+    prices: [
+      { date: '2024-01-02', open: 100, max: 101, min: 99, close: 100, Trading_Volume: 1000, Trading_money: 100500 },
+      { date: '2024-01-03', open: 95, max: 96, min: 94, close: 95, Trading_Volume: 1000, Trading_money: 95200 },
+    ],
+    dividends: [{ date: '2024-01-03', before_price: 100, after_price: 95 }],
+  });
+  assert.ok(Math.abs(bars[0].vwap - 100.5 * 0.95) < 1e-9);
+  assert.ok(Math.abs(bars[1].vwap - 95.2) < 1e-9);
+});

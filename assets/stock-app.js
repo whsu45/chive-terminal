@@ -5,7 +5,7 @@
   const API = 'https://api.finmindtrade.com/api/v4/data';
   const $ = id => document.getElementById(id);
 
-  const C = { up: '#ef4444', down: '#16a34a', ma20: '#f59e0b', band: '#94a3b8', strat: '#4f46e5', bh: '#94a3b8', grid: '#e2e8f0', axis: '#94a3b8' };
+  const C = { up: '#ef4444', down: '#16a34a', ma20: '#f59e0b', cost: '#7c3aed', band: '#94a3b8', strat: '#4f46e5', bh: '#94a3b8', grid: '#e2e8f0', axis: '#94a3b8' };
 
   // ---------- 格式化 ----------
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -190,6 +190,7 @@
           <div class="flex flex-wrap gap-3 text-xs text-slate-500">
             <span><i class="inline-block w-3 h-0.5 align-middle" style="background:${C.ma20}"></i> 月線 20MA</span>
             <span><i class="inline-block w-3 border-t border-dashed align-middle" style="border-color:${C.band}"></i> 布林上/下軌</span>
+            <span title="近 20 日主力(法人)買超日，以買超張數加權的成交均價"><i class="inline-block w-3 h-0.5 align-middle" style="background:${C.cost}"></i> 主力成本線 (20日)</span>
             <span style="color:${C.up}">▲ 買訊</span><span style="color:${C.down}">▼ 賣訊</span>
           </div>
         </div>
@@ -244,6 +245,8 @@
     const chipCard = card('💰 籌碼與信用交易', `
       <div class="text-xs">${row('主力(法人) 今日', lots(mf.d1), signCls(mf.d1))}
       ${row('　外資 / 投信 / 自營', `<span class="${signCls(mf.foreign)}">${lots(mf.foreign)}</span> / <span class="${signCls(mf.trust)}">${lots(mf.trust)}</span> / <span class="${signCls(mf.dealer)}">${lots(mf.dealer)}</span>`)}
+      ${row('主力成本 20 日 / 60 日', `${num(res.mfCost.c20)} / ${num(res.mfCost.c60)}`, 'text-violet-700')}
+      ${row('現價相對 20 日主力成本', pct(res.mfCost.c20 ? res.ctx.bars[res.ctx.bars.length - 1].close / res.mfCost.c20 - 1 : null, 1, true), signCls(res.mfCost.c20 ? res.ctx.bars[res.ctx.bars.length - 1].close - res.mfCost.c20 : null))}
       ${row('主力(法人) 5 日 / 20 日', `<span class="${signCls(mf.d5)}">${lots(mf.d5)}</span> / <span class="${signCls(mf.d20)}">${lots(mf.d20)}</span>`)}
       ${row('融資餘額（5 日變化）', `${mg.marginBal != null ? mg.marginBal.toLocaleString() : 'NA'} 張（${lots(mg.marginChg5)}）`)}
       ${row('融券餘額（5 日變化）', `${mg.shortBal != null ? mg.shortBal.toLocaleString() : 'NA'} 張（${lots(mg.shortChg5)}）`)}
@@ -360,7 +363,7 @@
     const pw = W - L - R, ph = H - T - B;
     let lo = Infinity, hi = -Infinity;
     for (let i = s0; i < bars.length; i++) {
-      lo = Math.min(lo, bars[i].low, ind.lower[i] ?? Infinity); hi = Math.max(hi, bars[i].high, ind.upper[i] ?? -Infinity);
+      lo = Math.min(lo, bars[i].low, ind.lower[i] ?? Infinity, ind.mfCost20[i] ?? Infinity); hi = Math.max(hi, bars[i].high, ind.upper[i] ?? -Infinity, ind.mfCost20[i] ?? -Infinity);
     }
     const padY = (hi - lo) * 0.06; lo -= padY; hi += padY;
     const step = pw / N, cw = Math.max(1.5, step * 0.62);
@@ -372,7 +375,7 @@
     // 月份刻度
     let lastM = '';
     for (let i = s0; i < bars.length; i++) { const m = bars[i].date.slice(0, 7); if (m !== lastM) { if (lastM) g += `<text x="${x(i)}" y="${H - 6}" font-size="11" fill="${C.axis}" text-anchor="middle">${m}</text>`; lastM = m; } }
-    g += `<path d="${line(ind.upper)}" fill="none" stroke="${C.band}" stroke-width="1.5" stroke-dasharray="4 3"/><path d="${line(ind.lower)}" fill="none" stroke="${C.band}" stroke-width="1.5" stroke-dasharray="4 3"/><path d="${line(ind.ma20)}" fill="none" stroke="${C.ma20}" stroke-width="2"/>`;
+    g += `<path d="${line(ind.upper)}" fill="none" stroke="${C.band}" stroke-width="1.5" stroke-dasharray="4 3"/><path d="${line(ind.lower)}" fill="none" stroke="${C.band}" stroke-width="1.5" stroke-dasharray="4 3"/><path d="${line(ind.ma20)}" fill="none" stroke="${C.ma20}" stroke-width="2"/><path d="${line(ind.mfCost20)}" fill="none" stroke="${C.cost}" stroke-width="2"/>`;
     for (let i = s0; i < bars.length; i++) {
       const b = bars[i], col = b.close >= b.open ? C.up : C.down;
       const top = y(Math.max(b.open, b.close)), bh = Math.max(1, Math.abs(y(b.open) - y(b.close)));
@@ -409,7 +412,8 @@
       showTip(`<div class="font-bold mb-1">${b.date}</div>
         <div>開 ${num(b.open)}　高 ${num(b.high)}</div><div>低 ${num(b.low)}　收 <b>${num(b.close)}</b> <span style="color:${c >= 0 ? '#fca5a5' : '#86efac'}">${pct(c, 2, true)}</span></div>
         <div>量 ${Math.round(b.volume).toLocaleString()} 張｜主力(法人) ${lots(b.mf)}</div>
-        <div class="text-slate-300">月線 ${num(ind.ma20[i])}｜帶寬 ${pct(ind.bw[i])}</div>${sigs ? `<div class="mt-1 pt-1 border-t border-slate-700">${sigs}</div>` : ''}`, evt);
+        <div class="text-slate-300">月線 ${num(ind.ma20[i])}｜帶寬 ${pct(ind.bw[i])}</div>
+        <div style="color:#c4b5fd">主力成本(20日) ${num(ind.mfCost20[i])}${ind.mfCost20[i] ? `（${pct(b.close / ind.mfCost20[i] - 1, 1, true)}）` : ''}</div>${sigs ? `<div class="mt-1 pt-1 border-t border-slate-700">${sigs}</div>` : ''}`, evt);
     };
     const leave = () => { hideTip(); for (const id of ['kCross', 'mCross']) document.getElementById(id)?.setAttribute('visibility', 'hidden'); };
     for (const [hitId, wrap] of [['kHit', 'kWrap'], ['mHit', 'mfWrap']]) {

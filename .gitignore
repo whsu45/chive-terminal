@@ -219,3 +219,5 @@ __marimo__/
 
 # Pycharm
 .idea
+# 指數調整事件回測：CI 每次部署由 Yahoo 日 K 重新產生
+data/rebalance.json

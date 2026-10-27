@@ -62,12 +62,19 @@ jobs:
         run: |
           node scripts/build_theme_picks.mjs
 
+      # 指數調整套利：前瞻模型每天重算一次（commit 回 Git）；事件回測每次部署重建、隨網站發布（失敗不影響其他頁面部署）
+      - name: Build index rebalancing data
+        continue-on-error: true
+        run: |
+          node scripts/build_index_model.mjs
+          node scripts/build_rebalance.mjs
+
       # 將更新後的 data/history.json 與族群資料推回 Git 儲存庫備份
       - name: Commit and push updated history.json
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/history.json data/themes.json data/theme_picks.json
+          git add data/history.json data/themes.json data/theme_picks.json data/index_model.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update history.json [skip ci]" && git push)
 
       - name: Setup Pages

@@ -33,14 +33,15 @@
     const start = new Date();
     start.setFullYear(start.getFullYear() - years - 1); // 多抓 1 年作指標暖機
     const s = start.toISOString().slice(0, 10);
-    const [prices, institutional, margin, dividends, info] = await Promise.all([
+    const [prices, institutional, margin, dividends, info, market] = await Promise.all([
       fetchDataset('TaiwanStockPrice', id, s, token),
       fetchDataset('TaiwanStockInstitutionalInvestorsBuySell', id, s, token).catch(() => []),
       fetchDataset('TaiwanStockMarginPurchaseShortSale', id, s, token).catch(() => []),
       fetchDataset('TaiwanStockDividendResult', id, s, token).catch(() => []),
       fetchDataset('TaiwanStockInfo', id, null, token).catch(() => []),
+      fetchDataset('TaiwanStockPrice', 'TAIEX', s, token).catch(() => []), // VCB 大盤月線濾網
     ]);
-    const bars = E.buildBars({ prices, institutional, margin, dividends });
+    const bars = E.buildBars({ prices, institutional, margin, dividends, market });
     const btStart = new Date();
     btStart.setFullYear(btStart.getFullYear() - years);
     const bs = btStart.toISOString().slice(0, 10);
@@ -115,6 +116,7 @@
   function card(title, body, extra = '') {
     return `<div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 ${extra}"><h3 class="text-sm font-bold text-slate-800 mb-3">${title}</h3>${body}</div>`;
   }
+  const standaloneTag = id => (E.SIGNAL_MAP[id]?.standalone ? '<span class="ml-1 px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 text-[10px] font-semibold align-middle">獨立策略・不計分</span>' : '');
   const row = (k, v, cls = 'text-slate-700') => `<div class="flex justify-between gap-3 py-1 border-b border-slate-50 last:border-0"><span class="text-slate-500">${k}</span><span class="font-semibold text-right ${cls}">${v}</span></div>`;
 
   function render(id, info, res, years) {
@@ -168,7 +170,7 @@
       const ev = evidence(res, s);
       return `<tr class="align-top hover:bg-slate-50">
         <td class="py-3 px-3 whitespace-nowrap"><span class="px-2 py-0.5 rounded text-xs font-bold ${s.side === 'buy' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">${s.side === 'buy' ? '買進' : '賣出'}</span></td>
-        <td class="py-3 px-3"><div class="font-bold text-slate-800">${esc(s.name)} <span class="text-amber-500">${'★'.repeat(s.strength)}</span></div><div class="text-[11px] text-slate-400">${esc(s.ref)}｜${esc(s.date)}${s.daysAgo ? `（${s.daysAgo} 日前）` : '（今日）'}</div></td>
+        <td class="py-3 px-3"><div class="font-bold text-slate-800">${esc(s.name)} <span class="text-amber-500">${'★'.repeat(s.strength)}</span>${standaloneTag(s.id)}</div><div class="text-[11px] text-slate-400">${esc(s.ref)}｜${esc(s.date)}${s.daysAgo ? `（${s.daysAgo} 日前）` : '（今日）'}</div></td>
         <td class="py-3 px-3 text-xs text-slate-600"><ul class="list-disc pl-4 space-y-0.5">${s.reasons.map(r => `<li>${esc(r)}</li>`).join('')}</ul>${s.stop ? `<div class="mt-1 text-slate-500">停損 ${num(s.stop)}（${esc(s.stopNote)}）</div>` : ''}${s.note ? `<div class="mt-1 font-semibold text-slate-700">${esc(s.note)}</div>` : ''}</td>
         <td class="py-3 px-3 text-xs"><span class="px-2 py-0.5 rounded font-bold ${ev.cls}">${ev.label}</span><div class="text-slate-500 mt-1">${esc(ev.text)}</div></td>
       </tr>`;
@@ -267,7 +269,7 @@
     const statTile = (label, v, cls, sub = '') => `<div class="p-4 rounded-xl bg-slate-50 border border-slate-100"><div class="text-[11px] font-semibold text-slate-400">${label}</div><div class="text-2xl font-extrabold mt-1 ${cls}">${v}</div>${sub ? `<div class="text-[11px] text-slate-400 mt-0.5">${sub}</div>` : ''}</div>`;
     const buyRows = Object.entries(res.perSignal).filter(([, v]) => v.side === 'buy').map(([sid, v]) => {
       const s = v.stats;
-      return `<tr class="hover:bg-slate-50"><td class="py-2 px-3 font-semibold text-slate-700">${esc(v.name)}<div class="text-[11px] font-normal text-slate-400">${esc(v.ref)}</div></td>
+      return `<tr class="hover:bg-slate-50"><td class="py-2 px-3 font-semibold text-slate-700">${esc(v.name)}${standaloneTag(sid)}<div class="text-[11px] font-normal text-slate-400">${esc(v.ref)}</div></td>
         <td class="py-2 px-3 text-right">${s.n}${s.openTrades ? `<span class="text-[11px] text-indigo-500"> +${s.openTrades}持有</span>` : ''}</td>
         <td class="py-2 px-3 text-right">${s.n ? pct(s.winRate, 0) : '—'}</td>
         <td class="py-2 px-3 text-right ${signCls(s.avgRet)}">${s.n ? pct(s.avgRet, 2, true) : '—'}</td>
@@ -470,7 +472,8 @@
     const sum = v.compositeSummary, b = v.baseline;
     const fmtS = s => (s.n ? `${pct(s.winRate, 0)} / ${pct(s.avgRet, 2, true)} / ${s.profitFactor != null ? s.profitFactor.toFixed(2) : '—'}` : '—');
     const pfCls = s => (!s.n ? 'text-slate-300' : s.profitFactor >= 1.2 ? 'text-red-600 font-bold' : s.profitFactor < 1 ? 'text-amber-600' : 'text-slate-600');
-    const buyRows = Object.values(v.buySignals).map(s => `<tr class="hover:bg-slate-50"><td class="py-2 px-3 font-semibold text-slate-700">${esc(s.name)}</td><td class="py-2 px-3 text-right">${s.all.n}</td><td class="py-2 px-3 text-right ${pfCls(s.all)}">${fmtS(s.all)}</td><td class="py-2 px-3 text-right ${pfCls(s.early)}">${fmtS(s.early)}</td><td class="py-2 px-3 text-right ${pfCls(s.late)}">${fmtS(s.late)}</td></tr>`).join('');
+    const buyRows = Object.entries(v.buySignals).map(([sid, s]) => `<tr class="hover:bg-slate-50"><td class="py-2 px-3 font-semibold text-slate-700">${esc(s.name)}${standaloneTag(sid)}</td><td class="py-2 px-3 text-right">${s.all.n}</td><td class="py-2 px-3 text-right ${pfCls(s.all)}">${fmtS(s.all)}</td><td class="py-2 px-3 text-right ${pfCls(s.early)}">${fmtS(s.early)}</td><td class="py-2 px-3 text-right ${pfCls(s.late)}">${fmtS(s.late)}</td></tr>`).join('');
+    const variantRows = Object.values(v.variants || {}).map(s => `<tr class="hover:bg-slate-50 text-slate-500"><td class="py-2 px-3 italic">對照：${esc(s.name)}</td><td class="py-2 px-3 text-right">${s.all.n}</td><td class="py-2 px-3 text-right ${pfCls(s.all)}">${fmtS(s.all)}</td><td class="py-2 px-3 text-right ${pfCls(s.early)}">${fmtS(s.early)}</td><td class="py-2 px-3 text-right ${pfCls(s.late)}">${fmtS(s.late)}</td></tr>`).join('');
     const sellRows = Object.values(v.sellSignals).map(s => {
       const c = H => { const o = s[H]; if (!o.n) return '<td class="py-2 px-3 text-right text-slate-300">—</td>'; const e = o.downRate - b[H].downRate; return `<td class="py-2 px-3 text-right ${e >= 0.05 ? 'text-green-600 font-bold' : e <= 0 ? 'text-amber-600' : ''}">${pct(o.downRate, 0)}<span class="text-[11px] text-slate-400">（${e >= 0 ? '+' : ''}${(e * 100).toFixed(0)}pp）</span></td>`; };
       return `<tr class="hover:bg-slate-50"><td class="py-2 px-3 font-semibold text-slate-700">${esc(s.name)}</td><td class="py-2 px-3 text-right">${s.n}</td>${c('h5')}${c('h10')}${c('h20')}</tr>`;
@@ -486,7 +489,7 @@
       </div>
       <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
         <div><div class="text-sm font-bold text-slate-700 mb-2">多方戰法（勝率 / 平均報酬 / PF）</div>
-          <div class="overflow-x-auto"><table class="w-full text-xs border-collapse"><thead class="text-slate-700 bg-slate-100"><tr><th class="py-2 px-3 text-left">戰法</th><th class="py-2 px-3 text-right">次數</th><th class="py-2 px-3 text-right">全期</th><th class="py-2 px-3 text-right">前期</th><th class="py-2 px-3 text-right">後期</th></tr></thead><tbody class="divide-y divide-slate-100">${buyRows}</tbody></table></div>
+          <div class="overflow-x-auto"><table class="w-full text-xs border-collapse"><thead class="text-slate-700 bg-slate-100"><tr><th class="py-2 px-3 text-left">戰法</th><th class="py-2 px-3 text-right">次數</th><th class="py-2 px-3 text-right">全期</th><th class="py-2 px-3 text-right">前期</th><th class="py-2 px-3 text-right">後期</th></tr></thead><tbody class="divide-y divide-slate-100">${buyRows}${variantRows}</tbody></table></div>
           <div class="text-[11px] text-slate-400 mt-1"><span class="text-red-600 font-bold">紅色粗體</span> PF ≥ 1.2｜<span class="text-amber-600">橘色</span> PF &lt; 1（扣成本後虧損）</div></div>
         <div><div class="text-sm font-bold text-slate-700 mb-2">賣出戰法：訊號後下跌機率（相對基準）</div>
           <div class="overflow-x-auto"><table class="w-full text-xs border-collapse"><thead class="text-slate-700 bg-slate-100"><tr><th class="py-2 px-3 text-left">戰法</th><th class="py-2 px-3 text-right">次數</th><th class="py-2 px-3 text-right">5 日</th><th class="py-2 px-3 text-right">10 日</th><th class="py-2 px-3 text-right">20 日</th></tr></thead><tbody class="divide-y divide-slate-100">${sellRows}</tbody></table></div>
@@ -496,7 +499,12 @@
         <b>驗證結論：</b>此期間台股為長多格局，持股時間僅約三分之一的綜合策略，總報酬普遍落後買進持有，但多數個股的最大回撤較小。
         多方戰法中，<b>主力由賣轉買點火、軋空火箭、光頭大紅棒</b>在前後兩期都維持正期望值（矩陣4 低檔反轉也是正的，但樣本少）；<b>大帶寬回測下軌</b>前期略虧、後期轉正，不夠穩定；<b>窄帶寬開布林</b>與<b>地板線搶反彈</b>全期扣除成本後為負。
         賣出戰法的預測力普遍有限（多數接近基準），比較適合當作持股的出場紀律，不宜單獨作為放空依據。每個訊號旁都標示了在該股的歷史表現，請一併參考。
-      </div>`;
+      </div>
+      ${v.buySignals.VCB ? `<div class="mt-3 p-4 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed">
+        <b>Larry Williams 波動收斂突破（VCB）：</b>跨 ${v.stocks} 檔共 ${v.buySignals.VCB.all.n.toLocaleString()} 筆，勝率 ${pct(v.buySignals.VCB.all.winRate, 0)}、平均每筆 ${pct(v.buySignals.VCB.all.avgRet, 2, true)}、PF ${v.buySignals.VCB.all.profitFactor.toFixed(2)}，前後兩期都一樣是負值；拿掉投信／大盤輔助濾網後結果幾乎相同。
+        原因是進場本身的優勢太小：突破後 5 日平均上漲幅度只比任意一天多約 0.1 個百分點，遠低於來回交易成本 0.585%；停損設在收斂日低點又很近，約三分之二的交易以停損出場。
+        因此 VCB 以<b>獨立策略</b>顯示訊號與回測，<b>不計入</b>綜合策略與買賣評分（加入的話，綜合策略報酬中位數會從 +28% 降到 +19%）。
+      </div>` : ''}`;
   }
 
   // ---------- 初始化 ----------

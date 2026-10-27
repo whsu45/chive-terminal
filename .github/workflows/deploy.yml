@@ -62,6 +62,12 @@ jobs:
         run: |
           node scripts/build_theme_picks.mjs
 
+      # 個股短沖（ORB）：Yahoo 5 分 K 回測，產物隨網站發布、不 commit 回 Git（失敗不影響其他頁面部署）
+      - name: Build ORB day-trade data
+        continue-on-error: true
+        run: |
+          node scripts/build_orb.mjs
+
       # 將更新後的 data/history.json 與族群資料推回 Git 儲存庫備份
       - name: Commit and push updated history.json
         run: |

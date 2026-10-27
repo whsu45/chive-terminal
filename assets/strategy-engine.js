@@ -9,7 +9,7 @@
  *
  * 時序原則（避免偷看未來）：所有訊號以當日收盤後資料判斷，回測一律於「次一交易日開盤」成交；
  * 價格型停損/停利以盤中觸價成交 (跳空則以開盤價成交)。
- * 例外：VCB 為收盤後確認型態、次一交易日盤中「觸價突破」才進場（預掛突破買單），未突破則不進場。
+ * 例外：VCB 為收盤後確認型態、次一交易日盤中「開盤價 + 0.5 × 型態日真實區間」觸價才進場，未觸及則不進場。
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
@@ -18,6 +18,8 @@
   'use strict';
 
   const COST = { buyFee: 0.001425, sellFee: 0.001425, tax: 0.003 };
+  // 個股期貨來回成本估計（期交稅 0.002% × 2 ＋ 手續費約 0.025% × 2，未計滑價）：VCB 另列此成本下的回測
+  const FUTURES_COST = 0.0006;
 
   // ==========================================
   // 資料整理：FinMind 原始資料 → bars
@@ -437,15 +439,17 @@
       },
     },
     {
-      // 型態日 i 收盤後成立；次一交易日盤中突破近 5 日高點才進場（見 vcbEntry）
-      // standalone：獨立策略，不參與《哥有籌必爆》綜合策略與買賣評分（跨個股驗證扣成本後為負，見 validate_strategy.mjs）
-      id: 'VCB', side: 'buy', name: 'Larry Williams 波動收斂突破', ref: 'VCB 企劃書 進場規則', exit: 'vcb', standalone: true,
+      // 型態日 i 收盤後成立；次一交易日盤中觸及「開盤價 + 0.5 × 型態日真實區間」才進場（見 vcbEntry）
+      // 收斂採 Crabel NR4、進場採 Williams 波動突破：跨個股測試中比規格書原版（真實區間縮小、突破 5 日高）扣成本前優勢較大
+      // standalone：獨立策略，不參與《哥有籌必爆》綜合策略與買賣評分（現股成本下約打平，見 validate_strategy.mjs）
+      // altCost：另列個股期貨成本下的回測
+      id: 'VCB', side: 'buy', name: 'Larry Williams 波動收斂突破', ref: 'VCB 企劃書（NR4 ＋ Williams 波動突破）', exit: 'vcb', standalone: true, altCost: 'futures',
       detect({ bars, ind, h, opts }, i) {
         if (i < 25 || ind.ma20[i] == null) return null;
-        const b = bars[i], p = bars[i - 1];
-        // 條件一～三：昨收上漲、真實區間收斂（小於前一日且小於 5 日 ATR）、收在 K 棒中點之上
-        if (!(b.close > p.close)) return null;
-        if (!(ind.tr[i] < ind.tr[i - 1] && ind.tr[i] < ind.atr5[i])) return null;
+        const b = bars[i];
+        // 波動收斂：NR4（今日高低波幅為近 4 日最窄）且收在 K 棒中點之上
+        const rng = k => bars[k].high - bars[k].low;
+        for (let k = i - 3; k < i; k++) if (!(rng(k) > rng(i))) return null;
         if (!(b.close >= (b.high + b.low) / 2)) return null;
         // 濾網：5 日均量 ≥ 1000 張、股價 > 10 元、站上 20MA
         if (!(ind.volMa5[i] >= 1000)) return null;
@@ -454,19 +458,23 @@
         const trust5 = h.trustSum(i, 5);
         const aux = (trust5 != null && trust5 > 0) || b.mktUp === true;
         if (opts.vcbAux !== false && !aux) return null;
-        const trigger = h.highest(i - 4, i).v;
+        // 進場：預設為 Williams 波動突破（次日開盤 + 0.5 × 今日真實區間）；opts.vcbEntry = 'hh5' 為規格書原版（突破近 5 日高點），供驗證對照
+        const hh5 = opts.vcbEntry === 'hh5';
+        const trigger = hh5 ? h.highest(i - 4, i).v : null;
+        const offset = 0.5 * ind.tr[i];
         const auxNote = [trust5 != null && trust5 > 0 ? `投信近 5 日買超 ${lots(trust5)}` : null, b.mktUp === true ? '大盤在月線之上' : null].filter(Boolean).join('、');
         return {
           strength: 1,
-          trigger,
+          trigger, offset,
           reasons: [
-            `收盤上漲 ${pct(h.pctChg(i), 2)}，收在 K 棒 ${pct((b.close - b.low) / Math.max(b.high - b.low, 1e-9), 0)} 位置（中點之上）`,
-            `真實區間 ${fmt(ind.tr[i])} 小於前一日 ${fmt(ind.tr[i - 1])} 與 5 日 ATR ${fmt(ind.atr5[i])}（波動收斂）`,
+            `NR4：今日波幅 ${fmt(rng(i))} 為近 4 日最窄（前 3 日 ${[i - 3, i - 2, i - 1].map(k => fmt(rng(k))).join('／')}）`,
+            `收在 K 棒 ${pct((b.close - b.low) / Math.max(b.high - b.low, 1e-9), 0)} 位置（中點之上），收盤 ${pct(h.pctChg(i), 2)}`,
             `5 日均量 ${Math.round(ind.volMa5[i]).toLocaleString()} 張、站上 20MA ${fmt(ind.ma20[i])}`,
             auxNote ? `趨勢輔助：${auxNote}` : '⚠ 趨勢輔助濾網未成立（投信未買超、大盤在月線下）',
-            `次一交易日盤中突破近 5 日高點 ${fmt(trigger)} 才進場；未突破則型態失效`,
+            hh5 ? `次一交易日盤中突破近 5 日高點 ${fmt(trigger)} 才進場；未突破則型態失效` : `次一交易日盤中觸及「開盤價 + ${fmt(offset)}」（0.5 × 今日真實區間）才進場；未觸及則型態失效`,
+            '⚠ 現股來回成本 0.585% 約吃掉全部優勢，回測只有用個股期貨（成本約 0.06%）才為正',
           ],
-          stop: Math.max(trigger * 0.96, b.low), stopNote: '跌破型態日低點或進場價 −4%（取較高者）',
+          stop: b.low, stopNote: '型態日低點與進場價 −4% 取較高者',
           targetNote: '獲利 ≥5% 停損移至成本，之後破前日低點或 5MA 出場；3 日內獲利未達 1.5% 時間停損',
         };
       },
@@ -727,14 +735,16 @@
     return null;
   }
 
-  // VCB：次一交易日盤中觸及突破價才成交（開盤跳空突破則以開盤價成交）；
+  // VCB：次一交易日盤中觸及觸發價才成交（觸發價 = 開盤價 + 0.5 × 型態日真實區間，或對照組的近 5 日高點；開盤跳空越過則以開盤價成交）；
   // 一字鎖漲停買不到；成交價仍需站上（含當下價格的）20MA
   function vcbEntry(ctx, i, sig) {
     const { bars } = ctx;
     const nb = bars[i + 1];
-    if (!nb || !(nb.high >= sig.trigger)) return null;
+    if (!nb) return null;
+    const trigger = sig.trigger != null ? sig.trigger : nb.open + sig.offset;
+    if (!(nb.high >= trigger)) return null;
     if (nb.open === nb.high && nb.open / bars[i].close - 1 >= 0.095) return null;
-    const fill = Math.max(nb.open, sig.trigger);
+    const fill = Math.max(nb.open, trigger);
     let s = fill;
     for (let k = i - 18; k <= i; k++) s += bars[k].close;
     if (!(fill > s / 20)) return null;
@@ -753,10 +763,13 @@
     const r = netRet(pos.avgCost, ex.exitPx);
     return {
       sigId: pos.sigId, sigDate: bars[pos.sigIdx].date, entryDate: bars[pos.entryIdx].date, entryPx: pos.avgCost,
-      exitDate: bars[ex.exitIdx].date, exitPx: ex.exitPx, ret: r, hold: ex.exitIdx - pos.entryIdx, reason: ex.reason,
+      exitDate: bars[ex.exitIdx].date, exitPx: ex.exitPx, ret: r, gross: ex.exitPx / pos.avgCost - 1, hold: ex.exitIdx - pos.entryIdx, reason: ex.reason,
       units: pos.units, open: !!ex.open,
     };
   }
+
+  // 同一批交易改以個股期貨成本計算報酬
+  const futuresTrades = trades => trades.map(t => ({ ...t, ret: t.gross - FUTURES_COST }));
 
   function summarize(trades) {
     const closed = trades.filter(t => !t.open);
@@ -961,6 +974,7 @@
   function analyze(bars, opts = {}) {
     const ctx = makeCtx(bars);
     if (opts.vcbAux === false) ctx.opts.vcbAux = false;
+    if (opts.vcbEntry) ctx.opts.vcbEntry = opts.vcbEntry;
     const hits = scanAll(ctx);
     const n = bars.length;
     const i = n - 1;
@@ -973,6 +987,7 @@
       if (s.side === 'buy') {
         const tr = backtestSignal(ctx, hits, s.id, startIdx);
         perSignal[s.id] = { side: 'buy', name: s.name, ref: s.ref, stats: summarize(tr), trades: tr };
+        if (s.altCost === 'futures') perSignal[s.id].futuresStats = summarize(futuresTrades(tr));
       } else {
         perSignal[s.id] = { side: 'sell', name: s.name, ref: s.ref, fwd: forwardStats(ctx, hits, s.id, startIdx) };
       }
@@ -1042,7 +1057,7 @@
     }
     if (riding && ratio != null && ratio >= 0.3) advice.push('🚀 沿上軌＋券資比 ≥30%：軋空條件成立，空單絕不可摸頭');
     const vcb = recent.find(s => s.id === 'VCB');
-    if (vcb) advice.push(`📐 Larry Williams VCB（獨立策略，不計入評分）：次一交易日盤中突破 ${fmt(vcb.trigger)} 才進場，停損 ${fmt(vcb.stop)}；未突破則型態失效`);
+    if (vcb) advice.push(`📐 Larry Williams VCB（獨立策略，不計入評分，建議以個股期操作）：次一交易日盤中觸及${vcb.trigger != null ? ` ${fmt(vcb.trigger)}` : `「開盤價 + ${fmt(vcb.offset)}」`}才進場，停損為型態日低點 ${fmt(vcb.stop)} 與進場價 −4% 取較高者；未觸及則型態失效`);
 
     return {
       ctx, hits, last: b, prev: bars[i - 1], date: b.date, verdict, verdictKey, score, scoreParts, advice,
@@ -1056,7 +1071,7 @@
   }
 
   return {
-    COST, SIGNALS, SIGNAL_MAP, HARD_EXIT_IDS,
+    COST, FUTURES_COST, SIGNALS, SIGNAL_MAP, HARD_EXIT_IDS, futuresTrades,
     buildBars, computeIndicators, makeCtx, scanAll, backtestSignal, backtestComposite, forwardStats, baselineForward, summarize, analyze, trendState,
   };
 });

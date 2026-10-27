@@ -201,16 +201,38 @@
     const sideRows = ['long', 'short'].map(k => `<tr class="text-slate-500"><td class="py-2 px-3">　└ 只看${SIDE[k]}</td>${statCells(sm.variants.full[k])}<td class="py-2 px-3 text-right ${signCls(sm.variants.full[k].grossAvg)}">${pct(sm.variants.full[k].grossAvg, 3, true)}</td></tr>`).join('');
     const halfRows = [['前半段', sm.halves.first], ['後半段', sm.halves.second]].map(([l, s]) => `<tr class="text-slate-500"><td class="py-2 px-3">　└ ${l}</td>${statCells(s)}<td class="py-2 px-3 text-right ${signCls(s.grossAvg)}">${pct(s.grossAvg, 3, true)}</td></tr>`).join('');
     const vc = sm.verdicts, cost = 2 * INDEX.cost.fee + INDEX.cost.tax;
+    const hr = INDEX.hourly;
+    const thead = '<thead class="text-slate-700 bg-slate-100"><tr><th class="py-2 px-3 text-left rounded-l-lg">版本</th><th class="py-2 px-3 text-right">筆數</th><th class="py-2 px-3 text-right">勝率</th><th class="py-2 px-3 text-right">盈虧比</th><th class="py-2 px-3 text-right">平均每筆</th><th class="py-2 px-3 text-right">PF</th><th class="py-2 px-3 text-right rounded-r-lg">未扣成本</th></tr></thead>';
+    const statRow = (label, s, cls = '') => `<tr class="hover:bg-slate-50 ${cls}"><td class="py-2 px-3 whitespace-nowrap">${label}</td>${statCells(s)}<td class="py-2 px-3 text-right ${signCls(s.grossAvg)}">${pct(s.grossAvg, 3, true)}</td></tr>`;
+    const lossQ = hr ? hr.quarters.filter(q => q.n && q.avgRet < 0).length : 0;
+    const hourlyBlock = hr ? `
+        <div>
+          <h3 class="text-sm font-bold text-slate-700">近兩年（60 分 K 近似）：${esc(hr.from)}～${esc(hr.to)}，${hr.days} 個交易日 × ${hr.stocks} 檔</h3>
+          <p class="text-[11px] text-slate-400 mt-0.5 mb-2">Yahoo 5 分 K 只保留 60 天，所以改用 60 分 K 跑同一套完整規則：開盤區間為 09:00～10:00，只在 10、11、12 點那根收盤進場，13:00 那根收盤（約 13:25）平倉；第一小時量以日成交量扣除 10～13 點量補回。</p>
+          <div class="overflow-x-auto"><table class="w-full text-xs border-collapse">${thead}
+            <tbody class="divide-y divide-slate-100">${statRow('完整規則（60 分 K）', hr.all, 'font-semibold')}${statRow('　└ 只看做多', hr.long, 'text-slate-500')}${statRow('　└ 只看做空', hr.short, 'text-slate-500')}
+            ${hr.quarters.map(q => statRow(`　${esc(q.q)}`, q, 'text-slate-500')).join('')}</tbody></table></div>
+          <div class="mt-2 text-xs text-slate-500">虧損季數：<b class="${lossQ ? 'text-green-600' : 'text-red-500'}">${lossQ} / ${hr.quarters.length}</b>（扣除當沖成本後平均每筆為負的季度）</div>
+        </div>` : '';
+    const longCheck = hr
+      ? `近兩年 60 分 K 近似回測（${hr.all.n.toLocaleString()} 筆）扣成本後平均每筆 ${pct(hr.all.avgRet, 2, true)}、未扣成本 ${pct(hr.all.grossAvg, 3, true)}，${lossQ} / ${hr.quarters.length} 季為負，${hr.all.avgRet < 0 ? '虧損並非近 60 日的特例。' : '長期結果與近 60 日不同，請留意。'}少數個股標示為「適合」，但每檔只有十幾筆交易，樣本很小，很可能只是運氣。`
+      : '少數個股標示為「適合」，但每檔只有十幾筆交易，樣本很小，很可能只是運氣，使用前請以更長的歷史資料再確認。';
     const conclusion = full.avgRet < 0
       ? `完整規則在 ${INDEX.stocks.length} 檔共 ${full.n.toLocaleString()} 筆交易中，勝率 ${pct(full.winRate, 0)}、盈虧比 ${ratio(full.payoff)}，扣除當沖成本後平均每筆 ${pct(full.avgRet, 2, true)}，遠低於規格書宣稱的勝率 45%～52%、盈虧比 2.5～3.5。未扣成本前平均每筆 ${pct(full.grossAvg, 3, true)}，${Math.abs(full.grossAvg) < cost / 3 ? '幾乎沒有優勢' : full.grossAvg < 0 ? '本身就是負的' : '有小幅優勢'}，來回約 ${pct(cost, 3)} 的當沖成本再把結果壓成明顯虧損。加上兩個避坑濾網後，交易次數減少，但期望值沒有改善。`
       : `完整規則在 ${INDEX.stocks.length} 檔共 ${full.n.toLocaleString()} 筆交易中，勝率 ${pct(full.winRate, 0)}、盈虧比 ${ratio(full.payoff)}，扣除當沖成本後平均每筆 ${pct(full.avgRet, 2, true)}。`;
     $('validation').innerHTML = `
-      <h2 class="text-lg font-bold text-slate-800">🧪 跨個股驗證（${INDEX.stocks.length} 檔 × 近 60 個交易日：${esc(INDEX.marketFrom)}～${esc(INDEX.marketTo)}）</h2>
+      <h2 class="text-lg font-bold text-slate-800">🧪 跨個股驗證（${INDEX.stocks.length} 檔 × 近 60 個交易日${hr ? ' ＋ 近兩年' : ''}）</h2>
       <p class="text-xs text-slate-400 mt-0.5 mb-4">參數全部取自規格書（K = 0.2、量 1.5 倍、停損 1%、移動停利 1.5 × Range），未依回測結果調整。前後半段以交易日數切分，用來檢查穩定度。</p>
-      <div class="overflow-x-auto"><table class="w-full text-xs border-collapse"><thead class="text-slate-700 bg-slate-100"><tr><th class="py-2 px-3 text-left rounded-l-lg">版本</th><th class="py-2 px-3 text-right">筆數</th><th class="py-2 px-3 text-right">勝率</th><th class="py-2 px-3 text-right">盈虧比</th><th class="py-2 px-3 text-right">平均每筆</th><th class="py-2 px-3 text-right">PF</th><th class="py-2 px-3 text-right rounded-r-lg">未扣成本</th></tr></thead>
-        <tbody class="divide-y divide-slate-100">${rows}${sideRows}${halfRows}</tbody></table></div>
-      <div class="mt-3 text-xs text-slate-500">個股判斷分布：適合 ${vc.GOOD || 0}・普通 ${vc.MEH || 0}・不適合 ${vc.BAD || 0}・樣本不足 ${vc.FEW || 0}・流動性不足 ${vc.ILLIQUID || 0}</div>
-      <div class="mt-4 p-4 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800 leading-relaxed"><b>驗證結論：</b>${conclusion}少數個股標示為「適合」，但每檔只有十幾筆交易，樣本很小，很可能只是運氣，使用前請以更長的歷史資料再確認。</div>`;
+      <div class="grid grid-cols-1 ${hr ? 'xl:grid-cols-2' : ''} gap-6">
+        <div>
+          <h3 class="text-sm font-bold text-slate-700">近 60 個交易日（5 分 K）：${esc(INDEX.marketFrom)}～${esc(INDEX.marketTo)}</h3>
+          <p class="text-[11px] text-slate-400 mt-0.5 mb-2">完整規格：開盤區間 09:00～09:30，每根 5 分 K 收盤判斷突破，13:20 平倉。</p>
+          <div class="overflow-x-auto"><table class="w-full text-xs border-collapse">${thead}
+            <tbody class="divide-y divide-slate-100">${rows}${sideRows}${halfRows}</tbody></table></div>
+          <div class="mt-2 text-xs text-slate-500">個股判斷分布：適合 ${vc.GOOD || 0}・普通 ${vc.MEH || 0}・不適合 ${vc.BAD || 0}・樣本不足 ${vc.FEW || 0}・流動性不足 ${vc.ILLIQUID || 0}</div>
+        </div>${hourlyBlock}
+      </div>
+      <div class="mt-4 p-4 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800 leading-relaxed"><b>驗證結論：</b>${conclusion}${longCheck}</div>`;
   }
 
   async function init() {

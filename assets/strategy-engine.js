@@ -1,6 +1,7 @@
 /*
  * 個股策略引擎（瀏覽器與 Node 共用）
  * 規則來源：《哥有籌必爆》/ 權證小哥 策略文件（s-strategy.md）
+ *          Larry Williams 波動率收斂突破（VCB）策略企劃書
  *
  * 資料限制（免費 FinMind 等級）：
  *  - 「主力買賣超」(前 15 大分點) 無法取得 → 以「三大法人合計買賣超」代理 (mf)
@@ -8,6 +9,7 @@
  *
  * 時序原則（避免偷看未來）：所有訊號以當日收盤後資料判斷，回測一律於「次一交易日開盤」成交；
  * 價格型停損/停利以盤中觸價成交 (跳空則以開盤價成交)。
+ * 例外：VCB 為收盤後確認型態、次一交易日盤中「觸價突破」才進場（預掛突破買單），未突破則不進場。
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
@@ -38,6 +40,13 @@
       else if (r.name === 'Investment_Trust') o.trust += net;
       else o.dealer += net;
     }
+    // 大盤（加權指數）是否在月線之上：VCB 趨勢輔助濾網
+    const mktUp = {};
+    {
+      const mk = (raw.market || []).filter(p => p.close > 0).sort((a, b) => (a.date < b.date ? -1 : 1));
+      const ma = sma(mk.map(p => p.close), 20);
+      mk.forEach((p, k) => { if (ma[k] != null) mktUp[p.date] = p.close > ma[k]; });
+    }
     const margin = {};
     for (const r of raw.margin || []) {
       margin[r.date] = { marginBal: r.MarginPurchaseTodayBalance, shortBal: r.ShortSaleTodayBalance };
@@ -61,6 +70,7 @@
         mf: io ? io.foreign + io.trust + io.dealer : null,
         marginBal: m ? m.marginBal : null,
         shortBal: m ? m.shortBal : null,
+        mktUp: p.date in mktUp ? mktUp[p.date] : null,
       };
     });
     return bars;
@@ -140,10 +150,14 @@
       return qty > 0 ? amt / qty : null;
     });
     const mfCost20 = mfCost(20), mfCost60 = mfCost(60);
+    // 真實區間 TrueRange 與其 5 日均值（VCB）
+    const tr = bars.map((b, i) => (i === 0 ? b.high - b.low : Math.max(b.high, bars[i - 1].close) - Math.min(b.low, bars[i - 1].close)));
+    const atr5 = sma(tr, 5);
+    const volMa5 = sma(vol, 5);
     return {
       close, vol, ma5, ma10, ma20, ma60, std20, upper, lower, floor95: lower, floor99, bw,
       upperSlope, lowerSlope, ma20Slope, ma20Slope5, ma60Slope5, bias, volMa20Prev,
-      biasP01, biasP05, biasP95, biasP99, mf, mfCum, volCum, mfCost20, mfCost60,
+      biasP01, biasP05, biasP95, biasP99, mf, mfCum, volCum, mfCost20, mfCost60, tr, atr5, volMa5,
     };
   }
 
@@ -162,6 +176,7 @@
       upperShadow(i) { return bars[i].high - Math.max(bars[i].open, bars[i].close); },
       lowerShadow(i) { return Math.min(bars[i].open, bars[i].close) - bars[i].low; },
       hasChip(i) { return bars[i].mf != null; },
+      trustSum(i, k) { let s = 0, seen = false; for (let x = Math.max(0, i - k + 1); x <= i; x++) if (bars[x].trust != null) { s += bars[x].trust; seen = true; } return seen ? s : null; },
       hasMargin(i) { return bars[i].marginBal != null && bars[i].shortBal != null; },
       // 盤整期：過去 N 天（不含當日）窄幅震盪
       consolidation(i, N, maxRange) {
@@ -186,7 +201,7 @@
         return c >= 3;
       },
     };
-    return { bars, ind, h };
+    return { bars, ind, h, opts: {} };
   }
 
   const fmt = (v, d = 2) => (v == null || !isFinite(v) ? 'NA' : Number(v).toFixed(d));
@@ -203,6 +218,8 @@
   //   ignition → 停損 min(近20日低點, 進場價×0.93)；月線下彎跌破出場
   //   squeeze  → 跌破月線或軋空衰竭（資減券減＋主力賣）出場
   //   floorSop → 搶反彈 SOP：1/10 資金、有賺就跑、最多加碼一次、破前低認賠、最多持有 5 日
+  //   vcb      → 停損 max(進場價−4%, 型態日低點)；收盤獲利 ≥5% 後停損移至成本，
+  //              之後以前一日低點（盤中）或收盤跌破 5MA 移動停利；持有第 3 日收盤獲利 <1.5% 時間停損
   // ==========================================
   const SIGNALS = [
     // ---------------- 多方 ----------------
@@ -419,6 +436,41 @@
         };
       },
     },
+    {
+      // 型態日 i 收盤後成立；次一交易日盤中突破近 5 日高點才進場（見 vcbEntry）
+      // standalone：獨立策略，不參與《哥有籌必爆》綜合策略與買賣評分（跨個股驗證扣成本後為負，見 validate_strategy.mjs）
+      id: 'VCB', side: 'buy', name: 'Larry Williams 波動收斂突破', ref: 'VCB 企劃書 進場規則', exit: 'vcb', standalone: true,
+      detect({ bars, ind, h, opts }, i) {
+        if (i < 25 || ind.ma20[i] == null) return null;
+        const b = bars[i], p = bars[i - 1];
+        // 條件一～三：昨收上漲、真實區間收斂（小於前一日且小於 5 日 ATR）、收在 K 棒中點之上
+        if (!(b.close > p.close)) return null;
+        if (!(ind.tr[i] < ind.tr[i - 1] && ind.tr[i] < ind.atr5[i])) return null;
+        if (!(b.close >= (b.high + b.low) / 2)) return null;
+        // 濾網：5 日均量 ≥ 1000 張、股價 > 10 元、站上 20MA
+        if (!(ind.volMa5[i] >= 1000)) return null;
+        if (!((b.rawClose ?? b.close) > 10 && b.close > ind.ma20[i])) return null;
+        // 籌碼/趨勢輔助：投信近 5 日買超 或 大盤在月線之上
+        const trust5 = h.trustSum(i, 5);
+        const aux = (trust5 != null && trust5 > 0) || b.mktUp === true;
+        if (opts.vcbAux !== false && !aux) return null;
+        const trigger = h.highest(i - 4, i).v;
+        const auxNote = [trust5 != null && trust5 > 0 ? `投信近 5 日買超 ${lots(trust5)}` : null, b.mktUp === true ? '大盤在月線之上' : null].filter(Boolean).join('、');
+        return {
+          strength: 1,
+          trigger,
+          reasons: [
+            `收盤上漲 ${pct(h.pctChg(i), 2)}，收在 K 棒 ${pct((b.close - b.low) / Math.max(b.high - b.low, 1e-9), 0)} 位置（中點之上）`,
+            `真實區間 ${fmt(ind.tr[i])} 小於前一日 ${fmt(ind.tr[i - 1])} 與 5 日 ATR ${fmt(ind.atr5[i])}（波動收斂）`,
+            `5 日均量 ${Math.round(ind.volMa5[i]).toLocaleString()} 張、站上 20MA ${fmt(ind.ma20[i])}`,
+            auxNote ? `趨勢輔助：${auxNote}` : '⚠ 趨勢輔助濾網未成立（投信未買超、大盤在月線下）',
+            `次一交易日盤中突破近 5 日高點 ${fmt(trigger)} 才進場；未突破則型態失效`,
+          ],
+          stop: Math.max(trigger * 0.96, b.low), stopNote: '跌破型態日低點或進場價 −4%（取較高者）',
+          targetNote: '獲利 ≥5% 停損移至成本，之後破前日低點或 5MA 出場；3 日內獲利未達 1.5% 時間停損',
+        };
+      },
+    },
 
     // ---------------- 空方 / 賣出 ----------------
     {
@@ -589,8 +641,14 @@
       case 'trail5': stop = Math.max(pos.entryPx, pos.peak) * 0.95; break;
       case 'ignition': stop = pos.stop; break;
       case 'floorSop': stop = pos.support; break;
+      case 'vcb': stop = pos.stop; break;
     }
     if (pos.exit === 'midBand' && j > pos.entryIdx) target = ind.ma20[j - 1];
+    // VCB 盤中突破進場：當日低點可能出現在進場之前，進場日改以收盤確認停損（開盤即跳空成交者除外）
+    if (pos.exit === 'vcb' && j === pos.entryIdx && !pos.gapFill) {
+      if (b.close <= pos.stop) return { exitIdx: j, exitPx: b.close, reason: '進場當日收盤跌破停損' };
+      stop = null;
+    }
     // 搶反彈進場當日正在創低，前低以收盤後確認
     if (pos.exit === 'floorSop' && j === pos.entryIdx) stop = null;
     if (stop != null && b.low <= stop) return { exitIdx: j, exitPx: Math.min(b.open, stop), reason: '停損/移動停利' };
@@ -615,6 +673,15 @@
         if (b.close < ind.ma20[j]) why = '跌破月線';
         else if (hits[j].some(x => x.id === 'SQUEEZE_END')) why = '軋空衰竭';
         else if (j >= 3 && h.hasMargin(j) && h.hasMargin(j - 3) && b.marginBal < bars[j - 3].marginBal && b.shortBal < bars[j - 3].shortBal && h.mfSum(j, 3) < 0) why = '資減券減＋主力賣';
+        break;
+      }
+      case 'vcb': {
+        if (!pos.trailOn && b.close >= pos.entryPx * 1.05) { pos.trailOn = true; pos.stop = Math.max(pos.stop, pos.entryPx); }
+        if (pos.trailOn) {
+          pos.stop = Math.max(pos.stop, b.low); // 明日以今日低點（前一日低點）防守
+          if (b.close < ind.ma5[j]) why = '跌破 5 日線';
+        }
+        if (!why && held === 2 && b.close / pos.entryPx - 1 < 0.015) why = '3 日未拉開獲利';
         break;
       }
       case 'floorSop': {
@@ -647,6 +714,7 @@
     if (def.exit === 'bald') pos.stop = Math.max(b.open, b.close * 0.9);
     if (def.exit === 'ignition') pos.stop = sig.stop;
     if (def.exit === 'floorSop') pos.support = Math.min(b.low, ctx.bars[j].low);
+    if (def.exit === 'vcb') { pos.stop = Math.max(fillPx * 0.96, b.low); pos.gapFill = fillPx === ctx.bars[j].open; }
     return pos;
   }
 
@@ -657,6 +725,27 @@
     const ref = ctx.bars[i].close;
     if (nb.low < ref) return Math.min(nb.open, ref);
     return null;
+  }
+
+  // VCB：次一交易日盤中觸及突破價才成交（開盤跳空突破則以開盤價成交）；
+  // 一字鎖漲停買不到；成交價仍需站上（含當下價格的）20MA
+  function vcbEntry(ctx, i, sig) {
+    const { bars } = ctx;
+    const nb = bars[i + 1];
+    if (!nb || !(nb.high >= sig.trigger)) return null;
+    if (nb.open === nb.high && nb.open / bars[i].close - 1 >= 0.095) return null;
+    const fill = Math.max(nb.open, sig.trigger);
+    let s = fill;
+    for (let k = i - 18; k <= i; k++) s += bars[k].close;
+    if (!(fill > s / 20)) return null;
+    return fill;
+  }
+
+  function entryFill(ctx, sig, i) {
+    const exit = SIGNAL_MAP[sig.id].exit;
+    if (exit === 'floorSop') return floorEntry(ctx, i);
+    if (exit === 'vcb') return vcbEntry(ctx, i, sig);
+    return ctx.bars[i + 1].open;
   }
 
   function closeTrade(ctx, pos, ex) {
@@ -703,9 +792,9 @@
       if (i >= n - 1) break;
       const sig = hits[i].find(x => x.id === sigId);
       if (!sig) continue;
-      let fill, j = i + 1;
-      if (SIGNAL_MAP[sigId].exit === 'floorSop') { fill = floorEntry(ctx, i); if (fill == null) continue; }
-      else fill = bars[j].open;
+      const j = i + 1;
+      const fill = entryFill(ctx, sig, i);
+      if (fill == null) continue;
       pos = openPosition(ctx, sigId, sig, i, j, fill);
       // 進場當日即適用停損
       const ex = managePosition(ctx, pos, j, hits);
@@ -791,15 +880,14 @@
       }
       equity[i] = eq;
       if (i >= n - 1) continue;
-      const buys = hits[i].filter(x => x.side === 'buy');
+      const buys = hits[i].filter(x => x.side === 'buy' && !SIGNAL_MAP[x.id].standalone);
       if (!buys.length || hits[i].some(x => x.side === 'sell')) continue;
       const ts = trendState(ctx, i);
       const allowed = buys.filter(x => ts !== 'REBOUND' || REBOUND_OK.includes(x.id)).sort((a, b) => b.strength - a.strength);
       if (!allowed.length) continue;
       const sig = allowed[0];
-      let fill;
-      if (SIGNAL_MAP[sig.id].exit === 'floorSop') { fill = floorEntry(ctx, i); if (fill == null) continue; }
-      else fill = bars[i + 1].open;
+      const fill = entryFill(ctx, sig, i);
+      if (fill == null) continue;
       const j = i + 1;
       pos = openPosition(ctx, sig.id, sig, i, j, fill);
       pos.globalExit = true;
@@ -829,6 +917,7 @@
         case 'trail5': stop = Math.max(pos.entryPx, pos.peak) * 0.95; break;
         case 'floorSop': stop = pos.support; break;
         case 'squeeze': stop = ctx.ind.ma20[n - 1]; break;
+        case 'vcb': stop = pos.stop; break;
       }
       openPos = { ...t, name: def.name, stop, pendingExit: pos.pendingExit || null };
     }
@@ -871,6 +960,7 @@
 
   function analyze(bars, opts = {}) {
     const ctx = makeCtx(bars);
+    if (opts.vcbAux === false) ctx.opts.vcbAux = false;
     const hits = scanAll(ctx);
     const n = bars.length;
     const i = n - 1;
@@ -893,7 +983,8 @@
     // ---- 近 3 日觸發訊號 ----
     const decay = [1, 0.6, 0.35];
     const recent = [];
-    for (let d = 0; d < 3 && i - d >= 0; d++) for (const s of hits[i - d]) recent.push({ ...s, daysAgo: d, date: bars[i - d].date });
+    // VCB 只在型態日的次一交易日有效：較早的型態已突破（反映在部位）或已失效
+    for (let d = 0; d < 3 && i - d >= 0; d++) for (const s of hits[i - d]) if (!(s.id === 'VCB' && d > 0)) recent.push({ ...s, daysAgo: d, date: bars[i - d].date });
 
     // ---- 狀態判讀 ----
     const ts = trendState(ctx, i);
@@ -911,6 +1002,7 @@
     let score = 0;
     const scoreParts = [];
     for (const s of recent) {
+      if (SIGNAL_MAP[s.id].standalone) continue;
       const w = (s.side === 'buy' ? 1 : -1) * s.strength * decay[s.daysAgo];
       score += w; scoreParts.push({ label: `${s.name}${s.daysAgo ? `（${s.daysAgo} 日前）` : ''}`, w });
     }
@@ -930,7 +1022,7 @@
 
     // ---- 執行建議 ----
     const advice = [];
-    const buyNow = recent.filter(s => s.side === 'buy').sort((a, b2) => b2.strength - a.strength || a.daysAgo - b2.daysAgo)[0];
+    const buyNow = recent.filter(s => s.side === 'buy' && !SIGNAL_MAP[s.id].standalone).sort((a, b2) => b2.strength - a.strength || a.daysAgo - b2.daysAgo)[0];
     const sellNow = recent.filter(s => s.side === 'sell').sort((a, b2) => b2.strength - a.strength || a.daysAgo - b2.daysAgo)[0];
     if (verdictKey === 'STRONG_BUY' || verdictKey === 'BUY') {
       if (buyNow) {
@@ -949,6 +1041,8 @@
       advice.push(ts === 'RECOVERY' ? '持有者續抱，空手者等待回測月線或突破訊號' : ts === 'REBOUND' ? '空頭架構，反彈是用來逃命的；空手觀望' : '方向未明，等待訊號確認');
     }
     if (riding && ratio != null && ratio >= 0.3) advice.push('🚀 沿上軌＋券資比 ≥30%：軋空條件成立，空單絕不可摸頭');
+    const vcb = recent.find(s => s.id === 'VCB');
+    if (vcb) advice.push(`📐 Larry Williams VCB（獨立策略，不計入評分）：次一交易日盤中突破 ${fmt(vcb.trigger)} 才進場，停損 ${fmt(vcb.stop)}；未突破則型態失效`);
 
     return {
       ctx, hits, last: b, prev: bars[i - 1], date: b.date, verdict, verdictKey, score, scoreParts, advice,

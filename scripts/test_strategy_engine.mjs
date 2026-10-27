@@ -11,7 +11,7 @@ function mkBars(rows) {
   return rows.map((r, i) => ({
     date: `2024-${String(Math.floor(i / 28) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
     open: r.o ?? r.c, high: r.h ?? Math.max(r.o ?? r.c, r.c), low: r.l ?? Math.min(r.o ?? r.c, r.c), close: r.c,
-    volume: r.v ?? 1000, mf: r.mf ?? 0, foreign: 0, trust: 0, dealer: 0,
+    volume: r.v ?? 1000, mf: r.mf ?? 0, foreign: 0, trust: r.t ?? 0, dealer: 0, mktUp: r.mu ?? null,
     marginBal: r.mb ?? null, shortBal: r.sb ?? null,
   }));
 }
@@ -182,4 +182,69 @@ test('成交均價：成交金額 ÷ 成交股數並套用除權息還原', () =
   });
   assert.ok(Math.abs(bars[0].vwap - 100.5 * 0.95) < 1e-9);
   assert.ok(Math.abs(bars[1].vwap - 95.2) < 1e-9);
+});
+
+// VCB：40 根緩漲 K 線（真實區間固定 1.0、量 2000 張、投信小買），第 40 根為收斂型態日
+const vcbBase = (t = 10) => Array.from({ length: 40 }, (_, k) => {
+  const c = 50 + 0.2 * k;
+  return { o: c - 0.1, c, h: c + 0.5, l: c - 0.5, v: 2000, t };
+});
+const vcbSetup = { o: 57.9, c: 58.0, h: 58.1, l: 57.85, v: 2000, t: 10 }; // TR 0.3、收在中點之上
+const vcbTrades = rows => { const ctx = E.makeCtx(mkBars(rows)); return E.backtestSignal(ctx, E.scanAll(ctx), 'VCB'); };
+
+test('VCB 型態：昨收上漲＋真實區間收斂＋收在中點之上，突破價為近 5 日高點', () => {
+  const hit = E.scanAll(E.makeCtx(mkBars([...vcbBase(), vcbSetup])))[40].find(h => h.id === 'VCB');
+  assert.ok(hit);
+  assert.ok(Math.abs(hit.trigger - 58.3) < 1e-9); // 第 39 根高點 57.8 + 0.5
+  assert.ok(Math.abs(hit.stop - 57.85) < 1e-9); // 型態日低點高於 58.3 × 0.96
+  // 投信未買超且無大盤資料 → 趨勢輔助濾網不成立
+  const noAux = E.makeCtx(mkBars([...vcbBase(0), { ...vcbSetup, t: 0 }]));
+  assert.ok(!E.scanAll(noAux)[40].some(h => h.id === 'VCB'));
+  noAux.opts.vcbAux = false;
+  assert.ok(E.scanAll(noAux)[40].some(h => h.id === 'VCB'));
+  // 大盤在月線之上也可滿足輔助濾網
+  assert.ok(E.scanAll(E.makeCtx(mkBars([...vcbBase(0), { ...vcbSetup, t: 0, mu: true }])))[40].some(h => h.id === 'VCB'));
+});
+
+test('VCB 進場：次日未突破不進場、一字鎖漲停買不到', () => {
+  assert.equal(vcbTrades([...vcbBase(), vcbSetup, { o: 58.0, c: 58.1, h: 58.2, l: 57.9 }, { c: 58 }]).length, 0);
+  assert.equal(vcbTrades([...vcbBase(), vcbSetup, { o: 63.8, c: 63.8, h: 63.8, l: 63.8 }, { c: 64 }]).length, 0);
+});
+
+test('VCB 時間停損：持有第 3 日收盤獲利 < 1.5% → 次日開盤出場', () => {
+  const t = vcbTrades([...vcbBase(), vcbSetup,
+    { o: 58.1, h: 58.6, l: 58.0, c: 58.4 }, { o: 58.4, h: 58.7, l: 58.2, c: 58.5 },
+    { o: 58.5, h: 58.8, l: 58.3, c: 58.6 }, { o: 58.7, h: 58.9, l: 58.5, c: 58.8 }]);
+  assert.equal(t.length, 1);
+  assert.equal(t[0].entryPx, 58.3); // 盤中觸價突破成交
+  assert.equal(t[0].exitPx, 58.7);
+  assert.equal(t[0].reason, '3 日未拉開獲利');
+});
+
+test('VCB 移動停利：收盤獲利 ≥5% 後以前一日低點防守', () => {
+  const t = vcbTrades([...vcbBase(), vcbSetup,
+    { o: 58.1, h: 58.6, l: 58.0, c: 58.4 }, { o: 58.6, h: 61.5, l: 58.5, c: 61.4 },
+    { o: 61.5, h: 62.0, l: 61.0, c: 61.8 }, { o: 61.6, h: 61.7, l: 60.5, c: 60.8 }]);
+  assert.equal(t.length, 1);
+  assert.equal(t[0].exitPx, 61.0); // 前一日低點
+  assert.equal(t[0].reason, '停損/移動停利');
+});
+
+test('VCB 進場當日停損：盤中突破者以收盤確認，開盤跳空者盤中即停損', () => {
+  const intraday = vcbTrades([...vcbBase(), vcbSetup, { o: 58.0, h: 58.4, l: 57.0, c: 57.5 }, { c: 57 }]);
+  assert.equal(intraday[0].exitPx, 57.5);
+  assert.equal(intraday[0].reason, '進場當日收盤跌破停損');
+  const gap = vcbTrades([...vcbBase(), vcbSetup, { o: 58.8, h: 59.0, l: 57.5, c: 58.0 }, { c: 58 }]);
+  assert.equal(gap[0].entryPx, 58.8); // 跳空開高以開盤價成交
+  assert.equal(gap[0].exitPx, 57.85); // 型態日低點
+});
+
+test('大盤月線濾網：加權指數收盤 > 20MA，依日期對應到個股', () => {
+  const day = k => `2024-01-${String(k + 1).padStart(2, '0')}`;
+  const market = Array.from({ length: 25 }, (_, k) => ({ date: day(k), close: k < 22 ? 100 + k : 80 }));
+  const prices = Array.from({ length: 25 }, (_, k) => ({ date: day(k), open: 10, max: 11, min: 9, close: 10, Trading_Volume: 1e6 }));
+  const bars = E.buildBars({ prices, market });
+  assert.equal(bars[18].mktUp, null); // 不足 20 日
+  assert.equal(bars[21].mktUp, true);
+  assert.equal(bars[22].mktUp, false);
 });

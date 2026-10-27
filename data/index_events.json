@@ -1,0 +1,3313 @@
+{
+ "updated": "2026-10-27",
+ "note": "人工整理自臺灣指數公司／MSCI 公告與引述公告的新聞；每筆事件附來源連結。新的審核結果公布後需手動補上。",
+ "indexes": [
+  {
+   "key": "tw50",
+   "index": "FTSE TWSE Taiwan 50",
+   "etfs": [
+    "0050",
+    "006208"
+   ],
+   "group": "cap",
+   "schedule": {
+    "months": [
+     3,
+     6,
+     9,
+     12
+    ],
+    "rule": "thirdFriday",
+    "note": "每季審核，第三個星期五收盤後生效"
+   },
+   "events": [
+    {
+     "review": "2023Q1",
+     "announceDate": "2023-03-03",
+     "effectiveDate": "2023-03-20",
+     "tradeDate": "2023-03-17",
+     "adds": [
+      {
+       "code": "1605",
+       "name": "華新"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "8046",
+       "name": "南電"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202303030265.aspx",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "CNA states effective after 2023-03-17 (Fri) close, i.e. from 2023-03-20. Codes from Wikipedia change table.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2023Q2",
+     "announceDate": "2023-06-02",
+     "effectiveDate": "2023-06-19",
+     "tradeDate": "2023-06-16",
+     "adds": [
+      {
+       "code": "4938",
+       "name": "和碩"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "6415",
+       "name": "矽力*-KY"
+      }
+     ],
+     "sources": [
+      "https://news.nextapple.com/finance/20230602/87DE494C84B58BDF0656F90D710BCB0B",
+      "https://udn.com/news/story/123006/7209164",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "Nextapple quotes announcement with codes: effective after 2023-06-16 close (from 2023-06-19). Review data date 2023-05-22.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2023Q3",
+     "announceDate": "2023-09-01",
+     "effectiveDate": "2023-09-18",
+     "tradeDate": "2023-09-15",
+     "adds": [
+      {
+       "code": "2301",
+       "name": "光寶科"
+      },
+      {
+       "code": "2345",
+       "name": "智邦"
+      },
+      {
+       "code": "3231",
+       "name": "緯創"
+      },
+      {
+       "code": "6669",
+       "name": "緯穎"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1402",
+       "name": "遠東新"
+      },
+      {
+       "code": "1605",
+       "name": "華新"
+      },
+      {
+       "code": "2609",
+       "name": "陽明"
+      },
+      {
+       "code": "2615",
+       "name": "萬海"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202309010331.aspx",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "CNA states effective Monday 2023-09-18; tradeDate 2023-09-15 derived (prior trading day / third Friday). Codes from Wikipedia table (CNA lists names only).",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2023Q4",
+     "announceDate": "2023-12-01",
+     "effectiveDate": "2023-12-18",
+     "tradeDate": "2023-12-15",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202312010286.aspx"
+     ],
+     "confidence": "verified",
+     "notes": "No changes to Taiwan 50 (CNA: 無新納入，也無成分股刪除). CNA states the review results take effect after 2023-12-15 close (from 2023-12-18); that sentence names the other indices explicitly, but the review is joint. Wikipedia table has no 2023-12 row, consistent with no change.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2024Q1",
+     "announceDate": "2024-03-01",
+     "effectiveDate": "2024-03-18",
+     "tradeDate": "2024-03-15",
+     "adds": [
+      {
+       "code": "3661",
+       "name": "世芯-KY"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "9910",
+       "name": "豐泰"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202403010292.aspx",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "CNA states effective 2024-03-18 (Mon); tradeDate 2024-03-15 derived.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2024Q2",
+     "announceDate": "2024-06-07",
+     "effectiveDate": "2024-06-24",
+     "tradeDate": "2024-06-21",
+     "adds": [
+      {
+       "code": "3017",
+       "name": "奇鋐"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2801",
+       "name": "彰銀"
+      }
+     ],
+     "sources": [
+      "https://www.knews.com.tw/news/FF7A58896EA11A0C18BE4100C1BD049C",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "Knews quotes announcement with codes; effective after 2024-06-21 close, i.e. from 2024-06-24. Review data date 2024-05-27.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2024Q3",
+     "announceDate": "2024-09-06",
+     "effectiveDate": "2024-09-23",
+     "tradeDate": "2024-09-20",
+     "adds": [
+      {
+       "code": "6446",
+       "name": "藥華藥"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2408",
+       "name": "南亞科"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202409060267.aspx",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "CNA states effective from the 23rd (2024-09-23, Mon); tradeDate 2024-09-20 derived (also stated as 9/20 close in other news summaries).",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2024Q4",
+     "announceDate": "2024-12-06",
+     "effectiveDate": "2024-12-23",
+     "tradeDate": "2024-12-20",
+     "adds": [
+      {
+       "code": "2609",
+       "name": "陽明"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1590",
+       "name": "亞德客-KY"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202412060283.aspx",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "CNA states effective after 2024-12-20 close; effectiveDate 2024-12-23 (next Monday) derived.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2025Q1",
+     "announceDate": "2025-03-07",
+     "effectiveDate": "2025-03-24",
+     "tradeDate": "2025-03-21",
+     "adds": [
+      {
+       "code": "2615",
+       "name": "萬海"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1326",
+       "name": "台化"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202503070254.aspx",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "CNA states effective after 2025-03-21 close; effectiveDate 2025-03-24 derived.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2025Q2",
+     "announceDate": "2025-06-06",
+     "effectiveDate": "2025-06-23",
+     "tradeDate": "2025-06-20",
+     "adds": [
+      {
+       "code": "2383",
+       "name": "台光電"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "3037",
+       "name": "欣興"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202506060251.aspx",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "CNA states effective after 2025-06-20 close, i.e. from 2025-06-23.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2025Q3",
+     "announceDate": "2025-09-05",
+     "effectiveDate": "2025-09-22",
+     "tradeDate": "2025-09-19",
+     "adds": [
+      {
+       "code": "2059",
+       "name": "川湖"
+      },
+      {
+       "code": "6919",
+       "name": "康霈*"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1101",
+       "name": "台泥"
+      },
+      {
+       "code": "6446",
+       "name": "藥華藥"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202509050269.aspx",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "CNA states effective after 2025-09-19 close; effectiveDate 2025-09-22 derived.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2025Q4",
+     "announceDate": "2025-12-05",
+     "effectiveDate": "2025-12-22",
+     "tradeDate": "2025-12-19",
+     "adds": [
+      {
+       "code": "3665",
+       "name": "貿聯-KY"
+      },
+      {
+       "code": "2360",
+       "name": "致茂"
+      },
+      {
+       "code": "3653",
+       "name": "健策"
+      },
+      {
+       "code": "2408",
+       "name": "南亞科"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "5871",
+       "name": "中租-KY"
+      },
+      {
+       "code": "4938",
+       "name": "和碩"
+      },
+      {
+       "code": "5876",
+       "name": "上海商銀"
+      },
+      {
+       "code": "2609",
+       "name": "陽明"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202512050295.aspx",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "CNA states effective after 2025-12-19 close; effectiveDate 2025-12-22 derived.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2026Q1",
+     "announceDate": "2026-03-06",
+     "effectiveDate": "2026-03-23",
+     "tradeDate": "2026-03-20",
+     "adds": [
+      {
+       "code": "2368",
+       "name": "金像電"
+      },
+      {
+       "code": "7769",
+       "name": "鴻勁"
+      },
+      {
+       "code": "2449",
+       "name": "京元電子"
+      },
+      {
+       "code": "3037",
+       "name": "欣興"
+      },
+      {
+       "code": "2344",
+       "name": "華邦電"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "3665",
+       "name": "貿聯-KY"
+      },
+      {
+       "code": "3034",
+       "name": "聯詠"
+      },
+      {
+       "code": "2912",
+       "name": "統一超"
+      },
+      {
+       "code": "2379",
+       "name": "瑞昱"
+      },
+      {
+       "code": "2615",
+       "name": "萬海"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202603060242.aspx",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "CNA states effective after 2026-03-20 close; effectiveDate 2026-03-23 derived.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2026Q2",
+     "announceDate": "2026-06-05",
+     "effectiveDate": "2026-06-22",
+     "tradeDate": "2026-06-18",
+     "adds": [
+      {
+       "code": "3665",
+       "name": "貿聯-KY"
+      },
+      {
+       "code": "3443",
+       "name": "創意"
+      },
+      {
+       "code": "8046",
+       "name": "南電"
+      },
+      {
+       "code": "4958",
+       "name": "臻鼎-KY"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "6919",
+       "name": "康霈*"
+      },
+      {
+       "code": "2002",
+       "name": "中鋼"
+      },
+      {
+       "code": "1301",
+       "name": "台塑"
+      },
+      {
+       "code": "2207",
+       "name": "和泰車"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202606050275.aspx",
+      "https://www.cna.com.tw/news/afe/202606180181.aspx",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "Sources state effective after 2026-06-18 (Thursday) close, not the third Friday: 2026-06-19 is the Dragon Boat Festival market holiday. effectiveDate 2026-06-22 (Mon) is derived as next trading day, not stated in sources read.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2026Q3",
+     "announceDate": "2026-09-04",
+     "effectiveDate": "2026-09-21",
+     "tradeDate": "2026-09-18",
+     "adds": [
+      {
+       "code": "6446",
+       "name": "藥華藥"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "3661",
+       "name": "世芯-KY"
+      }
+     ],
+     "sources": [
+      "https://money.udn.com/money/story/5607/9734823",
+      "https://zh.wikipedia.org/zh-tw/%E8%87%BA%E7%81%A350%E6%8C%87%E6%95%B8"
+     ],
+     "confidence": "verified",
+     "notes": "UDN reprints announcement with codes: effective after 2026-09-18 (Fri) close, i.e. from 2026-09-21 (Mon). Review data date 2026-08-24. announceDate 2026-09-04 from news reports.",
+     "announceTiming": "afterClose"
+    }
+   ]
+  },
+  {
+   "key": "msci_tw",
+   "index": "MSCI Taiwan",
+   "etfs": [],
+   "group": "cap",
+   "schedule": {
+    "months": [
+     2,
+     5,
+     8,
+     11
+    ],
+    "rule": "lastBusinessDay",
+    "note": "MSCI 季度調整，月底最後一個營業日收盤生效"
+   },
+   "events": [
+    {
+     "review": "2023-02",
+     "announceDate": "2023-02-10",
+     "effectiveDate": "2023-03-01",
+     "tradeDate": "2023-02-24",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://news.cnyes.com/news/id/5082370"
+     ],
+     "confidence": "verified",
+     "notes": "No standard-index adds/deletes ('本次成分股無新增刪除個股', 88 constituents). MSCI as-of-close was 2023-02-28 but Taiwan was closed 2/27-2/28 (228 holiday), so cnyes states it takes effect after the 2/24 close. effectiveDate derived (day after MSCI as-of-close).",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2023-05",
+     "announceDate": "2023-05-12",
+     "effectiveDate": "2023-06-01",
+     "tradeDate": "2023-05-31",
+     "adds": [
+      {
+       "code": "3443",
+       "name": "創意"
+      },
+      {
+       "code": "3231",
+       "name": "緯創"
+      }
+     ],
+     "deletes": [],
+     "sources": [
+      "https://news.cnyes.com/news/id/5175739"
+     ],
+     "confidence": "verified",
+     "notes": "Source says changes take effect after 5/31 close. No standard-index deletions reported; consistent with count 88 (Feb) -> 90 (Aug article says '維持90檔'). effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2023-08",
+     "announceDate": "2023-08-11",
+     "effectiveDate": "2023-09-01",
+     "tradeDate": "2023-08-31",
+     "adds": [
+      {
+       "code": "2376",
+       "name": "技嘉"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "3105",
+       "name": "穩懋"
+      }
+     ],
+     "sources": [
+      "https://cdnfinance.technews.tw/2023/08/11/msci-taiwan-stocks-2/",
+      "https://ec.ltn.com.tw/article/breakingnews/4393015",
+      "https://www.moneydj.com/funddj/ya/yp050000.djhtm?a=4077a830-b20e-4d4f-a4b2-f7e23f7bdc6c"
+     ],
+     "confidence": "verified",
+     "notes": "Effective at 8/31 close per sources; constituents stay at 90. effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2023-11",
+     "announceDate": "2023-11-15",
+     "effectiveDate": "2023-12-01",
+     "tradeDate": "2023-11-30",
+     "adds": [
+      {
+       "code": "3661",
+       "name": "世芯-KY"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "9921",
+       "name": "巨大"
+      }
+     ],
+     "sources": [
+      "https://finance.technews.tw/2023/11/15/msci-global-standard-index/",
+      "https://news.cnyes.com/news/id/5382089"
+     ],
+     "confidence": "verified",
+     "notes": "Effective after 11/30 close per sources. effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2024-02",
+     "announceDate": "2024-02-13",
+     "effectiveDate": "2024-03-01",
+     "tradeDate": "2024-02-29",
+     "adds": [],
+     "deletes": [
+      {
+       "code": "8454",
+       "name": "富邦媒"
+      }
+     ],
+     "sources": [
+      "https://news.cnyes.com/news/id/5451775"
+     ],
+     "confidence": "verified",
+     "notes": "Only change: 富邦媒 deleted; effective after 2/29 close. effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2024-05",
+     "announceDate": "2024-05-15",
+     "effectiveDate": "2024-06-03",
+     "tradeDate": "2024-05-31",
+     "adds": [
+      {
+       "code": "3017",
+       "name": "奇鋐"
+      },
+      {
+       "code": "1519",
+       "name": "華城"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "6770",
+       "name": "力積電"
+      },
+      {
+       "code": "4966",
+       "name": "譜瑞-KY"
+      },
+      {
+       "code": "8046",
+       "name": "南電"
+      }
+     ],
+     "sources": [
+      "https://www.ctee.com.tw/news/20240515700519-430201",
+      "https://news.cnyes.com/news/id/5563118"
+     ],
+     "confidence": "verified",
+     "notes": "Effective after 5/31 close; codes stated in both sources. effectiveDate derived (next Taiwan business day, Monday).",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2024-08",
+     "announceDate": "2024-08-13",
+     "effectiveDate": "2024-09-02",
+     "tradeDate": "2024-08-30",
+     "adds": [],
+     "deletes": [
+      {
+       "code": "6505",
+       "name": "台塑化"
+      }
+     ],
+     "sources": [
+      "https://ec.ltn.com.tw/article/breakingnews/4767023",
+      "https://finance.technews.tw/2024/08/13/msci-constituents/",
+      "https://smart.businessweekly.com.tw/Channel/IndepArticle.aspx?id=6016060"
+     ],
+     "confidence": "verified",
+     "notes": "MSCI released 8/12 US time = 8/13 Taiwan morning. Effective after 8/30 close. effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2024-11",
+     "announceDate": "2024-11-07",
+     "effectiveDate": "2024-11-26",
+     "tradeDate": "2024-11-25",
+     "adds": [
+      {
+       "code": "3293",
+       "name": "鈊象"
+      },
+      {
+       "code": "3653",
+       "name": "健策"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2344",
+       "name": "華邦電"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202411070052.aspx"
+     ],
+     "confidence": "verified",
+     "notes": "CNA: '調整結果預計25日收盤生效' (MSCI moved Nov review earlier, Monday 11/25). CNA article gives names only; codes 3293/2344 are confirmed by other read sources (pocket.tw 7774), 3653 健策 confirmed only via search snippet + standard mapping. Taipei Times summary: MSCI Taiwan count 87 -> 88. effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2025-02",
+     "announceDate": "2025-02-12",
+     "effectiveDate": "2025-03-03",
+     "tradeDate": "2025-02-27",
+     "adds": [
+      {
+       "code": "2383",
+       "name": "台光電"
+      },
+      {
+       "code": "3533",
+       "name": "嘉澤"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2408",
+       "name": "南亞科"
+      },
+      {
+       "code": "1605",
+       "name": "華新"
+      }
+     ],
+     "sources": [
+      "https://finance.technews.tw/2025/02/12/emc-and-lotes-added-to-msci-constituents/",
+      "https://finance.ettoday.net/news/2907169"
+     ],
+     "confidence": "verified",
+     "notes": "MSCI as-of-close 2025-02-28 but Taiwan closed (228 holiday), so Taiwan implementation at 2/27 close ('調整結果預計 27 日收盤生效'). Codes 2408/1605 from ettoday; 2383/3533 from search snippets + standard mapping. effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2025-05",
+     "announceDate": "2025-05-14",
+     "effectiveDate": "2025-06-02",
+     "tradeDate": "2025-05-29",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://www.ctee.com.tw/news/20250514700551-430201"
+     ],
+     "confidence": "verified",
+     "notes": "No standard-index adds/deletes. MSCI as-of-close 5/30 but Taiwan closed (Dragon Boat holiday), ctee expects implementation at 5/29 close. effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2025-08",
+     "announceDate": "2025-08-08",
+     "effectiveDate": "2025-08-27",
+     "tradeDate": "2025-08-26",
+     "adds": [
+      {
+       "code": "2059",
+       "name": "川湖"
+      },
+      {
+       "code": "6919",
+       "name": "康霈*"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "9904",
+       "name": "寶成"
+      },
+      {
+       "code": "9945",
+       "name": "潤泰新"
+      }
+     ],
+     "sources": [
+      "https://finance.technews.tw/2025/08/08/msci-lowers-two-taiwan-stock-weights-one-unchanged/"
+     ],
+     "confidence": "verified",
+     "notes": "Unusually early implementation: as of close 2025-08-26 (technews '26 日收盤生效'; MSCI Aug 2025 review confirmed as-of-close Aug 26 by exchange notices in search results). technews gives names only; codes from udn snippet (story 8925763, could not fetch) + standard mapping; 6919 康霈 also confirmed in pocket.tw 7774. effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2025-11",
+     "announceDate": "2025-11-06",
+     "effectiveDate": "2025-11-25",
+     "tradeDate": "2025-11-24",
+     "adds": [
+      {
+       "code": "1504",
+       "name": "東元"
+      },
+      {
+       "code": "2360",
+       "name": "致茂"
+      },
+      {
+       "code": "2368",
+       "name": "金像電"
+      },
+      {
+       "code": "2449",
+       "name": "京元電子"
+      },
+      {
+       "code": "3665",
+       "name": "貿聯-KY"
+      },
+      {
+       "code": "5274",
+       "name": "信驊"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2353",
+       "name": "宏碁"
+      },
+      {
+       "code": "2409",
+       "name": "友達"
+      },
+      {
+       "code": "2377",
+       "name": "微星"
+      },
+      {
+       "code": "6415",
+       "name": "矽力*-KY"
+      },
+      {
+       "code": "2347",
+       "name": "聯強"
+      },
+      {
+       "code": "6409",
+       "name": "旭隼"
+      },
+      {
+       "code": "3702",
+       "name": "大聯大"
+      }
+     ],
+     "sources": [
+      "https://www.pocket.tw/school/articles/6710/"
+     ],
+     "confidence": "verified",
+     "notes": "'11 月 24 日收盤後正式生效' (Monday, early implementation). Count 87 -> 86 per udn snippet. effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2026-02",
+     "announceDate": "2026-02-11",
+     "effectiveDate": "2026-03-02",
+     "tradeDate": "2026-02-26",
+     "adds": [
+      {
+       "code": "7769",
+       "name": "鴻勁"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1476",
+       "name": "儒鴻"
+      },
+      {
+       "code": "2105",
+       "name": "正新"
+      },
+      {
+       "code": "8464",
+       "name": "億豐"
+      },
+      {
+       "code": "9910",
+       "name": "豐泰"
+      }
+     ],
+     "sources": [
+      "https://news.cnyes.com/news/id/6341546"
+     ],
+     "confidence": "verified",
+     "notes": "cnyes: '本次調整定於 2 月 26 日盤後正式生效' (MSCI as-of-close 2/27; Taiwan closed 2/27 for the 228 holiday observed). effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2026-05",
+     "announceDate": "2026-05-13",
+     "effectiveDate": "2026-06-01",
+     "tradeDate": "2026-05-29",
+     "adds": [
+      {
+       "code": "6223",
+       "name": "旺矽"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2324",
+       "name": "仁寶"
+      },
+      {
+       "code": "2474",
+       "name": "可成"
+      },
+      {
+       "code": "1102",
+       "name": "亞泥"
+      },
+      {
+       "code": "1402",
+       "name": "遠東新"
+      },
+      {
+       "code": "1504",
+       "name": "東元"
+      },
+      {
+       "code": "2610",
+       "name": "華航"
+      },
+      {
+       "code": "2633",
+       "name": "台灣高鐵"
+      }
+     ],
+     "sources": [
+      "https://www.pocket.tw/school/articles/7472/"
+     ],
+     "confidence": "verified",
+     "notes": "'2026 年 5 月 29 日收盤後正式生效'; count 83 -> 77 (technews). Deletions of 遠東新/仁寶/可成 also cited by Cathay as cause of 00878 May-2026 deletions. effectiveDate derived.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2026-08",
+     "announceDate": "2026-08-13",
+     "effectiveDate": "2026-09-01",
+     "tradeDate": "2026-08-31",
+     "adds": [
+      {
+       "code": "2408",
+       "name": "南亞科"
+      },
+      {
+       "code": "2344",
+       "name": "華邦電"
+      },
+      {
+       "code": "8299",
+       "name": "群聯"
+      },
+      {
+       "code": "3189",
+       "name": "景碩"
+      },
+      {
+       "code": "8046",
+       "name": "南電"
+      },
+      {
+       "code": "6274",
+       "name": "台燿"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1101",
+       "name": "台泥"
+      },
+      {
+       "code": "2609",
+       "name": "陽明"
+      },
+      {
+       "code": "2834",
+       "name": "臺企銀"
+      },
+      {
+       "code": "3293",
+       "name": "鈊象"
+      },
+      {
+       "code": "3529",
+       "name": "力旺"
+      },
+      {
+       "code": "6919",
+       "name": "康霈*"
+      }
+     ],
+     "sources": [
+      "https://www.pocket.tw/school/articles/7774/",
+      "https://finance.technews.tw/2026/08/13/standard-stocks/"
+     ],
+     "confidence": "verified",
+     "notes": "'8月31日收盤後生效'. effectiveDate derived.",
+     "announceTiming": "preOpen"
+    }
+   ]
+  },
+  {
+   "key": "tw_div",
+   "index": "臺灣高股息指數",
+   "etfs": [
+    "0056"
+   ],
+   "group": "dividend",
+   "schedule": {
+    "months": [
+     3,
+     6,
+     9,
+     12
+    ],
+    "rule": "thirdFriday",
+    "note": "每季審核（6、12 月為主要換股），第三個星期五收盤後生效"
+   },
+   "events": [
+    {
+     "review": "2023-03",
+     "announceDate": "2023-03-03",
+     "effectiveDate": "2023-03-20",
+     "tradeDate": "2023-03-17",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://taiwanindex.com.tw/news/234"
+     ],
+     "confidence": "verified",
+     "notes": "Quarterly (March/September) review of the FTSE TWSE Taiwan index series; not one of the semiannual June/December reviews. Official result: no additions and no deletions. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2023-06",
+     "announceDate": "2023-06-03",
+     "effectiveDate": "2023-06-19",
+     "tradeDate": "2023-06-16",
+     "adds": [
+      {
+       "code": "2353",
+       "name": "宏碁"
+      },
+      {
+       "code": "1477",
+       "name": "聚陽"
+      },
+      {
+       "code": "2886",
+       "name": "兆豐金"
+      },
+      {
+       "code": "6669",
+       "name": "緯穎"
+      },
+      {
+       "code": "1907",
+       "name": "永豐餘"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "3017",
+       "name": "奇鋐"
+      },
+      {
+       "code": "2603",
+       "name": "長榮"
+      },
+      {
+       "code": "2337",
+       "name": "旺宏"
+      },
+      {
+       "code": "1802",
+       "name": "台玻"
+      },
+      {
+       "code": "6271",
+       "name": "同欣電"
+      }
+     ],
+     "sources": [
+      "https://taiwanindex.com.tw/news/247",
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=76438081-242e-482d-a13c-1a87500253e5",
+      "https://ec.ltn.com.tw/article/breakingnews/4321693"
+     ],
+     "confidence": "partial",
+     "notes": "Adds, deletes, and effective/trade dates are verified from the official TIP release. The announceDate is uncertain: the TIP page is timestamped 2023/06/03 01:00, the reviews follow a first-Friday pattern (2 June 2023 was a Friday), and LTN (dated 2023-06-03 06:39) says '今公布'. The release was most likely the evening of 2023-06-02, but the official timestamp is used here. Either way, the first trading day after the announcement is 2023-06-05. Transition-weight days: 6/19, 6/20, 6/21, 6/26, 6/27. Data cut-off: 2023-05-22. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2023-09",
+     "announceDate": "2023-09-01",
+     "effectiveDate": "2023-09-18",
+     "tradeDate": "2023-09-15",
+     "adds": [],
+     "deletes": [
+      {
+       "code": "2637",
+       "name": "慧洋-KY"
+      }
+     ],
+     "sources": [
+      "https://taiwanindex.com.tw/news/263",
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=2da97994-d646-4808-bd35-b15d156e9e23"
+     ],
+     "confidence": "verified",
+     "notes": "Quarterly (March/September) review of the FTSE TWSE Taiwan index series; not one of the semiannual June/December reviews. Deletion only, no addition, so the index dropped to 49 names. Transition-weight days: 9/18 through 9/22. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2023-12",
+     "announceDate": "2023-12-01",
+     "effectiveDate": "2023-12-18",
+     "tradeDate": "2023-12-15",
+     "adds": [
+      {
+       "code": "2105",
+       "name": "正新"
+      },
+      {
+       "code": "3005",
+       "name": "神基"
+      },
+      {
+       "code": "9917",
+       "name": "中保科"
+      },
+      {
+       "code": "1605",
+       "name": "華新"
+      },
+      {
+       "code": "6285",
+       "name": "啟碁"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "3189",
+       "name": "景碩"
+      },
+      {
+       "code": "2606",
+       "name": "裕民"
+      },
+      {
+       "code": "6669",
+       "name": "緯穎"
+      },
+      {
+       "code": "1907",
+       "name": "永豐餘"
+      }
+     ],
+     "sources": [
+      "https://taiwanindex.com.tw/news/276",
+      "https://www.ctee.com.tw/news/20231201701507-430403"
+     ],
+     "confidence": "verified",
+     "notes": "5 in, 4 out, which brings the count back to 50 after the Sept 2023 deletion. Transition-weight days: 12/18 through 12/22. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2024-03",
+     "announceDate": "2024-03-01",
+     "effectiveDate": "2024-03-18",
+     "tradeDate": "2024-03-15",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://taiwanindex.com.tw/news/294",
+      "https://udn.com/news/story/7253/7802874"
+     ],
+     "confidence": "verified",
+     "notes": "Quarterly (March/September) review of the FTSE TWSE Taiwan index series; not one of the semiannual June/December reviews. No additions and no deletions. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2024-06",
+     "announceDate": "2024-06-07",
+     "effectiveDate": "2024-06-24",
+     "tradeDate": "2024-06-21",
+     "adds": [
+      {
+       "code": "5871",
+       "name": "中租-KY"
+      },
+      {
+       "code": "3532",
+       "name": "台勝科"
+      },
+      {
+       "code": "4919",
+       "name": "新唐"
+      },
+      {
+       "code": "1319",
+       "name": "東陽"
+      },
+      {
+       "code": "9941",
+       "name": "裕融"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2409",
+       "name": "友達"
+      },
+      {
+       "code": "3665",
+       "name": "貿聯-KY"
+      },
+      {
+       "code": "1301",
+       "name": "台塑"
+      },
+      {
+       "code": "2542",
+       "name": "興富發"
+      },
+      {
+       "code": "8046",
+       "name": "南電"
+      }
+     ],
+     "sources": [
+      "https://taiwanindex.com.tw/news/303",
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=5800cecf-9370-41ef-9f32-e377ea91758d",
+      "https://finance.ettoday.net/news/2753892"
+     ],
+     "confidence": "verified",
+     "notes": "Transition-weight days: 6/24 through 6/28. Data cut-off: 2024-05-27. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2024-09",
+     "announceDate": "2024-09-06",
+     "effectiveDate": "2024-09-23",
+     "tradeDate": "2024-09-20",
+     "adds": [],
+     "deletes": [
+      {
+       "code": "4919",
+       "name": "新唐"
+      }
+     ],
+     "sources": [
+      "https://taiwanindex.com.tw/news/320",
+      "https://udn.com/news/story/123006/8211516"
+     ],
+     "confidence": "verified",
+     "notes": "Quarterly (March/September) review of the FTSE TWSE Taiwan index series; not one of the semiannual June/December reviews. Deletion only (新唐 4919), so the index dropped to 49 names. The UDN article omits the code, but the official TIP release gives 4919. Transition-weight days: 9/23 through 9/27. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2024-12",
+     "announceDate": "2024-12-06",
+     "effectiveDate": "2024-12-23",
+     "tradeDate": "2024-12-20",
+     "adds": [
+      {
+       "code": "2618",
+       "name": "長榮航"
+      },
+      {
+       "code": "2603",
+       "name": "長榮"
+      },
+      {
+       "code": "2542",
+       "name": "興富發"
+      },
+      {
+       "code": "2880",
+       "name": "華南金"
+      },
+      {
+       "code": "4763",
+       "name": "材料-KY"
+      },
+      {
+       "code": "5876",
+       "name": "上海商銀"
+      },
+      {
+       "code": "1504",
+       "name": "東元"
+      },
+      {
+       "code": "2609",
+       "name": "陽明"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1402",
+       "name": "遠東新"
+      },
+      {
+       "code": "5522",
+       "name": "遠雄"
+      },
+      {
+       "code": "3532",
+       "name": "台勝科"
+      },
+      {
+       "code": "2809",
+       "name": "京城銀"
+      },
+      {
+       "code": "2915",
+       "name": "潤泰全"
+      },
+      {
+       "code": "9917",
+       "name": "中保科"
+      },
+      {
+       "code": "1605",
+       "name": "華新"
+      }
+     ],
+     "sources": [
+      "https://taiwanindex.com.tw/news/337",
+      "https://finance.ettoday.net/news/2868990"
+     ],
+     "confidence": "verified",
+     "notes": "8 in, 7 out, which brings the count back to 50. The official TIP page prints the 2915 name as '潤泰金', which looks like a typo: code 2915 is 潤泰全 (Ruentex Industries), and ETtoday prints '潤泰全(2915)'. The code is unambiguous. Transition-weight days: 12/23 through 12/27. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2025-03",
+     "announceDate": "2025-03-07",
+     "effectiveDate": "2025-03-24",
+     "tradeDate": "2025-03-21",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://taiwanindex.com.tw/news/350",
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=0651d4b7-f666-4ad0-a2a3-f2db4b0ccfd7"
+     ],
+     "confidence": "verified",
+     "notes": "Quarterly (March/September) review of the FTSE TWSE Taiwan index series; not one of the semiannual June/December reviews. No additions and no deletions. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2025-06",
+     "announceDate": "2025-06-06",
+     "effectiveDate": "2025-06-23",
+     "tradeDate": "2025-06-20",
+     "adds": [
+      {
+       "code": "2883",
+       "name": "凱基金"
+      },
+      {
+       "code": "9904",
+       "name": "寶成"
+      },
+      {
+       "code": "3023",
+       "name": "信邦"
+      },
+      {
+       "code": "2887",
+       "name": "台新金"
+      },
+      {
+       "code": "1216",
+       "name": "統一"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2383",
+       "name": "台光電"
+      },
+      {
+       "code": "2542",
+       "name": "興富發"
+      },
+      {
+       "code": "4763",
+       "name": "材料-KY"
+      },
+      {
+       "code": "1303",
+       "name": "南亞"
+      },
+      {
+       "code": "2609",
+       "name": "陽明"
+      }
+     ],
+     "sources": [
+      "https://taiwanindex.com.tw/news/362",
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=4e17b9c1-576e-45f2-bdd4-32bc236e413b"
+     ],
+     "confidence": "verified",
+     "notes": "凱基金 (2883) is the former 開發金. Transition-weight days: 6/23 through 6/27. Data cut-off: 2025-05-26. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2025-09",
+     "announceDate": "2025-09-05",
+     "effectiveDate": "2025-09-22",
+     "tradeDate": "2025-09-19",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://taiwanindex.com.tw/news/382"
+     ],
+     "confidence": "verified",
+     "notes": "Quarterly (March/September) review of the FTSE TWSE Taiwan index series; not one of the semiannual June/December reviews. No additions and no deletions. Transition-weight days: 9/22 through 9/26. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2025-12",
+     "announceDate": "2025-12-05",
+     "effectiveDate": "2025-12-22",
+     "tradeDate": "2025-12-19",
+     "adds": [
+      {
+       "code": "2884",
+       "name": "玉山金"
+      },
+      {
+       "code": "2645",
+       "name": "長榮航太"
+      },
+      {
+       "code": "3045",
+       "name": "台灣大"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "5871",
+       "name": "中租-KY"
+      },
+      {
+       "code": "1504",
+       "name": "東元"
+      },
+      {
+       "code": "4958",
+       "name": "臻鼎-KY"
+      }
+     ],
+     "sources": [
+      "https://taiwanindex.com.tw/news/391",
+      "https://uanalyze.com.tw/articles/6989141384",
+      "https://www.businesstoday.com.tw/article/category/183013/post/202512050039/",
+      "https://www.ctee.com.tw/news/20251001701955-430201"
+     ],
+     "confidence": "verified",
+     "notes": "First review under the revised index rules announced 2025-10-01 (CTEE): constituents must be Taiwan-registered, which excludes KY companies, so 中租-KY and 臻鼎-KY were removed. Transition-weight days: 12/22, 12/23, 12/24, 12/26, 12/29 (12/25 is a market holiday). tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2026-03",
+     "announceDate": "2026-03-06",
+     "effectiveDate": "2026-03-23",
+     "tradeDate": "2026-03-20",
+     "adds": [],
+     "deletes": [
+      {
+       "code": "9941",
+       "name": "裕融"
+      }
+     ],
+     "sources": [
+      "https://taiwanindex.com.tw/news/405"
+     ],
+     "confidence": "verified",
+     "notes": "Quarterly (March/September) review of the FTSE TWSE Taiwan index series; not one of the semiannual June/December reviews. Deletion only (裕融 9941), so the index dropped to 49 names. Only the official TIP release was read; there is no secondary news cross-check. Transition-weight days: 3/23 through 3/27. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2026-06",
+     "announceDate": "2026-06-05",
+     "effectiveDate": "2026-06-22",
+     "tradeDate": "2026-06-18",
+     "adds": [
+      {
+       "code": "1513",
+       "name": "中興電"
+      },
+      {
+       "code": "4904",
+       "name": "遠傳"
+      },
+      {
+       "code": "1303",
+       "name": "南亞"
+      },
+      {
+       "code": "2408",
+       "name": "南亞科"
+      },
+      {
+       "code": "2344",
+       "name": "華邦電"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1477",
+       "name": "聚陽"
+      },
+      {
+       "code": "6176",
+       "name": "瑞儀"
+      },
+      {
+       "code": "1319",
+       "name": "東陽"
+      },
+      {
+       "code": "2006",
+       "name": "東和鋼鐵"
+      }
+     ],
+     "sources": [
+      "https://taiwanindex.com.tw/news/424",
+      "https://udn.com/news/story/123006/9548510",
+      "https://tw.stock.yahoo.com/news/etf%E6%88%90%E5%88%86%E8%82%A1%E8%AA%BF%E6%95%B4-0056%E6%8F%9B%E8%A1%805%E9%80%B24%E5%87%BA-%E8%A8%98%E6%86%B6%E9%AB%94%E9%9B%99%E9%9B%84%E5%85%A5%E5%88%97-%E5%86%8D%E5%88%AA%E5%82%B3%E7%94%A2-101024096.html"
+     ],
+     "confidence": "verified",
+     "notes": "5 in, 4 out, which brings the count back to 50. The trade date is a THURSDAY (2026-06-18) because 2026-06-19 is a market holiday (Dragon Boat Festival); the official release states '2026年6月18日（星期四）交易結束後生效（亦即自2026年6月22日（星期一）起生效）'. Transition-weight days: 6/22 through 6/26. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2026-09",
+     "announceDate": "2026-09-04",
+     "effectiveDate": "2026-09-21",
+     "tradeDate": "2026-09-18",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://taiwanindex.com.tw/news/450"
+     ],
+     "confidence": "verified",
+     "notes": "Quarterly (March/September) review of the FTSE TWSE Taiwan index series; not one of the semiannual June/December reviews. No additions and no deletions. Transition-weight days: 9/21, 9/22, 9/23, 9/24, 9/29, as listed officially. tradeDate is the official '交易結束後生效' date stated in the announcement. ",
+     "announceTiming": "afterClose"
+    }
+   ]
+  },
+  {
+   "key": "msci_esg_hdy",
+   "index": "MSCI 臺灣 ESG 永續高股息精選 30",
+   "etfs": [
+    "00878"
+   ],
+   "group": "dividend",
+   "schedule": {
+    "months": [
+     5,
+     11
+    ],
+    "rule": "lastBusinessDay",
+    "note": "MSCI 半年審核，月底最後一個營業日收盤生效"
+   },
+   "events": [
+    {
+     "review": "2023-05",
+     "announceDate": "2023-05-31",
+     "effectiveDate": "2023-06-01",
+     "tradeDate": "2023-05-31",
+     "adds": [
+      {
+       "code": "3231",
+       "name": "緯創"
+      },
+      {
+       "code": "3711",
+       "name": "日月光投控"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2327",
+       "name": "國巨"
+      },
+      {
+       "code": "2412",
+       "name": "中華電"
+      }
+     ],
+     "sources": [
+      "https://tw.stock.yahoo.com/news/00878%E8%AA%BF%E6%95%B4%E6%88%90%E5%88%86%E8%82%A1%EF%BC%81%E5%89%94%E9%99%A4%E4%B8%AD%E8%8F%AF%E9%9B%BB%E3%80%81%E5%9C%8B%E5%B7%A8-%E5%8A%A0%E5%85%A5%E7%B7%AF%E5%89%B5%E3%80%81%E6%97%A5%E6%9C%88%E5%85%892%E6%96%B0%E5%85%B5-090725546.html",
+      "https://www.gvm.com.tw/article/103183"
+     ],
+     "confidence": "partial",
+     "notes": "'其最新成分股調整於5月31日完成生效' (Cathay statement reported 2023-05-31). announceDate = date of Cathay's public statement; MSCI distributes custom-index results to licensees earlier, and 00878 holdings already showed 緯創/日月光投控 by 2023-05-26 (phased rebalancing). Exact MSCI announcement date not found.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2023-11",
+     "announceDate": null,
+     "effectiveDate": "2023-12-01",
+     "tradeDate": "2023-11-30",
+     "adds": [
+      {
+       "code": "1216",
+       "name": "統一"
+      },
+      {
+       "code": "2303",
+       "name": "聯電"
+      },
+      {
+       "code": "5347",
+       "name": "世界先進"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2353",
+       "name": "宏碁"
+      },
+      {
+       "code": "2883",
+       "name": "開發金"
+      },
+      {
+       "code": "2002",
+       "name": "中鋼"
+      },
+      {
+       "code": "2408",
+       "name": "南亞科"
+      }
+     ],
+     "sources": [
+      "https://www.moneyweekly.com.tw/_Article?AID=133645",
+      "https://smart.businessweekly.com.tw/Reading/IndepArticle.aspx?id=6013476",
+      "https://news.cnyes.com/news/id/5403164"
+     ],
+     "confidence": "partial",
+     "notes": "'其下半年最新成分股調整於11月30日收盤後完成生效'. Official announcement date not found (earliest read source dated 2023-12-07; ctee 2023-11-22 only predicted deletions and mis-coded 宏碁 as 2535 — correct code 2353). 00878 began selling deletions ~2023-11-21 (phased).",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2024-05",
+     "announceDate": "2024-06-03",
+     "effectiveDate": "2024-06-03",
+     "tradeDate": "2024-05-31",
+     "adds": [
+      {
+       "code": "3034",
+       "name": "聯詠"
+      },
+      {
+       "code": "2412",
+       "name": "中華電"
+      },
+      {
+       "code": "2105",
+       "name": "正新"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1303",
+       "name": "南亞"
+      },
+      {
+       "code": "2347",
+       "name": "聯強"
+      },
+      {
+       "code": "2357",
+       "name": "華碩"
+      }
+     ],
+     "sources": [
+      "https://www.businesstoday.com.tw/article/category/183008/post/202406030025/"
+     ],
+     "confidence": "partial",
+     "notes": "Read source (2024-06-03) gives list but no explicit effective date; search snippets (CNA) say effective before open 2024-06-03, i.e. after 5/31 close — consistent with MSCI May-2024 SAIR (as-of close 5/31). tradeDate derived. announceDate = first public report found.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2024-11",
+     "announceDate": "2024-11-26",
+     "effectiveDate": "2024-11-26",
+     "tradeDate": "2024-11-25",
+     "adds": [
+      {
+       "code": "2357",
+       "name": "華碩"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2474",
+       "name": "可成"
+      }
+     ],
+     "sources": [
+      "https://www.ctee.com.tw/news/20241126700770-430402"
+     ],
+     "confidence": "verified",
+     "notes": "'已於11/25收盤後(11/26開盤前)完成生效'. announceDate = Cathay/ctee public report date; MSCI client release likely with SAIR on 2024-11-07 (not confirmed).",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2025-05",
+     "announceDate": "2025-06-03",
+     "effectiveDate": "2025-06-02",
+     "tradeDate": "2025-05-29",
+     "adds": [
+      {
+       "code": "5871",
+       "name": "中租-KY"
+      },
+      {
+       "code": "2474",
+       "name": "可成"
+      },
+      {
+       "code": "2615",
+       "name": "萬海"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1101",
+       "name": "台泥"
+      },
+      {
+       "code": "2890",
+       "name": "永豐金"
+      },
+      {
+       "code": "2892",
+       "name": "第一金"
+      }
+     ],
+     "sources": [
+      "https://www.cna.com.tw/news/afe/202506030192.aspx"
+     ],
+     "confidence": "partial",
+     "notes": "CNA: '最新成分股內容已於6月2日開盤前生效'. CNA gives names only; codes from search snippets (chinatimes) + standard mapping. tradeDate derived: MSCI as-of-close 5/30 was a Taiwan holiday, so 5/29 is the last Taiwan close (not stated by source). Same review also introduced the 預擬資產管理規模 rule and cut single-stock cap 15%->10%.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2025-11",
+     "announceDate": "2025-12-01",
+     "effectiveDate": "2025-11-25",
+     "tradeDate": "2025-11-24",
+     "adds": [
+      {
+       "code": "2449",
+       "name": "京元電子"
+      },
+      {
+       "code": "3293",
+       "name": "鈊象"
+      },
+      {
+       "code": "4958",
+       "name": "臻鼎-KY"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2377",
+       "name": "微星"
+      },
+      {
+       "code": "2615",
+       "name": "萬海"
+      },
+      {
+       "code": "3702",
+       "name": "大聯大"
+      }
+     ],
+     "sources": [
+      "https://tw.stock.yahoo.com/news/00878%E6%88%90%E5%88%86%E8%82%A1%E8%AA%BF%E6%95%B4%E5%87%BA%E7%88%90%EF%BC%813%E9%80%B23%E5%87%BA%E8%B8%A2%E8%90%AC%E6%B5%B7-%E7%B4%8D%E5%85%A5%E9%88%8A%E8%B1%A1%E3%80%81%E4%BA%AC%E5%85%83%E9%9B%BB%E5%AD%90-063252670.html",
+      "https://finance.ettoday.net/news/3076575",
+      "https://money.udn.com/money/amp/story/5607/9174411",
+      "https://uanalyze.com.tw/articles/8841439800"
+     ],
+     "confidence": "partial",
+     "notes": "List confirmed (Cathay statements 2025-12-01). No source states the effective date ('近期...完成生效'); effectiveDate/tradeDate DERIVED by assuming alignment with the MSCI Nov-2025 SAIR (as-of close 2025-11-24), as in Nov 2024. 微星/大聯大 deleted because removed from parent MSCI Taiwan in this review. 00878 pre-positioned: began buying adds 2025-11-17; deletions <1% weight by 11/21.",
+     "announceTiming": "afterClose"
+    },
+    {
+     "review": "2026-05",
+     "announceDate": "2026-06-02",
+     "effectiveDate": "2026-06-01",
+     "tradeDate": "2026-05-29",
+     "adds": [
+      {
+       "code": "2603",
+       "name": "長榮"
+      },
+      {
+       "code": "2618",
+       "name": "長榮航"
+      },
+      {
+       "code": "2880",
+       "name": "華南金"
+      },
+      {
+       "code": "2887",
+       "name": "台新新光金"
+      },
+      {
+       "code": "2912",
+       "name": "統一超"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1402",
+       "name": "遠東新"
+      },
+      {
+       "code": "2324",
+       "name": "仁寶"
+      },
+      {
+       "code": "2474",
+       "name": "可成"
+      },
+      {
+       "code": "2449",
+       "name": "京元電子"
+      }
+     ],
+     "sources": [
+      "https://news.cnyes.com/news/id/6481342",
+      "https://tw.stock.yahoo.com/news/%E5%9C%8B%E6%B0%91etf-00878%E6%88%90%E5%88%86%E8%82%A1%E6%8F%9B%E8%A1%80%EF%BC%815%E9%80%B24%E5%87%BA%E5%88%AA%E4%BB%81%E5%AF%B6%E4%BA%AC%E5%85%83%E9%9B%BB-%E7%B4%8D%E9%95%B7%E6%A6%AE%E7%B5%B1%E4%B8%80%E8%B6%85-073808236.html"
+     ],
+     "confidence": "partial",
+     "notes": "'已於 6 月 1 日生效'. tradeDate derived (5/29 Friday close, matching MSCI May-2026 SAIR). announceDate = Cathay public report date. Same review applied rule tweaks (ESG-controversy buffer, buffer zone rank 21-40, yield-std threshold 10%->20%) per search snippets.",
+     "announceTiming": "afterClose"
+    }
+   ]
+  },
+  {
+   "key": "tip_hdy",
+   "index": "特選臺灣上市上櫃精選高息指數",
+   "etfs": [
+    "00919"
+   ],
+   "group": "dividend",
+   "schedule": {
+    "months": [
+     5,
+     12
+    ],
+    "rule": "lastYear",
+    "note": "半年審核，日期依去年同期推估"
+   },
+   "events": [
+    {
+     "review": "2023-05",
+     "announceDate": null,
+     "effectiveDate": "2023-06-01",
+     "tradeDate": "2023-05-31",
+     "adds": [
+      {
+       "code": "2385",
+       "name": "群光"
+      },
+      {
+       "code": "3044",
+       "name": "健鼎"
+      },
+      {
+       "code": "3264",
+       "name": "欣銓"
+      },
+      {
+       "code": "3702",
+       "name": "大聯大"
+      },
+      {
+       "code": "4915",
+       "name": "致伸"
+      },
+      {
+       "code": "6239",
+       "name": "力成"
+      },
+      {
+       "code": "6278",
+       "name": "台表科"
+      },
+      {
+       "code": "6691",
+       "name": "洋基工程"
+      },
+      {
+       "code": "8046",
+       "name": "南電"
+      },
+      {
+       "code": "9802",
+       "name": "鈺齊-KY"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1303",
+       "name": "南亞"
+      },
+      {
+       "code": "2002",
+       "name": "中鋼"
+      },
+      {
+       "code": "2353",
+       "name": "宏碁"
+      },
+      {
+       "code": "2357",
+       "name": "華碩"
+      },
+      {
+       "code": "2376",
+       "name": "技嘉"
+      },
+      {
+       "code": "2458",
+       "name": "義隆"
+      },
+      {
+       "code": "2637",
+       "name": "慧洋-KY"
+      },
+      {
+       "code": "3036",
+       "name": "文曄"
+      },
+      {
+       "code": "8150",
+       "name": "南茂"
+      },
+      {
+       "code": "9933",
+       "name": "中鼎"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=4105d465-e67c-406b-8302-462af74f4b3f"
+     ],
+     "confidence": "partial",
+     "notes": "Adds/deletes and dates from TIP press release text republished by MoneyDJ (2023-06-01 08:03): '自2023年5月31日(星期三)交易結束後生效(亦即自2023年6月1日(星期四)起生效)'. tradeDate stated directly. announceDate not confirmed (MoneyDJ republication on effective-date morning; actual TIP release date not found). Review data date 2023-05-15. No transition period mentioned.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2023-12",
+     "announceDate": "2023-12-18",
+     "effectiveDate": "2023-12-19",
+     "tradeDate": "2023-12-18",
+     "adds": [
+      {
+       "code": "1504",
+       "name": "東元"
+      },
+      {
+       "code": "1722",
+       "name": "台肥"
+      },
+      {
+       "code": "2211",
+       "name": "長榮鋼"
+      },
+      {
+       "code": "2886",
+       "name": "兆豐金"
+      },
+      {
+       "code": "2891",
+       "name": "中信金"
+      },
+      {
+       "code": "3005",
+       "name": "神基"
+      },
+      {
+       "code": "5483",
+       "name": "中美晶"
+      },
+      {
+       "code": "5904",
+       "name": "寶雅"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2352",
+       "name": "佳世達"
+      },
+      {
+       "code": "2382",
+       "name": "廣達"
+      },
+      {
+       "code": "2609",
+       "name": "陽明"
+      },
+      {
+       "code": "2615",
+       "name": "萬海"
+      },
+      {
+       "code": "3702",
+       "name": "大聯大"
+      },
+      {
+       "code": "4961",
+       "name": "天鈺"
+      },
+      {
+       "code": "8046",
+       "name": "南電"
+      },
+      {
+       "code": "9802",
+       "name": "鈺齊-KY"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=037e49c7-3b69-4e9b-a26a-c5188a2bd676",
+      "https://today.line.me/tw/v2/article/PGMQPKj",
+      "https://www.ctee.com.tw/news/20231222700748-430403"
+     ],
+     "confidence": "verified",
+     "notes": "TIP text: effective after close 2023-12-18 (Mon), i.e. from 2023-12-19. NOWnews (via LINE TODAY, 2023-12-18 11:20) says TIP announced '今(18)日'. Review data date 2023-11-30. No transition period mentioned.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2024-05",
+     "announceDate": "2024-05-31",
+     "effectiveDate": "2024-06-03",
+     "tradeDate": "2024-05-31",
+     "adds": [
+      {
+       "code": "2451",
+       "name": "創見"
+      },
+      {
+       "code": "2504",
+       "name": "國產"
+      },
+      {
+       "code": "2548",
+       "name": "華固"
+      },
+      {
+       "code": "2618",
+       "name": "長榮航"
+      },
+      {
+       "code": "2809",
+       "name": "京城銀"
+      },
+      {
+       "code": "2889",
+       "name": "國票金"
+      },
+      {
+       "code": "3014",
+       "name": "聯陽"
+      },
+      {
+       "code": "5347",
+       "name": "世界"
+      },
+      {
+       "code": "5508",
+       "name": "永信建"
+      },
+      {
+       "code": "5536",
+       "name": "聖暉"
+      },
+      {
+       "code": "6005",
+       "name": "群益證"
+      },
+      {
+       "code": "8070",
+       "name": "長華"
+      },
+      {
+       "code": "8112",
+       "name": "至上"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1504",
+       "name": "東元"
+      },
+      {
+       "code": "1722",
+       "name": "台肥"
+      },
+      {
+       "code": "2379",
+       "name": "瑞昱"
+      },
+      {
+       "code": "2385",
+       "name": "群光"
+      },
+      {
+       "code": "2449",
+       "name": "京元電子"
+      },
+      {
+       "code": "2886",
+       "name": "兆豐金"
+      },
+      {
+       "code": "3005",
+       "name": "神基"
+      },
+      {
+       "code": "3044",
+       "name": "健鼎"
+      },
+      {
+       "code": "3231",
+       "name": "緯創"
+      },
+      {
+       "code": "3293",
+       "name": "鈊象"
+      },
+      {
+       "code": "3592",
+       "name": "瑞鼎"
+      },
+      {
+       "code": "3711",
+       "name": "日月光投控"
+      },
+      {
+       "code": "6147",
+       "name": "頎邦"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=06124766-4d3d-4d38-bfa4-17526c4c9895",
+      "https://news.cnyes.com/news/id/5583233",
+      "https://www.ctee.com.tw/news/20240531700186-439901"
+     ],
+     "confidence": "verified",
+     "notes": "TIP text: effective after close 2024-05-31 (Fri), i.e. from 2024-06-03. cnyes: TIP announced 5/31. ETF caveat: 工商時報 (2024-05-31) reports 00919's PCF on its website already showed 12 of the new names on 5/29, i.e. the ETF itself traded ahead of the index tradeDate. Review data date 2024-05-15. No index transition period.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2024-09",
+     "announceDate": "2024-09-18",
+     "effectiveDate": "2024-09-19",
+     "tradeDate": "2024-09-18",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=716ec624-f1e0-4c2a-b2e3-18d5bbbc544b",
+      "https://www.cna.com.tw/news/afe/202409180341.aspx"
+     ],
+     "confidence": "verified",
+     "notes": "Quarterly-style review with NO constituent changes (weights may have been reset). TIP text: effective after close 2024-09-18; CNA 2024-09-18 says announced 'today'. Data date 2024-08-30.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2024-12",
+     "announceDate": "2024-12-17",
+     "effectiveDate": "2024-12-18",
+     "tradeDate": "2024-12-17",
+     "adds": [
+      {
+       "code": "1442",
+       "name": "名軒"
+      },
+      {
+       "code": "2348",
+       "name": "海悅"
+      },
+      {
+       "code": "2393",
+       "name": "億光"
+      },
+      {
+       "code": "2606",
+       "name": "裕民"
+      },
+      {
+       "code": "2637",
+       "name": "慧洋-KY"
+      },
+      {
+       "code": "3592",
+       "name": "瑞鼎"
+      },
+      {
+       "code": "5522",
+       "name": "遠雄"
+      },
+      {
+       "code": "8299",
+       "name": "群聯"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2211",
+       "name": "長榮鋼"
+      },
+      {
+       "code": "2548",
+       "name": "華固"
+      },
+      {
+       "code": "3014",
+       "name": "聯陽"
+      },
+      {
+       "code": "3264",
+       "name": "欣銓"
+      },
+      {
+       "code": "5483",
+       "name": "中美晶"
+      },
+      {
+       "code": "5536",
+       "name": "聖暉"
+      },
+      {
+       "code": "8016",
+       "name": "矽創"
+      },
+      {
+       "code": "8070",
+       "name": "長華"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=e2841066-44e9-452d-ac85-634769d59f76",
+      "https://www.nownews.com/news/6613532",
+      "https://news.cnyes.com/news/id/5818896"
+     ],
+     "confidence": "verified",
+     "notes": "TIP text: effective after close 2024-12-17 (Tue), i.e. from 2024-12-18. NOWnews 2024-12-17 17:56: '台灣指數公司今(17)日公布'. Data date 2024-11-29. No transition period mentioned in this release.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2025-03",
+     "announceDate": null,
+     "effectiveDate": "2025-03-19",
+     "tradeDate": "2025-03-18",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=78bafef3-c287-48fa-8fb2-ccb4c73d6db7"
+     ],
+     "confidence": "partial",
+     "notes": "No constituent changes. TIP text: effective after close 2025-03-18. announceDate not confirmed (MoneyDJ republished 2025-03-19 08:48; likely 2025-03-18).",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2025-05",
+     "announceDate": "2025-06-03",
+     "effectiveDate": "2025-06-04",
+     "tradeDate": "2025-06-03",
+     "adds": [
+      {
+       "code": "1477",
+       "name": "聚陽"
+      },
+      {
+       "code": "2371",
+       "name": "大同"
+      },
+      {
+       "code": "2385",
+       "name": "群光"
+      },
+      {
+       "code": "2439",
+       "name": "美律"
+      },
+      {
+       "code": "2458",
+       "name": "義隆"
+      },
+      {
+       "code": "2474",
+       "name": "可成"
+      },
+      {
+       "code": "2520",
+       "name": "冠德"
+      },
+      {
+       "code": "2609",
+       "name": "陽明"
+      },
+      {
+       "code": "2881",
+       "name": "富邦金"
+      },
+      {
+       "code": "2882",
+       "name": "國泰金"
+      },
+      {
+       "code": "3211",
+       "name": "順達"
+      },
+      {
+       "code": "4763",
+       "name": "材料-KY"
+      },
+      {
+       "code": "6412",
+       "name": "群電"
+      },
+      {
+       "code": "6670",
+       "name": "復盛應用"
+      },
+      {
+       "code": "6757",
+       "name": "台灣虎航"
+      },
+      {
+       "code": "8070",
+       "name": "長華"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2348",
+       "name": "海悅"
+      },
+      {
+       "code": "2454",
+       "name": "聯發科"
+      },
+      {
+       "code": "2809",
+       "name": "京城銀"
+      },
+      {
+       "code": "2889",
+       "name": "國票金"
+      },
+      {
+       "code": "5904",
+       "name": "寶雅"
+      },
+      {
+       "code": "6691",
+       "name": "洋基工程"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=05a4226a-61d4-4849-8540-9711eddb7360",
+      "https://tw.stock.yahoo.com/news/00919%E7%8B%82%E6%90%B6%E8%B2%A8-%E6%8A%95%E4%BF%A1%E6%A9%AB%E6%8E%83-8%E6%96%B01%E8%80%81-%E6%88%90%E5%88%86%E8%82%A1-%E5%AE%83-120900503.html"
+     ],
+     "confidence": "partial",
+     "notes": "16 in / 6 out: constituent count expanded from 30 to 40 under a methodology change (per news). TIP text: effective after close 2025-06-03 (Tue), i.e. from 2025-06-04. Index rules set an 8-trading-day transition period starting on (and including) the effective date; review weight changes are phased in over those 8 days, so the ETF's actual trading is spread from the effective date onward rather than concentrated at the tradeDate close. FTNN (2025-06-12) says 00919 completes the swap on 2025-06-13, consistent with an 8-day window 6/4-6/13. announceDate 2025-06-03 is inferred (中時/wantrich article URL dated 20250603 could not be read, 403); not directly confirmed. Data date 2025-05-15. TIP lists 材料KY as '材料KY' (4763 材料-KY).",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2025-09",
+     "announceDate": "2025-09-16",
+     "effectiveDate": "2025-09-17",
+     "tradeDate": "2025-09-16",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://tw.stock.yahoo.com/news/%E6%8C%87%E6%95%B8%E5%AE%9A%E6%9C%9F%E5%AF%A9%E6%A0%B8%E7%B5%90%E6%9E%9C%E5%87%BA%E7%88%90-00919%E5%92%8C00929%E6%88%90%E5%88%86%E8%82%A1%E7%B6%AD%E6%8C%81%E4%B8%8D%E8%AE%8A-105829292.html"
+     ],
+     "confidence": "partial",
+     "notes": "No constituent changes per news article dated 2025-09-16 (18:58) saying the 00919 index constituents were unchanged and review results effective from the 17th. The TIP release text itself was not found for this review; tradeDate derived as the trading day before 2025-09-17.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2025-12",
+     "announceDate": "2025-12-16",
+     "effectiveDate": "2025-12-17",
+     "tradeDate": "2025-12-16",
+     "adds": [
+      {
+       "code": "1215",
+       "name": "卜蜂"
+      },
+      {
+       "code": "2027",
+       "name": "大成鋼"
+      },
+      {
+       "code": "2211",
+       "name": "長榮鋼"
+      },
+      {
+       "code": "2357",
+       "name": "華碩"
+      },
+      {
+       "code": "2887",
+       "name": "台新新光金"
+      },
+      {
+       "code": "3036",
+       "name": "文曄"
+      },
+      {
+       "code": "3702",
+       "name": "大聯大"
+      },
+      {
+       "code": "8422",
+       "name": "可寧衛"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1442",
+       "name": "名軒"
+      },
+      {
+       "code": "2371",
+       "name": "大同"
+      },
+      {
+       "code": "2393",
+       "name": "億光"
+      },
+      {
+       "code": "2439",
+       "name": "美律"
+      },
+      {
+       "code": "2520",
+       "name": "冠德"
+      },
+      {
+       "code": "3592",
+       "name": "瑞鼎"
+      },
+      {
+       "code": "5508",
+       "name": "永信建"
+      },
+      {
+       "code": "8299",
+       "name": "群聯"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=5e637f1d-8586-4b12-9c89-b8207081fc79",
+      "https://newtalk.tw/news/view/2025-12-17/1010138",
+      "https://uanalyze.com.tw/articles/5721142325",
+      "https://tw.stock.yahoo.com/news/00919%E6%8F%9B%E8%82%A1-8%E9%80%B28%E5%87%BA%E5%90%8D%E5%96%AE-%E6%AC%A1%E7%9C%8B-094455237.html"
+     ],
+     "confidence": "verified",
+     "notes": "TIP text: effective after close 2025-12-16 (Tue), i.e. from 2025-12-17. Yahoo (2025-12-16): results announced after the close today. Index rules set an 8-trading-day transition period starting on (and including) the effective date; review weight changes are phased in over those 8 days, so the ETF's actual trading is spread from the effective date onward rather than concentrated at the tradeDate close.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2026-03",
+     "announceDate": null,
+     "effectiveDate": "2026-03-18",
+     "tradeDate": "2026-03-17",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=4a07c65e-d9eb-48ab-9c56-c9748cc6e2c8",
+      "https://www.cna.com.tw/news/afe/202603180253.aspx"
+     ],
+     "confidence": "partial",
+     "notes": "No constituent changes. TIP text: effective after close 2026-03-17, i.e. from 2026-03-18. announceDate conflicting: MoneyDJ republished 2026-03-18 07:45 (so release was likely 2026-03-17), while CNA (2026-03-18 16:38) says TIP published 'today'. Data date 2026-02-26.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2026-05",
+     "announceDate": "2026-06-02",
+     "effectiveDate": "2026-06-03",
+     "tradeDate": "2026-06-02",
+     "adds": [
+      {
+       "code": "1210",
+       "name": "大成"
+      },
+      {
+       "code": "1319",
+       "name": "東陽"
+      },
+      {
+       "code": "1402",
+       "name": "遠東新"
+      },
+      {
+       "code": "2105",
+       "name": "正新"
+      },
+      {
+       "code": "2347",
+       "name": "聯強"
+      },
+      {
+       "code": "2379",
+       "name": "瑞昱"
+      },
+      {
+       "code": "2382",
+       "name": "廣達"
+      },
+      {
+       "code": "2542",
+       "name": "興富發"
+      },
+      {
+       "code": "2597",
+       "name": "潤弘"
+      },
+      {
+       "code": "2855",
+       "name": "統一證"
+      },
+      {
+       "code": "2883",
+       "name": "凱基金"
+      },
+      {
+       "code": "3293",
+       "name": "鈊象"
+      },
+      {
+       "code": "4938",
+       "name": "和碩"
+      },
+      {
+       "code": "5871",
+       "name": "中租-KY"
+      },
+      {
+       "code": "6890",
+       "name": "來億-KY"
+      },
+      {
+       "code": "8454",
+       "name": "富邦媒"
+      },
+      {
+       "code": "9910",
+       "name": "豐泰"
+      },
+      {
+       "code": "9941",
+       "name": "裕融"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1215",
+       "name": "卜蜂"
+      },
+      {
+       "code": "2027",
+       "name": "大成鋼"
+      },
+      {
+       "code": "2303",
+       "name": "聯電"
+      },
+      {
+       "code": "2404",
+       "name": "漢唐"
+      },
+      {
+       "code": "2451",
+       "name": "創見"
+      },
+      {
+       "code": "2609",
+       "name": "陽明"
+      },
+      {
+       "code": "3036",
+       "name": "文曄"
+      },
+      {
+       "code": "3211",
+       "name": "順達"
+      },
+      {
+       "code": "3702",
+       "name": "大聯大"
+      },
+      {
+       "code": "5347",
+       "name": "世界"
+      },
+      {
+       "code": "6005",
+       "name": "群益證"
+      },
+      {
+       "code": "6176",
+       "name": "瑞儀"
+      },
+      {
+       "code": "6239",
+       "name": "力成"
+      },
+      {
+       "code": "6278",
+       "name": "台表科"
+      },
+      {
+       "code": "6412",
+       "name": "群電"
+      },
+      {
+       "code": "6757",
+       "name": "台灣虎航"
+      },
+      {
+       "code": "8070",
+       "name": "長華"
+      },
+      {
+       "code": "8422",
+       "name": "可寧衛"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=c7fa06c5-779d-4e14-ae28-4161c712dd7d",
+      "https://udn.com/news/story/123006/9541228",
+      "https://www.ctee.com.tw/news/20260602701830-430403"
+     ],
+     "confidence": "verified",
+     "notes": "TIP text: effective after close 2026-06-02 (Tue), i.e. from 2026-06-03. 經濟日報/工商時報 articles of 2026-06-02 evening carry the list, so announced 2026-06-02. Index rules set an 8-trading-day transition period starting on (and including) the effective date; review weight changes are phased in over those 8 days, so the ETF's actual trading is spread from the effective date onward rather than concentrated at the tradeDate close. Beware: some aggregator articles (e.g. udn 整理包 9548670) mis-code 統一證 as 2912 and 來億-KY as 6980; correct codes per TIP text are 2855 and 6890. Data date 2026-05-15.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2026-09",
+     "announceDate": null,
+     "effectiveDate": "2026-09-17",
+     "tradeDate": "2026-09-16",
+     "adds": [],
+     "deletes": [],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=a41821d5-0944-4968-986d-7ae99ab0a20b"
+     ],
+     "confidence": "partial",
+     "notes": "No constituent changes. TIP text: effective after close 2026-09-16 (Wed), i.e. from 2026-09-17. announceDate not confirmed (MoneyDJ republished 2026-09-17 09:27; likely 2026-09-16). Data date 2026-08-31.",
+     "announceTiming": "preOpen"
+    }
+   ]
+  },
+  {
+   "key": "tip_value",
+   "index": "臺灣價值高息指數",
+   "etfs": [
+    "00940"
+   ],
+   "group": "dividend",
+   "schedule": {
+    "months": [
+     5,
+     11
+    ],
+    "rule": "lastYear",
+    "note": "半年審核，日期依去年同期推估"
+   },
+   "events": [
+    {
+     "review": "2024-05",
+     "announceDate": "2024-05-17",
+     "effectiveDate": "2024-05-20",
+     "tradeDate": "2024-05-17",
+     "adds": [
+      {
+       "code": "2206",
+       "name": "三陽工業"
+      },
+      {
+       "code": "2357",
+       "name": "華碩"
+      },
+      {
+       "code": "2504",
+       "name": "國產"
+      },
+      {
+       "code": "2520",
+       "name": "冠德"
+      },
+      {
+       "code": "2548",
+       "name": "華固"
+      },
+      {
+       "code": "2618",
+       "name": "長榮航"
+      },
+      {
+       "code": "2634",
+       "name": "漢翔"
+      },
+      {
+       "code": "2809",
+       "name": "京城銀"
+      },
+      {
+       "code": "2884",
+       "name": "玉山金"
+      },
+      {
+       "code": "2890",
+       "name": "永豐金"
+      },
+      {
+       "code": "2892",
+       "name": "第一金"
+      },
+      {
+       "code": "3010",
+       "name": "華立"
+      },
+      {
+       "code": "3044",
+       "name": "健鼎"
+      },
+      {
+       "code": "3376",
+       "name": "新日興"
+      },
+      {
+       "code": "3406",
+       "name": "玉晶光"
+      },
+      {
+       "code": "3413",
+       "name": "京鼎"
+      },
+      {
+       "code": "3703",
+       "name": "欣陸"
+      },
+      {
+       "code": "4766",
+       "name": "南寶"
+      },
+      {
+       "code": "4961",
+       "name": "天鈺"
+      },
+      {
+       "code": "5534",
+       "name": "長虹"
+      },
+      {
+       "code": "6278",
+       "name": "台表科"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1216",
+       "name": "統一"
+      },
+      {
+       "code": "1723",
+       "name": "中碳"
+      },
+      {
+       "code": "1785",
+       "name": "光洋科"
+      },
+      {
+       "code": "2301",
+       "name": "光寶科"
+      },
+      {
+       "code": "2352",
+       "name": "佳世達"
+      },
+      {
+       "code": "2404",
+       "name": "漢唐"
+      },
+      {
+       "code": "2474",
+       "name": "可成"
+      },
+      {
+       "code": "3005",
+       "name": "神基"
+      },
+      {
+       "code": "3014",
+       "name": "聯陽"
+      },
+      {
+       "code": "3596",
+       "name": "智易"
+      },
+      {
+       "code": "3704",
+       "name": "合勤控"
+      },
+      {
+       "code": "3706",
+       "name": "神達"
+      },
+      {
+       "code": "5388",
+       "name": "中磊"
+      },
+      {
+       "code": "5469",
+       "name": "瀚宇博"
+      },
+      {
+       "code": "5876",
+       "name": "上海商銀"
+      },
+      {
+       "code": "6139",
+       "name": "亞翔"
+      },
+      {
+       "code": "6146",
+       "name": "耕興"
+      },
+      {
+       "code": "8016",
+       "name": "矽創"
+      },
+      {
+       "code": "8150",
+       "name": "南茂"
+      },
+      {
+       "code": "9904",
+       "name": "寶成"
+      },
+      {
+       "code": "9921",
+       "name": "巨大"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=32fe206a-feda-463e-8c95-1e94f66df8fe",
+      "https://m.cnyes.com/news/id/5567450"
+     ],
+     "confidence": "verified",
+     "notes": "First review after 00940 listed 2024-04-01. TIP text: effective after close 2024-05-17 (Fri), i.e. from 2024-05-20. cnyes: TIP announced 5/17. Data date 2024-04-30. No transition period in this release. News suggests the ETF itself traded over several days around this date (not verified in detail).",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2024-11",
+     "announceDate": null,
+     "effectiveDate": "2024-11-19",
+     "tradeDate": "2024-11-18",
+     "adds": [
+      {
+       "code": "1402",
+       "name": "遠東新"
+      },
+      {
+       "code": "2347",
+       "name": "聯強"
+      },
+      {
+       "code": "2379",
+       "name": "瑞昱"
+      },
+      {
+       "code": "2393",
+       "name": "億光"
+      },
+      {
+       "code": "2404",
+       "name": "漢唐"
+      },
+      {
+       "code": "2439",
+       "name": "美律"
+      },
+      {
+       "code": "2458",
+       "name": "義隆"
+      },
+      {
+       "code": "2474",
+       "name": "可成"
+      },
+      {
+       "code": "2610",
+       "name": "華航"
+      },
+      {
+       "code": "2834",
+       "name": "臺企銀"
+      },
+      {
+       "code": "2881",
+       "name": "富邦金"
+      },
+      {
+       "code": "2915",
+       "name": "潤泰全"
+      },
+      {
+       "code": "3036",
+       "name": "文曄"
+      },
+      {
+       "code": "8299",
+       "name": "群聯"
+      },
+      {
+       "code": "9904",
+       "name": "寶成"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2027",
+       "name": "大成鋼"
+      },
+      {
+       "code": "2206",
+       "name": "三陽工業"
+      },
+      {
+       "code": "2520",
+       "name": "冠德"
+      },
+      {
+       "code": "2634",
+       "name": "漢翔"
+      },
+      {
+       "code": "2809",
+       "name": "京城銀"
+      },
+      {
+       "code": "2884",
+       "name": "玉山金"
+      },
+      {
+       "code": "3010",
+       "name": "華立"
+      },
+      {
+       "code": "3703",
+       "name": "欣陸"
+      },
+      {
+       "code": "4766",
+       "name": "南寶"
+      },
+      {
+       "code": "5347",
+       "name": "世界"
+      },
+      {
+       "code": "5534",
+       "name": "長虹"
+      },
+      {
+       "code": "6121",
+       "name": "新普"
+      },
+      {
+       "code": "6147",
+       "name": "頎邦"
+      },
+      {
+       "code": "6191",
+       "name": "精成科"
+      },
+      {
+       "code": "6605",
+       "name": "帝寶"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=12a8d800-fe0b-4b74-b984-161233765aab",
+      "https://smart.businessweekly.com.tw/Channel/IndepArticle.aspx?id=6017177"
+     ],
+     "confidence": "partial",
+     "notes": "Adds/deletes and effective/trade dates verified from TIP text: effective after close 2024-11-18 (Mon), i.e. from 2024-11-19. announceDate uncertain: 商周/CNA article updated 2024-11-19 says TIP announced 'today' while also saying changes 'already took effect after the 18th close'; release was likely 2024-11-18 after close. Data date 2024-10-30. No transition period in this release.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2025-05",
+     "announceDate": "2025-05-19",
+     "effectiveDate": "2025-05-20",
+     "tradeDate": "2025-05-19",
+     "adds": [
+      {
+       "code": "1102",
+       "name": "亞泥"
+      },
+      {
+       "code": "1216",
+       "name": "統一"
+      },
+      {
+       "code": "2609",
+       "name": "陽明"
+      },
+      {
+       "code": "2615",
+       "name": "萬海"
+      },
+      {
+       "code": "2886",
+       "name": "兆豐金"
+      },
+      {
+       "code": "3005",
+       "name": "神基"
+      },
+      {
+       "code": "3211",
+       "name": "順達"
+      },
+      {
+       "code": "6147",
+       "name": "頎邦"
+      },
+      {
+       "code": "6196",
+       "name": "帆宣"
+      },
+      {
+       "code": "8016",
+       "name": "矽創"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1402",
+       "name": "遠東新"
+      },
+      {
+       "code": "2347",
+       "name": "聯強"
+      },
+      {
+       "code": "2504",
+       "name": "國產"
+      },
+      {
+       "code": "2548",
+       "name": "華固"
+      },
+      {
+       "code": "2834",
+       "name": "臺企銀"
+      },
+      {
+       "code": "2890",
+       "name": "永豐金"
+      },
+      {
+       "code": "3264",
+       "name": "欣銓"
+      },
+      {
+       "code": "3376",
+       "name": "新日興"
+      },
+      {
+       "code": "5483",
+       "name": "中美晶"
+      },
+      {
+       "code": "6488",
+       "name": "環球晶"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=305ab71e-73a2-48b7-a307-2daad1866a13",
+      "https://newtalk.tw/news/view/2025-05-20/971891"
+     ],
+     "confidence": "verified",
+     "notes": "TIP text: effective after close 2025-05-19 (Mon), i.e. from 2025-05-20. Newtalk: TIP announced Monday (19th). Index rules set a 5-trading-day transition period starting on (and including) the effective date; weight changes are phased in over those 5 days, so the ETF's actual trading is spread from the effective date onward rather than concentrated at the tradeDate close. Data date 2025-04-30.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2025-11",
+     "announceDate": "2025-11-18",
+     "effectiveDate": "2025-11-19",
+     "tradeDate": "2025-11-18",
+     "adds": [
+      {
+       "code": "1513",
+       "name": "中興電"
+      },
+      {
+       "code": "2312",
+       "name": "金寶"
+      },
+      {
+       "code": "2324",
+       "name": "仁寶"
+      },
+      {
+       "code": "2801",
+       "name": "彰銀"
+      },
+      {
+       "code": "2885",
+       "name": "元大金"
+      },
+      {
+       "code": "2890",
+       "name": "永豐金"
+      },
+      {
+       "code": "2912",
+       "name": "統一超"
+      },
+      {
+       "code": "3023",
+       "name": "信邦"
+      },
+      {
+       "code": "5469",
+       "name": "瀚宇博"
+      },
+      {
+       "code": "6188",
+       "name": "廣明"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "1504",
+       "name": "東元"
+      },
+      {
+       "code": "2609",
+       "name": "陽明"
+      },
+      {
+       "code": "2886",
+       "name": "兆豐金"
+      },
+      {
+       "code": "3211",
+       "name": "順達"
+      },
+      {
+       "code": "3413",
+       "name": "京鼎"
+      },
+      {
+       "code": "3711",
+       "name": "日月光投控"
+      },
+      {
+       "code": "4961",
+       "name": "天鈺"
+      },
+      {
+       "code": "6147",
+       "name": "頎邦"
+      },
+      {
+       "code": "6196",
+       "name": "帆宣"
+      },
+      {
+       "code": "8299",
+       "name": "群聯"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=0b324706-61dc-49ca-8bba-4cab291db14f",
+      "https://tw.stock.yahoo.com/news/00940%E5%88%AA%E9%99%BD%E6%98%8E%E3%80%81%E5%A2%9E%E5%85%83%E5%A4%A7%E9%87%91%EF%BC%813%E6%AA%94etf%E6%8F%9B%E8%82%A1-%E8%BF%9160%E8%90%AC%E8%82%A1%E6%B0%91%E9%97%9C%E6%B3%A8-092308867.html"
+     ],
+     "confidence": "verified",
+     "notes": "TIP text: effective after close 2025-11-18 (Tue), i.e. from 2025-11-19. Yahoo article (2025-11-18 17:23) reports the published results, so announced 2025-11-18. Index rules set a 5-trading-day transition period starting on (and including) the effective date; weight changes are phased in over those 5 days, so the ETF's actual trading is spread from the effective date onward rather than concentrated at the tradeDate close. Data date 2025-10-31.",
+     "announceTiming": "preOpen"
+    },
+    {
+     "review": "2026-05",
+     "announceDate": "2026-05-19",
+     "effectiveDate": "2026-05-20",
+     "tradeDate": "2026-05-19",
+     "adds": [
+      {
+       "code": "2356",
+       "name": "英業達"
+      },
+      {
+       "code": "2421",
+       "name": "建準"
+      },
+      {
+       "code": "2883",
+       "name": "凱基金"
+      },
+      {
+       "code": "2887",
+       "name": "台新新光金"
+      },
+      {
+       "code": "3045",
+       "name": "台灣大"
+      },
+      {
+       "code": "3706",
+       "name": "神達"
+      },
+      {
+       "code": "5269",
+       "name": "祥碩"
+      },
+      {
+       "code": "6139",
+       "name": "亞翔"
+      },
+      {
+       "code": "6196",
+       "name": "帆宣"
+      },
+      {
+       "code": "8069",
+       "name": "元太"
+      }
+     ],
+     "deletes": [
+      {
+       "code": "2312",
+       "name": "金寶"
+      },
+      {
+       "code": "2324",
+       "name": "仁寶"
+      },
+      {
+       "code": "2382",
+       "name": "廣達"
+      },
+      {
+       "code": "2439",
+       "name": "美律"
+      },
+      {
+       "code": "2603",
+       "name": "長榮"
+      },
+      {
+       "code": "3005",
+       "name": "神基"
+      },
+      {
+       "code": "6188",
+       "name": "廣明"
+      },
+      {
+       "code": "6239",
+       "name": "力成"
+      },
+      {
+       "code": "6257",
+       "name": "矽格"
+      },
+      {
+       "code": "6285",
+       "name": "啟碁"
+      }
+     ],
+     "sources": [
+      "https://www.moneydj.com/kmdj/news/newsviewer.aspx?a=02b32b4a-ac24-461d-915f-6016fedb987d",
+      "https://newtalk.tw/news/view/2026-05-20/1036153"
+     ],
+     "confidence": "verified",
+     "notes": "TIP text: effective after close 2026-05-19 (Tue), i.e. from 2026-05-20. Newtalk: TIP announced Tuesday (19th). Index rules set a 5-trading-day transition period starting on (and including) the effective date; weight changes are phased in over those 5 days, so the ETF's actual trading is spread from the effective date onward rather than concentrated at the tradeDate close. Data date 2026-04-30. The 2026-11 review had not occurred as of 2026-10-27.",
+     "announceTiming": "preOpen"
+    }
+   ]
+  }
+ ]
+}

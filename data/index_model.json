@@ -1,0 +1,377 @@
+{
+ "builtOn": "2026-10-27",
+ "generatedAt": "2026-10-27T05:46:03.990Z",
+ "quoteDate": "2026-10-22",
+ "from": "2026-07-28",
+ "rules": {
+  "minTurnover": 150000000,
+  "minYield": 6.5,
+  "maxRank": 200,
+  "days": 60
+ },
+ "universe": 1949,
+ "candidates": [
+  {
+   "code": "2542",
+   "name": "興富發",
+   "market": "上市",
+   "close": 40,
+   "rank": 158,
+   "mktCap": 861,
+   "turnover60": 4.31,
+   "yield": 10,
+   "eps": 2.45,
+   "op": 8230744,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": true,
+    "rank": true
+   }
+  },
+  {
+   "code": "6669",
+   "name": "緯穎",
+   "market": "上市",
+   "close": 1840,
+   "rank": 19,
+   "mktCap": 10308,
+   "turnover60": 107.25,
+   "yield": 8.93,
+   "eps": 156.38,
+   "op": 37676176,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": true,
+    "rank": true
+   }
+  },
+  {
+   "code": "2385",
+   "name": "群光",
+   "market": "上市",
+   "close": 101,
+   "rank": 171,
+   "mktCap": 773,
+   "turnover60": 3.18,
+   "yield": 7.13,
+   "eps": 5.06,
+   "op": 2275878,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": true,
+    "rank": true
+   }
+  }
+ ],
+ "nearMiss": [
+  {
+   "code": "5314",
+   "name": "世紀*",
+   "market": "上櫃",
+   "close": 25.1,
+   "rank": 317,
+   "mktCap": 303,
+   "turnover60": 5.81,
+   "yield": 125.97,
+   "eps": 0.66,
+   "op": 360378,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": true,
+    "rank": false
+   }
+  },
+  {
+   "code": "4915",
+   "name": "致伸",
+   "market": "上市",
+   "close": 62,
+   "rank": 326,
+   "mktCap": 293,
+   "turnover60": 2.03,
+   "yield": 7.37,
+   "eps": 2.55,
+   "op": 1334290,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": true,
+    "rank": false
+   }
+  },
+  {
+   "code": "1477",
+   "name": "聚陽",
+   "market": "上市",
+   "close": 209,
+   "rank": 218,
+   "mktCap": 516,
+   "turnover60": 3.38,
+   "yield": 7.18,
+   "eps": 7.65,
+   "op": 2463673,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": true,
+    "rank": false
+   }
+  },
+  {
+   "code": "4763",
+   "name": "材料*-KY",
+   "market": "上市",
+   "close": 45.9,
+   "rank": 242,
+   "mktCap": 454,
+   "turnover60": 3.96,
+   "yield": 6.64,
+   "eps": 1.85,
+   "op": 2315136,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": true,
+    "rank": false
+   }
+  },
+  {
+   "code": "2603",
+   "name": "長榮",
+   "market": "上市",
+   "close": 260,
+   "rank": 44,
+   "mktCap": 5629,
+   "turnover60": 31.57,
+   "yield": 6.15,
+   "eps": 11.24,
+   "op": 28306277,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": false,
+    "rank": true
+   }
+  },
+  {
+   "code": "6121",
+   "name": "新普",
+   "market": "上櫃",
+   "close": 364,
+   "rank": 186,
+   "mktCap": 673,
+   "turnover60": 2.69,
+   "yield": 5.99,
+   "eps": 15.89,
+   "op": 4526868,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": false,
+    "rank": true
+   }
+  },
+  {
+   "code": "1102",
+   "name": "亞泥",
+   "market": "上市",
+   "close": 38.55,
+   "rank": 113,
+   "mktCap": 1367,
+   "turnover60": 3.21,
+   "yield": 5.97,
+   "eps": 2.13,
+   "op": 2895481,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": false,
+    "rank": true
+   }
+  },
+  {
+   "code": "2812",
+   "name": "台中銀",
+   "market": "上市",
+   "close": 18.6,
+   "rank": 127,
+   "mktCap": 1195,
+   "turnover60": 3.11,
+   "yield": 5.7,
+   "eps": 0.87,
+   "op": 6255182,
+   "opLabel": "稅前淨利",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": false,
+    "rank": true
+   }
+  },
+  {
+   "code": "5871",
+   "name": "中租-KY",
+   "market": "上市",
+   "close": 106,
+   "rank": 95,
+   "mktCap": 1850,
+   "turnover60": 7.59,
+   "yield": 5.66,
+   "eps": 5.84,
+   "op": 15085841,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": false,
+    "rank": true
+   }
+  },
+  {
+   "code": "2105",
+   "name": "正新",
+   "market": "上市",
+   "close": 32,
+   "rank": 144,
+   "mktCap": 1037,
+   "turnover60": 1.75,
+   "yield": 5.63,
+   "eps": 1.05,
+   "op": 4841165,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": false,
+    "rank": true
+   }
+  },
+  {
+   "code": "2834",
+   "name": "臺企銀",
+   "market": "上市",
+   "close": 17.9,
+   "rank": 93,
+   "mktCap": 1861,
+   "turnover60": 8.52,
+   "yield": 5.59,
+   "eps": 0.71,
+   "op": 8938951,
+   "opLabel": "稅前淨利",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": false,
+    "rank": true
+   }
+  },
+  {
+   "code": "6005",
+   "name": "群益證",
+   "market": "上市",
+   "close": 30.6,
+   "rank": 174,
+   "mktCap": 751,
+   "turnover60": 2.29,
+   "yield": 5.59,
+   "eps": 3.24,
+   "op": 9541633,
+   "opLabel": "稅前淨利",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": false,
+    "rank": true
+   }
+  },
+  {
+   "code": "3005",
+   "name": "神基",
+   "market": "上市",
+   "close": 125.5,
+   "rank": 168,
+   "mktCap": 784,
+   "turnover60": 3.11,
+   "yield": 5.41,
+   "eps": 4.27,
+   "op": 3193524,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": false,
+    "rank": true
+   }
+  },
+  {
+   "code": "2474",
+   "name": "可成",
+   "market": "上市",
+   "close": 196.5,
+   "rank": 141,
+   "mktCap": 1059,
+   "turnover60": 5.01,
+   "yield": 5.23,
+   "eps": 5.14,
+   "op": 291239,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": false,
+    "rank": true
+   }
+  },
+  {
+   "code": "3260",
+   "name": "威剛",
+   "market": "上櫃",
+   "close": 328,
+   "rank": 131,
+   "mktCap": 1169,
+   "turnover60": 34.61,
+   "yield": 5.18,
+   "eps": 62.46,
+   "op": 25044794,
+   "opLabel": "營業利益",
+   "period": "115 年 Q2（累計）",
+   "checks": {
+    "turnover": true,
+    "profit": true,
+    "yield": false,
+    "rank": true
+   }
+  }
+ ]
+}

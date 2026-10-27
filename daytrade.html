@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個股短沖 ORB 判斷</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tip { position: absolute; pointer-events: none; z-index: 20; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
+    <div class="max-w-[1400px] mx-auto space-y-6">
+
+        <!-- Header & Nav Tabs -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">⚡ 個股短沖判斷（開盤區間突破 ORB）</h1>
+                    <p class="text-slate-500 text-sm mt-1">以 09:00～09:30 開盤區間的帶量突破做當沖，13:20 前平倉；每檔附近 60 個交易日的 5 分 K 回測</p>
+                </div>
+                <div id="meta" class="text-xs text-slate-500 md:text-right space-y-1"></div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mt-6 border-b border-slate-100 pb-2">
+                <a href="./index.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">📊 台指期夜盤預測</a>
+                <a href="./broker.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🏦 主力券商買超分析</a>
+                <a href="./stock.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🎯 個股策略分析</a>
+                <a href="./themes.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🧩 族群漲跌排行</a>
+                <a href="./daytrade.html" class="px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 rounded-lg border border-indigo-100">⚡ 個股短沖</a>
+            </div>
+
+            <form id="queryForm" class="mt-5 flex flex-col sm:flex-row sm:items-end gap-3">
+                <label class="flex-1 min-w-0">
+                    <span class="text-xs font-semibold text-slate-500">股票代號</span>
+                    <input id="stockInput" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 3037" list="stockList" class="mt-1 w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-lg font-semibold text-slate-800">
+                    <datalist id="stockList"></datalist>
+                </label>
+                <button type="submit" class="px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition-colors">判斷</button>
+            </form>
+            <p class="mt-2 text-xs text-slate-400">可查詢族群漲跌排行的成分股與跨個股驗證股票（約 300 檔）；資料於每次網站自動更新時重算</p>
+        </div>
+
+        <div id="status" class="hidden"></div>
+        <div id="result" class="hidden space-y-6"></div>
+
+        <!-- 今日觸發與排行 -->
+        <div id="today" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200"></div>
+
+        <!-- 跨個股驗證 -->
+        <div id="validation" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200"></div>
+
+        <!-- 規則與限制 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 text-sm text-slate-600 space-y-2">
+            <h2 class="text-lg font-bold text-slate-800">📐 規則與資料限制</h2>
+            <ul class="list-disc pl-5 space-y-1">
+                <li><b>開盤區間</b>：09:00～09:30 的 6 根 5 分 K 最高 H、最低 L，Range = H − L。多方觸發 = H + 0.2 × Range，空方觸發 = L − 0.2 × Range。</li>
+                <li><b>進場</b>：09:30 之後，5 分 K <b>收盤價穿越</b>觸發價，且該根成交量 &gt; 開盤區間平均量 × 1.5，以該根收盤價成交。多、空各最多一次，當日觸發 2 次即停止；13:10 之後不再進場。</li>
+                <li><b>出場</b>：多單跌破「區間中軸」或「進場價 −1%」（取較近者）停損，空單反之；浮盈達 1.5 × Range 後啟動移動停利，以保本價與最近 3 根 K 棒低點（空單為高點）防守；13:20 以 13:15 那根收盤價強制平倉。</li>
+                <li><b>避坑濾網</b>：開盤區間 &lt; 前 5 日平均真實區間 × 15% 時當日不進場；加權指數相對昨收紅盤才做多、翻黑才做空。驗證區也列出不加濾網的對照組。</li>
+                <li><b>成本</b>：現股當沖手續費 0.1425% × 2、當沖證交稅 0.15%，來回約 0.435%（未計券商折讓與滑價）。</li>
+                <li><b>資料</b>：Yahoo Finance 5 分 K，僅提供近 60 個交易日；09:00 那根 K 棒的成交量通常為 0（開盤集合競價量未計入），計算區間均量時排除。網站自動更新有數小時延遲，<b>不是即時訊號</b>，盤中請以看盤軟體確認觸發價。</li>
+                <li><b>做空</b>：需該股可現股當沖先賣（或以融券、個股期操作），回測未檢查個股資格。日均量 &lt; 1,000 張的個股標示為流動性不足。</li>
+                <li>本頁為策略規則的程式化呈現與歷史統計，<b>不構成投資建議</b>。</li>
+            </ul>
+        </div>
+
+        <footer class="text-center text-xs text-slate-400 py-4">
+            資料來源：Yahoo Finance 5 分 K | 策略：開盤區間突破（Toby Crabel / Larry Williams） | 自動化發布 via GitHub Actions & Pages
+        </footer>
+    </div>
+
+    <div id="tip" class="tip hidden bg-slate-900/95 text-white text-xs rounded-lg px-3 py-2 shadow-lg"></div>
+
+    <script src="./assets/daytrade-app.js"></script>
+</body>
+</html>

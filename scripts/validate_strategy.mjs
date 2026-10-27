@@ -62,8 +62,22 @@ async function loadStock(id) {
 const pool = () => ({ all: [], early: [], late: [] });
 const buyPool = {}, sellPool = {}, basePool = { h5: [0, 0], h10: [0, 0], h20: [0, 0] };
 const composite = [];
-// 對照組：VCB 只用 XScript 核心條件（不加投信／大盤輔助濾網）
-const variantPool = { VCB_CORE: pool() };
+// VCB 對照：個股期成本、未扣成本、規格書原進場（突破近 5 日高）、不加投信／大盤輔助濾網
+const VARIANTS = {
+  VCB_FUT: '主規則・個股期成本（約 0.06%）',
+  VCB_GROSS: '主規則・未扣成本',
+  VCB_HH5: 'NR4＋突破近 5 日高（規格書原進場）・現股成本',
+  VCB_HH5_FUT: 'NR4＋突破近 5 日高・個股期成本',
+  VCB_CORE: '無投信／大盤輔助濾網・現股成本',
+};
+const variantPool = Object.fromEntries(Object.keys(VARIANTS).map(k => [k, pool()]));
+const addVariant = (key, trades, retOf) => {
+  for (const t of trades.filter(t => !t.open)) {
+    const r = retOf(t);
+    variantPool[key].all.push(r);
+    (t.entryDate < SPLIT ? variantPool[key].early : variantPool[key].late).push(r);
+  }
+};
 const vcbExitReasons = {};
 for (const s of Engine.SIGNALS) { if (s.side === 'buy') buyPool[s.id] = pool(); else sellPool[s.id] = { h5: [0, 0, 0], h10: [0, 0, 0], h20: [0, 0, 0], n: 0 }; }
 
@@ -86,10 +100,13 @@ for (const id of STOCKS) {
     }
   }
   for (const t of res.perSignal.VCB.trades.filter(t => !t.open)) vcbExitReasons[t.reason] = (vcbExitReasons[t.reason] || 0) + 1;
-  for (const t of Engine.analyze(bars, { vcbAux: false }).perSignal.VCB.trades.filter(t => !t.open)) {
-    variantPool.VCB_CORE.all.push(t.ret);
-    (t.entryDate < SPLIT ? variantPool.VCB_CORE.early : variantPool.VCB_CORE.late).push(t.ret);
-  }
+  const vcbTrades = res.perSignal.VCB.trades;
+  addVariant('VCB_FUT', vcbTrades, t => t.gross - Engine.FUTURES_COST);
+  addVariant('VCB_GROSS', vcbTrades, t => t.gross);
+  const hh5 = Engine.analyze(bars, { vcbEntry: 'hh5' }).perSignal.VCB.trades;
+  addVariant('VCB_HH5', hh5, t => t.ret);
+  addVariant('VCB_HH5_FUT', hh5, t => t.gross - Engine.FUTURES_COST);
+  addVariant('VCB_CORE', Engine.analyze(bars, { vcbAux: false }).perSignal.VCB.trades, t => t.ret);
   for (const H of ['h5', 'h10', 'h20']) { const o = res.baseline[H]; basePool[H][0] += o.n; basePool[H][1] += Math.round(o.downRate * o.n); }
   const c = res.composite;
   composite.push({
@@ -117,7 +134,8 @@ const out = {
     name: Engine.SIGNAL_MAP[id].name, n: p.n,
     ...Object.fromEntries(['h5', 'h10', 'h20'].map(H => [H, { n: p[H][0], downRate: p[H][0] ? p[H][1] / p[H][0] : null, avg: p[H][0] ? p[H][2] / p[H][0] : null }])),
   }])),
-  variants: { VCB_CORE: { name: 'VCB 僅核心條件（無投信／大盤濾網）', ...Object.fromEntries(['all', 'early', 'late'].map(k => [k, stat(variantPool.VCB_CORE[k])])) } },
+  futuresCost: Engine.FUTURES_COST,
+  variants: Object.fromEntries(Object.entries(VARIANTS).map(([k, name]) => [k, { name: `VCB ${name}`, ...Object.fromEntries(['all', 'early', 'late'].map(x => [x, stat(variantPool[k][x])])) }])),
   vcbExitReasons,
   baseline: Object.fromEntries(['h5', 'h10', 'h20'].map(H => [H, { n: basePool[H][0], downRate: basePool[H][1] / basePool[H][0] }])),
   composite,

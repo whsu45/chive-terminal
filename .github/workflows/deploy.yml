@@ -1,18 +1,28 @@
 name: Update Taiwan Futures Forecast Page
 
 on:
+  # 推 code 到 main 就立即重抓資料並部署（bot 的資料 commit 用 GITHUB_TOKEN 推送，不會再觸發，不會無限循環）
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '.claude/**'
+
+  # GitHub 排程在本 repo 實測延遲 2～5.5 小時（凌晨 UTC 22–23 時段約 2 小時，白天約 4–5 小時），
+  # 所以盤前時段刻意提早、多排幾次；每次執行只補抓尚未定案的日期，重複執行無副作用。
+  # 分鐘數避開 :00 / :30 尖峰。時間皆為台灣時間 (UTC+8)。
   schedule:
-    # 第1次執行：台灣時間每週一至週六 06:12 AM (對應 UTC 22:30 Sun-Thu)
-    - cron: '12 22 * * 0-5'
-    # 第2次備援執行：台灣時間每週一至週六 07:13 AM (對應 UTC 00:30 Mon-Fri)
-    - cron: '13 23 * * 1-6'
-    # 第3次備援執行：台灣時間每週一至週六 08:12 AM (對應 UTC 01:30 Mon-Fri)
-    - cron: '12 0 * * 1-6'
-    # 第4次備援執行：台灣時間每週一至週六 15:11 PM (對應 UTC 07:00 Mon-Fri)
-    - cron: '11 7 * * 1-6'
-    # 第5次備援執行：台灣時間每週一至週六 20:11 PM (對應 UTC 12:00 Mon-Fri)
-    - cron: '11 12 * * 1-6'
-  
+    # 盤前：夜盤 05:00 收盤、美股 04:00（夏令）／05:00（冬令）收盤後的資料，需在 08:45 期貨開盤前上線
+    # 週一至週六（週六早上是週五夜盤；週一早上是週五夜盤歸檔到週一的紀錄）
+    - cron: '47 20 * * 0-5'   # 台灣 04:47 週一至週六
+    - cron: '37 21 * * 0-5'   # 台灣 05:37 週一至週六
+    - cron: '23 22 * * 0-5'   # 台灣 06:23 週一至週六
+    - cron: '17 23 * * 0-5'   # 台灣 07:17 週一至週六
+    # 盤後：日盤 13:45 收盤後的三大法人、證交所／櫃買收盤行情、券商分點（週一至週五）
+    - cron: '7 6 * * 1-5'     # 台灣 14:07 週一至週五
+    # 晚間：FinMind 融資融券等晚間才完整的資料，供族群強弱勢判讀（週一至週五）
+    - cron: '41 11 * * 1-5'   # 台灣 19:41 週一至週五
+
   workflow_dispatch:
 
 permissions:
@@ -20,9 +30,10 @@ permissions:
   pages: write
   id-token: write
 
+# 排隊而不取消：避免部署做到一半被下一個觸發中斷；同時只保留最新一個等待中的執行
 concurrency:
   group: 'pages'
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
@@ -32,8 +43,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 取分支「當下」最新內容（含前一次執行推回的資料 commit），而非觸發當時的 commit
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -62,20 +76,19 @@ jobs:
         run: |
           node scripts/build_theme_picks.mjs
 
-      # 指數調整套利：前瞻模型每天重算一次（commit 回 Git）；事件回測每次部署重建、隨網站發布（失敗不影響其他頁面部署）
-      - name: Build index rebalancing data
+      # 個股短沖（ORB）：Yahoo 5 分 K 回測，產物隨網站發布、不 commit 回 Git（失敗不影響其他頁面部署）
+      - name: Build ORB day-trade data
         continue-on-error: true
         run: |
-          node scripts/build_index_model.mjs
-          node scripts/build_rebalance.mjs
+          node scripts/build_orb.mjs
 
       # 將更新後的 data/history.json 與族群資料推回 Git 儲存庫備份
       - name: Commit and push updated history.json
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/history.json data/themes.json data/theme_picks.json data/index_model.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update history.json [skip ci]" && git push)
+          git add data/history.json data/themes.json data/theme_picks.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update history.json [skip ci]" && git pull --rebase origin "${{ github.ref_name }}" && git push)
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

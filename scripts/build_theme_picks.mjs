@@ -12,9 +12,9 @@ const Engine = require(path.join(ROOT, 'assets/strategy-engine.js'));
 const API = 'https://api.finmindtrade.com/api/v4/data';
 const TOKEN = process.env.FINMIND_TOKEN || '';
 
-const STRONG_POOL = 15; // 當日漲幅前 N 名進入強勢候選
-const WEAK_POOL = 12; // 當日跌幅前 N 名進入弱勢候選
-const MIN_VOLUME = 500; // 成交量門檻（張），排除流動性不足個股
+const STRONG_POOL = 10; // 當日漲幅前 N 名進入強勢候選
+const WEAK_POOL = 10; // 當日跌幅前 N 名進入弱勢候選
+const MIN_VOLUME = 1000; // 成交量門檻（張），排除流動性不足個股
 const STRONG_PICKS = 5;
 const WEAK_PICKS = 3;
 const HISTORY_YEARS = 3;
@@ -51,6 +51,9 @@ async function analyzeStock(code) {
   return Engine.analyze(bars, { startIdx: Math.max(0, bars.findIndex(b => b.date >= bs)) });
 }
 
+// 只採用計入評分的訊號（VCB 等獨立策略不作為強弱勢理由）
+const scoredRecent = res => res.recent.filter(s => !Engine.SIGNAL_MAP[s.id].standalone);
+
 // 跨個股驗證（scripts/validate_strategy.mjs 產出）
 let VALIDATION = null;
 try { VALIDATION = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/strategy_validation.json'), 'utf8')); } catch (e) { /* 無驗證檔 */ }
@@ -67,7 +70,7 @@ function crossText(s) {
 
 // 可信度：觸發訊號在本股或跨個股驗證中是否具備統計優勢
 function confidence(res, side) {
-  const sigs = res.recent.filter(s => (side === 'strong' ? s.side === 'buy' : s.side === 'sell'));
+  const sigs = scoredRecent(res).filter(s => (side === 'strong' ? s.side === 'buy' : s.side === 'sell'));
   let level = 0;
   for (const s of sigs) {
     const ps = res.perSignal[s.id];
@@ -109,9 +112,9 @@ function buildReasons(stock, res, side) {
   const r = [];
   r.push(`今日 ${stock.pct > 0 ? '+' : ''}${stock.pct.toFixed(2)}%，量 ${stock.volume.toLocaleString()} 張；所屬族群：${stock.themes.map(t => `${t.title}（平均 ${t.avg_pct > 0 ? '+' : ''}${t.avg_pct}%）`).join('、')}`);
   r.push(`策略綜合判斷「${res.verdict}」（分數 ${res.score > 0 ? '+' : ''}${res.score.toFixed(2)}）`);
-  const sigs = res.recent.filter(s => (side === 'strong' ? s.side === 'buy' : s.side === 'sell'));
+  const sigs = scoredRecent(res).filter(s => (side === 'strong' ? s.side === 'buy' : s.side === 'sell'));
   for (const s of sigs.slice(0, 3)) r.push(`${s.daysAgo ? `${s.daysAgo} 日前` : '今日'}觸發「${s.name}」：${s.reasons[0]}｜${evidenceText(res, s)}${crossText(s)}`);
-  const opp = res.recent.filter(s => (side === 'strong' ? s.side === 'sell' : s.side === 'buy'));
+  const opp = scoredRecent(res).filter(s => (side === 'strong' ? s.side === 'sell' : s.side === 'buy'));
   if (opp.length) r.push(`⚠ 同時有反向訊號：${opp.map(s => s.name).join('、')}`);
   if (TREND_TXT[res.trend]) r.push(TREND_TXT[res.trend]);
   r.push(`${QUAD_TXT[res.quadrant]}（近 10 日 ${lots(res.mf.d10)}）`);
@@ -174,8 +177,8 @@ const out = {
   quote_date: themes.quote_date,
   method: {
     strongPool: STRONG_POOL, weakPool: WEAK_POOL, minVolume: MIN_VOLUME, historyYears: HISTORY_YEARS,
-    strongRule: '族群成分股當日漲幅前 15 名（量 ≥ 500 張）中，策略綜合分數 ≥ 1.5（買進以上），依分數取前 5',
-    weakRule: '族群成分股當日跌幅前 12 名（量 ≥ 500 張）中，策略綜合分數最低的 3 檔',
+    strongRule: `族群成分股當日漲幅前 ${STRONG_POOL} 名（量 ≥ ${MIN_VOLUME} 張）中，策略綜合分數 ≥ 1.5（買進以上），依分數取前 5`,
+    weakRule: `族群成分股當日跌幅前 ${WEAK_POOL} 名（量 ≥ ${MIN_VOLUME} 張）中，策略綜合分數最低的 3 檔`,
     confidenceRule: '高：觸發訊號在本股（≥5 次）或跨個股驗證中具統計優勢（買訊 PF ≥1.2／1.5，賣訊下跌機率高於基準 5pp）；中：略優於基準；低：無統計優勢或樣本不足',
   },
   evaluated: { strong: strongEval.length, weak: weakEval.length },

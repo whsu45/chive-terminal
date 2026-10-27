@@ -55,13 +55,34 @@ def get_us_info_for_date(us_data_by_date, prev_date_str):
     return {}
 
 
+MA_PERIOD = 20
+
+
+def _attach_ma_and_trim(ohlc_list, months=3):
+    """
+    以完整抓到的日 K 計算月線 (20 日收盤均線)，再裁成近 N 個月。
+    多抓的前段歷史讓圖表第一根 K 棒就有月線，不會前 20 根空白。
+    """
+    closes = [d["close"] for d in ohlc_list]
+    for i, d in enumerate(ohlc_list):
+        d["ma20"] = round(sum(closes[i - MA_PERIOD + 1:i + 1]) / MA_PERIOD, 1) if i >= MA_PERIOD - 1 else None
+    if not ohlc_list:
+        return ohlc_list
+    last = datetime.strptime(ohlc_list[-1]["time"], "%Y-%m-%d")
+    y, m = last.year, last.month - months
+    if m <= 0:
+        y, m = y - 1, m + 12
+    cutoff = f"{y:04d}-{m:02d}-{min(last.day, 28):02d}"
+    return [d for d in ohlc_list if d["time"] >= cutoff]
+
+
 def fetch_ohlc_3m(session, symbol):
     ohlc_list = []
     headers = {'User-Agent': 'Mozilla/5.0'}
 
     yf_symbol = "^TWII" if "TW" in symbol or "TAIEX" in symbol else "^IXIC"
     base_url = DATA_SOURCES["yahoo_finance"]["chart_api_url"]
-    url = f"{base_url.format(symbol=yf_symbol)}?interval=1d&range=3mo"
+    url = f"{base_url.format(symbol=yf_symbol)}?interval=1d&range=6mo"  # 多抓 3 個月供月線暖機
     try:
         resp = session.get(url, headers=headers, timeout=5)
         if resp.status_code == 200:
@@ -90,18 +111,19 @@ def fetch_ohlc_3m(session, symbol):
                         "close": round(closes[i], 1)
                     })
             if len(ohlc_list) > 10:
-                return ohlc_list
+                return _attach_ma_and_trim(ohlc_list)
     except Exception as e:
         print(f"Yahoo OHLC fetch error for {yf_symbol}: {e}")
 
     stooq_symbol = "^TWII" if "TW" in symbol or "TAIEX" in symbol else "^IXIC"
     stooq_base_url = DATA_SOURCES["stooq"]["daily_csv_url"]
     stooq_url = f"{stooq_base_url}?s={stooq_symbol}&i=d"
+    ohlc_list = []
     try:
         resp = session.get(stooq_url, headers=headers, timeout=5)
         if resp.status_code == 200 and "Date,Open" in resp.text:
             lines = resp.text.strip().split('\n')[1:]
-            for line in lines[-65:]:
+            for line in lines[-130:]:
                 parts = line.split(',')
                 if len(parts) >= 5:
                     date_str, o, h, l, c = parts[0], parts[1], parts[2], parts[3], parts[4]
@@ -114,7 +136,7 @@ def fetch_ohlc_3m(session, symbol):
                             "close": round(float(c), 1)
                         })
             if len(ohlc_list) > 10:
-                return ohlc_list
+                return _attach_ma_and_trim(ohlc_list)
     except Exception as e:
         print(f"Stooq OHLC fetch error for {stooq_symbol}: {e}")
 

@@ -26,8 +26,10 @@ def generate_svg_kline_chart(ohlc_data, title, width=580, height=280):
         </div>
         '''
 
-    highs = [d['high'] for d in ohlc_data]
-    lows = [d['low'] for d in ohlc_data]
+    ma_color = "#f59e0b"
+    ma_values = [d.get('ma20') for d in ohlc_data]
+    highs = [d['high'] for d in ohlc_data] + [v for v in ma_values if v is not None]
+    lows = [d['low'] for d in ohlc_data] + [v for v in ma_values if v is not None]
     min_price = min(lows)
     max_price = max(highs)
     price_range = max_price - min_price if max_price != min_price else 1.0
@@ -77,11 +79,34 @@ def generate_svg_kline_chart(ohlc_data, title, width=580, height=280):
         body_h = max(abs(c_y - o_y), 1.5)
 
         tooltip = f"{d['time']} &#10;開: {d['open']:,.1f} &#10;高: {d['high']:,.1f} &#10;低: {d['low']:,.1f} &#10;收: {d['close']:,.1f}"
+        if d.get('ma20') is not None:
+            tooltip += f" &#10;月線: {d['ma20']:,.1f}"
 
         svg_elements.append(
             f'<line x1="{x_center:.1f}" y1="{h_y:.1f}" x2="{x_center:.1f}" y2="{l_y:.1f}" stroke="{color}" stroke-width="1.2" />')
         svg_elements.append(
             f'<rect x="{x_left:.1f}" y="{top_y:.1f}" width="{bar_width:.1f}" height="{body_h:.1f}" fill="{color}" rx="0.5"><title>{tooltip}</title></rect>')
+
+    # 月線 (20 日均線)：斷點處分段，避免缺值時連成錯誤的直線
+    segments, current = [], []
+    for idx, v in enumerate(ma_values):
+        if v is None:
+            if len(current) > 1:
+                segments.append(current)
+            current = []
+            continue
+        current.append(f"{padding_left + (idx + 0.5) * bar_spacing:.1f},{price_to_y(v):.1f}")
+    if len(current) > 1:
+        segments.append(current)
+    for seg in segments:
+        svg_elements.append(
+            f'<polyline fill="none" stroke="{ma_color}" stroke-width="2" stroke-linejoin="round" points="{" ".join(seg)}" pointer-events="none" />')
+
+    last_ma = next((v for v in reversed(ma_values) if v is not None), None)
+    if last_ma is not None:
+        svg_elements.append(
+            f'<line x1="{padding_left + 2}" y1="9" x2="{padding_left + 18}" y2="9" stroke="{ma_color}" stroke-width="2" />'
+            f'<text x="{padding_left + 23}" y="12.5" font-size="10" fill="#64748b">月線 (MA20) {last_ma:,.1f}</text>')
 
     elements_str = "\n".join(svg_elements)
     return f'<svg viewBox="0 0 {width} {height}" class="w-full h-auto overflow-visible font-sans">{elements_str}</svg>'

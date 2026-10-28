@@ -1,6 +1,6 @@
 {
  "quote_date": "2026-10-28",
- "members_fetched": "2026-10-28",
+ "members_fetched": "2026-10-29",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -2337,6 +2337,125 @@
    "flat": 1
   },
   {
+   "slug": "solar",
+   "title": "太陽能概念股",
+   "desc": "太陽能概念股指營收主要來自太陽光電產業鏈的台股，範圍涵蓋上游矽晶圓與導電漿材料、中游電池與模組製造，到下游案場開發、統包工程與售電。",
+   "members": [
+    {
+     "code": "3691",
+     "name": "碩禾",
+     "market": "上櫃",
+     "open": 128.0,
+     "high": 131.0,
+     "low": 128.0,
+     "close": 131.0,
+     "change": 11.5,
+     "pct": 9.62,
+     "volume": 2361
+    },
+    {
+     "code": "6244",
+     "name": "茂迪",
+     "market": "上櫃",
+     "open": 20.95,
+     "high": 21.25,
+     "low": 20.95,
+     "close": 21.2,
+     "change": 0.5,
+     "pct": 2.42,
+     "volume": 984
+    },
+    {
+     "code": "5483",
+     "name": "中美晶",
+     "market": "上櫃",
+     "open": 190.0,
+     "high": 193.0,
+     "low": 186.5,
+     "close": 188.5,
+     "change": 4.0,
+     "pct": 2.17,
+     "volume": 5045
+    },
+    {
+     "code": "2406",
+     "name": "國碩",
+     "market": "上市",
+     "open": 31.95,
+     "high": 32.25,
+     "low": 30.25,
+     "close": 30.5,
+     "change": 0.0,
+     "pct": 0.0,
+     "volume": 9770
+    },
+    {
+     "code": "3576",
+     "name": "聯合再生",
+     "market": "上市",
+     "open": 17.3,
+     "high": 17.3,
+     "low": 16.7,
+     "close": 16.9,
+     "change": -0.1,
+     "pct": -0.59,
+     "volume": 5992
+    },
+    {
+     "code": "6869",
+     "name": "雲豹能源",
+     "market": "上市",
+     "open": 67.8,
+     "high": 68.5,
+     "low": 66.3,
+     "close": 66.3,
+     "change": -1.0,
+     "pct": -1.49,
+     "volume": 617
+    },
+    {
+     "code": "6477",
+     "name": "安集",
+     "market": "上市",
+     "open": 32.3,
+     "high": 32.3,
+     "low": 31.0,
+     "close": 31.25,
+     "change": -0.75,
+     "pct": -2.34,
+     "volume": 468
+    },
+    {
+     "code": "6443",
+     "name": "元晶",
+     "market": "上市",
+     "open": 26.0,
+     "high": 26.2,
+     "low": 25.0,
+     "close": 25.1,
+     "change": -0.9,
+     "pct": -3.46,
+     "volume": 7734
+    },
+    {
+     "code": "6806",
+     "name": "森崴能源",
+     "market": null,
+     "open": null,
+     "high": null,
+     "low": null,
+     "close": null,
+     "change": null,
+     "pct": null,
+     "volume": null
+    }
+   ],
+   "avg_pct": 0.79,
+   "up": 3,
+   "down": 4,
+   "flat": 1
+  },
+  {
    "slug": "fab-facility",
    "title": "廠務概念股",
    "desc": "廠務概念股指承攬半導體與高科技廠房建廠工程的台股，環節涵蓋無塵室與機電空調統包、化學品與氣體供應系統、超純水與製程管線、製程排氣，以及無塵室微污染防治。",
@@ -2490,125 +2609,6 @@
    "up": 7,
    "down": 5,
    "flat": 0
-  },
-  {
-   "slug": "solar",
-   "title": "太陽能概念股",
-   "desc": "太陽能概念股指營收主要來自太陽光電產業鏈的台股，範圍涵蓋上游矽晶圓與導電漿材料、中游電池與模組製造，到下游案場開發、統包工程與售電。",
-   "members": [
-    {
-     "code": "3691",
-     "name": "碩禾",
-     "market": "上櫃",
-     "open": 128.0,
-     "high": 131.0,
-     "low": 128.0,
-     "close": 131.0,
-     "change": 11.5,
-     "pct": 9.62,
-     "volume": 2361
-    },
-    {
-     "code": "6244",
-     "name": "茂迪",
-     "market": "上櫃",
-     "open": 20.95,
-     "high": 21.25,
-     "low": 20.95,
-     "close": 21.2,
-     "change": 0.5,
-     "pct": 2.42,
-     "volume": 984
-    },
-    {
-     "code": "5483",
-     "name": "中美晶",
-     "market": "上櫃",
-     "open": 190.0,
-     "high": 193.0,
-     "low": 186.5,
-     "close": 188.5,
-     "change": 4.0,
-     "pct": 2.17,
-     "volume": 5045
-    },
-    {
-     "code": "2406",
-     "name": "國碩",
-     "market": "上市",
-     "open": 31.95,
-     "high": 32.25,
-     "low": 30.25,
-     "close": 30.5,
-     "change": 0.0,
-     "pct": 0.0,
-     "volume": 9770
-    },
-    {
-     "code": "3576",
-     "name": "聯合再生",
-     "market": "上市",
-     "open": 17.3,
-     "high": 17.3,
-     "low": 16.7,
-     "close": 16.9,
-     "change": -0.1,
-     "pct": -0.59,
-     "volume": 5992
-    },
-    {
-     "code": "6869",
-     "name": "雲豹能源",
-     "market": "上市",
-     "open": 67.8,
-     "high": 68.5,
-     "low": 66.3,
-     "close": 66.3,
-     "change": -1.0,
-     "pct": -1.49,
-     "volume": 617
-    },
-    {
-     "code": "6477",
-     "name": "安集",
-     "market": "上市",
-     "open": 32.3,
-     "high": 32.3,
-     "low": 31.0,
-     "close": 31.25,
-     "change": -0.75,
-     "pct": -2.34,
-     "volume": 468
-    },
-    {
-     "code": "6443",
-     "name": "元晶",
-     "market": "上市",
-     "open": 26.0,
-     "high": 26.2,
-     "low": 25.0,
-     "close": 25.1,
-     "change": -0.9,
-     "pct": -3.46,
-     "volume": 7734
-    },
-    {
-     "code": "6806",
-     "name": "森崴能源",
-     "market": null,
-     "open": null,
-     "high": null,
-     "low": null,
-     "close": null,
-     "change": null,
-     "pct": null,
-     "volume": null
-    }
-   ],
-   "avg_pct": 0.79,
-   "up": 3,
-   "down": 4,
-   "flat": 1
   },
   {
    "slug": "osat",
@@ -2903,18 +2903,6 @@
      "volume": 643
     },
     {
-     "code": "3664",
-     "name": "安瑞-KY",
-     "market": "上櫃",
-     "open": 8.43,
-     "high": 8.43,
-     "low": 8.43,
-     "close": 8.43,
-     "change": 0.0,
-     "pct": 0.0,
-     "volume": 4
-    },
-    {
      "code": "2468",
      "name": "華經",
      "market": "上市",
@@ -2925,6 +2913,18 @@
      "change": 0.0,
      "pct": 0.0,
      "volume": 33639
+    },
+    {
+     "code": "3664",
+     "name": "安瑞-KY",
+     "market": "上櫃",
+     "open": 8.43,
+     "high": 8.43,
+     "low": 8.43,
+     "close": 8.43,
+     "change": 0.0,
+     "pct": 0.0,
+     "volume": 4
     },
     {
      "code": "6689",
@@ -3665,18 +3665,6 @@
      "volume": 156
     },
     {
-     "code": "2630",
-     "name": "亞航",
-     "market": "上市",
-     "open": 42.05,
-     "high": 42.55,
-     "low": 41.75,
-     "close": 42.35,
-     "change": 0.0,
-     "pct": 0.0,
-     "volume": 432
-    },
-    {
      "code": "8033",
      "name": "雷虎",
      "market": "上市",
@@ -3699,6 +3687,18 @@
      "change": 0.0,
      "pct": 0.0,
      "volume": 1223
+    },
+    {
+     "code": "2630",
+     "name": "亞航",
+     "market": "上市",
+     "open": 42.05,
+     "high": 42.55,
+     "low": 41.75,
+     "close": 42.35,
+     "change": 0.0,
+     "pct": 0.0,
+     "volume": 432
     },
     {
      "code": "6753",
@@ -3927,7 +3927,7 @@
      "volume": 126
     }
    ],
-   "avg_pct": -0.11,
+   "avg_pct": -0.12,
    "up": 2,
    "down": 4,
    "flat": 0

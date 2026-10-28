@@ -2,7 +2,7 @@ import os
 import json
 import requests
 from datetime import datetime, timezone, timedelta
-from modules.utils import get_past_trading_days, DATA_DIR, JSON_FILE, BROKER_JSON_FILE
+from modules.utils import clean_int, get_past_trading_days, DATA_DIR, JSON_FILE, BROKER_JSON_FILE
 from modules.taifex_scraper import (
     find_night_session,
     is_taifex_trading_day,
@@ -20,7 +20,19 @@ from modules.themes_scraper import update_themes_json
 DATA_VERSION = "v13"
 
 
-def process_single_date(session, target_date_str, prev_date_str, us_data_by_date, today_str):
+def _cached_int(prev_rec, key):
+    """ 讀取舊紀錄中已成功抓到的數值（"+774"、"27,131"、684 等），沒有則回傳 None """
+    if not prev_rec:
+        return None
+    val = prev_rec.get(key)
+    if isinstance(val, int):
+        return val
+    if isinstance(val, str) and val != "NA":
+        return clean_int(val)
+    return None
+
+
+def process_single_date(session, target_date_str, prev_date_str, us_data_by_date, today_str, prev_rec=None):
     data = {
         "date": target_date_str,
         "prev_date": prev_date_str,
@@ -62,10 +74,27 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
     ah_pos = fetch_institutional_positions_ah(session, night["trade_date"]) if night else {}
     full_pos = fetch_institutional_positions_full(session, target_date_str)
 
+    # 重新計算（例如等待收盤驗證）時若期交所暫時連不上，沿用之前已成功抓到的數值，
+    # 避免整筆紀錄從空白重建而把已抓到的夜盤資料蓋成 NA。已結束的交易時段數值不會再變動。
+    if prev_rec and prev_rec.get("prev_date") == prev_date_str and prev_rec.get("version") == DATA_VERSION:
+        if night_price_change is None:
+            night_price_change = _cached_int(prev_rec, "night_price_change")
+        if night_vol is None:
+            night_vol = _cached_int(prev_rec, "night_vol")
+        if day_vol is None:
+            day_vol = _cached_int(prev_rec, "day_vol")
+        ah_pos = dict(ah_pos)
+        full_pos = dict(full_pos)
+        for k in ("foreign", "trust", "dealer"):
+            if ah_pos.get(k) is None:
+                ah_pos[k] = _cached_int(prev_rec, f"{k}_net_ah")
+            if full_pos.get(k) is None:
+                full_pos[k] = _cached_int(prev_rec, f"{k}_net_full")
+
     # 已過去的日期若期交所查無日盤行情 → 休市
     is_past = target_date_str < today_str
     target_closed = is_past and not is_taifex_trading_day(session, target_date_str)
-    prev_closed = night is None and not is_taifex_trading_day(session, prev_date_str)
+    prev_closed = night_price_change is None and not is_taifex_trading_day(session, prev_date_str)
     if prev_closed:
         data["forecast_desc"] = f"前一日 ({prev_date_str}) 休市，沒有夜盤交易，無法預測。"
 
@@ -185,7 +214,7 @@ def update_history_json():
         
         if needs_update:
             print(f"抓取與分析資料 (TAIFEX {DATA_VERSION})：{target_date_str}...")
-            new_record = process_single_date(session, target_date_str, prev_date_str, us_data_by_date, today_str)
+            new_record = process_single_date(session, target_date_str, prev_date_str, us_data_by_date, today_str, prev_rec=rec)
             existing_records[target_date_str] = new_record
 
     sorted_history = sorted(existing_records.values(), key=lambda x: x["date"], reverse=True)

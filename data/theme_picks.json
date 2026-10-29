@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-29T01:16:21.739Z",
+ "generatedAt": "2026-10-29T01:55:38.496Z",
  "quote_date": "2026-10-28",
  "method": {
   "strongPool": 10,
@@ -16,29 +16,56 @@
  },
  "strong": [
   {
-   "code": "2368",
-   "name": "金像電",
-   "market": "上市",
-   "close": 1185,
-   "pct": 9.72,
-   "volume": 7541,
+   "code": "3581",
+   "name": "博磊",
+   "market": "上櫃",
+   "close": 116,
+   "pct": 9.95,
+   "volume": 3508,
    "themes": [
-    "PCB 概念股"
+    "探針卡概念股"
    ],
    "asOf": "2026-10-28",
    "verdict": "買進",
    "verdictKey": "BUY",
-   "score": 3,
+   "score": 2.3,
    "trend": "RECOVERY",
    "reasons": [
-    "今日 +9.72%，量 7,541 張；所屬族群：PCB 概念股（平均 +5.83%）",
-    "策略綜合判斷「買進」（分數 +3.00）",
+    "今日 +9.95%，量 3,508 張；所屬族群：探針卡概念股（平均 +6.5%）",
+    "策略綜合判斷「買進」（分數 +2.30）",
+    "今日觸發「葛蘭碧① 帶量突破上揚月線」：月線上揚，收盤由下往上突破月線 109.40｜本股歷史 8 次，勝率 25%、平均每筆 +1.50%；跨 42 檔驗證 732 次，勝率 30%、PF 1.10",
+    "⚠ 同時有反向訊號：葛蘭碧⑤ 跌破下彎月線",
     "回升架構：月線上揚且股價站上月線（多頭，回檔不破月線可續抱）",
-    "主力(法人)買＋月線上揚：順勢攻擊（近 10 日 +3,066 張）",
-    "策略部位持有中（2026-10-07 依「主力由賣轉買點火」進場，停損 950.00）"
+    "主力(法人)買＋月線上揚：順勢攻擊（近 10 日 +121 張）",
+    "月線斜率 +0.51% ≥ 0.4%，屬強勢多頭推升"
    ],
-   "confidence": 0,
-   "confidenceLabel": "低"
+   "confidence": 2,
+   "confidenceLabel": "高"
+  },
+  {
+   "code": "6217",
+   "name": "中探針",
+   "market": "上櫃",
+   "close": 170.5,
+   "pct": 10,
+   "volume": 2500,
+   "themes": [
+    "探針卡概念股"
+   ],
+   "asOf": "2026-10-28",
+   "verdict": "買進",
+   "verdictKey": "BUY",
+   "score": 2.2,
+   "trend": "TRANSITION",
+   "reasons": [
+    "今日 +10.00%，量 2,500 張；所屬族群：探針卡概念股（平均 +6.5%）",
+    "策略綜合判斷「買進」（分數 +2.20）",
+    "1 日前觸發「大帶寬回測下軌＋主力吃貨」：帶寬 36.3%（≥20% 區間震盪型）｜本股歷史 4 次，勝率 25%、平均每筆 -0.55%；跨 42 檔驗證 338 次，勝率 42%、PF 1.23",
+    "轉折過渡：月線方向與股價位置不一致",
+    "主力(法人)買＋月線上揚：順勢攻擊（近 10 日 +892 張）"
+   ],
+   "confidence": 1,
+   "confidenceLabel": "中"
   }
  ],
  "weak": [
@@ -69,56 +96,77 @@
    "confidenceLabel": "低"
   },
   {
-   "code": "6176",
-   "name": "瑞儀",
-   "market": "上市",
-   "close": 87.9,
-   "pct": -0.9,
-   "volume": 2512,
+   "code": "3264",
+   "name": "欣銓",
+   "market": "上櫃",
+   "close": 237.5,
+   "pct": -4.23,
+   "volume": 31882,
    "themes": [
-    "蘋概股"
+    "封測概念股"
    ],
    "asOf": "2026-10-28",
    "verdict": "賣出",
    "verdictKey": "SELL",
-   "score": -2.5,
+   "score": -3.9,
    "trend": "REBOUND",
    "reasons": [
-    "今日 -0.90%，量 2,512 張；所屬族群：蘋概股（平均 +3.1%）",
-    "策略綜合判斷「賣出」（分數 -2.50）",
+    "今日 -4.23%，量 31,882 張；所屬族群：封測概念股（平均 +2.81%）",
+    "策略綜合判斷「賣出」（分數 -3.90）",
+    "2 日前觸發「大帶寬反彈上軌＋主力出貨」：帶寬 20.4%（≥20%）｜本股歷史 9 次，10 日後下跌機率 33%（基準 47%）；跨 42 檔 10 日後下跌機率 48%（基準 45%）",
+    "2 日前觸發「葛蘭碧⑤ 跌破下彎月線」：月線扣高轉下彎｜本股歷史 30 次，10 日後下跌機率 43%（基準 47%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
     "反彈架構：月線下彎且股價在月線下（空頭，反彈是逃命點）",
-    "主力(法人)賣＋月線下彎：多殺多（近 10 日 -1,966 張）"
+    "主力(法人)賣＋月線下彎：多殺多（近 10 日 -20,250 張）"
    ],
    "confidence": 0,
    "confidenceLabel": "低"
   },
   {
-   "code": "2634",
-   "name": "漢翔",
-   "market": "上市",
-   "close": 60.9,
-   "pct": -0.49,
-   "volume": 4949,
+   "code": "3693",
+   "name": "營邦",
+   "market": "上櫃",
+   "close": 670,
+   "pct": -2.47,
+   "volume": 1751,
    "themes": [
-    "軍工概念股"
+    "伺服器機殼概念股"
    ],
    "asOf": "2026-10-28",
-   "verdict": "觀望",
-   "verdictKey": "HOLD",
-   "score": -1.1,
+   "verdict": "賣出",
+   "verdictKey": "SELL",
+   "score": -3.8,
    "trend": "REBOUND",
    "reasons": [
-    "今日 -0.49%，量 4,949 張；所屬族群：軍工概念股（平均 -0.04%）",
-    "策略綜合判斷「觀望」（分數 -1.10）",
-    "1 日前觸發「葛蘭碧⑦ 反彈無力碰不到月線」：月線下彎｜本股歷史 46 次，10 日後下跌機率 41%（基準 53%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
+    "今日 -2.47%，量 1,751 張；所屬族群：伺服器機殼概念股（平均 +2.67%）",
+    "策略綜合判斷「賣出」（分數 -3.80）",
+    "1 日前觸發「葛蘭碧⑦ 反彈無力碰不到月線」：月線下彎｜本股歷史 47 次，10 日後下跌機率 60%（基準 51%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
+    "2 日前觸發「葛蘭碧⑤ 跌破下彎月線」：月線扣高轉下彎｜本股歷史 25 次，10 日後下跌機率 56%（基準 51%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
     "反彈架構：月線下彎且股價在月線下（空頭，反彈是逃命點）",
-    "主力(法人)買＋月線下彎：低檔抗跌（近 10 日 +4,982 張）"
+    "主力(法人)賣＋月線下彎：多殺多（近 10 日 -678 張）"
    ],
-   "confidence": 0,
-   "confidenceLabel": "低"
+   "confidence": 2,
+   "confidenceLabel": "高"
   }
  ],
  "strongCandidates": [
+  {
+   "code": "6217",
+   "name": "中探針",
+   "market": "上櫃",
+   "close": 170.5,
+   "pct": 10,
+   "volume": 2500,
+   "themes": [
+    "探針卡概念股"
+   ],
+   "asOf": "2026-10-28",
+   "verdict": "買進",
+   "verdictKey": "BUY",
+   "score": 2.2,
+   "trend": "TRANSITION",
+   "confidence": 1,
+   "confidenceLabel": "中"
+  },
   {
    "code": "4977",
    "name": "眾達-KY",
@@ -175,6 +223,62 @@
    "confidenceLabel": "高"
   },
   {
+   "code": "3260",
+   "name": "威剛",
+   "market": "上櫃",
+   "close": 363.5,
+   "pct": 9.98,
+   "volume": 10934,
+   "themes": [
+    "記憶體概念股"
+   ],
+   "asOf": "2026-10-28",
+   "verdict": "觀望",
+   "verdictKey": "HOLD",
+   "score": 0.9,
+   "trend": "TRANSITION",
+   "confidence": 2,
+   "confidenceLabel": "高"
+  },
+  {
+   "code": "3105",
+   "name": "穩懋",
+   "market": "上櫃",
+   "close": 540,
+   "pct": 9.98,
+   "volume": 17231,
+   "themes": [
+    "矽光子概念股",
+    "第三代半導體概念股",
+    "低軌衛星概念股"
+   ],
+   "asOf": "2026-10-28",
+   "verdict": "觀望",
+   "verdictKey": "HOLD",
+   "score": -0.7,
+   "trend": "RECOVERY",
+   "confidence": 0,
+   "confidenceLabel": "低"
+  },
+  {
+   "code": "3455",
+   "name": "由田",
+   "market": "上櫃",
+   "close": 270,
+   "pct": 9.98,
+   "volume": 2289,
+   "themes": [
+    "玻璃基板概念股"
+   ],
+   "asOf": "2026-10-28",
+   "verdict": "觀望",
+   "verdictKey": "HOLD",
+   "score": 0.3,
+   "trend": "TRANSITION",
+   "confidence": 0,
+   "confidenceLabel": "低"
+  },
+  {
    "code": "3443",
    "name": "創意",
    "market": "上市",
@@ -193,6 +297,24 @@
    "confidenceLabel": "低"
   },
   {
+   "code": "3581",
+   "name": "博磊",
+   "market": "上櫃",
+   "close": 116,
+   "pct": 9.95,
+   "volume": 3508,
+   "themes": [
+    "探針卡概念股"
+   ],
+   "asOf": "2026-10-28",
+   "verdict": "買進",
+   "verdictKey": "BUY",
+   "score": 2.3,
+   "trend": "RECOVERY",
+   "confidence": 2,
+   "confidenceLabel": "高"
+  },
+  {
    "code": "6533",
    "name": "晶心科",
    "market": "上市",
@@ -207,97 +329,6 @@
    "verdictKey": "HOLD",
    "score": 1,
    "trend": "TRANSITION",
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
-   "code": "3035",
-   "name": "智原",
-   "market": "上市",
-   "close": 210.5,
-   "pct": 9.92,
-   "volume": 2678,
-   "themes": [
-    "矽智財概念股"
-   ],
-   "asOf": "2026-10-28",
-   "verdict": "觀望",
-   "verdictKey": "HOLD",
-   "score": -1.2,
-   "trend": "RECOVERY",
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
-   "code": "3406",
-   "name": "玉晶光",
-   "market": "上市",
-   "close": 1330,
-   "pct": 9.92,
-   "volume": 5456,
-   "themes": [
-    "蘋概股"
-   ],
-   "asOf": "2026-10-28",
-   "verdict": "賣出",
-   "verdictKey": "SELL",
-   "score": -3.2,
-   "trend": "RECOVERY",
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
-   "code": "1560",
-   "name": "中砂",
-   "market": "上市",
-   "close": 914,
-   "pct": 9.86,
-   "volume": 2408,
-   "themes": [
-    "半導體設備概念股",
-    "矽晶圓概念股"
-   ],
-   "asOf": "2026-10-28",
-   "verdict": "賣出",
-   "verdictKey": "SELL",
-   "score": -1.6,
-   "trend": "REBOUND",
-   "confidence": 2,
-   "confidenceLabel": "高"
-  },
-  {
-   "code": "6415",
-   "name": "矽力*-KY",
-   "market": "上市",
-   "close": 525,
-   "pct": 9.83,
-   "volume": 7419,
-   "themes": [
-    "IC 設計概念股"
-   ],
-   "asOf": "2026-10-28",
-   "verdict": "賣出",
-   "verdictKey": "SELL",
-   "score": -1.7,
-   "trend": "RECOVERY",
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
-   "code": "2368",
-   "name": "金像電",
-   "market": "上市",
-   "close": 1185,
-   "pct": 9.72,
-   "volume": 7541,
-   "themes": [
-    "PCB 概念股"
-   ],
-   "asOf": "2026-10-28",
-   "verdict": "買進",
-   "verdictKey": "BUY",
-   "score": 3,
-   "trend": "RECOVERY",
    "confidence": 0,
    "confidenceLabel": "低"
   }

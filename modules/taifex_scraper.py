@@ -113,13 +113,17 @@ def find_night_session(session, target_date_str, prev_date_str, today_str):
     """
     找出「前一個平日 (prev_date_str) 15:00 開盤」的那盤夜盤，作為 target_date_str 的開盤預測依據。
     一般情況期交所交易日 = target_date_str；若 target_date_str 休市，該夜盤會被歸到之後的營業日，
-    因此往後逐日查詢（不超過今天），並以頁面上的夜盤開始日期比對。
+    因此往後逐日查詢，並以頁面上的夜盤開始日期比對。
+    查詢上限為「今天之後的第一個平日」：週五夜盤歸屬下週一交易日，但期交所週六清晨就已公布該報表，
+    若只查到今天，週六／週日的排程會抓不到週一的預測資料，要等到週一才補上。
     回傳 {"trade_date", "price_change", "volume"}；前一個平日休市（沒有夜盤）時回傳 None。
     """
     curr = datetime.strptime(target_date_str, "%Y/%m/%d")
-    today = datetime.strptime(today_str, "%Y/%m/%d")
+    limit = datetime.strptime(today_str, "%Y/%m/%d") + timedelta(days=1)
+    while limit.weekday() >= 5:
+        limit += timedelta(days=1)
     for _ in range(8):
-        if curr > today:
+        if curr > limit:
             break
         if curr.weekday() < 5:
             q = curr.strftime("%Y/%m/%d")

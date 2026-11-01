@@ -3,6 +3,40 @@ from .utils import format_signed_num, format_pts_str
 from .chart_generator import generate_svg_kline_chart
 
 
+_WEEKDAY_ZH = ["一", "二", "三", "四", "五", "六", "日"]
+
+
+def _fmt_md(date_str):
+    """ '2026/10/30' → '10/30(五)' """
+    d = datetime.strptime(date_str, "%Y/%m/%d")
+    return f"{d.month}/{d.day}({_WEEKDAY_ZH[d.weekday()]})"
+
+
+def night_session_label(rec):
+    """
+    該筆預測的來源夜盤時段說明。期交所將週五（或連假前）夜盤歸屬到下一個交易日，
+    因此 11/02(一) 的預測資料其實來自 10/30(五) 15:00 ~ 10/31(六) 05:00 的夜盤，需明確標示。
+    """
+    prev = rec.get("prev_date")
+    if not prev:
+        return ""
+    if str(rec.get("night_price_change", "NA")) != "NA":
+        start = datetime.strptime(prev, "%Y/%m/%d")
+        end = start + timedelta(days=1)
+        return f"來源夜盤：{_fmt_md(prev)} 15:00 → {_fmt_md(end.strftime('%Y/%m/%d'))} 05:00"
+    if "休市" in str(rec.get("forecast_desc", "")):
+        return f"{_fmt_md(prev)} 休市，無夜盤"
+    return f"{_fmt_md(prev)} 夜盤資料尚未取得"
+
+
+def verify_status_display(rec):
+    """ 尚未驗證的最新預測改為顯示要等哪一天的日盤收盤 """
+    status = rec.get("verify_status", "NA")
+    if status == "尚未驗證":
+        return f"等待 {_fmt_md(rec['date'])} 13:30 收盤驗證"
+    return status
+
+
 def generate_index_html(history_records, tw_kline_data, us_kline_data):
     latest_data = history_records[0]
 
@@ -77,7 +111,10 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
 
         history_rows_html += f"""
         <tr class="hover:bg-slate-50 transition-colors">
-            <td class="py-3 px-4 font-semibold text-slate-700">{item['date']}</td>
+            <td class="py-3 px-4">
+                <div class="font-semibold text-slate-700 whitespace-nowrap">{_fmt_md(item['date'])} <span class="text-[11px] text-slate-400 font-normal">{item['date'][:4]}</span></div>
+                <div class="text-[11px] text-slate-400 mt-0.5 whitespace-nowrap">{night_session_label(item)}</div>
+            </td>
             <td class="py-3 px-4 {c_color}">{item['night_price_change']}</td>
             <td class="py-3 px-4">
                 <div class="font-semibold text-slate-700">{item['night_volume_ratio']}</div>
@@ -106,7 +143,7 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
             </td>
             <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {s_badge}">{item['scenario']}</span></td>
             <td class="py-3 px-4 text-center">{item.get('sparkline_svg', '')}<div class="text-[11px] {act_color} mt-0.5">{act_change}</div></td>
-            <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {item.get('verify_badge_class', 'bg-slate-100')}">{item.get('verify_status', 'NA')}</span></td>
+            <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {item.get('verify_badge_class', 'bg-slate-100')}">{verify_status_display(item)}</span></td>
         </tr>
         """
 
@@ -126,7 +163,8 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-2xl font-bold text-slate-800">📊 台指期夜盤三大數據走勢預測</h1>
-                    <p class="text-slate-500 text-sm mt-1">分析目標交易日：<span class="font-bold text-slate-800">{latest_data['date']}</span> （對應前一日盤：{latest_data['prev_date']}）</p>
+                    <p class="text-slate-500 text-sm mt-1">預測 <span class="font-bold text-slate-800">{_fmt_md(latest_data['date'])} 日盤</span> 開盤走勢，依據 <span class="font-bold text-slate-800">{_fmt_md(latest_data['prev_date'])} 夜盤</span></p>
+                    <p class="text-slate-400 text-xs mt-0.5">{night_session_label(latest_data)}（期交所將此盤歸屬於 {latest_data['date']} 交易日）</p>
                 </div>
                 <div class="text-xs text-slate-500 md:text-right space-y-1">
                     <div>頁面產生時間：<span class="font-semibold text-slate-700">{tw_time_str}</span> <span class="text-slate-400">(UTC+8)</span></div>
@@ -210,7 +248,7 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
                         <span class="{latest_sox_c}">{latest_sox}</span>
                     </div>
                 </div>
-                <p class="text-[11px] text-slate-400 mt-2">同夜盤時段美股漲跌點數</p>
+                <p class="text-[11px] text-slate-400 mt-2">{_fmt_md(latest_data['prev_date'])} 美股收盤漲跌點數（與來源夜盤同一時段）</p>
             </div>
         </div>
 
@@ -279,7 +317,7 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
                 <table class="w-full text-sm text-left text-slate-600 border-collapse">
                     <thead class="text-xs text-slate-700 uppercase bg-slate-100">
                         <tr>
-                            <th class="py-3 px-4 rounded-l-lg">交易日期</th>
+                            <th class="py-3 px-4 rounded-l-lg">預測日盤 / 來源夜盤</th>
                             <th class="py-3 px-4">夜盤漲跌</th>
                             <th class="py-3 px-4">夜盤量佔比 (算式)</th>
                             <th class="py-3 px-4">三大法人淨額 (夜盤)</th>

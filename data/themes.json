@@ -1,6 +1,6 @@
 {
  "quote_date": "2026-10-30",
- "members_fetched": "2026-10-31",
+ "members_fetched": "2026-11-01",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -1890,18 +1890,6 @@
      "volume": 7250
     },
     {
-     "code": "6477",
-     "name": "安集",
-     "market": "上市",
-     "open": 31.05,
-     "high": 31.05,
-     "low": 29.8,
-     "close": 30.0,
-     "change": -1.05,
-     "pct": -3.38,
-     "volume": 622
-    },
-    {
      "code": "6244",
      "name": "茂迪",
      "market": "上櫃",
@@ -1912,6 +1900,18 @@
      "change": -0.7,
      "pct": -3.38,
      "volume": 1913
+    },
+    {
+     "code": "6477",
+     "name": "安集",
+     "market": "上市",
+     "open": 31.05,
+     "high": 31.05,
+     "low": 29.8,
+     "close": 30.0,
+     "change": -1.05,
+     "pct": -3.38,
+     "volume": 622
     },
     {
      "code": "6443",
@@ -4164,18 +4164,6 @@
      "volume": 471
     },
     {
-     "code": "3518",
-     "name": "柏騰",
-     "market": "上市",
-     "open": 36.05,
-     "high": 36.2,
-     "low": 34.6,
-     "close": 35.1,
-     "change": -2.05,
-     "pct": -5.52,
-     "volume": 1622
-    },
-    {
      "code": "3707",
      "name": "漢磊",
      "market": "上櫃",
@@ -4186,6 +4174,18 @@
      "change": -3.8,
      "pct": -5.52,
      "volume": 4300
+    },
+    {
+     "code": "3518",
+     "name": "柏騰",
+     "market": "上市",
+     "open": 36.05,
+     "high": 36.2,
+     "low": 34.6,
+     "close": 35.1,
+     "change": -2.05,
+     "pct": -5.52,
+     "volume": 1622
     },
     {
      "code": "6182",
@@ -4783,18 +4783,6 @@
      "volume": 3930
     },
     {
-     "code": "2375",
-     "name": "凱美",
-     "market": "上市",
-     "open": 113.0,
-     "high": 114.0,
-     "low": 107.5,
-     "close": 110.0,
-     "change": -7.5,
-     "pct": -6.38,
-     "volume": 2316
-    },
-    {
      "code": "8042",
      "name": "金山電",
      "market": "上櫃",
@@ -4805,6 +4793,18 @@
      "change": -9.0,
      "pct": -6.38,
      "volume": 8538
+    },
+    {
+     "code": "2375",
+     "name": "凱美",
+     "market": "上市",
+     "open": 113.0,
+     "high": 114.0,
+     "low": 107.5,
+     "close": 110.0,
+     "change": -7.5,
+     "pct": -6.38,
+     "volume": 2316
     },
     {
      "code": "2472",

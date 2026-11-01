@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美股科技族群 × 台股連動</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        details > summary { cursor: pointer; list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] .chev { transform: rotate(90deg); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
+    <div class="max-w-[1400px] mx-auto space-y-6">
+
+        <!-- Header & Nav Tabs -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">🇺🇸 美股科技族群 × 台股連動</h1>
+                    <p class="text-slate-500 text-sm mt-1">美股科技族群最新趨勢與漲跌、相關係數最高的台股，以及「美股科技漲跌 → 台股隔日」的連動回測</p>
+                </div>
+                <div id="meta" class="text-xs text-slate-500 md:text-right space-y-1"></div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mt-6 border-b border-slate-100 pb-2">
+                <a href="./index.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">📊 台指期夜盤預測</a>
+                <a href="./broker.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🏦 主力券商買超分析</a>
+                <a href="./stock.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🎯 個股策略分析</a>
+                <a href="./themes.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🧩 族群漲跌排行</a>
+                <a href="./us-tech.html" class="px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 rounded-lg border border-indigo-100">🇺🇸 美股科技連動</a>
+            </div>
+        </div>
+
+        <div id="status" class="hidden"></div>
+
+        <!-- 總覽卡片 -->
+        <div id="overview" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+
+        <!-- 族群漲跌排行 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">📈 美股科技族群最新趨勢與漲跌</h2>
+                    <p id="groupsSub" class="text-xs text-slate-400 mt-0.5">依族群成分股等權平均「最近一個美股交易日漲跌幅」排序；點擊族群展開成分股、對應台股族群與相關係數最高的前三台股</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button id="expandAll" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm">全部展開</button>
+                    <button id="collapseAll" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm">全部收合</button>
+                </div>
+            </div>
+            <div id="groups" class="space-y-2"></div>
+        </div>
+
+        <!-- 整體相關係數最高的台股 -->
+        <div id="top3" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200"></div>
+
+        <!-- 回測 -->
+        <div id="backtest" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200"></div>
+
+        <!-- 方法說明 -->
+        <div id="method" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 text-sm text-slate-600 space-y-2"></div>
+
+        <!-- 歷史：每日漲跌前三族群 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">🗓️ 每日美股科技漲跌前三族群歷史</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">每個美股交易日的漲幅前三與跌幅前三族群，並記錄台股隔一交易日的加權指數反應；逐日累積保留</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="./data/us_tech_history.json" target="_blank" class="text-xs text-indigo-600 hover:underline">📥 下載完整 us_tech_history.json</a>
+                    <button id="moreHistory" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm">顯示更多</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-600 border-collapse">
+                    <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                        <tr>
+                            <th class="py-3 px-3 rounded-l-lg whitespace-nowrap">美股交易日</th>
+                            <th class="py-3 px-3 whitespace-nowrap">科技整體</th>
+                            <th class="py-3 px-3 whitespace-nowrap">費半</th>
+                            <th class="py-3 px-3">漲幅前三族群</th>
+                            <th class="py-3 px-3">跌幅前三族群</th>
+                            <th class="py-3 px-3 rounded-r-lg whitespace-nowrap">台股隔日加權指數</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer class="text-center text-xs text-slate-400 py-4">
+            行情：Yahoo Finance 日線（美股成分股、費半、NASDAQ、台股加權與個股） ｜ 台股候選名單：本站設定檔 ＋ FinLab 科技相關族群 ｜ 自動化發布 via GitHub Actions & Pages
+        </footer>
+    </div>
+    <script src="./assets/us-tech-app.js"></script>
+</body>
+</html>

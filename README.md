@@ -239,4 +239,5 @@ python fetch_and_build.py
 
 ---
 - https://whsu45.github.io/chive-terminal/index.html
+- https://whsu45.github.io/chive-terminal/us-tech.html （美股科技族群趨勢 × 台股連動：`scripts/build_us_tech.mjs` 產生 `data/us_tech.json` 與逐日累積的 `data/us_tech_history.json`，族群與台股候選定義在 `data/us_tech_config.json`）
 - https://fubon-ebrokerdj.fbs.com.tw/z/zg/zgb/zgb0.djhtm

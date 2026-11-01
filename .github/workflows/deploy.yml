@@ -62,12 +62,18 @@ jobs:
         run: |
           node scripts/build_theme_picks.mjs
 
+      # 美股科技族群趨勢與台股連動（Yahoo Finance 日線；失敗不影響其他頁面部署）
+      - name: Build US tech sector linkage
+        continue-on-error: true
+        run: |
+          node scripts/build_us_tech.mjs
+
       # 將更新後的 data/history.json 與族群資料推回 Git 儲存庫備份
       - name: Commit and push updated history.json
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/history.json data/themes.json data/theme_picks.json
+          git add data/history.json data/themes.json data/theme_picks.json data/us_tech.json data/us_tech_history.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update history.json [skip ci]" && git push)
 
       - name: Setup Pages

@@ -45,6 +45,9 @@ async function fetchDataset(dataset, id) {
   throw new Error(`fetch failed ${dataset} ${id}`);
 }
 
+// 加權指數：VCB「大盤在月線之上」輔助濾網
+const MARKET = await fetchDataset('TaiwanStockPrice', 'TAIEX');
+
 async function loadStock(id) {
   const [prices, institutional, margin, dividends, info] = await Promise.all([
     fetchDataset('TaiwanStockPrice', id),
@@ -53,12 +56,29 @@ async function loadStock(id) {
     fetchDataset('TaiwanStockDividendResult', id),
     fetchDataset('TaiwanStockInfo', id),
   ]);
-  return { bars: Engine.buildBars({ prices, institutional, margin, dividends }), name: info[0]?.stock_name || id };
+  return { bars: Engine.buildBars({ prices, institutional, margin, dividends, market: MARKET }), name: info[0]?.stock_name || id };
 }
 
 const pool = () => ({ all: [], early: [], late: [] });
 const buyPool = {}, sellPool = {}, basePool = { h5: [0, 0], h10: [0, 0], h20: [0, 0] };
 const composite = [];
+// VCB 對照：個股期成本、未扣成本、規格書原進場（突破近 5 日高）、不加投信／大盤輔助濾網
+const VARIANTS = {
+  VCB_FUT: '主規則・個股期成本（約 0.06%）',
+  VCB_GROSS: '主規則・未扣成本',
+  VCB_HH5: 'NR4＋突破近 5 日高（規格書原進場）・現股成本',
+  VCB_HH5_FUT: 'NR4＋突破近 5 日高・個股期成本',
+  VCB_CORE: '無投信／大盤輔助濾網・現股成本',
+};
+const variantPool = Object.fromEntries(Object.keys(VARIANTS).map(k => [k, pool()]));
+const addVariant = (key, trades, retOf) => {
+  for (const t of trades.filter(t => !t.open)) {
+    const r = retOf(t);
+    variantPool[key].all.push(r);
+    (t.entryDate < SPLIT ? variantPool[key].early : variantPool[key].late).push(r);
+  }
+};
+const vcbExitReasons = {};
 for (const s of Engine.SIGNALS) { if (s.side === 'buy') buyPool[s.id] = pool(); else sellPool[s.id] = { h5: [0, 0, 0], h10: [0, 0, 0], h20: [0, 0, 0], n: 0 }; }
 
 for (const id of STOCKS) {
@@ -79,6 +99,14 @@ for (const id of STOCKS) {
       for (const H of ['h5', 'h10', 'h20']) { const o = ps.fwd[H]; sp[H][0] += o.n; sp[H][1] += o.down; sp[H][2] += o.sum; }
     }
   }
+  for (const t of res.perSignal.VCB.trades.filter(t => !t.open)) vcbExitReasons[t.reason] = (vcbExitReasons[t.reason] || 0) + 1;
+  const vcbTrades = res.perSignal.VCB.trades;
+  addVariant('VCB_FUT', vcbTrades, t => t.gross - Engine.FUTURES_COST);
+  addVariant('VCB_GROSS', vcbTrades, t => t.gross);
+  const hh5 = Engine.analyze(bars, { vcbEntry: 'hh5' }).perSignal.VCB.trades;
+  addVariant('VCB_HH5', hh5, t => t.ret);
+  addVariant('VCB_HH5_FUT', hh5, t => t.gross - Engine.FUTURES_COST);
+  addVariant('VCB_CORE', Engine.analyze(bars, { vcbAux: false }).perSignal.VCB.trades, t => t.ret);
   for (const H of ['h5', 'h10', 'h20']) { const o = res.baseline[H]; basePool[H][0] += o.n; basePool[H][1] += Math.round(o.downRate * o.n); }
   const c = res.composite;
   composite.push({
@@ -106,6 +134,9 @@ const out = {
     name: Engine.SIGNAL_MAP[id].name, n: p.n,
     ...Object.fromEntries(['h5', 'h10', 'h20'].map(H => [H, { n: p[H][0], downRate: p[H][0] ? p[H][1] / p[H][0] : null, avg: p[H][0] ? p[H][2] / p[H][0] : null }])),
   }])),
+  futuresCost: Engine.FUTURES_COST,
+  variants: Object.fromEntries(Object.entries(VARIANTS).map(([k, name]) => [k, { name: `VCB ${name}`, ...Object.fromEntries(['all', 'early', 'late'].map(x => [x, stat(variantPool[k][x])])) }])),
+  vcbExitReasons,
   baseline: Object.fromEntries(['h5', 'h10', 'h20'].map(H => [H, { n: basePool[H][0], downRate: basePool[H][1] / basePool[H][0] }])),
   composite,
 };
@@ -125,6 +156,11 @@ for (const [id, v] of Object.entries(out.buySignals)) {
   const f = s => s.n ? `n=${s.n} 勝率 ${(s.winRate * 100).toFixed(0)}% 均報 ${(s.avgRet * 100).toFixed(2)}% PF ${s.profitFactor?.toFixed(2)}` : 'n=0';
   console.log(`${v.name.padEnd(18)} 全期 ${f(v.all)} | 前期 ${f(v.early)} | 後期 ${f(v.late)}`);
 }
+for (const v of Object.values(out.variants)) {
+  const f = s => s.n ? `n=${s.n} 勝率 ${(s.winRate * 100).toFixed(0)}% 均報 ${(s.avgRet * 100).toFixed(2)}% PF ${s.profitFactor?.toFixed(2)}` : 'n=0';
+  console.log(`[對照] ${v.name} 全期 ${f(v.all)} | 前期 ${f(v.early)} | 後期 ${f(v.late)}`);
+}
+console.log('VCB 出場原因：', JSON.stringify(vcbExitReasons));
 console.log('\n==== 賣出訊號（事後下跌機率 vs 基準）====');
 const b = out.baseline;
 console.log(`基準（任意日）            5日 ${(b.h5.downRate * 100).toFixed(0)}%  10日 ${(b.h10.downRate * 100).toFixed(0)}%  20日 ${(b.h20.downRate * 100).toFixed(0)}%`);

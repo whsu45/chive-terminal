@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>指數調整套利</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        details > summary { cursor: pointer; list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] .chev { transform: rotate(90deg); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
+    <div class="max-w-[1400px] mx-auto space-y-6">
+
+        <!-- Header & Nav Tabs -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">📅 指數成分股調整與被動前瞻套利</h1>
+                    <p class="text-slate-500 text-sm mt-1">追蹤臺灣 50、MSCI 與高股息 ETF 的換股公告與預估時程；名單公布後列出買賣時間點與預估點位，並以過去 3 年的實際換股事件回測</p>
+                </div>
+                <div id="meta" class="text-xs text-slate-500 md:text-right space-y-1"></div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mt-6 border-b border-slate-100 pb-2">
+                <a href="./index.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">📊 台指期夜盤預測</a>
+                <a href="./broker.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🏦 主力券商買超分析</a>
+                <a href="./stock.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🎯 個股策略分析</a>
+                <a href="./themes.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🧩 族群漲跌排行</a>
+                <a href="./rebalance.html" class="px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 rounded-lg border border-indigo-100">📅 指數調整套利</a>
+            </div>
+        </div>
+
+        <div id="status" class="hidden"></div>
+
+        <!-- 市場動態：已公告的調整 + 時程 -->
+        <div id="opportunities" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200"></div>
+        <div class="grid grid-cols-1 xl:grid-cols-5 gap-6">
+            <div id="calendar" class="xl:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-slate-200"></div>
+            <div id="model" class="xl:col-span-3 bg-white rounded-xl shadow-sm p-6 border border-slate-200"></div>
+        </div>
+
+        <!-- 回測 -->
+        <div id="backtest" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200"></div>
+
+        <!-- 歷史事件 -->
+        <div id="history" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200"></div>
+
+        <!-- 規則與限制 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 text-sm text-slate-600 space-y-2">
+            <h2 class="text-lg font-bold text-slate-800">📐 規則與資料限制</h2>
+            <ul class="list-disc pl-5 space-y-1">
+                <li><b>時間點</b>：公告日 A 為名單公布日；生效交易日 T 為追蹤基金在收盤最後一盤換股的那一天（規格書的「生效日 13:25～13:30」）。13:25 委託市價賣出，回測以 T 的收盤價成交。</li>
+                <li><b>階段 2→3</b>：新增股買進、T 收盤賣出；刪除股反向放空。盤後公告的指數（臺灣 50、臺灣高股息）於公告後第一個交易日開盤進場；盤前公告的指數（MSCI、精選高息、價值高息）於公告當天開盤進場，其中精選高息與價值高息常在生效當天早上才公布，等於「當天開盤 → 收盤」。00878 的名單在生效後才公開，只能回測階段 4。</li>
+                <li><b>分批換股</b>：部分高股息 ETF 在生效日前後數個交易日分批調整（例如 00919、00940 自 2025 年起有 5～8 日過渡期），實際被動買賣盤不一定集中在 T 的最後一盤。</li>
+                <li><b>階段 4</b>：T 收盤反手（新增股放空、刪除股回補做多），分別計算 T+1 開盤、T+3 收盤回補。</li>
+                <li><b>階段 1</b>：公告前 15 個交易日開盤卡位、公告日收盤出場。這需要事先猜中名單，回測直接用事後名單，所以只代表「模型完全猜中」時的上限，不是可實現的績效。</li>
+                <li><b>擁擠交易</b>：公告前 20 個交易日漲幅 &gt; 30% 標記為擁擠（規格書建議大幅降低部位）。規格書另提的「融資暴增」與「被動買進張數 ÷ 日均量」需要 ETF 規模與權重資料，目前沒有納入。</li>
+                <li><b>超額報酬</b>：同方向下個股漲跌減去加權指數同期間漲跌（未扣成本），用來排除 2023～2026 年大多頭對做多的影響。</li>
+                <li><b>成本</b>：手續費 0.1425% × 2、證交稅 0.3%；放空以融券或個股期操作，成本以現股估算，未計借券費與滑價。股價已做除權息還原。</li>
+                <li><b>事件資料</b>：人工整理自臺灣指數公司、MSCI 公告與引述公告的新聞，每筆附來源連結；新的審核結果公布後需手動補進 <code>data/index_events.json</code>。下一次審核日期為依規則推估。</li>
+                <li><b>前瞻模型</b>：只用目前的公開資料篩選，無法回測當年的預測準確度；各高股息 ETF 的實際編製規則不同（例如預估股利、價值因子），候選名單僅供參考。</li>
+                <li>本頁為策略規則的程式化呈現與歷史統計，<b>不構成投資建議</b>。</li>
+            </ul>
+        </div>
+
+        <footer class="text-center text-xs text-slate-400 py-4">
+            事件：臺灣指數公司、MSCI 與新聞報導 ｜ 價格：Yahoo Finance（還原權息） ｜ 模型：證交所、櫃買中心 OpenAPI | 自動化發布 via GitHub Actions & Pages
+        </footer>
+    </div>
+
+    <script src="./assets/rebalance-app.js"></script>
+</body>
+</html>

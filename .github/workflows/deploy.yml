@@ -62,20 +62,12 @@ jobs:
         run: |
           node scripts/build_theme_picks.mjs
 
-      # 族群戰法損益：增量回測族群成分股（每次最多 60 檔約 240 次 API，額度用完即保存進度；失敗不影響其他頁面部署）
-      - name: Build theme strategy ranking
-        continue-on-error: true
-        env:
-          FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
-        run: |
-          node scripts/build_theme_strategies.mjs --max 60
-
       # 將更新後的 data/history.json 與族群資料推回 Git 儲存庫備份
       - name: Commit and push updated history.json
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/history.json data/themes.json data/theme_picks.json data/theme_strategies.json
+          git add data/history.json data/themes.json data/theme_picks.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update history.json [skip ci]" && git push)
 
       - name: Setup Pages

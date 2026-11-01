@@ -219,3 +219,5 @@ __marimo__/
 
 # Pycharm
 .idea
+# ORB 短沖資料：CI 每次部署由 Yahoo 5 分 K 重新產生
+data/orb/

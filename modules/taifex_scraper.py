@@ -1,7 +1,36 @@
 import re
+import time
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 from .utils import clean_int, DATA_SOURCES
+
+
+TAIFEX_TIMEOUT = 15
+TAIFEX_RETRIES = 3
+
+
+def _taifex_post(session, url, payload, headers, label):
+    """
+    POST 期交所並在逾時/連線錯誤/非 200 時重試。
+    期交所從 GitHub Actions 偶爾會讀取逾時，單次失敗不應讓已抓到的資料變成 NA。
+    全部失敗時拋出最後一次的例外（或回傳 None 表示非 200），由呼叫端處理。
+    """
+    last_err = None
+    for attempt in range(1, TAIFEX_RETRIES + 1):
+        try:
+            resp = session.post(url, data=payload, headers=headers, timeout=TAIFEX_TIMEOUT)
+            if resp.status_code == 200:
+                return resp
+            print(f"[{label}] TAIFEX HTTP {resp.status_code} (attempt {attempt}/{TAIFEX_RETRIES})")
+            last_err = None
+        except Exception as e:
+            print(f"[{label}] TAIFEX request error (attempt {attempt}/{TAIFEX_RETRIES}): {e}")
+            last_err = e
+        if attempt < TAIFEX_RETRIES:
+            time.sleep(2 * attempt)
+    if last_err is not None:
+        raise last_err
+    return None
 
 
 def _is_response_date_matched(soup, target_date_str):
@@ -40,8 +69,8 @@ def _post_daily_market_report(session, query_date_str, market_code):
         'MarketCode': market_code, 'commodity_idt': 'TX', 'commodity_id2t': '', 'commodity_id2t2': ''
     }
     headers = {'User-Agent': 'Mozilla/5.0'}
-    resp = session.post(url, data=payload, headers=headers, timeout=5)
-    if resp.status_code != 200:
+    resp = _taifex_post(session, url, payload, headers, f"{query_date_str} market {market_code}")
+    if resp is None:
         return None
     return BeautifulSoup(resp.text, 'html.parser')
 
@@ -124,8 +153,8 @@ def fetch_day_market_volume(session, prev_date_str):
     }
     headers = {'User-Agent': 'Mozilla/5.0'}
     try:
-        resp = session.post(url, data=payload, headers=headers, timeout=5)
-        if resp.status_code == 200:
+        resp = _taifex_post(session, url, payload, headers, f"{prev_date_str} Day volume")
+        if resp is not None:
             soup = BeautifulSoup(resp.text, 'html.parser')
             if not _is_response_date_matched(soup, prev_date_str):
                 return None
@@ -164,8 +193,8 @@ def fetch_institutional_positions_ah(session, target_date_str):
     positions = {"foreign": None, "trust": None, "dealer": None}
 
     try:
-        resp = session.post(url, data=payload, headers=headers, timeout=5)
-        if resp.status_code == 200:
+        resp = _taifex_post(session, url, payload, headers, f"{target_date_str} AH positions")
+        if resp is not None:
             soup = BeautifulSoup(resp.text, 'html.parser')
             # 檢查回傳網頁的日期是否相符，若不符代表期交所尚未公布當日資料
             if not _is_response_date_matched(soup, target_date_str):
@@ -205,8 +234,8 @@ def fetch_institutional_positions_full(session, target_date_str):
     positions = {"foreign": None, "trust": None, "dealer": None}
 
     try:
-        resp = session.post(url, data=payload, headers=headers, timeout=5)
-        if resp.status_code == 200:
+        resp = _taifex_post(session, url, payload, headers, f"{target_date_str} Full positions")
+        if resp is not None:
             soup = BeautifulSoup(resp.text, 'html.parser')
             # 核心防呆：若期交所回傳的日期非 target_date_str（表示當日尚未收盤產出），直接回傳 None
             if not _is_response_date_matched(soup, target_date_str):

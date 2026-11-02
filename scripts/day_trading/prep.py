@@ -52,6 +52,9 @@ def markets_for(codes):
     return out
 
 
+PREP_VERSION = 3  # 快取結構版本：欄位有增減就 +1，舊快取會自動重建
+
+
 def build(code, peers_arg=None, refresh=False):
     today = cal.today_tw()
     prev = cal.prev_trading_day(today)
@@ -59,7 +62,7 @@ def build(code, peers_arg=None, refresh=False):
     if not refresh and os.path.exists(cache):
         with open(cache, "r", encoding="utf-8") as f:
             d = json.load(f)
-        if (not peers_arg) or d.get("peers_arg") == peers_arg:
+        if d.get("version") == PREP_VERSION and ((not peers_arg) or d.get("peers_arg") == peers_arg):
             return d
 
     print(f"[prep] 建立 {code} 盤前資料（前一交易日 {prev}）...")
@@ -174,6 +177,7 @@ def build(code, peers_arg=None, refresh=False):
                         "prev_chg_pct": (src.get(p) or {}).get("chg_pct"), "prev_vol": (src.get(p) or {}).get("v")}
 
     out = {
+        "version": PREP_VERSION,
         "code": code, "name": name, "market": market, "date": today.isoformat(), "prev_date": prev.isoformat(),
         "group": gname, "peers": peers, "peers_arg": peers_arg, "peer_info": peer_info,
         "tech": tech, "hist_tail": hist[-30:], "limit_up": up, "limit_down": dn,

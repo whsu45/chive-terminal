@@ -25,7 +25,88 @@ import src_warrants as W
 import http_client as http
 import glob
 import subprocess
+import threading
+import http.server
+import urllib.parse
 from config import CACHE_DIR, HERE
+
+WEB_DIR = os.path.join(HERE, "web")
+
+
+class WebState:
+    """monitor 與網頁共用的狀態。"""
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.latest = {}      # code -> ev（去掉不可序列化欄位）
+        self.history = {}     # code -> [{time, price, p_long, p_short, y}]
+        self.daily = {}       # code -> 盤前資料（精簡）
+        self.describe = {}    # code -> 盤前文字摘要
+        self.index = {}       # t00/o00 -> {ref, chg}
+        self.codes = []
+        self.updated = None
+        self.interval = 180
+        self.shioaji = False
+
+    def put(self, ev, quotes):
+        with self.lock:
+            rec = {k: v for k, v in ev.items() if k != "quote"}
+            rec["quote"] = {k: ev["quote"].get(k) for k in ("ref", "o", "h", "l", "v", "y", "bids", "asks")}
+            self.latest[ev["code"]] = rec
+            h = self.history.setdefault(ev["code"], [])
+            h.append({"time": ev["time"], "price": ev.get("price"), "p_long": ev["p_long"], "p_short": ev["p_short"], "y": ev["quote"].get("y")})
+            if len(h) > 2000:
+                del h[:500]
+            for k in ("t00", "o00"):
+                q = quotes.get(k)
+                if q and q.get("ref") and q.get("y"):
+                    self.index[k] = {"ref": q["ref"], "chg": (q["ref"] / q["y"] - 1) * 100}
+            self.updated = dt.datetime.now().isoformat()
+
+    def snapshot(self):
+        with self.lock:
+            return json.dumps({"codes": self.codes, "latest": self.latest, "daily": self.daily, "describe": self.describe,
+                               "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji},
+                              ensure_ascii=False, default=str)
+
+    def history_json(self, code):
+        with self.lock:
+            return json.dumps(self.history.get(code, []), ensure_ascii=False, default=str)
+
+
+WEB = WebState()
+
+
+class Handler(http.server.BaseHTTPRequestHandler):
+    def log_message(self, *a):  # 不要把每次 fetch 印到終端
+        pass
+
+    def _send(self, body, ctype="application/json; charset=utf-8", code=200):
+        data = body.encode("utf-8") if isinstance(body, str) else body
+        self.send_response(code)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_GET(self):
+        path = urllib.parse.urlparse(self.path).path
+        if path in ("/", "/index.html"):
+            with open(os.path.join(WEB_DIR, "index.html"), "rb") as f:
+                return self._send(f.read(), "text/html; charset=utf-8")
+        if path == "/api/state":
+            return self._send(WEB.snapshot())
+        if path.startswith("/api/history/"):
+            return self._send(WEB.history_json(path.rsplit("/", 1)[-1]))
+        self._send('{"error":"not found"}', code=404)
+
+
+def start_web(port):
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", port), Handler)
+    th = threading.Thread(target=srv.serve_forever, daemon=True)
+    th.start()
+    print(f"[web] 儀表板：http://127.0.0.1:{port}/   （只綁本機，不對外）")
+    return srv
 
 load_env()
 CALIBRATE_MAX_AGE_DAYS = int(os.environ.get("CALIBRATE_MAX_AGE_DAYS", "45") or 45)
@@ -133,9 +214,11 @@ def explain(ev):
 
 
 class Monitor:
-    def __init__(self, codes, peers_arg, interval, use_shioaji, big_lot, refresh):
+    def __init__(self, codes, peers_arg, interval, use_shioaji, big_lot, refresh, web=False):
         self.codes = codes
         self.interval = interval
+        self.web = web
+        WEB.codes = list(codes); WEB.interval = interval
         self.daily = {}
         self.samples = {c: [] for c in codes}
         self.w_prev = {}
@@ -144,6 +227,10 @@ class Monitor:
         for c in codes:
             self.daily[c] = prep.build(c, peers_arg, refresh)
             print(prep.describe(self.daily[c]))
+            dd = self.daily[c]
+            WEB.daily[c] = {k: dd.get(k) for k in ("code", "name", "market", "group", "peers", "limit_up", "limit_down", "tech", "flags", "insti_sum", "margin", "sbl")}
+            WEB.daily[c]["warrants"] = {k: v for k, v in (dd.get("warrants") or {}).items() if k != "list"}
+            WEB.describe[c] = prep.describe(dd)
             pc = (self.daily[c].get("tech") or {}).get("close")
             if pc:
                 th = src_shioaji.lot_thresholds(pc)
@@ -176,6 +263,7 @@ class Monitor:
                 ok = src_shioaji.start_stream(codes)
                 if ok:
                     self.flow_src = src_shioaji
+                    WEB.shioaji = True
                     u = src_shioaji.usage()
                     print(f"[shioaji] 串流已啟動 {ok}" + (f"，今日流量 {u['used_mb']:.0f}/{u['limit_mb']:.0f} MB" if u else ""))
             else:
@@ -227,6 +315,7 @@ class Monitor:
             ev = model.evaluate(d, q, idx, peers_q, flow, self.samples[c], now, warrants=wq)
             if wq and wq.get("alerts"):
                 ev["warnings"] = wq["alerts"] + ev["warnings"]
+            WEB.put(ev, quotes)
             results.append(ev)
         return results
 
@@ -246,6 +335,10 @@ class Monitor:
                     self.log(ev)
                     if as_json:
                         print(json.dumps({k: v for k, v in ev.items() if k != "quote"}, ensure_ascii=False, default=str))
+                    elif self.web:
+                        inf = ev["info"]
+                        print(f"[{ev['time']}] {ev['code']} {ev['name']} {ev['quote'].get('ref')} {fmt_pct(inf.get('chg_pct'))}  多 {ev['p_long']:.0f}% 空 {ev['p_short']:.0f}%  {ev['verdict']}"
+                              + "".join(f"\n   {w}" for w in ev["warnings"] if w.startswith("⚠")))
                     else:
                         print(render(ev, self.daily[ev["code"]], brief))
                         if verbose:
@@ -258,11 +351,16 @@ class Monitor:
             if once:
                 break
             hhmm = dt.datetime.now().strftime("%H:%M")
-            if hhmm >= "13:35":
-                print("已收盤，監控結束。")
+            if hhmm >= "13:35" or hhmm < "08:30":
                 if self.calibrate_after_close:
                     run_calibration("收盤後補跑校準")
-                break
+                    self.calibrate_after_close = False
+                if not self.web:
+                    print("已收盤，監控結束。")
+                    break
+                # 網頁模式：收盤後維持服務，每 5 分鐘輕量更新一次
+                time.sleep(300)
+                continue
             time.sleep(max(5, self.interval - (time.time() - t0)))
 
 
@@ -279,10 +377,16 @@ def main():
     ap.add_argument("--big-lot", type=int, default=0, help="固定大單門檻（張）；預設 0 = 依金額與當日分布自動推算")
     ap.add_argument("--big-amount", type=float, default=None, help="大單金額門檻（元），預設 .env 的 BIG_LOT_AMOUNT 或 500 萬")
     ap.add_argument("--refresh", action="store_true", help="重抓盤前資料（忽略今日快取）")
+    ap.add_argument("--web", nargs="?", const=8765, type=int, default=None, metavar="PORT",
+                    help="啟動本機網頁儀表板（預設 port 8765，只綁 127.0.0.1）")
     a = ap.parse_args()
     if a.big_amount:
         os.environ["BIG_LOT_AMOUNT"] = str(int(a.big_amount))
-    m = Monitor(a.codes, a.peers, a.interval, not a.no_shioaji, a.big_lot, a.refresh)
+    if a.web:
+        start_web(a.web)
+        if a.interval == 180:
+            a.interval = 60  # 盯盤用：網頁模式預設 1 分鐘一輪
+    m = Monitor(a.codes, a.peers, a.interval, not a.no_shioaji, a.big_lot, a.refresh, web=bool(a.web))
     try:
         m.run(a.once, a.json, a.verbose, a.brief)
     except KeyboardInterrupt:

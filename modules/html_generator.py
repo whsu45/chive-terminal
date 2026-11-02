@@ -30,11 +30,11 @@ def night_session_label(rec):
 
 
 def verify_status_display(rec):
-    """ 尚未驗證的最新預測改為顯示要等哪一天的日盤收盤 """
+    """ 回傳 (徽章文字, 補充說明)；尚未驗證的最新預測改為顯示要等哪一天的日盤收盤 """
     status = rec.get("verify_status", "NA")
     if status == "尚未驗證":
-        return f"等待 {_fmt_md(rec['date'])} 13:30 收盤驗證"
-    return status
+        return "⏳ 等待驗證", f"{_fmt_md(rec['date'])} 13:30 收盤後"
+    return status, ""
 
 
 def generate_index_html(history_records, tw_kline_data, us_kline_data):
@@ -109,41 +109,44 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
         act_color = "text-red-500 font-semibold" if act_change.startswith(
             "+") else "text-green-500 font-semibold" if act_change.startswith("-") else "text-slate-400"
 
+        verify_text, verify_note = verify_status_display(item)
+        verify_note_html = f'<div class="text-[11px] text-slate-400 mt-1 whitespace-nowrap">{verify_note}</div>' if verify_note else ''
+
         history_rows_html += f"""
         <tr class="hover:bg-slate-50 transition-colors">
-            <td class="py-3 px-4">
+            <td class="py-3 px-3">
                 <div class="font-semibold text-slate-700 whitespace-nowrap">{_fmt_md(item['date'])} <span class="text-[11px] text-slate-400 font-normal">{item['date'][:4]}</span></div>
                 <div class="text-[11px] text-slate-400 mt-0.5 whitespace-nowrap">{night_session_label(item)}</div>
             </td>
-            <td class="py-3 px-4 {c_color}">{item['night_price_change']}</td>
-            <td class="py-3 px-4">
-                <div class="font-semibold text-slate-700">{item['night_volume_ratio']}</div>
-                <div class="text-[11px] text-slate-400 mt-0.5">{item.get('vol_formula_str', '')}</div>
+            <td class="py-3 px-3 font-semibold whitespace-nowrap {c_color}">{item['night_price_change']}</td>
+            <td class="py-3 px-3">
+                <div class="font-semibold text-slate-700 whitespace-nowrap">{item['night_volume_ratio']}</div>
+                <div class="text-[11px] text-slate-400 mt-0.5 whitespace-nowrap">{item.get('vol_formula_str', '')}</div>
             </td>
-            <td class="py-3 px-4">
-                <div class="text-xs space-y-0.5">
+            <td class="py-3 px-3">
+                <div class="text-xs space-y-0.5 whitespace-nowrap">
                     <div><span class="text-slate-400">外資:</span> <span class="{haf_color}">{haf_str}</span></div>
                     <div><span class="text-slate-400">投信:</span> <span class="{hat_color}">{hat_str}</span></div>
                     <div><span class="text-slate-400">自營:</span> <span class="{had_color}">{had_str}</span></div>
                 </div>
             </td>
-            <td class="py-3 px-4">
-                <div class="text-xs space-y-0.5">
+            <td class="py-3 px-3">
+                <div class="text-xs space-y-0.5 whitespace-nowrap">
                     <div><span class="text-slate-400">外資:</span> <span class="{hff_color}">{hff_str}</span></div>
                     <div><span class="text-slate-400">投信:</span> <span class="{hft_color}">{hft_str}</span></div>
                     <div><span class="text-slate-400">自營:</span> <span class="{hfd_color}">{hfd_str}</span></div>
                 </div>
             </td>
-            <td class="py-3 px-4">
-                <div class="text-xs space-y-0.5">
+            <td class="py-3 px-3">
+                <div class="text-xs space-y-0.5 whitespace-nowrap">
                     <div><span class="text-slate-400">道瓊:</span> <span class="{hdji_c}">{hdji}</span></div>
                     <div><span class="text-slate-400">那指:</span> <span class="{hixic_c}">{hixic}</span></div>
                     <div><span class="text-slate-400">費半:</span> <span class="{hsox_c}">{hsox}</span></div>
                 </div>
             </td>
-            <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {s_badge}">{item['scenario']}</span></td>
-            <td class="py-3 px-4 text-center">{item.get('sparkline_svg', '')}<div class="text-[11px] {act_color} mt-0.5">{act_change}</div></td>
-            <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-md text-xs {item.get('verify_badge_class', 'bg-slate-100')}">{verify_status_display(item)}</span></td>
+            <td class="py-3 px-3"><span class="inline-block whitespace-nowrap px-2.5 py-1 rounded-md text-xs {s_badge}">{item['scenario']}</span></td>
+            <td class="py-3 px-3 text-center whitespace-nowrap">{item.get('sparkline_svg', '')}<div class="text-[11px] {act_color} mt-0.5">{act_change}</div></td>
+            <td class="py-3 px-3"><span class="inline-block whitespace-nowrap px-2.5 py-1 rounded-md text-xs {item.get('verify_badge_class', 'bg-slate-100')}">{verify_text}</span>{verify_note_html}</td>
         </tr>
         """
 
@@ -318,15 +321,15 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
                 <table class="w-full text-sm text-left text-slate-600 border-collapse">
                     <thead class="text-xs text-slate-700 uppercase bg-slate-100">
                         <tr>
-                            <th class="py-3 px-4 rounded-l-lg">預測日盤 / 來源夜盤</th>
-                            <th class="py-3 px-4">夜盤漲跌</th>
-                            <th class="py-3 px-4">夜盤量佔比 (算式)</th>
-                            <th class="py-3 px-4">三大法人淨額 (夜盤)</th>
-                            <th class="py-3 px-4">三大法人淨額 (全日)</th>
-                            <th class="py-3 px-4">美股指數 (對應夜盤)</th>
-                            <th class="py-3 px-4">預測劇本</th>
-                            <th class="py-3 px-4 text-center">當日加權指數走勢 (09:00~13:30)</th>
-                            <th class="py-3 px-4 rounded-r-lg">型態驗證</th>
+                            <th class="py-3 px-3 rounded-l-lg whitespace-nowrap">預測日盤 / 來源夜盤</th>
+                            <th class="py-3 px-3 whitespace-nowrap">夜盤漲跌</th>
+                            <th class="py-3 px-3 whitespace-nowrap">夜盤量佔比 (算式)</th>
+                            <th class="py-3 px-3 whitespace-nowrap">三大法人淨額 (夜盤)</th>
+                            <th class="py-3 px-3 whitespace-nowrap">三大法人淨額 (全日)</th>
+                            <th class="py-3 px-3 whitespace-nowrap">美股指數 (對應夜盤)</th>
+                            <th class="py-3 px-3 whitespace-nowrap">預測劇本</th>
+                            <th class="py-3 px-3 text-center whitespace-nowrap">當日加權指數走勢<br><span class="font-normal normal-case">(09:00~13:30)</span></th>
+                            <th class="py-3 px-3 rounded-r-lg whitespace-nowrap">型態驗證</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">

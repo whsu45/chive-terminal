@@ -221,3 +221,10 @@ __marimo__/
 .idea
 # ORB 短沖資料：CI 每次部署由 Yahoo 5 分 K 重新產生
 data/orb/
+
+# day_trading 本機監控：快取、紀錄、金鑰一律不進 git
+scripts/day_trading/.cache/
+scripts/day_trading/logs/
+scripts/day_trading/.env
+*.swp
+*.swo

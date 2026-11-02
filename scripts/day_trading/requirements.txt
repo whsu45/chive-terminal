@@ -1,0 +1,4 @@
+# 核心功能只用 Python 標準庫，不需安裝任何套件。
+# 以下為選用：永豐 Shioaji（大單/散戶分流、逐筆成交串流）。
+# 安裝： python3 -m pip install -r requirements.txt
+shioaji>=1.2

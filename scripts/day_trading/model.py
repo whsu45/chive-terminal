@@ -354,11 +354,18 @@ def warrant_factors(d, q, wq, info, now):
         return F
     hp = w.get("hedge_pct")
     chg_prev = (d.get("tech") or {}).get("chg_pct") or 0
-    if hp is not None:
+    has_warrants = bool(w.get("n_call") or w.get("n_put"))
+    if hp is not None and has_warrants:
         if hp >= 2:
             F.append(("前日避險買盤重", -0.25, f"發行商避險淨買 {w['hedge_net']:+} 張 ({hp:+.1f}% 量)：校準此情境隔日僅 33% 上漲、均 -0.54%；權證散戶獲利了結時發行商反手賣現股"))
         elif hp <= -2:
             F.append(("前日避險賣壓重", -0.2, f"發行商避險淨賣 {w['hedge_net']:+} 張 ({hp:+.1f}% 量)：校準此情境隔日 43% 上漲、均 -1.07%，弱勢續跌多於反彈"))
+    elif hp is not None and not has_warrants:
+        # 沒有權證，T86「自營商(避險)」欄不是權證避險：多半是可轉債套利放空（持續性、對隔日方向資訊少）或 ETF 相關避險
+        if hp <= -2:
+            F.append(("可轉債或其他避險賣壓", -0.1, f"此標的無權證，自營商避險欄淨賣 {w['hedge_net']:+} 張 ({hp:+.1f}% 量)：多為可轉債套利放空，屬持續性賣壓、非權證訊號，權重小"))
+        elif hp >= 2:
+            F.append(("可轉債或其他避險買盤", 0.1, f"此標的無權證，自營商避險欄淨買 {w['hedge_net']:+} 張 ({hp:+.1f}% 量)：可能是套利部位回補，權重小"))
     surge = w.get("call_surge")
     if surge and surge >= 3:
         F.append(("前日認購爆量", 0.15, f"前日認購金額為 5 日均 {surge:.1f} 倍（標的 {chg_prev:+.1f}%）：校準隔日 69% 上漲、均 +0.85%，但樣本只有 13 個"))

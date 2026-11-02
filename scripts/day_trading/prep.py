@@ -222,7 +222,8 @@ def describe(d):
                  + (f"（= 5日均 ×{w['call_surge']:.1f}）" if w.get('call_surge') else "")
                  + f"  發行商避險 {w['hedge_net']:+} 張 ({(w['hedge_pct'] or 0):+.1f}% 量)")
     elif w is not None:
-        L.append("  權證：此標的無權證")
+        hn = w.get("hedge_net") or 0
+        L.append("  權證：此標的無權證" + (f"；自營商避險欄 {hn:+} 張 ({(w.get('hedge_pct') or 0):+.1f}% 量) 非權證避險，多為可轉債套利或其他避險" if abs(w.get("hedge_pct") or 0) >= 2 else ""))
     mc = d["market_ctx"]
     tx = mc.get("tx_night")
     us = mc.get("us", {})

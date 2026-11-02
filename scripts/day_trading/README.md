@@ -5,7 +5,7 @@
 
 ```bash
 cd scripts/day_trading
-python3 monitor.py 3042 --web               # 本機網頁儀表板 http://127.0.0.1:8765/（盯盤用這個）
+python3 monitor.py 3042 --web               # 本機網頁儀表板 http://127.0.0.1:8770/（盯盤用這個，會自動開瀏覽器）
 python3 monitor.py 3042                     # 純終端輸出，族群自動查 groups.json
 python3 monitor.py 3042 --peers 2484,8081   # 自訂同族群
 python3 monitor.py 3042 7704 --interval 120 # 多檔、兩分鐘一次
@@ -31,6 +31,22 @@ monitor.py 啟動時會檢查上次 `calibrate.py` 的日期：超過 `CALIBRATE
 之後每輪印：即時價量、大盤與族群相對強弱、五檔、（有 Shioaji 時）大單/散戶分流、
 多空勝率、警示、支撐壓力、空單與多單的進場/停損/目標。
 每輪結果都 append 到 `logs/monitor_YYYYMMDD.jsonl`，`review.py` 讀它做復盤。
+
+## Windows
+
+全部只用標準庫，Windows 直接能跑；差別只在啟動指令與編碼：
+
+```powershell
+cd scripts\day_trading
+py -3 monitor.py 3042 --web          # 或 python monitor.py ...；沒有 python3 這個名字
+py -3 -m pip install -r requirements.txt   # 要用永豐串流才需要
+```
+
+- 主控台編碼：程式啟動時自動把輸出切成 UTF-8（並呼叫 SetConsoleOutputCP 65001）。
+  Windows Terminal / PowerShell 7 顯示正常；舊版 cmd 不會當掉，只是「≥ ⚠ ▶」這類符號顯示成 ?。盯盤請用 `--web`，網頁不受影響。
+- `.env` 用記事本存成 UTF-8 也沒關係，程式會吃掉 BOM。
+- 儀表板只綁 127.0.0.1，第一次啟動不會跳防火牆詢問；`--web` 會自動開預設瀏覽器，不要就加 `--no-open`。
+- 快取與紀錄放在 `scripts\day_trading\.cache\`、`logs\`，路徑都用 `os.path` 組，沒有寫死的斜線。
 
 ## 永豐 Shioaji（選用）
 

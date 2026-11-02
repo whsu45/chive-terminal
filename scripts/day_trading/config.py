@@ -3,7 +3,24 @@ day_trading 共用設定：路徑、常數、分點名單、族群定義。
 所有本機執行的腳本都從這裡讀設定；API 金鑰只從 .env 讀，不寫在程式裡。
 """
 import os
+import sys
 import json
+
+# --- 跨平台：Windows 主控台預設 cp950，印「≥ ⚠ ▶」會直接 UnicodeEncodeError。
+#     統一把 stdout/stderr 切成 UTF-8；終端不支援的字元用 ? 取代，不中斷程式。
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        if _stream and hasattr(_stream, "reconfigure"):
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+if os.name == "nt":
+    # 讓 Windows Terminal / PowerShell 正確顯示 UTF-8（舊 cmd 也不會當掉，只是部分符號顯示為 ?）
+    try:
+        import ctypes
+        ctypes.windll.kernel32.SetConsoleOutputCP(65001)
+    except Exception:
+        pass
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -58,7 +75,7 @@ def load_env(path=ENV_FILE):
     if not os.path.exists(path):
         return {}
     out = {}
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8-sig") as f:  # utf-8-sig：吃掉 Windows 記事本加的 BOM
         for line in f:
             line = line.strip()
             if not line or line.startswith("#") or "=" not in line:
@@ -75,7 +92,7 @@ def load_groups():
     """族群定義：{"族群名": ["代碼", ...]}。使用者可自行編輯 groups.json。"""
     if not os.path.exists(GROUPS_FILE):
         return {}
-    with open(GROUPS_FILE, "r", encoding="utf-8") as f:
+    with open(GROUPS_FILE, "r", encoding="utf-8-sig") as f:
         return json.load(f)
 
 

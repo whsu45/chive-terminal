@@ -38,7 +38,7 @@ def load_ticks(api, code, date):
     """回 [(sec_of_day, price, vol, tick_type)]，快取成 JSON。"""
     path = os.path.join(TICK_DIR, f"{code}_{date.isoformat()}.json")
     if os.path.exists(path):
-        with open(path) as f:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     c = S.get_contract(api, code)
     t = api.ticks(contract=c, date=date.isoformat())
@@ -46,7 +46,7 @@ def load_ticks(api, code, date):
     for ts, p, v, tt in zip(t.ts, t.close, t.volume, t.tick_type):
         d = S.ns_to_dt(ts)
         rows.append([d.hour * 3600 + d.minute * 60 + d.second, float(p), int(v), int(tt)])
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(rows, f)
     return rows
 

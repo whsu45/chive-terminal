@@ -26,6 +26,7 @@ import http_client as http
 import glob
 import subprocess
 import threading
+import webbrowser
 import http.server
 import urllib.parse
 from config import CACHE_DIR, HERE
@@ -377,13 +378,19 @@ def main():
     ap.add_argument("--big-lot", type=int, default=0, help="固定大單門檻（張）；預設 0 = 依金額與當日分布自動推算")
     ap.add_argument("--big-amount", type=float, default=None, help="大單金額門檻（元），預設 .env 的 BIG_LOT_AMOUNT 或 500 萬")
     ap.add_argument("--refresh", action="store_true", help="重抓盤前資料（忽略今日快取）")
-    ap.add_argument("--web", nargs="?", const=8765, type=int, default=None, metavar="PORT",
-                    help="啟動本機網頁儀表板（預設 port 8765，只綁 127.0.0.1）")
+    ap.add_argument("--web", nargs="?", const=8770, type=int, default=None, metavar="PORT",
+                    help="啟動本機網頁儀表板（預設 port 8770，只綁 127.0.0.1）")
+    ap.add_argument("--no-open", action="store_true", help="--web 時不要自動開瀏覽器")
     a = ap.parse_args()
     if a.big_amount:
         os.environ["BIG_LOT_AMOUNT"] = str(int(a.big_amount))
     if a.web:
         start_web(a.web)
+        if not a.no_open:
+            try:
+                webbrowser.open(f"http://127.0.0.1:{a.web}/")  # macOS / Windows / Linux 都用系統預設瀏覽器
+            except Exception:
+                pass
         if a.interval == 180:
             a.interval = 60  # 盯盤用：網頁模式預設 1 分鐘一輪
     m = Monitor(a.codes, a.peers, a.interval, not a.no_shioaji, a.big_lot, a.refresh, web=bool(a.web))

@@ -158,6 +158,7 @@ function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
     +(i.book_imb!=null?`<div class="small muted">五檔買 ${i.bid5} / 賣 ${i.ask5}（不平衡 ${f(i.book_imb,2)}）</div>`:'');
   const gd=i.group_detail||[];
   $('group').innerHTML=`<div class="small muted">族群均 <b class="num ${cls(i.group_avg)}">${pct(i.group_avg)}</b>（${i.group_up??'-'}/${i.group_n??'-'} 漲）· ${esc(d.group||'未定義')}</div>
+    ${i.group_leader?`<div class="alert hard" style="margin:6px 0">族群領漲 <b>${esc(i.group_leader[2]||i.group_leader[1])}</b> <b class="num up">${pct(i.group_leader[0])}</b>：族群資金輪動，空單防接貨軋空</div>`:''}
     <table class="grid"><tr><th>代碼</th><th>名稱</th><th style="text-align:right">漲跌</th></tr>${gd.map(([p,c,n])=>`<tr><td class="num">${c}</td><td>${esc(n||'')}</td><td class="n ${cls(p)}">${pct(p)}</td></tr>`).join('')}</table>`;
   const w=ev.warrants,wd=d.warrants||{};
   $('warr').innerHTML=w&&w.n?`<div class="kv"><div>認購量<b class="num">${w.call_vol}</b></div><div>昨全日<b class="num">${wd.call_vol??'-'}</b></div><div>認購漲/跌<b class="num"><span class="up">${w.call_up}</span>/<span class="dn">${w.call_down}</span></b></div><div>認售量<b class="num">${w.put_vol}</b></div></div>

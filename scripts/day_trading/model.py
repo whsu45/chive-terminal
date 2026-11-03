@@ -155,6 +155,57 @@ def daily_factors(d):
 
 
 # ---------------------------------------------------------------- 盤中因子
+def _flow_dynamics(flow, now):
+    """
+    主力分流的「動態」：淨額的水位本身校準過沒預測力（IC≈-0.03），但水位在幾分鐘內的劇變有意義。
+    flow["hist"]: 本程式歷次取樣 [[epoch_sec, big_net, small_net, price], ...]（monitor/replay 附上）。
+    11/03 建榮復盤：主力淨賣 09:20 -483 → 09:22 -273（2 分鐘回補 210 張）→ 價 89.2→90.85→96.65；
+    09:25 -13（幾乎全回補）→ 09:28 -221（再倒 200 張）→ 價 96.65→92.35。前者是空單該停損的硬訊號，
+    後者是「拉高、回補鎖單、再倒」的出貨型態。
+    """
+    F, warns = [], []
+    hist = flow.get("hist") or []
+    if len(hist) < 2 or not flow.get("volume"):
+        return F, warns
+    vol = flow["volume"]
+    min_abs = max(20, 0.015 * vol)             # 至少 1.5% 量才算「劇變」，小型股下限 20 張
+    t_now, big_now = hist[-1][0], hist[-1][1]
+
+    # (1) 3 分鐘內的收斂 / 翻向
+    ref = None
+    for hrec in reversed(hist[:-1]):
+        if t_now - hrec[0] <= 200:
+            ref = hrec
+        else:
+            break
+    if ref is not None:
+        delta = big_now - ref[1]
+        mins = max(1, round((t_now - ref[0]) / 60))
+        if ref[1] < 0 and delta >= max(min_abs, 0.4 * abs(ref[1])):
+            F.append(("主力急回補", 0.5, f"主力淨賣 {mins} 分鐘內由 {ref[1]:+} 收斂到 {big_now:+}（回補 {delta:+} 張）：倒貨的人自己轉身買，空單前提失效"))
+            warns.append(f"⚠ 主力 {mins} 分鐘內回補 {delta} 張（{ref[1]:+} → {big_now:+}），空單停損要執行、不要加碼攤平；多單勿追，先看是回補鎖單還是真轉向")
+        elif ref[1] > 0 and -delta >= max(min_abs, 0.4 * abs(ref[1])):
+            F.append(("主力急出", -0.5, f"主力淨買 {mins} 分鐘內由 {ref[1]:+} 掉到 {big_now:+}（出掉 {-delta} 張）：拉的人在跑"))
+            warns.append(f"⚠ 主力 {mins} 分鐘內出掉 {-delta} 張（{ref[1]:+} → {big_now:+}），多單先減半或停利")
+
+    # (2) 10 分鐘內「回補 → 再倒」且價格從高點回落 ≥2%：拉高出貨型態
+    win = [hrec for hrec in hist if t_now - hrec[0] <= 600]
+    if len(win) >= 4:
+        i_tr = min(range(len(win)), key=lambda i: win[i][1])              # 淨賣最深點
+        if i_tr < len(win) - 2:
+            after = win[i_tr:]
+            i_pk = max(range(len(after)), key=lambda i: after[i][1])      # 之後的回補高點
+            covered = after[i_pk][1] - after[0][1]
+            resold = after[i_pk][1] - big_now
+            px_hi = max((r[3] or 0) for r in after[: i_pk + 1])
+            px_now = hist[-1][3] or 0
+            drop = (1 - px_now / px_hi) * 100 if px_hi else 0
+            if covered >= min_abs and resold >= max(min_abs, 0.4 * covered) and drop >= 2 and i_pk < len(after) - 1:
+                F.append(("主力拉高出貨", -0.5, f"主力先回補 {covered:+.0f} 張把價頂到 {px_hi}，再倒 {resold:.0f} 張，價已回落 {drop:.1f}%：拉高、鎖單、再倒的出貨型態，散戶在高點接貨"))
+                warns.append(f"⚠ 主力拉高出貨：回補 {covered:.0f} 張後再倒 {resold:.0f} 張，價自 {px_hi} 回落 {drop:.1f}%。反彈不過高點是空點；多單不接")
+    return F, warns
+
+
 def intraday_factors(d, q, idx, peers_q, flow, samples, now):
     """
     q: 個股 MIS quote；idx: {t00:quote, o00:quote}；peers_q: {code: quote}；
@@ -195,12 +246,35 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now):
         elif gap <= -1.5:
             F.append(("開低", 0.15, f"跳空 {gap:+.1f}%"))
 
+    # 族群先掃一遍：有沒有成員接近漲停（≥6%）。11/03 建榮復盤：台玻 13 萬張鎖漲停，族群資金把建榮
+    # 隔日沖 30% 的庫存全接走還軋到漲停；族群「均值」-0.3% 完全看不出來，均值被下游 CCL 的跌幅稀釋
+    pc = []
+    for code, pq in (peers_q or {}).items():
+        if pq.get("ref") and pq.get("y"):
+            pc.append(((pq["ref"] / pq["y"] - 1) * 100, code, pq.get("name")))
+    leader = max(pc) if pc else None
+    leader_strong = bool(leader and leader[0] >= 6)
+
     # 隔日沖庫存 + 盤中急拉（不一定是跳空）：庫存 ≥5% 量且盤中漲幅 ≥5%，就是倒貨點附近
     dtp_inv = ((d.get("brokers") or {}).get("day") or {}).get("daytrade_buy_pct") or 0
+    inv_scale = 0.5 if leader_strong else 1.0
+    inv_note = f"；但族群 {leader[2] or leader[1]} {leader[0]:+.1f}% 接近漲停，族群資金可能接走這批貨，權重折半" if leader_strong else ""
     if dtp_inv >= 5 and chg >= 5 and not pre_open:
-        F.append(("庫存倒貨點", -0.6, f"隔日沖分點昨買 {dtp_inv:.0f}% 量，盤中已拉 {chg:+.1f}%：他們的獲利了結區，反彈不過高點就是空點（但首 10 分鐘先不追）"))
+        F.append(("庫存倒貨點", -0.6 * inv_scale, f"隔日沖分點昨買 {dtp_inv:.0f}% 量，盤中已拉 {chg:+.1f}%：他們的獲利了結區，反彈不過高點就是空點（但首 10 分鐘先不追）{inv_note}"))
     elif dtp_inv >= 5 and chg >= 2.5 and not pre_open:
-        F.append(("庫存逼近倒貨區", -0.3, f"隔日沖庫存 {dtp_inv:.0f}% 量，盤中 {chg:+.1f}%，接近他們的出貨區"))
+        F.append(("庫存逼近倒貨區", -0.3 * inv_scale, f"隔日沖庫存 {dtp_inv:.0f}% 量，盤中 {chg:+.1f}%，接近他們的出貨區{inv_note}"))
+
+    # 衝高回落（墓碑）：今高離昨收 ≥5%、現價已從今高回落 ≥3%。11/03 建榮 96.65→91.3、驊宏資 44.95→42.3：
+    # 高點接貨的散戶全套牢，上方每一檔都是解套賣壓，此時「強於大盤、VWAP 之上」的多方分數是慣性假象
+    # MIS 的今高會延遲（11/03 建榮 ref 已 96.65、h 還停在 93.5），所以用本程式看過的最高價補正
+    h_eff = max([x for x in [h, p] + [s[1] for s in (samples or [])] if x] or [0])
+    info["high_seen"] = h_eff
+    if h_eff and y and p and not pre_open:
+        hi_chg = (h_eff / y - 1) * 100
+        pull = (1 - p / h_eff) * 100
+        info["pullback_from_high_pct"] = pull
+        if hi_chg >= 5 and pull >= 3 and chg > -1:
+            F.append(("衝高回落", -0.4, f"今高 {h_eff} ({hi_chg:+.1f}%) 後已回落 {pull:.1f}%：高點套牢賣壓在上，追多等於接最後一棒；反彈不過前高再空"))
 
     # 相對強弱
     if idx_chg is not None:
@@ -216,15 +290,19 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now):
             F.append(("略弱於大盤", -0.2, f"相對強弱 {rs:+.1f}"))
 
     # 族群
-    pc = []
-    for code, pq in (peers_q or {}).items():
-        if pq.get("ref") and pq.get("y"):
-            pc.append(((pq["ref"] / pq["y"] - 1) * 100, code, pq.get("name")))
     if pc:
         avg = sum(x[0] for x in pc) / len(pc)
         ups = sum(1 for x in pc if x[0] > 0)
         info["group_avg"] = avg; info["group_up"] = ups; info["group_n"] = len(pc)
         info["group_detail"] = sorted(pc, reverse=True)
+        spread = leader[0] - min(pc)[0]
+        if leader_strong:
+            info["group_leader"] = list(leader)
+            F.append(("族群有領漲股", 0.4, f"{leader[2] or leader[1]} {leader[0]:+.1f}% 接近漲停，族群資金輪動中，同業低價股有補漲買盤；"
+                                          f"族群均 {avg:+.2f}% 被其他成員稀釋，別只看均值。空單要防族群資金接貨軋空"))
+        if spread >= 8 and len(pc) >= 3:
+            F.append(("族群分歧", 0.0, f"族群最強 {leader[2] or leader[1]} {leader[0]:+.1f}% vs 最弱 {min(pc)[2] or min(pc)[1]} {min(pc)[0]:+.1f}%："
+                                      f"上下游走反向（如玻纖紗漲價：上游漲、CCL 跌），均值無意義，看個股站哪一邊"))
         diff = chg - avg
         if diff < -1.5:
             F.append(("族群最弱", -0.5, f"個股 {chg:+.2f}% vs 族群均 {avg:+.2f}%（{ups}/{len(pc)} 檔漲），弱者恆弱"))
@@ -309,6 +387,8 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now):
                 F.append(("規律小單出貨", -0.45, f"藏單淨賣 {flow['hidden_net']:+} 張 ({hn:+.1f}% 量)：{desc}，主力分批倒貨"))
             else:
                 F.append(("規律小單", 0.0, f"偵測到切單 {desc}，方向尚不明確"))
+        fF, fW = _flow_dynamics(flow, now)
+        F += fF; warns += fW
         io = flow["buy_vol"] / flow["sell_vol"] if flow.get("sell_vol") else None
         info["outer_inner"] = io
         if io and io > 1.4:

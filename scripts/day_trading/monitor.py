@@ -223,6 +223,7 @@ class Monitor:
         self.daily = {}
         self.samples = {c: [] for c in codes}
         self.w_prev = {}
+        self.flow_hist = {}   # code -> [[epoch, big_net, small_net, price], ...]，給 model._flow_dynamics 看主力淨額的變化
         self.flow_src = None
         import src_shioaji
         for c in codes:
@@ -300,6 +301,11 @@ class Monitor:
             idx = {k: quotes[k] for k in ("t00", "o00") if k in quotes}
             peers_q = {p: quotes[p] for p in d["peers"] if p in quotes}
             flow = self.flow_src.flow(c, price=q.get("ref")) if self.flow_src else None
+            if flow and flow.get("volume"):
+                hh = self.flow_hist.setdefault(c, [])
+                hh.append([now.timestamp(), flow["big_net"], flow["small_net"], q.get("ref")])
+                del hh[:-60]
+                flow["hist"] = list(hh)
             wq = None
             wl = (d.get("warrants") or {}).get("list") or []
             if wl:

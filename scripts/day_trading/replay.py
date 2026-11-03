@@ -88,6 +88,7 @@ def main():
     acc = S._state[code]
     out_path = os.path.join(LOG_DIR, f"replay_{date:%Y%m%d}_{code}.jsonl")
     samples = []
+    flow_hist = []
     print(f"\n=== 重播 {code} {d['name']} {date}  每 {a.step} 分鐘")
     print(f"{'時間':6} {'價':>7} {'漲跌%':>7} {'大盤%':>7} {'族群%':>7} {'量':>7} {'主力淨%':>7} {'散戶淨%':>7} {'藏單':>6} {'多%':>4} {'空%':>4}  判斷 / 主要因子")
     cur = dt.datetime.combine(date, dt.time(9, a.step))
@@ -110,6 +111,9 @@ def main():
                 if pq:
                     pq["name"] = pname; peers_q[p] = pq
             flow = S.flow(code, price=q["ref"])
+            if flow and flow.get("volume"):
+                flow_hist.append([cur.timestamp(), flow["big_net"], flow["small_net"], q["ref"]])
+                flow["hist"] = list(flow_hist[-60:])
             ev = model.evaluate(d, q, idx, peers_q, flow, samples, cur)
             inf = ev["info"]
             fac = "  ".join(f"{n}({s:+.1f})" for n, s, _ in ev["intraday_factors"][:5])

@@ -1,10 +1,65 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "static", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "8765"], "port": 8765 },
-    { "name": "orb", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "8766", "--directory", "../chive-terminal-orb"], "port": 8766 },
-    { "name": "idx", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "8767", "--directory", "../chive-terminal-idx"], "port": 8767 },
-    { "name": "vcb", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "8768", "--directory", "../chive-terminal-vcb"], "port": 8768 },
-    { "name": "daytrade-web", "runtimeExecutable": "python3", "runtimeArgs": ["scripts/day_trading/monitor.py", "5340", "--web", "8770", "--interval", "30", "--no-open"], "port": 8770 }
+    {
+      "name": "static",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765"
+      ],
+      "port": 8765
+    },
+    {
+      "name": "orb",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8766",
+        "--directory",
+        "../chive-terminal-orb"
+      ],
+      "port": 8766
+    },
+    {
+      "name": "idx",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8767",
+        "--directory",
+        "../chive-terminal-idx"
+      ],
+      "port": 8767
+    },
+    {
+      "name": "vcb",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8768",
+        "--directory",
+        "../chive-terminal-vcb"
+      ],
+      "port": 8768
+    },
+    {
+      "name": "daytrade-web",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "scripts/day_trading/monitor.py",
+        "5340",
+        "--web",
+        "8770",
+        "--interval",
+        "30",
+        "--no-open"
+      ],
+      "port": 8770
+    }
   ]
 }

@@ -23,15 +23,26 @@ def fetch(ex_codes):
         z = http.to_float(s.get("z"))
         bids = list(zip([http.to_float(x) for x in _split(s.get("b"))], [http.to_int(x) for x in _split(s.get("g"))]))
         asks = list(zip([http.to_float(x) for x in _split(s.get("a"))], [http.to_int(x) for x in _split(s.get("f"))]))
-        # 無最新成交價時以最佳買價/賣價中點當參考價
+        # 無最新成交價（z='-'）時以最佳買賣中點當參考價，但夾在今日高低之間：
+        # 「瞬間價格穩定措施」延緩撮合的 2 分鐘內 MIS 不給成交價、五檔卻是試算價
+        # （11/03 建榮 09:24：成交最高 93.5，五檔中點 96.65），不夾會把試算價當成真的成交。
+        # 超出高低的中點另存 trial，給前端/警示用。
         ref = z
+        trial = None
+        hi, lo = http.to_float(s.get("h")), http.to_float(s.get("l"))
         if ref is None:
+            mid = None
             if bids and asks and bids[0][0] and asks[0][0]:
-                ref = (bids[0][0] + asks[0][0]) / 2
+                mid = (bids[0][0] + asks[0][0]) / 2
             elif bids and bids[0][0]:
-                ref = bids[0][0]
+                mid = bids[0][0]
             elif asks and asks[0][0]:
-                ref = asks[0][0]
+                mid = asks[0][0]
+            if mid is not None:
+                ref = mid
+                if hi and lo and not (lo <= mid <= hi):
+                    trial = mid
+                    ref = min(max(mid, lo), hi)
         out[code] = {
             "code": code, "name": s.get("n"), "ex": s.get("ex"), "t": s.get("t"),
             "z": z, "ref": ref, "o": http.to_float(s.get("o")), "h": http.to_float(s.get("h")),
@@ -39,6 +50,7 @@ def fetch(ex_codes):
             "u": http.to_float(s.get("u")), "w": http.to_float(s.get("w")),
             "bids": bids, "asks": asks,
             "tv": http.to_int(s.get("tv")),  # 當盤成交量
+            "trial": trial,  # 延緩撮合期間的試算價（超出今日高低時才有）
         }
     return out
 

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>當沖監控</title>
 <style>
-:root{--bg:#0f1115;--panel:#171a21;--panel2:#1e222b;--line:#2a2f3a;--fg:#e6e9ef;--muted:#8b93a3;--up:#ff4d4f;--dn:#2ecc71;--warn:#ffb020;--accent:#4c8dff;--mono:"SF Mono",Menlo,Consolas,monospace}
+:root{--bg:#0f1115;--panel:#171a21;--panel2:#1e222b;--line:#2a2f3a;--fg:#e6e9ef;--muted:#8b93a3;--up:#ff4d4f;--dn:#2ecc71;--warn:#ffb020;--accent:#4c8dff;--vwap:#f5c542;--mono:"SF Mono",Menlo,Consolas,monospace}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 -apple-system,"PingFang TC","Noto Sans TC",system-ui,sans-serif}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
@@ -16,13 +16,20 @@ header .tab{padding:6px 12px;border:1px solid var(--line);border-radius:8px;curs
 header .tab.active{border-color:var(--accent);background:#1b2a46}
 header .meta{margin-left:auto;display:flex;gap:18px;color:var(--muted);align-items:center;flex-wrap:wrap}
 .clock{font-size:20px;color:var(--fg)}
-.deadline{padding:4px 10px;border-radius:6px;background:#2b2210;color:var(--warn);font-weight:600}
-.deadline.over{background:#3a1616;color:var(--up)}
+.phase{padding:4px 10px;border-radius:6px;background:var(--panel2);color:var(--fg);font-weight:600;cursor:help;border:1px solid var(--line)}
+.phase.early{border-color:var(--accent);background:#1b2a46}.phase.mid{border-color:#5a5f6b}.phase.late{border-color:var(--warn);background:#2b2210;color:var(--warn)}
+.phase.closed,.phase.pre,.phase.trial{color:var(--muted)}
 main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16px;max-width:1800px;margin:0 auto}
 @media (max-width:1200px){main{grid-template-columns:1fr 1fr}}
 @media (max-width:760px){main{grid-template-columns:1fr;padding:8px}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
 .card h3{margin:0 0 8px;font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;font-weight:600}
+.charts{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr 2fr;gap:12px}
+@media (max-width:1200px){.charts{grid-template-columns:1fr 1fr}.charts .stock{grid-column:span 2}}
+@media (max-width:760px){.charts{grid-template-columns:1fr}.charts .stock{grid-column:span 1}}
+.charts .card{padding:8px 10px}
+.charts canvas{width:100%;height:230px;display:block}
+.charts .stock canvas{height:300px}
 .price{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
 .price .big{font-size:44px;font-weight:700;line-height:1}
 .price .chg{font-size:22px;font-weight:600}
@@ -36,6 +43,8 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .alerts{display:flex;flex-direction:column;gap:6px}
 .alert{padding:8px 10px;border-radius:8px;background:#2b2210;border-left:4px solid var(--warn);font-size:13px}
 .alert.hard{background:#3a1616;border-left-color:var(--up)}
+.alert.note{background:var(--panel2);border-left-color:var(--line);color:var(--muted)}
+.alert .t{font-family:var(--mono);color:var(--muted);margin-right:6px;font-size:12px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{padding:4px 8px;border-radius:999px;font-size:12px;background:var(--panel2);border:1px solid var(--line);cursor:help;white-space:nowrap}
 .chip.pos{border-color:#5a2426;background:#2a1517}.chip.neg{border-color:#1f5a3a;background:#122a1d}.chip.zero{opacity:.7}
@@ -43,6 +52,7 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .plan{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .plan .box{background:var(--panel2);border-radius:10px;padding:10px;border-top:3px solid var(--line)}
 .plan .box.short{border-top-color:var(--dn)}.plan .box.long{border-top-color:var(--up)}
+.plan .box.dim{opacity:.55}
 .plan .box h4{margin:0 0 6px;font-size:13px}
 .plan .box .entry{font-size:13px;color:var(--fg);margin-bottom:6px}
 .plan table{width:100%;font-size:13px;border-collapse:collapse}.plan td{padding:2px 0}.plan td:last-child{text-align:right}
@@ -63,11 +73,12 @@ table.grid{width:100%;border-collapse:collapse;font-size:13px}
 table.grid th{color:var(--muted);text-align:left;font-weight:500;padding:3px 6px;border-bottom:1px solid var(--line)}
 table.grid td{padding:3px 6px;border-bottom:1px solid #20242d}
 table.grid td.n{text-align:right;font-family:var(--mono)}
-canvas{width:100%;height:220px;display:block}
+#chart{width:100%;height:220px;display:block}
 .span2{grid-column:span 2}@media (max-width:760px){.span2{grid-column:span 1}}
 .muted{color:var(--muted)}.small{font-size:12px}
 footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .stale{color:var(--warn)}
+.hint{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
 </style>
 </head>
 <body>
@@ -76,96 +87,185 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
   <div class="meta">
     <span id="idx"></span>
     <span id="shioaji"></span>
-    <span class="deadline" id="deadline"></span>
+    <span class="phase" id="phase"></span>
     <span class="clock num" id="clock"></span>
   </div>
 </header>
 <main id="main">
-  <section class="card" id="c-price"><h3>即時</h3><div id="price"></div></section>
-  <section class="card" id="c-verdict"><h3>多空勝率</h3><div id="verdict"></div></section>
+  <section class="charts">
+    <div class="card"><h3 id="t-tse">加權</h3><canvas id="jb-tse"></canvas></div>
+    <div class="card"><h3 id="t-otc">櫃買</h3><canvas id="jb-otc"></canvas></div>
+    <div class="card stock"><h3 id="t-stk">個股</h3><canvas id="jb-stk"></canvas></div>
+  </section>
+  <section class="card" id="c-price"><h3>即時 <span class="small muted" id="live-t"></span></h3><div id="price"></div></section>
+  <section class="card" id="c-verdict"><h3>多空勝率 <span class="small muted" id="eval-t"></span></h3><div id="verdict"></div></section>
   <section class="card" id="c-alerts"><h3>警示</h3><div class="alerts" id="alerts"></div></section>
   <section class="card" id="c-factors"><h3>因子（滑鼠停留看理由）</h3><div id="factors"></div></section>
-  <section class="card" id="c-plan"><h3>進出場計畫</h3><div class="plan" id="plan"></div></section>
+  <section class="card" id="c-plan"><h3>進出場計畫（已畫在個股江波圖）</h3><div class="plan" id="plan"></div></section>
   <section class="card" id="c-ladder"><h3>壓力 / 支撐</h3><div class="ladder" id="ladder"></div></section>
   <section class="card" id="c-flow"><h3>主力 / 散戶 分流</h3><div class="flow" id="flow"></div></section>
   <section class="card" id="c-book"><h3>五檔</h3><div class="book" id="book"></div></section>
-  <section class="card" id="c-group"><h3>族群 / 大盤</h3><div id="group"></div></section>
+  <section class="card" id="c-group"><h3>族群</h3><div id="group"></div></section>
   <section class="card" id="c-warr"><h3>權證</h3><div id="warr"></div></section>
-  <section class="card span2" id="c-chart"><h3>走勢與勝率曲線</h3><canvas id="chart" height="220"></canvas></section>
+  <section class="card span2" id="c-chart"><h3>勝率曲線（每次估算）</h3><canvas id="chart" height="220"></canvas></section>
   <section class="card" id="c-pre"><h3>盤前摘要</h3><pre id="pre" class="small" style="white-space:pre-wrap;margin:0;color:var(--muted)"></pre></section>
 </main>
 <footer id="foot">以上為技術面與籌碼面推算，不構成投資建議。</footer>
 <script>
-let STATE=null, CUR=null, HIST={};
+let STATE=null, LIVE=null, CUR=null, HIST={};
 const $=id=>document.getElementById(id);
 const f=(x,d=2)=>x==null?'-':Number(x).toFixed(d);
 const pct=(x,d=2)=>x==null?'-':(x>0?'+':'')+Number(x).toFixed(d)+'%';
 const cls=x=>x>0?'up':x<0?'dn':'flat';
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dec=p=>p==null?2:p>=500?0:p>=100?1:p>=50?1:2;
+const fp=p=>f(p,dec(p));
 
+// 時段（與 model.PHASES 一致；後端沒回時前端自己算）
+const PHASES=[['pre','00:00','08:30','盤前','','看夜盤、美股與盤前籌碼，定今天的主劇本'],['trial','08:30','09:00','試撮','08:30–09:00','掛單可撤，價量可能是假的；只看方向不下結論'],
+ ['early','09:00','10:30','早盤','09:00–10:30','隔日沖倒貨與主力表態多在此段；首 10 分鐘不追單，等 VWAP 與分流方向一致再進'],
+ ['mid','10:30','12:00','中盤','10:30–12:00','量能通常縮、假突破多，只做 5 分 K 確認的突破/跌破單，目標縮短'],
+ ['late','12:00','13:30','尾盤','12:00–13:30','法人作價與當沖回補主導，順 VWAP 方向做；13:20 前當沖部位處理完，13:25 後試撮不開新單'],
+ ['closed','13:30','24:00','已收盤','','復盤：review.py / replay.py']];
+function phaseNow(){const n=new Date();const hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  const p=PHASES.find(([k,a,b])=>a<=hm&&hm<b)||PHASES[PHASES.length-1];return {key:p[0],label:p[3],range:p[4],hint:p[5]};}
 function tick(){const n=new Date();$('clock').textContent=n.toLocaleTimeString('zh-TW',{hour12:false});
-  const dl=new Date(n);dl.setHours(9,50,0,0);const open=new Date(n);open.setHours(9,0,0,0);
-  const el=$('deadline');
-  if(n<open){el.textContent='開盤倒數 '+fmtDur(open-n);el.className='deadline';}
-  else if(n<dl){el.textContent='09:50 平倉倒數 '+fmtDur(dl-n);el.className='deadline';}
-  else{el.textContent='已過 09:50 · 不開新倉';el.className='deadline over';}}
-function fmtDur(ms){const s=Math.max(0,Math.floor(ms/1000));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+  const ph=(LIVE&&LIVE.phase)||phaseNow();const el=$('phase');el.className='phase '+ph.key;el.textContent=ph.label+(ph.range?' '+ph.range:'');el.title=ph.hint||'';}
 setInterval(tick,1000);tick();
 
-async function load(){try{const r=await fetch('/api/state?_='+Date.now());STATE=await r.json();
+async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());STATE=await r.json();
   if(!CUR||!STATE.codes.includes(CUR))CUR=STATE.codes[0];render();
   const h=await fetch('/api/history/'+CUR+'?_='+Date.now());HIST[CUR]=await h.json();drawChart();}
   catch(e){$('foot').innerHTML='<span class="stale">連線中斷：'+esc(e)+'</span>';}}
-setInterval(load,5000);load();
+async function loadLive(){try{const r=await fetch('/api/live?_='+Date.now());LIVE=await r.json();if(STATE)renderLive();}catch(e){}}
+setInterval(loadState,10000);setInterval(loadLive,10000);loadState();setTimeout(loadLive,1500);
 
-function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
-  $('tabs').innerHTML=STATE.codes.map(c=>{const e=STATE.latest[c];const ch=e?.info?.chg_pct;
-    return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();load()">${c} ${esc(e?.name||'')} <span class="num ${cls(ch)}">${pct(ch)}</span></div>`}).join('');
-  const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${pct(v.chg)}</b>`).join(' &nbsp; ');
-  $('shioaji').innerHTML=STATE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';
-  if(!ev){$('price').textContent='等待第一次評估…';return;}
-  const q=ev.quote,i=ev.info||{};
-  const age=(Date.now()-new Date(STATE.updated).getTime())/1000;
-  $('price').innerHTML=`<div class="price"><span class="big num ${cls(i.chg_pct)}">${f(q.ref,q.ref>=500?0:q.ref>=100?1:2)}</span><span class="chg num ${cls(i.chg_pct)}">${pct(i.chg_pct)}</span><span class="muted">${esc(ev.time)} ${age>STATE.interval*2?'<span class="stale">(資料過舊)</span>':''}</span></div>
-   <div class="kv"><div>開<b class="num">${f(q.o,1)}</b></div><div>高<b class="num up">${f(q.h,1)}</b></div><div>低<b class="num dn">${f(q.l,1)}</b></div><div>昨收<b class="num">${f(q.y,1)}</b></div>
-   <div>量<b class="num">${q.v??'-'}</b></div><div>量比<b class="num">${f(i.vol_pace,2)}</b></div><div>VWAP<b class="num">${f(i.vwap,2)}</b></div><div>日內位置<b class="num">${i.range_pos==null?'-':Math.round(i.range_pos*100)+'%'}</b></div>
-   <div>漲停<b class="num up">${f(d.limit_up,1)}</b></div><div>跌停<b class="num dn">${f(d.limit_down,1)}</b></div><div>跳空<b class="num ${cls(i.gap_pct)}">${pct(i.gap_pct,1)}</b></div><div>相對大盤<b class="num ${cls(i.rs_vs_index)}">${pct(i.rs_vs_index,1)}</b></div></div>`;
-  const side=ev.side;const vcol=side==='空'?'dn':side==='多'?'up':'flat';
-  $('verdict').innerHTML=`<div class="verdict ${vcol}">${esc(ev.verdict)}</div>
-   <div class="bars"><span class="up">多</span><div class="bar long"><i style="width:${ev.p_long}%"></i></div><b class="num up">${f(ev.p_long,0)}%</b></div>
-   <div class="bars"><span class="dn">空</span><div class="bar short"><i style="width:${ev.p_short}%"></i></div><b class="num dn">${f(ev.p_short,0)}%</b></div>
-   <div class="small muted" style="margin-top:6px">盤前 <b class="num">${f(ev.daily_bias,2)}</b> · 盤中 <b class="num">${f(ev.intra_bias,2)}</b> · 合計 <b class="num">${f(ev.bias,2)}</b></div>`;
-  $('alerts').innerHTML=(ev.warnings||[]).map(w=>`<div class="alert ${/處置|09:50|⚠/.test(w)?'hard':''}">${esc(w)}</div>`).join('')||'<span class="muted">無</span>';
-  const chip=([n,s,t])=>`<span class="chip ${s>0?'pos':s<0?'neg':'zero'}" title="${esc(t)}">${esc(n)}<b>${s>0?'+':''}${f(s,1)}</b></span>`;
-  $('factors').innerHTML=`<div class="small muted" style="margin-bottom:4px">盤前</div><div class="chips">${(ev.daily_factors||[]).map(chip).join('')||'<span class="muted">無</span>'}</div>
-   <div class="small muted" style="margin:8px 0 4px">盤中</div><div class="chips">${(ev.intraday_factors||[]).map(chip).join('')||'<span class="muted">無</span>'}</div>`;
-  const pl=ev.plan||{};const box=(k,o,title)=>o?`<div class="box ${k}"><h4>${title}</h4><div class="entry">${esc(o.entry)}</div><table>
-    <tr><td>停損</td><td class="num">${f(o.stop,1)} <span class="muted">(${f(o.risk_pct,1)}%)</span></td></tr><tr><td>目標 1</td><td class="num">${f(o.t1,1)} <span class="muted">(${f(o.reward_pct,1)}%)</span></td></tr><tr><td>目標 2</td><td class="num">${f(o.t2,1)}</td></tr></table>
-    ${o.breakdown||o.breakout?`<div class="small muted" style="margin-top:6px">${esc(o.breakdown||o.breakout)}</div>`:''}</div>`:'';
-  $('plan').innerHTML=box('short',ev.p_short>0?pl.short:null,`空 <span class="num dn">${f(ev.p_short,0)}%</span>`)+box('long',pl.long,`多 <span class="num up">${f(ev.p_long,0)}%</span>`);
-  const res=(pl.resistance||[]).slice().reverse(),sup=pl.support||[];
-  $('ladder').innerHTML=res.map(([n,v])=>`<div class="row r"><span>${esc(n)}</span><span>${f(v,1)}</span></div>`).join('')+`<div class="row now"><span>現價</span><span>${f(q.ref,1)}</span></div>`+sup.map(([n,v])=>`<div class="row s"><span>${esc(n)}</span><span>${f(v,1)}</span></div>`).join('');
-  const fl=ev.flow;
+function activeSide(ev){if(!ev)return null;if(ev.p_short<=0)return 'long';return ev.p_short>=ev.p_long?'short':'long';}
+
+// ---------------------------------------------------------------- 江波圖
+function drawJB(c,o){
+  const dpr=window.devicePixelRatio||1;const W=c.width=c.clientWidth*dpr,H=c.height=c.clientHeight*dpr;const g=c.getContext('2d');g.clearRect(0,0,W,H);
+  const F=px=>px*dpr;g.font=`${F(11)}px ${getComputedStyle(document.body).fontFamily}`;
+  const ref=o.y;const pts=(o.series||[]).map(b=>o.stock?{t:b[0],o:b[1],h:b[2],l:b[3],c:b[4],v:b[5],a:b[6]}:{t:b[0],c:b[1],v:0,a:0}).filter(p=>p.c!=null);
+  if(!ref||!pts.length){g.fillStyle='#8b93a3';g.fillText(ref?'等待分時資料…':'等待報價…',F(10),F(20));return;}
+  const padL=F(6),padR=F(o.stock?70:56),padT=F(8),padB=F(16),volH=o.stock?Math.round(H*0.17):0;
+  const x0=padL,x1=W-padR,y0=padT,y1=H-padB-volH-(o.stock?F(4):0);
+  const mins=t=>{const [h,m]=t.split(':').map(Number);return Math.min(270,Math.max(0,(h-9)*60+m));};
+  const X=m=>x0+(x1-x0)*m/270;
+  let dev=0;pts.forEach(p=>{dev=Math.max(dev,Math.abs(p.c-ref));if(o.stock){dev=Math.max(dev,Math.abs(p.h-ref),Math.abs(p.l-ref));}});
+  const lv=[];if(o.plan){for(const side of ['short','long']){const pl=o.plan[side];if(!pl)continue;[pl.entry_px,pl.stop,pl.t1,pl.t2].forEach(v=>{if(v!=null&&Math.abs(v-ref)/ref<0.1)lv.push(v);});}}
+  lv.forEach(v=>dev=Math.max(dev,Math.abs(v-ref)));
+  dev=Math.max(dev,ref*0.004)*1.12;
+  const Y=v=>y0+(y1-y0)*(1-((v-ref)/dev+1)/2);
+  // 格線：昨收 + ±50% ±100% 的 dev
+  g.lineWidth=F(1);g.strokeStyle='#232833';[-1,-0.5,0.5,1].forEach(k=>{const v=ref+dev*k;g.beginPath();g.moveTo(x0,Y(v));g.lineTo(x1,Y(v));g.stroke();
+    g.fillStyle=k>0?'#ff4d4f':'#2ecc71';g.globalAlpha=.8;g.fillText(pct((v/ref-1)*100,1),x1+F(4),Y(v)+F(4));g.globalAlpha=1;});
+  g.setLineDash([F(4),F(4)]);g.strokeStyle='#8b93a3';g.beginPath();g.moveTo(x0,Y(ref));g.lineTo(x1,Y(ref));g.stroke();g.setLineDash([]);
+  g.fillStyle='#8b93a3';g.fillText(o.stock?fp(ref):f(ref,0),x1+F(4),Y(ref)+F(4));
+  // 時段分隔與時間軸
+  const ticks=[['09:00',0],['10:00',60],['10:30',90],['11:00',120],['12:00',180],['13:00',240],['13:30',270]];
+  ticks.forEach(([lab,m])=>{const strong=(m===90||m===180);g.strokeStyle=strong?'#3a4150':'#232833';g.setLineDash(strong?[F(2),F(3)]:[]);g.beginPath();g.moveTo(X(m),y0);g.lineTo(X(m),H-padB);g.stroke();g.setLineDash([]);
+    if(m%60===0||m===270){g.fillStyle='#8b93a3';g.fillText(lab,X(m)-F(m===270?30:14),H-F(4));}});
+  // 現在時間
+  const n=new Date();const nm=(n.getHours()-9)*60+n.getMinutes();if(nm>0&&nm<270){g.strokeStyle='#4c8dff';g.globalAlpha=.5;g.beginPath();g.moveTo(X(nm),y0);g.lineTo(X(nm),y1);g.stroke();g.globalAlpha=1;}
+  // 成交量
+  if(o.stock&&volH){const mv=Math.max(1,...pts.map(p=>p.v||0));const bw=Math.max(F(1),(x1-x0)/270*0.8);pts.forEach(p=>{const hgt=(p.v||0)/mv*volH;g.fillStyle=p.c>=p.o?'rgba(255,77,79,.55)':'rgba(46,204,113,.55)';g.fillRect(X(mins(p.t))-bw/2,H-padB-hgt,bw,hgt);});}
+  // 價格線（分段上色 + 與昨收間淡填色）
+  for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i];const col=b.c>=ref?'#ff4d4f':'#2ecc71';const xa=X(mins(a.t)),xb=X(mins(b.t));
+    g.fillStyle=col;g.globalAlpha=.10;g.beginPath();g.moveTo(xa,Y(ref));g.lineTo(xa,Y(a.c));g.lineTo(xb,Y(b.c));g.lineTo(xb,Y(ref));g.closePath();g.fill();g.globalAlpha=1;
+    g.strokeStyle=col;g.lineWidth=F(1.6);g.beginPath();g.moveTo(xa,Y(a.c));g.lineTo(xb,Y(b.c));g.stroke();}
+  if(pts.length===1){const p=pts[0];g.fillStyle=p.c>=ref?'#ff4d4f':'#2ecc71';g.beginPath();g.arc(X(mins(p.t)),Y(p.c),F(2.5),0,7);g.fill();}
+  // VWAP
+  if(o.stock){let cv=0,ca=0;g.strokeStyle='#f5c542';g.lineWidth=F(1);g.beginPath();let s=false;pts.forEach(p=>{cv+=p.v||0;ca+=p.a||0;if(!cv)return;const vw=ca/cv;const x=X(mins(p.t)),y=Y(vw);s?g.lineTo(x,y):g.moveTo(x,y);s=true;});g.stroke();}
+  // 買賣點
+  if(o.plan){const act=o.side;const draw=(side)=>{const pl=o.plan[side];if(!pl)return;const on=side===act;const col=side==='short'?'#2ecc71':'#ff4d4f';g.globalAlpha=on?1:.35;
+      const line=(v,lab,color,dash,w)=>{if(v==null||Math.abs(v-ref)/ref>=0.1)return;g.setLineDash(dash);g.strokeStyle=color;g.lineWidth=F(w);g.beginPath();g.moveTo(x0,Y(v));g.lineTo(x1,Y(v));g.stroke();g.setLineDash([]);
+        const txt=lab+' '+fp(v);const tw=g.measureText(txt).width+F(6);g.fillStyle='#0f1115';g.fillRect(x1-tw-F(2),Y(v)-F(7),tw,F(13));g.fillStyle=color;g.fillText(txt,x1-tw+F(1),Y(v)+F(4));};
+      line(pl.entry_px,side==='short'?'空':'多',col,[],on?1.8:1);line(pl.stop,'損','#ffb020',[F(5),F(3)],1.2);line(pl.t1,'T1',col,[F(2),F(3)],1);line(pl.t2,'T2',col,[F(2),F(3)],1);g.globalAlpha=1;};
+    draw(act==='short'?'long':'short');draw(act);}
+  // 最新價
+  const last=pts[pts.length-1];const lp=o.last??last.c;const lc=lp>=ref?'#ff4d4f':'#2ecc71';
+  g.fillStyle=lc;g.beginPath();g.arc(X(mins(last.t)),Y(last.c),F(3),0,7);g.fill();
+  const txt=o.stock?fp(lp):f(lp,0);const tw=g.measureText(txt).width+F(8);g.fillStyle=lc;g.fillRect(x1+F(2),Y(lp)-F(8),tw,F(15));g.fillStyle='#0f1115';g.fillText(txt,x1+F(6),Y(lp)+F(4));
+}
+function drawAll(){if(!LIVE)return;const ev=STATE&&STATE.latest[CUR];
+  for(const [k,id,tid,nm] of [['t00','jb-tse','t-tse','加權'],['o00','jb-otc','t-otc','櫃買']]){const ix=LIVE.index[k];const s=LIVE.index_series[k]||[];
+    $(tid).innerHTML=`${nm} <b class="num ${cls(ix?.chg)}">${ix?f(ix.ref,0):'-'} ${pct(ix?.chg)}</b>${LIVE.index_stream?'':' <span class="small muted">(MIS 取樣)</span>'}`;
+    drawJB($(id),{series:s,y:ix?.y,last:ix?.ref,stock:false});}
+  const q=LIVE.quotes[CUR];const s=LIVE.series[CUR]||[];
+  $('t-stk').innerHTML=`${CUR} ${esc(q?.name||ev?.name||'')} <b class="num ${cls(q?.chg_pct)}">${q?fp(q.ref):'-'} ${pct(q?.chg_pct)}</b> <span class="small muted">— 價 · <span style="color:var(--vwap)">VWAP</span> · ${LIVE.shioaji?'逐筆分K':'MIS 取樣'} · 線：<span class="dn">空</span>/<span class="up">多</span> 進場、<span style="color:var(--warn)">損</span>、T1/T2</span>`;
+  drawJB($('jb-stk'),{series:s,y:q?.y,last:q?.ref,stock:true,plan:ev?.plan,side:activeSide(ev)});}
+window.addEventListener('resize',()=>{drawAll();drawChart();});
+
+// ---------------------------------------------------------------- 即時區（10 秒）
+function renderLive(){const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
+  const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${pct(v.chg)}</b>`).join(' &nbsp; ');
+  $('shioaji').innerHTML=LIVE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';
+  $('live-t').textContent=LIVE.time||'';
+  if(q){const rp=(q.h!=null&&q.l!=null&&q.h!==q.l)?Math.round((q.ref-q.l)/(q.h-q.l)*100)+'%':'-';
+    $('price').innerHTML=`<div class="price"><span class="big num ${cls(q.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(q.chg_pct)}">${pct(q.chg_pct)}</span></div>
+     <div class="kv"><div>開<b class="num">${fp(q.o)}</b></div><div>高<b class="num up">${fp(q.h)}</b></div><div>低<b class="num dn">${fp(q.l)}</b></div><div>昨收<b class="num">${fp(q.y)}</b></div>
+     <div>量<b class="num">${q.v??'-'}</b></div><div>量比<b class="num">${f(i.vol_pace,2)}</b></div><div>VWAP<b class="num">${f(LIVE.flow[CUR]?.vwap??i.vwap,2)}</b></div><div>日內位置<b class="num">${rp}</b></div>
+     <div>漲停<b class="num up">${fp(d.limit_up)}</b></div><div>跌停<b class="num dn">${fp(d.limit_down)}</b></div><div>跳空<b class="num ${cls(i.gap_pct)}">${pct(i.gap_pct,1)}</b></div><div>相對大盤<b class="num ${cls(i.rs_vs_index)}">${pct(i.rs_vs_index,1)}</b></div></div>`;
+    const bids=q.bids||[],asks=q.asks||[];const mx=Math.max(1,...bids.map(b=>b[1]),...asks.map(a=>a[1]));const bv=bids.reduce((s,b)=>s+b[1],0),av=asks.reduce((s,a)=>s+a[1],0);
+    $('book').innerHTML=`<div><div class="small muted">委買</div>${bids.map(([p,v])=>`<div class="lv bid"><span>${fp(p)}</span><i style="width:${v/mx*100}%"></i><span>${v}</span></div>`).join('')}</div>
+      <div><div class="small muted">委賣</div>${asks.map(([p,v])=>`<div class="lv ask"><span>${fp(p)}</span><i style="width:${v/mx*100}%"></i><span>${v}</span></div>`).join('')}</div>`
+      +(bv+av?`<div class="small muted">五檔買 ${bv} / 賣 ${av}（不平衡 ${f((bv-av)/(bv+av),2)}）</div>`:'');}
+  const fl=LIVE.flow[CUR]||ev.flow;
   if(fl){const vol=fl.volume||1;const row=(lab,net,p)=>{const w=Math.min(50,Math.abs(p||0)*2.5);return `<div class="row"><span>${lab}</span><div class="track"><i class="${(net||0)>=0?'p':'n'}" style="width:${w}%"></i></div><b class="num ${cls(net)}">${net>0?'+':''}${net??0} <span class="muted">${pct(p,1)}</span></b></div>`};
     const th=fl.thresholds||{};
     $('flow').innerHTML=row('主力',fl.big_net,fl.big_net_pct)+row('藏單',fl.hidden_net,fl.hidden_net_pct)+row('散戶',fl.small_net,fl.small_net_pct)+row('中實戶',fl.mid_net,fl.mid_net/vol*100)
       +`<div class="small muted" style="margin-top:6px">外盤 ${fl.buy_vol} / 內盤 ${fl.sell_vol} · VWAP ${f(fl.vwap,2)} · 門檻 大單 ≥${th.big_lots} 張（${f(th.big_amount/1e4,0)} 萬${th.p95?'，P95 '+th.p95:''}）散戶 &lt;${th.small_lots} 張</div>`
       +(fl.iceberg||[]).filter(x=>x.regular||x.share_cnt>=0.2).map(x=>`<div class="alert" style="margin-top:6px">規律小單：${x.size} 張 × ${x.count} 筆 ${x.side}，共 ${x.volume} 張${x.avg_gap_s?`，每 ${f(x.avg_gap_s,0)} 秒`:''}${x.regular?' ← 機器單':''}</div>`).join('');}
   else $('flow').innerHTML='<span class="muted">需要永豐串流（.env 填金鑰）</span>';
-  const bids=q.bids||[],asks=q.asks||[];const mx=Math.max(1,...bids.map(b=>b[1]),...asks.map(a=>a[1]));
-  $('book').innerHTML=`<div><div class="small muted">委買</div>${bids.map(([p,v])=>`<div class="lv bid"><span>${f(p,1)}</span><i style="width:${v/mx*100}%"></i><span>${v}</span></div>`).join('')}</div>
-    <div><div class="small muted">委賣</div>${asks.map(([p,v])=>`<div class="lv ask"><span>${f(p,1)}</span><i style="width:${v/mx*100}%"></i><span>${v}</span></div>`).join('')}</div>`
-    +(i.book_imb!=null?`<div class="small muted">五檔買 ${i.bid5} / 賣 ${i.ask5}（不平衡 ${f(i.book_imb,2)}）</div>`:'');
+  renderAlerts(ev);renderWarr(ev);drawAll();}
+
+function renderAlerts(ev){const live=(LIVE&&LIVE.alerts&&LIVE.alerts[CUR])||ev.live_alerts||[];const seen=new Set();const out=[];
+  live.slice().reverse().forEach(([t,w])=>{if(seen.has(w.slice(0,24)))return;seen.add(w.slice(0,24));out.push(`<div class="alert hard"><span class="t">${esc(t)}</span>${esc(w)}</div>`);});
+  (ev.warnings||[]).forEach(w=>{if(seen.has(w.slice(0,24)))return;seen.add(w.slice(0,24));const hard=/處置|⚠/.test(w);const note=/首 10 分鐘|尾盤|已收盤|試撮/.test(w)&&!hard;
+    out.push(`<div class="alert ${hard?'hard':note?'note':''}">${esc(w)}</div>`);});
+  $('alerts').innerHTML=out.join('')||'<span class="muted">無</span>';}
+
+function renderWarr(ev){const w=(LIVE&&LIVE.warrants&&LIVE.warrants[CUR])||ev.warrants,wd=(STATE.daily[CUR]||{}).warrants||{};
+  $('warr').innerHTML=w&&w.n?`<div class="kv"><div>認購量<b class="num">${w.call_vol}</b></div><div>昨全日<b class="num">${wd.call_vol??'-'}</b></div><div>認購漲/跌<b class="num"><span class="up">${w.call_up}</span>/<span class="dn">${w.call_down}</span></b></div><div>認售量<b class="num">${w.put_vol}</b></div></div>
+    <table class="grid" style="margin-top:6px">${(w.tops||[]).map(([n,r,v,c])=>`<tr><td>${esc(n)}</td><td class="n">${v}</td><td class="n ${cls(c)}">${pct(c,0)}</td></tr>`).join('')}</table>
+    <div class="small muted" style="margin-top:4px">前日避險 ${wd.hedge_net??'-'} 張（${pct(wd.hedge_pct,1)} 量）</div>`
+    :(wd&&(wd.n_call||wd.n_put)?'<span class="muted">尚無盤中資料</span>':'<span class="muted">此標的無權證</span>');}
+
+// ---------------------------------------------------------------- 估算區（每 interval 秒）
+function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
+  $('tabs').innerHTML=STATE.codes.map(c=>{const lq=LIVE&&LIVE.quotes[c];const e=STATE.latest[c];const ch=lq?lq.chg_pct:e?.info?.chg_pct;
+    return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||'')} <span class="num ${cls(ch)}">${pct(ch)}</span></div>`}).join('');
+  if(!LIVE){const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${pct(v.chg)}</b>`).join(' &nbsp; ');
+    $('shioaji').innerHTML=STATE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';}
+  $('pre').textContent=STATE.describe?.[CUR]||'';
+  if(!ev){$('verdict').textContent='等待第一次估算…';if(!LIVE)$('price').textContent='等待報價…';return;}
+  const i=ev.info||{};
+  const age=(Date.now()-new Date(STATE.updated).getTime())/1000;const next=Math.max(0,Math.round(STATE.interval-age));
+  $('eval-t').innerHTML=`估算 ${esc(ev.time)} · 下次 ${String(Math.floor(next/60)).padStart(2,'0')}:${String(next%60).padStart(2,'0')}${age>STATE.interval*2?' <span class="stale">(過舊)</span>':''}`;
+  const side=ev.side;const vcol=side==='空'?'dn':side==='多'?'up':'flat';const ph=(LIVE&&LIVE.phase)||i.phase||phaseNow();
+  $('verdict').innerHTML=`<div class="verdict ${vcol}">${esc(ev.verdict)}</div>
+   <div class="bars"><span class="up">多</span><div class="bar long"><i style="width:${ev.p_long}%"></i></div><b class="num up">${f(ev.p_long,0)}%</b></div>
+   <div class="bars"><span class="dn">空</span><div class="bar short"><i style="width:${ev.p_short}%"></i></div><b class="num dn">${f(ev.p_short,0)}%</b></div>
+   <div class="small muted" style="margin-top:6px">盤前 <b class="num">${f(ev.daily_bias,2)}</b> · 盤中 <b class="num">${f(ev.intra_bias,2)}</b> · 合計 <b class="num">${f(ev.bias,2)}</b></div>
+   <div class="hint"><b>${esc(ph.label)}</b>${ph.range?' '+ph.range:''}：${esc(ph.hint)}</div>`;
+  const chip=([n,s,t])=>`<span class="chip ${s>0?'pos':s<0?'neg':'zero'}" title="${esc(t)}">${esc(n)}<b>${s>0?'+':''}${f(s,1)}</b></span>`;
+  $('factors').innerHTML=`<div class="small muted" style="margin-bottom:4px">盤前</div><div class="chips">${(ev.daily_factors||[]).map(chip).join('')||'<span class="muted">無</span>'}</div>
+   <div class="small muted" style="margin:8px 0 4px">盤中</div><div class="chips">${(ev.intraday_factors||[]).map(chip).join('')||'<span class="muted">無</span>'}</div>`;
+  const pl=ev.plan||{};const act=activeSide(ev);
+  const box=(k,o,title)=>o?`<div class="box ${k} ${k===act?'':'dim'}"><h4>${title}${k===act?' <span class="small muted">主計畫</span>':''}</h4><div class="entry">${esc(o.entry)}</div><table>
+    <tr><td>停損</td><td class="num">${fp(o.stop)} <span class="muted">(${f(o.risk_pct,1)}%)</span></td></tr><tr><td>目標 1</td><td class="num">${fp(o.t1)} <span class="muted">(${f(o.reward_pct,1)}%)</span></td></tr><tr><td>目標 2</td><td class="num">${fp(o.t2)}</td></tr></table>
+    ${o.breakdown||o.breakout?`<div class="small muted" style="margin-top:6px">${esc(o.breakdown||o.breakout)}</div>`:''}</div>`:'';
+  $('plan').innerHTML=box('short',ev.p_short>0?pl.short:null,`空 <span class="num dn">${f(ev.p_short,0)}%</span>`)+box('long',pl.long,`多 <span class="num up">${f(ev.p_long,0)}%</span>`);
+  const res=(pl.resistance||[]).slice().reverse(),sup=pl.support||[];const cur=(LIVE&&LIVE.quotes[CUR]&&LIVE.quotes[CUR].ref)||ev.quote.ref;
+  $('ladder').innerHTML=res.map(([n,v])=>`<div class="row r"><span>${esc(n)}</span><span>${fp(v)}</span></div>`).join('')+`<div class="row now"><span>現價</span><span>${fp(cur)}</span></div>`+sup.map(([n,v])=>`<div class="row s"><span>${esc(n)}</span><span>${fp(v)}</span></div>`).join('');
   const gd=i.group_detail||[];
   $('group').innerHTML=`<div class="small muted">族群均 <b class="num ${cls(i.group_avg)}">${pct(i.group_avg)}</b>（${i.group_up??'-'}/${i.group_n??'-'} 漲）· ${esc(d.group||'未定義')}</div>
     ${i.group_leader?`<div class="alert hard" style="margin:6px 0">族群領漲 <b>${esc(i.group_leader[2]||i.group_leader[1])}</b> <b class="num up">${pct(i.group_leader[0])}</b>：族群資金輪動，空單防接貨軋空</div>`:''}
     <table class="grid"><tr><th>代碼</th><th>名稱</th><th style="text-align:right">漲跌</th></tr>${gd.map(([p,c,n])=>`<tr><td class="num">${c}</td><td>${esc(n||'')}</td><td class="n ${cls(p)}">${pct(p)}</td></tr>`).join('')}</table>`;
-  const w=ev.warrants,wd=d.warrants||{};
-  $('warr').innerHTML=w&&w.n?`<div class="kv"><div>認購量<b class="num">${w.call_vol}</b></div><div>昨全日<b class="num">${wd.call_vol??'-'}</b></div><div>認購漲/跌<b class="num"><span class="up">${w.call_up}</span>/<span class="dn">${w.call_down}</span></b></div><div>認售量<b class="num">${w.put_vol}</b></div></div>
-    <table class="grid" style="margin-top:6px">${(w.tops||[]).map(([n,r,v,c])=>`<tr><td>${esc(n)}</td><td class="n">${v}</td><td class="n ${cls(c)}">${pct(c,0)}</td></tr>`).join('')}</table>
-    <div class="small muted" style="margin-top:4px">前日避險 ${wd.hedge_net??'-'} 張（${pct(wd.hedge_pct,1)} 量）</div>`
-    :(wd&&(wd.n_call||wd.n_put)?'<span class="muted">尚無盤中資料</span>':'<span class="muted">此標的無權證</span>');
-  $('pre').textContent=STATE.describe?.[CUR]||'';
+  if(!LIVE){renderAlerts(ev);renderWarr(ev);
+    const q=ev.quote;$('price').innerHTML=`<div class="price"><span class="big num ${cls(i.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(i.chg_pct)}">${pct(i.chg_pct)}</span><span class="muted">${esc(ev.time)}</span></div>`;}
+  else renderLive();
 }
 function drawChart(){const h=HIST[CUR]||[];const c=$('chart');const W=c.width=c.clientWidth*devicePixelRatio,H=c.height=220*devicePixelRatio;const g=c.getContext('2d');g.clearRect(0,0,W,H);
   if(h.length<2){g.fillStyle='#8b93a3';g.font=`${12*devicePixelRatio}px sans-serif`;g.fillText('資料累積中…',10*devicePixelRatio,20*devicePixelRatio);return;}
@@ -181,7 +281,6 @@ function drawChart(){const h=HIST[CUR]||[];const c=$('chart');const W=c.width=c.
   g.fillText(f(hi,1),4,pad+4);g.fillText(f(lo,1),4,H-pad+4);g.fillText('100%',W-pad+4,pad+4);g.fillText('50%',W-pad+4,y2(50)+4);g.fillText('0%',W-pad+4,H-pad+4);
   const step=Math.max(1,Math.floor(h.length/8));for(let i=0;i<h.length;i+=step){g.fillText(h[i].time.slice(0,5),x(i)-14*devicePixelRatio,H-8*devicePixelRatio);}
   g.fillStyle='#ff4d4f';g.fillText('— 多%',pad,14*devicePixelRatio);g.fillStyle='#2ecc71';g.fillText('— 空%',pad+50*devicePixelRatio,14*devicePixelRatio);g.fillStyle='#e6e9ef';g.fillText('— 價',pad+100*devicePixelRatio,14*devicePixelRatio);}
-window.addEventListener('resize',drawChart);
 </script>
 </body>
 </html>

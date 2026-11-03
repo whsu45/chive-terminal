@@ -33,7 +33,17 @@ def available():
 
 def _new_acc():
     return {"ticks": [], "last": None, "high": None, "low": None,
-            "bid_total": None, "ask_total": None, "bid_cnt": None, "ask_cnt": None}
+            "bid_total": None, "ask_total": None, "bid_cnt": None, "ask_cnt": None,
+            "bars": {}}   # "HH:MM" -> [o, h, l, c, vol, amt]（分 K，給江波圖）
+
+
+def _bar_update(acc, ts, price, vol):
+    key = ts.strftime("%H:%M") if isinstance(ts, dt.datetime) else str(ts)[:5]
+    b = acc["bars"].get(key)
+    if b is None:
+        acc["bars"][key] = [price, price, price, price, vol, price * vol]
+    else:
+        b[1] = max(b[1], price); b[2] = min(b[2], price); b[3] = price; b[4] += vol; b[5] += price * vol
 
 
 def ns_to_dt(ts):
@@ -62,6 +72,7 @@ def _ingest(code, ts, price, vol, tick_type, big_lot=None):
     acc["high"] = price if acc["high"] is None else max(acc["high"], price)
     acc["low"] = price if acc["low"] is None else min(acc["low"], price)
     acc["ticks"].append((ts, float(price), int(vol), int(tick_type)))
+    _bar_update(acc, ts, float(price), int(vol))
 
 
 def lot_thresholds(price, sizes=None):
@@ -210,6 +221,99 @@ def start_stream(codes, big_lot=None):
         except Exception as e:
             print(f"[shioaji] {code} 訂閱失敗：{e}")
     return ok
+
+
+_idx = {}   # "t00"/"o00" -> {"last": float, "bars": {"HH:MM": [o,h,l,c,0,0]}}
+_IDX_CONTRACTS = {"t00": ("TSE", "IX0001"), "o00": ("OTC", "IX0043")}   # 加權、櫃買
+
+
+def _idx_contract(api, key):
+    ex, code = _IDX_CONTRACTS[key]
+    try:
+        return getattr(api.Contracts.Indexs, ex)[code]
+    except Exception:
+        return None
+
+
+def start_index_stream():
+    """訂閱加權/櫃買指數即時值（on_quote_idx_v1），並用一次 kbars 回補今日分 K。回傳成功的 key。"""
+    api = login()
+    if api is None:
+        return []
+    import shioaji as sj
+    ok = []
+
+    @api.on_quote_idx_v1()
+    def _on_idx(*args):
+        try:
+            quote = args[-1]
+            code = str(getattr(quote, "code", "") or "")
+            key = next((k for k, (_, c) in _IDX_CONTRACTS.items() if c == code), None)
+            if key is None:
+                return
+            close = getattr(quote, "close", None)
+            if close is None:
+                return
+            ts = getattr(quote, "datetime", None) or dt.datetime.now()
+            with _lock:
+                acc = _idx.setdefault(key, {"last": None, "bars": {}})
+                acc["last"] = float(close)
+                _bar_update(acc, ts, float(close), 0)
+        except Exception:
+            pass
+
+    today = dt.date.today().isoformat()
+    for key in _IDX_CONTRACTS:
+        contract = _idx_contract(api, key)
+        if contract is None:
+            continue
+        try:
+            k = api.kbars(contract=contract, start=today, end=today)   # 1 次額度，回補開盤到現在
+            with _lock:
+                acc = _idx.setdefault(key, {"last": None, "bars": {}})
+                for ts, c in zip(k.ts, k.Close):
+                    t = ns_to_dt(ts)
+                    if t.date() == dt.date.today():
+                        acc["bars"][t.strftime("%H:%M")] = [float(c)] * 4 + [0, 0]
+                        acc["last"] = float(c)
+        except Exception as e:
+            print(f"[shioaji] 指數 {key} 回補分K失敗：{str(e)[:80]}")
+        try:
+            api.quote.subscribe(contract, quote_type=sj.QuoteType.Tick, version=sj.QuoteVersion.v1)
+            ok.append(key)
+        except Exception as e:
+            print(f"[shioaji] 指數 {key} 訂閱失敗：{str(e)[:80]}")
+    return ok
+
+
+def series(code):
+    """個股分 K：[[HH:MM, o, h, l, c, vol, amt], ...]（給江波圖；amt 可算 VWAP）。"""
+    with _lock:
+        acc = _state.get(code)
+        if not acc:
+            return []
+        return [[k] + list(v) for k, v in sorted(acc["bars"].items())]
+
+
+def index_series(key):
+    """指數分 K：[[HH:MM, close], ...]。沒訂閱到回 []。"""
+    with _lock:
+        acc = _idx.get(key)
+        if not acc:
+            return []
+        return [[k, v[3]] for k, v in sorted(acc["bars"].items())]
+
+
+def last_price(code):
+    with _lock:
+        acc = _state.get(code)
+        return acc["last"] if acc else None
+
+
+def index_last(key):
+    with _lock:
+        acc = _idx.get(key)
+        return acc["last"] if acc else None
 
 
 def flow(code, window_min=None, price=None):

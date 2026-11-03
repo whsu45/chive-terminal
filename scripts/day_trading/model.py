@@ -155,12 +155,31 @@ def daily_factors(d):
 
 
 # ---------------------------------------------------------------- 盤中因子
+PHASES = [
+    ("pre",   "00:00", "08:30", "盤前",  "", "看夜盤、美股與盤前籌碼，定今天的主劇本"),
+    ("trial", "08:30", "09:00", "試撮",  "08:30–09:00", "掛單可撤，價量可能是假的；只看方向不下結論"),
+    ("early", "09:00", "10:30", "早盤",  "09:00–10:30", "隔日沖倒貨與主力表態多在此段；首 10 分鐘不追單，等 VWAP 與分流方向一致再進"),
+    ("mid",   "10:30", "12:00", "中盤",  "10:30–12:00", "量能通常縮、假突破多，只做 5 分 K 確認的突破/跌破單，目標縮短"),
+    ("late",  "12:00", "13:30", "尾盤",  "12:00–13:30", "法人作價與當沖回補主導，順 VWAP 方向做；13:20 前當沖部位處理完，13:25 後試撮不開新單"),
+    ("closed","13:30", "24:00", "已收盤", "", "復盤：review.py / replay.py"),
+]
+
+
+def phase_of(now):
+    """回 {key, label, range, hint}。"""
+    hhmm = now.strftime("%H:%M")
+    for key, a, b, label, rng, hint in PHASES:
+        if a <= hhmm < b:
+            return {"key": key, "label": label, "range": rng, "hint": hint}
+    return {"key": "closed", "label": "已收盤", "range": "", "hint": ""}
+
+
 def _flow_dynamics(flow, now):
     """
     主力分流的「動態」：淨額的水位本身校準過沒預測力（IC≈-0.03），但水位在幾分鐘內的劇變有意義。
     flow["hist"]: 本程式歷次取樣 [[epoch_sec, big_net, small_net, price], ...]（monitor/replay 附上）。
-    11/03 建榮復盤：主力淨賣 09:20 -483 → 09:22 -273（2 分鐘回補 210 張）→ 價 89.2→90.85→96.65；
-    09:25 -13（幾乎全回補）→ 09:28 -221（再倒 200 張）→ 價 96.65→92.35。前者是空單該停損的硬訊號，
+    11/03 建榮復盤：主力淨賣 09:20 -483 → 09:22 -273（2 分鐘回補 210 張）→ 價 89.2→90.85→93.5；
+    09:25 -13（幾乎全回補）→ 09:28 -221（再倒 200 張）→ 價 93.5→92.35。前者是空單該停損的硬訊號，
     後者是「拉高、回補鎖單、再倒」的出貨型態。
     """
     F, warns = [], []
@@ -264,9 +283,9 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now):
     elif dtp_inv >= 5 and chg >= 2.5 and not pre_open:
         F.append(("庫存逼近倒貨區", -0.3 * inv_scale, f"隔日沖庫存 {dtp_inv:.0f}% 量，盤中 {chg:+.1f}%，接近他們的出貨區{inv_note}"))
 
-    # 衝高回落（墓碑）：今高離昨收 ≥5%、現價已從今高回落 ≥3%。11/03 建榮 96.65→91.3、驊宏資 44.95→42.3：
+    # 衝高回落（墓碑）：今高離昨收 ≥5%、現價已從今高回落 ≥3%。11/03 建榮 93.5→90.9、驊宏資 44.95→42.3：
     # 高點接貨的散戶全套牢，上方每一檔都是解套賣壓，此時「強於大盤、VWAP 之上」的多方分數是慣性假象
-    # MIS 的今高會延遲（11/03 建榮 ref 已 96.65、h 還停在 93.5），所以用本程式看過的最高價補正
+    # MIS 的今高可能延遲，所以用本程式看過的最高價補正（注意 11/03 建榮「96.65」其實是延緩撮合試算價，已在 src_mis 夾回高低）
     h_eff = max([x for x in [h, p] + [s[1] for s in (samples or [])] if x] or [0])
     info["high_seen"] = h_eff
     if h_eff and y and p and not pre_open:
@@ -409,13 +428,15 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now):
         elif pace < 0.6:
             F.append(("量縮", 0.0, f"量比 {pace:.1f}，盤整機率高，兩邊勝率都打折"))
 
-    # 時間規則
-    if hhmm >= "09:50":
-        warns.append("已過 09:50：依紀律不開新倉，以下僅供觀察與復盤")
-    elif hhmm >= "09:35":
-        warns.append("09:35 以後只做縮短時間目標的單，09:50 前全數平倉")
-    elif "09:00" <= hhmm < "09:10":
+    # 時段規則（階段性策略，見 PHASES）
+    ph = phase_of(now)
+    info["phase"] = ph
+    if "09:00" <= hhmm < "09:10":
         warns.append("開盤首 10 分鐘：位置、VWAP、相對強弱都還是雜訊，盤中因子只計一半，不追單")
+    elif hhmm >= "13:20" and ph["key"] == "late":
+        warns.append("尾盤最後 10 分鐘：13:25 起收盤試撮不能撤單，當沖部位現在處理")
+    elif ph["key"] == "closed":
+        warns.append("已收盤，以下僅供復盤")
     return F, warns, info
 
 
@@ -561,7 +582,7 @@ def build_plan(d, q, info, levels, p_long, p_short, now):
         stop = I.round_tick(r1[1] + pad, "up")
         tgt1 = s1[1] if s1 else I.round_tick(p - atr * 0.5, "down")
         tgt2 = below[1][1] if len(below) > 1 else I.round_tick(p - atr * 0.9, "down")
-        plan["short"] = {"entry": f"反彈至 {r1[1]} ({r1[0]}) 不過，{entry} 空", "stop": stop,
+        plan["short"] = {"entry": f"反彈至 {r1[1]} ({r1[0]}) 不過，{entry} 空", "entry_px": entry, "trigger_px": r1[1], "stop": stop,
                          "t1": tgt1, "t2": tgt2, "risk_pct": (stop - entry) / entry * 100,
                          "reward_pct": (entry - tgt1) / entry * 100,
                          "breakdown": f"備援：5分K收破 {s1[1]} ({s1[0]}) 追空，停損 {I.round_tick(s1[1] + pad, 'up')}，目標 {tgt2}" if s1 else None}
@@ -570,7 +591,7 @@ def build_plan(d, q, info, levels, p_long, p_short, now):
         stop = I.round_tick(s1[1] - pad, "down")
         tgt1 = r1[1] if r1 else I.round_tick(p + atr * 0.5, "up")
         tgt2 = above[1][1] if len(above) > 1 else I.round_tick(p + atr * 0.9, "up")
-        plan["long"] = {"entry": f"回測 {s1[1]} ({s1[0]}) 守住，{entry} 多", "stop": stop,
+        plan["long"] = {"entry": f"回測 {s1[1]} ({s1[0]}) 守住，{entry} 多", "entry_px": entry, "trigger_px": s1[1], "stop": stop,
                         "t1": tgt1, "t2": tgt2, "risk_pct": (entry - stop) / entry * 100,
                         "reward_pct": (tgt1 - entry) / entry * 100,
                         "breakout": f"備援：5分K收過 {r1[1]} ({r1[0]}) 追多，停損 {I.round_tick(r1[1] - pad, 'down')}，目標 {tgt2}" if r1 else None}

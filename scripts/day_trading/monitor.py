@@ -114,12 +114,37 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self._send('{"error":"not found"}', code=404)
 
 
-def start_web(port):
-    srv = http.server.ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    th = threading.Thread(target=srv.serve_forever, daemon=True)
-    th.start()
-    print(f"[web] 儀表板：http://127.0.0.1:{port}/   （只綁本機，不對外）")
-    return srv
+def _port_holder(port):
+    """誰佔了這個 port（macOS/Linux 用 lsof；查不到回 None）。"""
+    try:
+        out = subprocess.run(["lsof", "-nP", f"-iTCP:{port}", "-sTCP:LISTEN", "-t"], capture_output=True, text=True, timeout=3).stdout.split()
+        if not out:
+            return None
+        pid = out[0]
+        cmd = subprocess.run(["ps", "-o", "command=", "-p", pid], capture_output=True, text=True, timeout=3).stdout.strip()
+        return f"PID {pid}：{cmd[:80]}"
+    except Exception:
+        return None
+
+
+def start_web(port, tries=10):
+    """綁 127.0.0.1:port；被佔就往後找（最多 tries 個），回傳 (server, 實際 port)。"""
+    for i in range(tries):
+        p = port + i
+        try:
+            srv = http.server.ThreadingHTTPServer(("127.0.0.1", p), Handler)
+        except OSError as e:
+            if e.errno not in (48, 98, 10048):   # EADDRINUSE：macOS / Linux / Windows
+                raise
+            who = _port_holder(p)
+            print(f"[web] port {p} 已被佔用" + (f"（{who}）" if who else "") +
+                  ("；若那是上一個 monitor，Ctrl+C 停掉它或 kill 該 PID，或把多檔放同一個程序：monitor.py 5340 3711 --web" if i == 0 else ""))
+            continue
+        th = threading.Thread(target=srv.serve_forever, daemon=True)
+        th.start()
+        print(f"[web] 儀表板：http://127.0.0.1:{p}/   （只綁本機，不對外）")
+        return srv, p
+    raise SystemExit(f"[web] {port}~{port + tries - 1} 都被佔用，請用 --web <其他 port>")
 
 load_env()
 CALIBRATE_MAX_AGE_DAYS = int(os.environ.get("CALIBRATE_MAX_AGE_DAYS", "45") or 45)
@@ -586,7 +611,7 @@ def main():
     if a.big_amount:
         os.environ["BIG_LOT_AMOUNT"] = str(int(a.big_amount))
     if a.web:
-        start_web(a.web)
+        _, a.web = start_web(a.web)
         if not a.no_open:
             try:
                 webbrowser.open(f"http://127.0.0.1:{a.web}/")  # macOS / Windows / Linux 都用系統預設瀏覽器

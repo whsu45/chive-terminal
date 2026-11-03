@@ -115,21 +115,68 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 
 def _port_holder(port):
-    """誰佔了這個 port（macOS/Linux 用 lsof；查不到回 None）。"""
+    """誰佔了這個 port → (pid, 指令) 或 None。macOS/Linux 用 lsof+ps，Windows 用 netstat+PowerShell。"""
     try:
+        if os.name == "nt":
+            out = subprocess.run(["netstat", "-ano", "-p", "tcp"], capture_output=True, text=True, timeout=5).stdout
+            pid = None
+            for ln in out.splitlines():
+                parts = ln.split()
+                if len(parts) >= 5 and parts[1].endswith(f":{port}") and parts[3].upper() == "LISTENING":
+                    pid = parts[4]; break
+            if not pid:
+                return None
+            cmd = subprocess.run(["powershell", "-NoProfile", "-Command",
+                                  f"(Get-CimInstance Win32_Process -Filter 'ProcessId={pid}').CommandLine"],
+                                 capture_output=True, text=True, timeout=8).stdout.strip()
+            return int(pid), cmd
         out = subprocess.run(["lsof", "-nP", f"-iTCP:{port}", "-sTCP:LISTEN", "-t"], capture_output=True, text=True, timeout=3).stdout.split()
         if not out:
             return None
-        pid = out[0]
-        cmd = subprocess.run(["ps", "-o", "command=", "-p", pid], capture_output=True, text=True, timeout=3).stdout.strip()
-        return f"PID {pid}：{cmd[:80]}"
+        pid = int(out[0])
+        cmd = subprocess.run(["ps", "-o", "command=", "-p", str(pid)], capture_output=True, text=True, timeout=3).stdout.strip()
+        return pid, cmd
     except Exception:
         return None
 
 
+def _kill(pid):
+    """先禮後兵：TERM 等 3 秒，還在就 KILL。回傳是否結束。"""
+    import signal
+    try:
+        if os.name == "nt":
+            subprocess.run(["taskkill", "/PID", str(pid), "/F"], capture_output=True, timeout=8)
+        else:
+            os.kill(pid, signal.SIGTERM)
+            for _ in range(30):
+                time.sleep(0.1)
+                try:
+                    os.kill(pid, 0)
+                except OSError:
+                    break
+            else:
+                os.kill(pid, signal.SIGKILL)
+                time.sleep(0.3)
+        return True
+    except Exception as e:
+        print(f"[web] 無法結束 PID {pid}：{e}")
+        return False
+
+
+def _short_cmd(cmd):
+    """指令太長時只留 monitor.py 之後的部分（python 路徑沒資訊）。"""
+    k = cmd.find("monitor.py")
+    return cmd[k:][:70] if k >= 0 else cmd[-70:]
+
+
 def start_web(port, tries=10):
-    """綁 127.0.0.1:port；被佔就往後找（最多 tries 個），回傳 (server, 實際 port)。"""
-    for i in range(tries):
+    """
+    綁 127.0.0.1:port。被佔時：佔用者若是另一個 monitor.py（上一次沒關的儀表板）就砍掉它、接管同一個 port；
+    是別的程式就往後找（最多 tries 個）。回傳 (server, 實際 port)。
+    """
+    i = 0
+    killed = False
+    while i < tries:
         p = port + i
         try:
             srv = http.server.ThreadingHTTPServer(("127.0.0.1", p), Handler)
@@ -137,8 +184,14 @@ def start_web(port, tries=10):
             if e.errno not in (48, 98, 10048):   # EADDRINUSE：macOS / Linux / Windows
                 raise
             who = _port_holder(p)
-            print(f"[web] port {p} 已被佔用" + (f"（{who}）" if who else "") +
-                  ("；若那是上一個 monitor，Ctrl+C 停掉它或 kill 該 PID，或把多檔放同一個程序：monitor.py 5340 3711 --web" if i == 0 else ""))
+            if who and "monitor.py" in who[1] and who[0] != os.getpid() and not killed:
+                print(f"[web] port {p} 被上一個 monitor 佔用（PID {who[0]}：{_short_cmd(who[1])}），結束它並接管")
+                killed = _kill(who[0])
+                if killed:
+                    time.sleep(0.5)
+                    continue          # 同一個 port 再試一次
+            print(f"[web] port {p} 已被佔用" + (f"（PID {who[0]}：{_short_cmd(who[1])}）" if who else "") + "，改用下一個")
+            i += 1; killed = False
             continue
         th = threading.Thread(target=srv.serve_forever, daemon=True)
         th.start()

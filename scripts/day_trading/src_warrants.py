@@ -126,7 +126,7 @@ def intraday(wd):
         try:
             quotes.update(src_mis.fetch([ex for _, ex in chunk]))
         except http.HttpError:
-            continue
+            return {}   # 少一批就是不完整的快照：回空讓呼叫端沿用上一輪，否則下一輪會把整天的量當成「這一分鐘」
     res = {"call_vol": 0, "put_vol": 0, "call_up": 0, "call_down": 0, "put_up": 0, "put_down": 0, "n": 0, "tops": []}
     for w, _ in items:
         q = quotes.get(w["code"])
@@ -181,7 +181,7 @@ def intraday_detail(wd):
         try:
             quotes.update(src_mis.fetch([ex for _, ex in chunk]))
         except http.HttpError:
-            continue
+            return {}   # 少一批就是不完整的快照：回空讓呼叫端沿用上一輪，否則下一輪會把整天的量當成「這一分鐘」
     snap = {}
     for w, _ in items:
         q = quotes.get(w["code"])
@@ -248,7 +248,8 @@ def alerts(snap, prev_snap, stock_chg_pct, base_call_vol, interval_min):
             out.append(f"⚠ 現股只動 {sc:+.1f}% 但認購權證中位已 {med:+.0f}%：發行商在調隱含波動率或市場搶先定價，現股接下來波動可能放大。")
 
     if base_call_vol and prev_snap:
-        dv_all = sum(max(0, s["v"] - (prev_snap.get(s["code"]) or {}).get("v", 0)) for s in calls + puts)
+        # 只算上一輪也有的權證；上一輪沒抓到的不能當成「這一輪全新成交」
+        dv_all = sum(max(0, s["v"] - prev_snap[s["code"]]["v"]) for s in calls + puts if s["code"] in prev_snap)
         if dv_all >= base_call_vol * 0.08:
             out.append(f"⚠ 權證 {interval_min} 分鐘成交 {dv_all} 張 = 昨日全日認購量 {dv_all/base_call_vol*100:.0f}%：瞬間爆量，現股即將或正在劇烈波動，部位先減半。")
     return out

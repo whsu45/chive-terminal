@@ -23,7 +23,7 @@ import prep
 import model
 import src_mis
 import src_warrants as W
-import http_client as http
+import http_client as hc   # 別名不能叫 http：下面 import http.server 會把它蓋掉
 import glob
 import subprocess
 import threading
@@ -461,12 +461,16 @@ class Monitor:
     def fast_loop(self, every=10):
         while True:
             t0 = time.time()
+            backoff = 0
             try:
                 self.fast_tick()
+            except hc.HttpError as e:
+                backoff = 20   # MIS 偶發回 HTML/限流：這輪跳過，多等 20 秒再試
+                print(f"[fast] MIS 抓取失敗，20 秒後再試：{str(e)[:120]}")
             except Exception as e:
                 print(f"[fast] {str(e)[:100]}")
             hhmm = dt.datetime.now().strftime("%H:%M")
-            wait = 60 if (hhmm >= "13:35" or hhmm < "08:25") else every
+            wait = 60 if (hhmm >= "13:35" or hhmm < "08:25") else every + backoff
             time.sleep(max(1, wait - (time.time() - t0)))
 
     def start_fast(self, every=10):
@@ -501,8 +505,8 @@ class Monitor:
                         if verbose:
                             print(explain(ev))
                 sys.stdout.flush()
-            except http.HttpError as e:
-                print(f"[{dt.datetime.now():%H:%M:%S}] 抓取失敗：{e}")
+            except hc.HttpError as e:
+                print(f"[{dt.datetime.now():%H:%M:%S}] 抓取失敗（這一輪跳過，下一輪再試）：{str(e)[:160]}")
             except Exception:
                 traceback.print_exc()
             if once:

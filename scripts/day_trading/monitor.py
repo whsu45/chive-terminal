@@ -70,7 +70,7 @@ class WebState:
             for k in ("t00", "o00"):
                 q = quotes.get(k)
                 if q and q.get("ref") and q.get("y"):
-                    self.index[k] = {"ref": q["ref"], "chg": (q["ref"] / q["y"] - 1) * 100}
+                    self.index[k] = {"ref": q["ref"], "y": q["y"], "chg": (q["ref"] / q["y"] - 1) * 100}
             self.updated = dt.datetime.now().isoformat()
 
     def snapshot(self):

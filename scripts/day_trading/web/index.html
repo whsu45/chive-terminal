@@ -119,6 +119,8 @@ const pct=(x,d=2)=>x==null?'-':(x>0?'+':'')+Number(x).toFixed(d)+'%';
 const cls=x=>x>0?'up':x<0?'dn':'flat';
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const dec=p=>p==null?2:p>=500?0:p>=100?1:p>=50?1:2;
+const sgn=(x,d=2)=>x==null?'-':(x>0?'+':'')+Number(x).toFixed(d);
+const chgTxt=(ref,y,d)=>(ref==null||!y)?'-':`${sgn(ref-y,d)} (${pct((ref/y-1)*100)})`;
 const fp=p=>f(p,dec(p));
 
 // 時段（與 model.PHASES 一致；後端沒回時前端自己算）
@@ -148,20 +150,25 @@ function drawJB(c,o){
   const F=px=>px*dpr;g.font=`${F(11)}px ${getComputedStyle(document.body).fontFamily}`;
   const ref=o.y;const pts=(o.series||[]).map(b=>o.stock?{t:b[0],o:b[1],h:b[2],l:b[3],c:b[4],v:b[5],a:b[6]}:{t:b[0],c:b[1],v:0,a:0}).filter(p=>p.c!=null);
   if(!ref||!pts.length){g.fillStyle='#8b93a3';g.fillText(ref?'等待分時資料…':'等待報價…',F(10),F(20));return;}
-  const padL=F(6),padR=F(o.stock?70:56),padT=F(8),padB=F(16),volH=o.stock?Math.round(H*0.17):0;
+  const padL=F(6),padR=F(o.stock?96:84),padT=F(8),padB=F(16),volH=o.stock?Math.round(H*0.17):0;
   const x0=padL,x1=W-padR,y0=padT,y1=H-padB-volH-(o.stock?F(4):0);
   const mins=t=>{const [h,m]=t.split(':').map(Number);return Math.min(270,Math.max(0,(h-9)*60+m));};
   const X=m=>x0+(x1-x0)*m/270;
-  let dev=0;pts.forEach(p=>{dev=Math.max(dev,Math.abs(p.c-ref));if(o.stock){dev=Math.max(dev,Math.abs(p.h-ref),Math.abs(p.l-ref));}});
+  // 範圍：上下各自依實際走勢（非對稱），昨收永遠在圖內；大跌日不會把線擠在下半部
+  let up=0,dn=0;pts.forEach(p=>{up=Math.max(up,p.c-ref);dn=Math.max(dn,ref-p.c);if(o.stock){up=Math.max(up,p.h-ref);dn=Math.max(dn,ref-p.l);}});
   const lv=[];if(o.plan){for(const side of ['short','long']){const pl=o.plan[side];if(!pl)continue;[pl.entry_px,pl.stop,pl.t1,pl.t2].forEach(v=>{if(v!=null&&Math.abs(v-ref)/ref<0.1)lv.push(v);});}}
-  lv.forEach(v=>dev=Math.max(dev,Math.abs(v-ref)));
-  dev=Math.max(dev,ref*0.004)*1.12;
-  const Y=v=>y0+(y1-y0)*(1-((v-ref)/dev+1)/2);
-  // 格線：昨收 + ±50% ±100% 的 dev
-  g.lineWidth=F(1);g.strokeStyle='#232833';[-1,-0.5,0.5,1].forEach(k=>{const v=ref+dev*k;g.beginPath();g.moveTo(x0,Y(v));g.lineTo(x1,Y(v));g.stroke();
-    g.fillStyle=k>0?'#ff4d4f':'#2ecc71';g.globalAlpha=.8;g.fillText(pct((v/ref-1)*100,1),x1+F(4),Y(v)+F(4));g.globalAlpha=1;});
+  lv.forEach(v=>{up=Math.max(up,v-ref);dn=Math.max(dn,ref-v);});
+  const minDev=ref*0.004;up=Math.max(up,minDev)*1.12;dn=Math.max(dn,minDev)*1.12;
+  const Y=v=>y0+(y1-y0)*(up-(v-ref))/(up+dn);
+  // 格線：以整齊的百分比為間距（每邊最多 4 條），右側標 % 與價位
+  const maxPct=Math.max(up,dn)/ref*100;const steps=[0.25,0.5,1,2,2.5,5,10];const stepP=steps.find(st=>maxPct/st<=4)||10;
+  const lastY=Y(o.last??pts[pts.length-1].c);
+  g.lineWidth=F(1);g.strokeStyle='#232833';
+  for(let k=1;k<=8;k++){for(const sg of [1,-1]){const v=ref*(1+sg*k*stepP/100);if(v>ref+up||v<ref-dn)continue;g.beginPath();g.moveTo(x0,Y(v));g.lineTo(x1,Y(v));g.stroke();
+    if(Math.abs(Y(v)-lastY)<F(13)||Math.abs(Y(v)-Y(ref))<F(13))continue;   // 跟最新價 / 昨收標籤重疊就不印
+    g.fillStyle=sg>0?'#ff4d4f':'#2ecc71';g.globalAlpha=.85;g.fillText(`${sg>0?'+':'-'}${k*stepP}% ${o.stock?fp(v):f(v,0)}`,x1+F(4),Y(v)+F(4));g.globalAlpha=1;}}
   g.setLineDash([F(4),F(4)]);g.strokeStyle='#8b93a3';g.beginPath();g.moveTo(x0,Y(ref));g.lineTo(x1,Y(ref));g.stroke();g.setLineDash([]);
-  g.fillStyle='#8b93a3';g.fillText(o.stock?fp(ref):f(ref,0),x1+F(4),Y(ref)+F(4));
+  g.fillStyle='#8b93a3';g.fillText('昨收 '+(o.stock?fp(ref):f(ref,0)),x1+F(4),Y(ref)+F(4));
   // 時段分隔與時間軸
   const ticks=[['09:00',0],['10:00',60],['10:30',90],['11:00',120],['12:00',180],['13:00',240],['13:30',270]];
   ticks.forEach(([lab,m])=>{const strong=(m===90||m===180);g.strokeStyle=strong?'#3a4150':'#232833';g.setLineDash(strong?[F(2),F(3)]:[]);g.beginPath();g.moveTo(X(m),y0);g.lineTo(X(m),H-padB);g.stroke();g.setLineDash([]);
@@ -190,20 +197,20 @@ function drawJB(c,o){
 }
 function drawAll(){if(!LIVE||!LIVE.quotes)return;const ev=STATE&&STATE.latest[CUR];
   for(const [k,id,tid,nm] of [['t00','jb-tse','t-tse','加權'],['o00','jb-otc','t-otc','櫃買']]){const ix=LIVE.index[k];const s=LIVE.index_series[k]||[];
-    $(tid).innerHTML=`${nm} <b class="num ${cls(ix?.chg)}">${ix?f(ix.ref,0):'-'} ${pct(ix?.chg)}</b>${LIVE.index_stream?'':' <span class="small muted">(MIS 取樣)</span>'}`;
+    $(tid).innerHTML=`${nm} <b class="num ${cls(ix?.chg)}">${ix?f(ix.ref,0):'-'} ${ix?chgTxt(ix.ref,ix.y,0):''}</b>${LIVE.index_stream?'':' <span class="small muted">(MIS 取樣)</span>'}`;
     drawJB($(id),{series:s,y:ix?.y,last:ix?.ref,stock:false});}
   const q=LIVE.quotes[CUR];const s=LIVE.series[CUR]||[];
-  $('t-stk').innerHTML=`${CUR} ${esc(q?.name||ev?.name||'')} <b class="num ${cls(q?.chg_pct)}">${q?fp(q.ref):'-'} ${pct(q?.chg_pct)}</b> <span class="small muted">— 價 · <span style="color:var(--vwap)">VWAP</span> · ${LIVE.shioaji?'逐筆分K':'MIS 取樣'} · 線：<span class="dn">空</span>/<span class="up">多</span> 進場、<span style="color:var(--warn)">損</span>、T1/T2</span>`;
+  $('t-stk').innerHTML=`${CUR} ${esc(q?.name||ev?.name||'')} <b class="num ${cls(q?.chg_pct)}">${q?fp(q.ref):'-'} ${q?chgTxt(q.ref,q.y,dec(q.ref)):''}</b> <span class="small muted">— 價 · <span style="color:var(--vwap)">VWAP</span> · ${LIVE.shioaji?'逐筆分K':'MIS 取樣'} · 線：<span class="dn">空</span>/<span class="up">多</span> 進場、<span style="color:var(--warn)">損</span>、T1/T2</span>`;
   drawJB($('jb-stk'),{series:s,y:q?.y,last:q?.ref,stock:true,plan:ev?.plan,side:activeSide(ev)});}
 window.addEventListener('resize',()=>{drawAll();drawChart();});
 
 // ---------------------------------------------------------------- 即時區（10 秒）
 function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
-  const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${pct(v.chg)}</b>`).join(' &nbsp; ');
+  const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
   $('shioaji').innerHTML=LIVE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';
   $('live-t').textContent=LIVE.time||'';
   if(q){const rp=(q.h!=null&&q.l!=null&&q.h!==q.l)?Math.round((q.ref-q.l)/(q.h-q.l)*100)+'%':'-';
-    $('price').innerHTML=`<div class="price"><span class="big num ${cls(q.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(q.chg_pct)}">${pct(q.chg_pct)}</span></div>
+    $('price').innerHTML=`<div class="price"><span class="big num ${cls(q.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(q.chg_pct)}">${sgn(q.ref-q.y,dec(q.ref))} <span style="font-size:16px">${pct(q.chg_pct)}</span></span></div>
      <div class="kv"><div>開<b class="num">${fp(q.o)}</b></div><div>高<b class="num up">${fp(q.h)}</b></div><div>低<b class="num dn">${fp(q.l)}</b></div><div>昨收<b class="num">${fp(q.y)}</b></div>
      <div>量<b class="num">${q.v??'-'}</b></div><div>量比<b class="num">${f(i.vol_pace,2)}</b></div><div>VWAP<b class="num">${f(LIVE.flow[CUR]?.vwap??i.vwap,2)}</b></div><div>日內位置<b class="num">${rp}</b></div>
      <div>漲停<b class="num up">${fp(d.limit_up)}</b></div><div>跌停<b class="num dn">${fp(d.limit_down)}</b></div><div>跳空<b class="num ${cls(i.gap_pct)}">${pct(i.gap_pct,1)}</b></div><div>相對大盤<b class="num ${cls(i.rs_vs_index)}">${pct(i.rs_vs_index,1)}</b></div></div>`;
@@ -236,7 +243,7 @@ function renderWarr(ev){const w=(LIVE&&LIVE.warrants&&LIVE.warrants[CUR])||ev.wa
 function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   $('tabs').innerHTML=STATE.codes.map(c=>{const lq=LIVE&&LIVE.quotes[c];const e=STATE.latest[c];const ch=lq?lq.chg_pct:e?.info?.chg_pct;
     return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||'')} <span class="num ${cls(ch)}">${pct(ch)}</span></div>`}).join('');
-  if(!LIVE){const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${pct(v.chg)}</b>`).join(' &nbsp; ');
+  if(!LIVE){const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
     $('shioaji').innerHTML=STATE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';}
   $('pre').textContent=STATE.describe?.[CUR]||'';
   if(!ev){$('verdict').textContent='等待第一次估算…';if(!LIVE)$('price').textContent='等待報價…';return;}
@@ -264,23 +271,37 @@ function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
     ${i.group_leader?`<div class="alert hard" style="margin:6px 0">族群領漲 <b>${esc(i.group_leader[2]||i.group_leader[1])}</b> <b class="num up">${pct(i.group_leader[0])}</b>：族群資金輪動，空單防接貨軋空</div>`:''}
     <table class="grid"><tr><th>代碼</th><th>名稱</th><th style="text-align:right">漲跌</th></tr>${gd.map(([p,c,n])=>`<tr><td class="num">${c}</td><td>${esc(n||'')}</td><td class="n ${cls(p)}">${pct(p)}</td></tr>`).join('')}</table>`;
   if(!LIVE){renderAlerts(ev);renderWarr(ev);
-    const q=ev.quote;$('price').innerHTML=`<div class="price"><span class="big num ${cls(i.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(i.chg_pct)}">${pct(i.chg_pct)}</span><span class="muted">${esc(ev.time)}</span></div>`;}
+    const q=ev.quote;$('price').innerHTML=`<div class="price"><span class="big num ${cls(i.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(i.chg_pct)}">${chgTxt(q.ref,q.y,dec(q.ref))}</span><span class="muted">${esc(ev.time)}</span></div>`;}
   else renderLive();
 }
-function drawChart(){const h=HIST[CUR]||[];const c=$('chart');const W=c.width=c.clientWidth*devicePixelRatio,H=c.height=220*devicePixelRatio;const g=c.getContext('2d');g.clearRect(0,0,W,H);
-  if(h.length<2){g.fillStyle='#8b93a3';g.font=`${12*devicePixelRatio}px sans-serif`;g.fillText('資料累積中…',10*devicePixelRatio,20*devicePixelRatio);return;}
-  const pad=36*devicePixelRatio,x=i=>pad+(W-2*pad)*i/(h.length-1);
-  const ps=h.map(p=>p.price).filter(v=>v!=null);let lo=Math.min(...ps),hi=Math.max(...ps);if(hi===lo){hi+=1;lo-=1;}
-  const y=v=>pad+(H-2*pad)*(1-(v-lo)/(hi-lo));
-  const y2=v=>pad+(H-2*pad)*(1-v/100);
-  g.lineWidth=1*devicePixelRatio;g.strokeStyle='#2a2f3a';[0,25,50,75,100].forEach(v=>{g.beginPath();g.moveTo(pad,y2(v));g.lineTo(W-pad,y2(v));g.stroke();});
-  const line=(key,col,yy,w)=>{g.beginPath();g.strokeStyle=col;g.lineWidth=w*devicePixelRatio;let s=false;h.forEach((p,i)=>{if(p[key]==null)return;const X=x(i),Y=yy(p[key]);s?g.lineTo(X,Y):g.moveTo(X,Y);s=true;});g.stroke();};
-  line('p_long','#ff4d4f',y2,1.2);line('p_short','#2ecc71',y2,1.2);line('price','#e6e9ef',y,2);
-  if(h[0].y){g.setLineDash([4,4]);g.strokeStyle='#8b93a3';g.beginPath();g.moveTo(pad,y(h[0].y));g.lineTo(W-pad,y(h[0].y));g.stroke();g.setLineDash([]);}
-  g.fillStyle='#8b93a3';g.font=`${11*devicePixelRatio}px sans-serif`;
-  g.fillText(f(hi,1),4,pad+4);g.fillText(f(lo,1),4,H-pad+4);g.fillText('100%',W-pad+4,pad+4);g.fillText('50%',W-pad+4,y2(50)+4);g.fillText('0%',W-pad+4,H-pad+4);
-  const step=Math.max(1,Math.floor(h.length/8));for(let i=0;i<h.length;i+=step){g.fillText(h[i].time.slice(0,5),x(i)-14*devicePixelRatio,H-8*devicePixelRatio);}
-  g.fillStyle='#ff4d4f';g.fillText('— 多%',pad,14*devicePixelRatio);g.fillStyle='#2ecc71';g.fillText('— 空%',pad+50*devicePixelRatio,14*devicePixelRatio);g.fillStyle='#e6e9ef';g.fillText('— 價',pad+100*devicePixelRatio,14*devicePixelRatio);}
+function drawChart(){const h=HIST[CUR]||[];const c=$('chart');const dpr=window.devicePixelRatio||1;const W=c.width=c.clientWidth*dpr,H=c.height=220*dpr;const g=c.getContext('2d');g.clearRect(0,0,W,H);
+  const F=px=>px*dpr;g.font=`${F(11)}px ${getComputedStyle(document.body).fontFamily}`;
+  if(!h.length){g.fillStyle='#8b93a3';g.fillText('等待第一次估算…',F(10),F(20));return;}
+  const padL=F(6),padR=F(70),padT=F(8),padB=F(16),gap=F(12);const x0=padL,x1=W-padR;
+  const pH=Math.round((H-padT-padB-gap)*0.55);const y0a=padT,y1a=padT+pH,y0b=y1a+gap,y1b=H-padB;
+  const mins=t=>{const [hh,mm]=t.split(':').map(Number);return Math.min(270,Math.max(0,(hh-9)*60+mm));};const X=m=>x0+(x1-x0)*m/270;
+  const y=h[0].y;const ps=h.map(p=>p.price).filter(v=>v!=null);
+  let lo=Math.min(...ps,y||Infinity),hi=Math.max(...ps,y||-Infinity);const padv=Math.max((hi-lo)*0.15,(y||ps[0])*0.003);lo-=padv;hi+=padv;
+  const Ya=v=>y0a+(y1a-y0a)*(1-(v-lo)/(hi-lo));const Yb=v=>y0b+(y1b-y0b)*(1-v/100);
+  // 時間軸（兩個面板共用）
+  g.lineWidth=F(1);[['09:00',0],['10:00',60],['10:30',90],['11:00',120],['12:00',180],['13:00',240],['13:30',270]].forEach(([lab,m])=>{const strong=(m===90||m===180);
+    g.strokeStyle=strong?'#3a4150':'#232833';g.setLineDash(strong?[F(2),F(3)]:[]);g.beginPath();g.moveTo(X(m),y0a);g.lineTo(X(m),y1b);g.stroke();g.setLineDash([]);
+    if(m%60===0||m===270){g.fillStyle='#8b93a3';g.fillText(lab,X(m)-F(m===270?30:14),H-F(4));}});
+  // 上面板：價格（自己的刻度）+ 昨收
+  g.strokeStyle='#232833';[lo,hi].forEach(v=>{g.beginPath();g.moveTo(x0,Ya(v));g.lineTo(x1,Ya(v));g.stroke();});
+  g.fillStyle='#8b93a3';g.fillText(fp(hi),x1+F(4),Ya(hi)+F(4));g.fillText(fp(lo),x1+F(4),Ya(lo)+F(4));
+  if(y){g.setLineDash([F(4),F(4)]);g.strokeStyle='#8b93a3';g.beginPath();g.moveTo(x0,Ya(y));g.lineTo(x1,Ya(y));g.stroke();g.setLineDash([]);g.fillText('昨收 '+fp(y),x1+F(4),Ya(y)+F(4));}
+  for(let i=1;i<h.length;i++){const a=h[i-1],b=h[i];if(a.price==null||b.price==null)continue;g.strokeStyle=(y&&b.price<y)?'#2ecc71':'#ff4d4f';g.lineWidth=F(1.8);g.beginPath();g.moveTo(X(mins(a.time)),Ya(a.price));g.lineTo(X(mins(b.time)),Ya(b.price));g.stroke();}
+  const last=h[h.length-1];if(last.price!=null){const col=(y&&last.price<y)?'#2ecc71':'#ff4d4f';g.fillStyle=col;g.beginPath();g.arc(X(mins(last.time)),Ya(last.price),F(3),0,7);g.fill();
+    const txt=fp(last.price)+(y?' '+chgTxt(last.price,y,dec(last.price)):'');g.fillText(txt,X(mins(last.time))+F(6)>x1-F(120)?x1-F(150):X(mins(last.time))+F(6),Ya(last.price)-F(6));}
+  g.fillStyle='#e6e9ef';g.fillText('價',x0+F(4),y0a+F(11));
+  // 下面板：多 / 空 勝率 0–100%
+  g.strokeStyle='#232833';[0,50,100].forEach(v=>{g.beginPath();g.moveTo(x0,Yb(v));g.lineTo(x1,Yb(v));g.stroke();g.fillStyle='#8b93a3';g.fillText(v+'%',x1+F(4),Yb(v)+F(4));});
+  const line=(key,col)=>{g.strokeStyle=col;g.lineWidth=F(1.6);g.beginPath();let st=false;h.forEach(p=>{if(p[key]==null)return;const xx=X(mins(p.time)),yy=Yb(p[key]);st?g.lineTo(xx,yy):g.moveTo(xx,yy);st=true;});g.stroke();
+    if(st){g.fillStyle=col;g.beginPath();g.arc(X(mins(last.time)),Yb(last[key]),F(2.5),0,7);g.fill();}};
+  line('p_long','#ff4d4f');line('p_short','#2ecc71');
+  g.fillStyle='#ff4d4f';g.fillText(`— 多 ${f(last.p_long,0)}%`,x0+F(4),y0b+F(11));g.fillStyle='#2ecc71';g.fillText(`— 空 ${f(last.p_short,0)}%`,x0+F(70),y0b+F(11));
+  g.fillStyle='#8b93a3';g.fillText(`每 ${Math.round((STATE?.interval||180)/60)} 分鐘一次估算，共 ${h.length} 次`,x0+F(140),y0b+F(11));}
 </script>
 </body>
 </html>

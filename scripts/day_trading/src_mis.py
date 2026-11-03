@@ -30,6 +30,10 @@ def fetch(ex_codes):
         ref = z
         trial = None
         hi, lo = http.to_float(s.get("h")), http.to_float(s.get("l"))
+        tr = s.get("trade") if isinstance(s.get("trade"), dict) else {}
+        last_trade = http.to_float(tr.get("z")) if tr else None   # 2026-11 起 MIS 多了 trade{t,v,z}：這 5 秒沒成交時仍有最後一筆
+        if ref is None and last_trade:
+            ref = last_trade
         if ref is None:
             mid = None
             if bids and asks and bids[0][0] and asks[0][0]:
@@ -51,6 +55,7 @@ def fetch(ex_codes):
             "bids": bids, "asks": asks,
             "tv": http.to_int(s.get("tv")),  # 當盤成交量
             "trial": trial,  # 延緩撮合期間的試算價（超出今日高低時才有）
+            "last_trade": last_trade, "last_trade_t": tr.get("t") if tr else None,
         }
     return out
 

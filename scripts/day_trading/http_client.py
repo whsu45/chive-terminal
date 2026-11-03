@@ -79,11 +79,22 @@ def post(url, data, headers=None, referer=None, retries=2, timeout=HTTP_TIMEOUT,
 
 
 def get_json(url, params=None, **kw):
-    raw = get(url, params=params, **kw)
-    try:
-        return json.loads(raw.decode("utf-8", errors="ignore"))
-    except json.JSONDecodeError as e:
-        raise HttpError(f"{url}: 非 JSON 回應 ({e})")
+    """GET 並解析 JSON。MIS 偶爾回「只有空白行、沒有內容」的 200，這種非 JSON 回應會等 1 秒再試一次。"""
+    last = None
+    for attempt in range(2):
+        raw = get(url, params=params, **kw)
+        txt = raw.decode("utf-8", errors="ignore").strip()
+        try:
+            return json.loads(txt)
+        except json.JSONDecodeError as e:
+            last = HttpError(f"{url}: 非 JSON 回應 ({e}; 長度 {len(raw)})")
+            if kw.get("cache_ttl"):
+                try:
+                    os.remove(_cache_path(url + json.dumps(params or {}, sort_keys=True)))
+                except Exception:
+                    pass
+            time.sleep(1)
+    raise last
 
 
 def to_float(x, default=None):

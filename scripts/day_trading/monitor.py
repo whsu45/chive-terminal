@@ -313,8 +313,16 @@ class Monitor:
         return res
 
     def poll(self):
-        quotes = src_mis.fetch(sorted(self.ex_codes))
         now = dt.datetime.now()
+        try:
+            quotes = src_mis.fetch(sorted(self.ex_codes))
+        except hc.HttpError:
+            if not self.flow_src:
+                raise
+            quotes = self._quotes_from_shioaji(now)
+            if not quotes:
+                raise
+            print(f"[{now:%H:%M:%S}] MIS 失敗，這輪估算用 Shioaji 串流報價（無五檔/族群）")
         results = []
         for c in self.codes:
             d = self.daily[c]
@@ -390,14 +398,47 @@ class Monitor:
         else:
             b[1] = max(b[1], price); b[2] = min(b[2], price); b[3] = price; b[4] += dv; b[5] += price * dv
 
+    def _quotes_from_shioaji(self, now):
+        """MIS 掛掉時用 Shioaji 串流狀態湊報價（個股與指數；沒有五檔、沒有族群）。"""
+        out = {}
+        for c in self.codes:
+            bars = self.flow_src.series(c)
+            last = self.flow_src.last_price(c)
+            if not bars or not last:
+                continue
+            y = (self.daily[c].get("tech") or {}).get("close")
+            out[c] = {"code": c, "name": self.daily[c]["name"], "ex": self.daily[c]["market"], "t": now.strftime("%H:%M:%S"),
+                      "z": last, "ref": last, "o": bars[0][1], "h": max(b[2] for b in bars), "l": min(b[3] for b in bars),
+                      "y": y, "v": sum(b[5] for b in bars), "bids": [], "asks": [], "trial": None, "src": "shioaji"}
+        if self.index_stream:
+            for k in ("t00", "o00"):
+                last = self.flow_src.index_last(k)
+                y = (WEB.live.get("index") or {}).get(k, {}).get("y") if WEB.live else None
+                if last and y:
+                    out[k] = {"code": k, "ref": last, "z": last, "y": y, "bids": [], "asks": []}
+        return out
+
     def fast_tick(self):
-        """一輪快更新：MIS 報價 → 分時序列、分流、分流劇變警示；每 60 秒順便更新權證快照與警示。"""
-        quotes = src_mis.fetch(sorted(self.ex_codes))
+        """一輪快更新：MIS 報價 → 分時序列、分流、分流劇變警示；每 60 秒順便更新權證快照與警示。
+        MIS 失敗時改用 Shioaji 串流湊報價（圖表、分流不中斷，只少五檔與族群）。"""
         now = dt.datetime.now()
+        try:
+            quotes = src_mis.fetch(sorted(self.ex_codes))
+            self._mis_fail = 0
+        except hc.HttpError as e:
+            self._mis_fail = getattr(self, "_mis_fail", 0) + 1
+            if not self.flow_src:
+                raise
+            if self._mis_fail in (1, 10, 100):
+                print(f"[fast] MIS 失敗（第 {self._mis_fail} 次），改用 Shioaji 串流報價：{str(e)[:100]}")
+            quotes = self._quotes_from_shioaji(now)
+            if not quotes:
+                raise
         do_wq = time.time() - self._last_wq_t >= 60
         live = {"time": now.strftime("%H:%M:%S"), "phase": model.phase_of(now), "index": {}, "index_series": {},
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
-                "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval}
+                "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
+                "mis_fail": getattr(self, "_mis_fail", 0)}
         for k in ("t00", "o00"):
             q = quotes.get(k)
             if q and q.get("y"):

@@ -136,8 +136,8 @@ setInterval(tick,1000);tick();
 async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());STATE=await r.json();
   if(!CUR||!STATE.codes.includes(CUR))CUR=STATE.codes[0];render();
   const h=await fetch('/api/history/'+CUR+'?_='+Date.now());HIST[CUR]=await h.json();drawChart();}
-  catch(e){$('foot').innerHTML='<span class="stale">連線中斷：'+esc(e)+'</span>';}}
-async function loadLive(){try{const r=await fetch('/api/live?_='+Date.now());LIVE=await r.json();if(STATE)renderLive();}catch(e){}}
+  catch(e){$('foot').innerHTML='<span class="stale">連線中斷（monitor 還在跑嗎？）：'+esc(e)+'</span>';}}
+async function loadLive(){try{const r=await fetch('/api/live?_='+Date.now());const j=await r.json();LIVE=(j&&j.quotes)?j:null;if(STATE)renderLive();}catch(e){}}
 setInterval(loadState,10000);setInterval(loadLive,10000);loadState();setTimeout(loadLive,1500);
 
 function activeSide(ev){if(!ev)return null;if(ev.p_short<=0)return 'long';return ev.p_short>=ev.p_long?'short':'long';}
@@ -188,7 +188,7 @@ function drawJB(c,o){
   g.fillStyle=lc;g.beginPath();g.arc(X(mins(last.t)),Y(last.c),F(3),0,7);g.fill();
   const txt=o.stock?fp(lp):f(lp,0);const tw=g.measureText(txt).width+F(8);g.fillStyle=lc;g.fillRect(x1+F(2),Y(lp)-F(8),tw,F(15));g.fillStyle='#0f1115';g.fillText(txt,x1+F(6),Y(lp)+F(4));
 }
-function drawAll(){if(!LIVE)return;const ev=STATE&&STATE.latest[CUR];
+function drawAll(){if(!LIVE||!LIVE.quotes)return;const ev=STATE&&STATE.latest[CUR];
   for(const [k,id,tid,nm] of [['t00','jb-tse','t-tse','加權'],['o00','jb-otc','t-otc','櫃買']]){const ix=LIVE.index[k];const s=LIVE.index_series[k]||[];
     $(tid).innerHTML=`${nm} <b class="num ${cls(ix?.chg)}">${ix?f(ix.ref,0):'-'} ${pct(ix?.chg)}</b>${LIVE.index_stream?'':' <span class="small muted">(MIS 取樣)</span>'}`;
     drawJB($(id),{series:s,y:ix?.y,last:ix?.ref,stock:false});}
@@ -198,7 +198,7 @@ function drawAll(){if(!LIVE)return;const ev=STATE&&STATE.latest[CUR];
 window.addEventListener('resize',()=>{drawAll();drawChart();});
 
 // ---------------------------------------------------------------- 即時區（10 秒）
-function renderLive(){const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
+function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
   const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${pct(v.chg)}</b>`).join(' &nbsp; ');
   $('shioaji').innerHTML=LIVE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';
   $('live-t').textContent=LIVE.time||'';

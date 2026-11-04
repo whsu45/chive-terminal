@@ -1,6 +1,6 @@
 {
  "quote_date": "2026-11-04",
- "members_fetched": "2026-11-04",
+ "members_fetched": "2026-11-05",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -3981,6 +3981,125 @@
    "flat": 0
   },
   {
+   "slug": "sic-gan",
+   "title": "第三代半導體概念股",
+   "desc": "第三代半導體概念股指投入碳化矽（SiC）與氮化鎵（GaN）等寬能隙材料的台股，環節涵蓋基板與晶圓、磊晶片、化合物半導體代工，以及 SiC 二極體與 MOSFET 元件。",
+   "members": [
+    {
+     "code": "3707",
+     "name": "漢磊",
+     "market": "上櫃",
+     "open": 60.7,
+     "high": 60.7,
+     "low": 56.1,
+     "close": 59.7,
+     "change": 0.2,
+     "pct": 0.34,
+     "volume": 4182
+    },
+    {
+     "code": "8121",
+     "name": "越峰",
+     "market": "上櫃",
+     "open": 26.5,
+     "high": 26.5,
+     "low": 25.05,
+     "close": 26.05,
+     "change": -0.05,
+     "pct": -0.19,
+     "volume": 544
+    },
+    {
+     "code": "4991",
+     "name": "環宇-KY",
+     "market": "上櫃",
+     "open": 375.0,
+     "high": 388.0,
+     "low": 331.0,
+     "close": 357.0,
+     "change": -10.5,
+     "pct": -2.86,
+     "volume": 5995
+    },
+    {
+     "code": "6182",
+     "name": "合晶",
+     "market": "上櫃",
+     "open": 87.7,
+     "high": 87.7,
+     "low": 77.0,
+     "close": 82.8,
+     "change": -2.5,
+     "pct": -2.93,
+     "volume": 43345
+    },
+    {
+     "code": "3105",
+     "name": "穩懋",
+     "market": "上櫃",
+     "open": 525.0,
+     "high": 525.0,
+     "low": 477.0,
+     "close": 501.0,
+     "change": -29.0,
+     "pct": -5.47,
+     "volume": 32445
+    },
+    {
+     "code": "2340",
+     "name": "台亞",
+     "market": "上市",
+     "open": 40.15,
+     "high": 40.75,
+     "low": 38.2,
+     "close": 38.55,
+     "change": -3.25,
+     "pct": -7.78,
+     "volume": 10965
+    },
+    {
+     "code": "3518",
+     "name": "柏騰",
+     "market": "上市",
+     "open": 33.15,
+     "high": 33.7,
+     "low": 31.5,
+     "close": 31.85,
+     "change": -2.7,
+     "pct": -7.81,
+     "volume": 1785
+    },
+    {
+     "code": "3016",
+     "name": "嘉晶",
+     "market": "上市",
+     "open": 124.0,
+     "high": 124.0,
+     "low": 115.5,
+     "close": 116.0,
+     "change": -11.5,
+     "pct": -9.02,
+     "volume": 6106
+    },
+    {
+     "code": "6488",
+     "name": "環球晶",
+     "market": "上櫃",
+     "open": 687.0,
+     "high": 688.0,
+     "low": 617.0,
+     "close": 619.0,
+     "change": -66.0,
+     "pct": -9.64,
+     "volume": 25024
+    }
+   ],
+   "avg_pct": -5.04,
+   "up": 1,
+   "down": 8,
+   "flat": 0
+  },
+  {
    "slug": "osat",
    "title": "封測概念股",
    "desc": "封測概念股指以半導體後段封裝與測試代工（OSAT）為主要營收的台股，服務 IC 設計公司、IDM 與晶圓廠，環節包含晶圓針測、IC 封裝、成品測試與系統級測試。",
@@ -4157,125 +4276,6 @@
    "avg_pct": -5.04,
    "up": 2,
    "down": 12,
-   "flat": 0
-  },
-  {
-   "slug": "sic-gan",
-   "title": "第三代半導體概念股",
-   "desc": "第三代半導體概念股指投入碳化矽（SiC）與氮化鎵（GaN）等寬能隙材料的台股，環節涵蓋基板與晶圓、磊晶片、化合物半導體代工，以及 SiC 二極體與 MOSFET 元件。",
-   "members": [
-    {
-     "code": "3707",
-     "name": "漢磊",
-     "market": "上櫃",
-     "open": 60.7,
-     "high": 60.7,
-     "low": 56.1,
-     "close": 59.7,
-     "change": 0.2,
-     "pct": 0.34,
-     "volume": 4182
-    },
-    {
-     "code": "8121",
-     "name": "越峰",
-     "market": "上櫃",
-     "open": 26.5,
-     "high": 26.5,
-     "low": 25.05,
-     "close": 26.05,
-     "change": -0.05,
-     "pct": -0.19,
-     "volume": 544
-    },
-    {
-     "code": "4991",
-     "name": "環宇-KY",
-     "market": "上櫃",
-     "open": 375.0,
-     "high": 388.0,
-     "low": 331.0,
-     "close": 357.0,
-     "change": -10.5,
-     "pct": -2.86,
-     "volume": 5995
-    },
-    {
-     "code": "6182",
-     "name": "合晶",
-     "market": "上櫃",
-     "open": 87.7,
-     "high": 87.7,
-     "low": 77.0,
-     "close": 82.8,
-     "change": -2.5,
-     "pct": -2.93,
-     "volume": 43345
-    },
-    {
-     "code": "3105",
-     "name": "穩懋",
-     "market": "上櫃",
-     "open": 525.0,
-     "high": 525.0,
-     "low": 477.0,
-     "close": 501.0,
-     "change": -29.0,
-     "pct": -5.47,
-     "volume": 32445
-    },
-    {
-     "code": "2340",
-     "name": "台亞",
-     "market": "上市",
-     "open": 40.15,
-     "high": 40.75,
-     "low": 38.2,
-     "close": 38.55,
-     "change": -3.25,
-     "pct": -7.78,
-     "volume": 10965
-    },
-    {
-     "code": "3518",
-     "name": "柏騰",
-     "market": "上市",
-     "open": 33.15,
-     "high": 33.7,
-     "low": 31.5,
-     "close": 31.85,
-     "change": -2.7,
-     "pct": -7.81,
-     "volume": 1785
-    },
-    {
-     "code": "3016",
-     "name": "嘉晶",
-     "market": "上市",
-     "open": 124.0,
-     "high": 124.0,
-     "low": 115.5,
-     "close": 116.0,
-     "change": -11.5,
-     "pct": -9.02,
-     "volume": 6106
-    },
-    {
-     "code": "6488",
-     "name": "環球晶",
-     "market": "上櫃",
-     "open": 687.0,
-     "high": 688.0,
-     "low": 617.0,
-     "close": 619.0,
-     "change": -66.0,
-     "pct": -9.64,
-     "volume": 25024
-    }
-   ],
-   "avg_pct": -5.04,
-   "up": 1,
-   "down": 8,
    "flat": 0
   },
   {

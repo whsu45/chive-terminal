@@ -78,8 +78,8 @@
    }
   ],
   "taiexNext": {
-   "date": "2026-11-03",
-   "pct": -3.59
+   "date": "2026-11-04",
+   "pct": -3.8
   }
  },
  {
@@ -1615,8 +1615,8 @@
     "pct": -1.18
    },
    {
-    "key": "ev",
-    "title": "電動車／自駕",
+    "key": "software",
+    "title": "軟體／雲端",
     "pct": 0.45
    }
   ],
@@ -1846,13 +1846,13 @@
   "sox": 0.45,
   "top3Up": [
    {
-    "key": "internet",
-    "title": "網路平台",
+    "key": "ev",
+    "title": "電動車／自駕",
     "pct": 1.42
    },
    {
-    "key": "ev",
-    "title": "電動車／自駕",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 1.42
    },
    {
@@ -3485,13 +3485,13 @@
     "pct": 1.23
    },
    {
-    "key": "networking",
-    "title": "網通／光通訊",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 0.46
    },
    {
-    "key": "internet",
-    "title": "網路平台",
+    "key": "networking",
+    "title": "網通／光通訊",
     "pct": 0.46
    }
   ],
@@ -3919,8 +3919,8 @@
     "pct": 7.66
    },
    {
-    "key": "networking",
-    "title": "網通／光通訊",
+    "key": "cyber",
+    "title": "資安",
     "pct": 1.09
    }
   ],
@@ -6326,8 +6326,8 @@
     "pct": 0.93
    },
    {
-    "key": "semicap",
-    "title": "半導體設備",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 0.67
    }
   ],
@@ -8485,8 +8485,8 @@
     "pct": -0.52
    },
    {
-    "key": "internet",
-    "title": "網路平台",
+    "key": "aiserver",
+    "title": "AI 伺服器／資料中心硬體",
     "pct": 0.69
    }
   ],

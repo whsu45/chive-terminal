@@ -184,7 +184,7 @@ monitor 每輪記住每檔權證的價量，跟上一輪比（成交量加權、
 | `indicators.py` | MA/BB/ATR/RSI、tick 規則、漲跌停 |
 | `src_mis.py` `src_twse.py` `src_tpex.py` `src_moneydj.py` `src_taifex.py` `src_yahoo.py` `src_shioaji.py` | 各資料源 |
 | `tw_calendar.py` | 交易日推算（以 TWSE 是否有收盤資料判定） |
-| `groups.json` | 族群定義，可自行增修。**上下游要分開**（如「玻纖紗布」1802/1815/5340/1303 與「CCL基板」2383/6274/6213），否則上游漲下游跌時均值會互相抵銷 |
+| `groups.json` | 族群定義，可自行增修。**上下游要分開**（如「玻纖紗布」1802/1815/5340/1303 與「CCL基板」2383/6274/6213；「DRAM原廠」2408/2344/3006 與「記憶體模組控制IC」8299/3260/4967/2451/8271），否則上游漲下游跌時均值會互相抵銷 |
 | `.env.example` | 金鑰範本；真正的 `.env` 不進 git |
 
 ## 給 Claude 的用法

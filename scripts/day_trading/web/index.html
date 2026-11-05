@@ -67,6 +67,9 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .ctl .tag{padding:2px 8px;border-radius:6px;font-weight:700;color:#0f1115;background:#f5a623}.ctl .tag.retail{background:#8b93a3}
 .ctl .track{flex:1;height:8px;border-radius:4px;background:#3a4150;overflow:hidden;display:flex}.ctl .track i{display:block;height:100%;background:#f5a623}
 .ctl b{font-family:var(--mono)}
+.wall{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--panel2);font-size:12px;border-left:4px solid var(--line)}
+.wall.bid{border-left-color:var(--up)}.wall.ask{border-left-color:var(--dn)}.wall.ended{opacity:.6}
+.wall b{font-family:var(--mono)}.wall .v{font-weight:700}.wall .v.real{color:var(--up)}.wall .v.fake{color:var(--warn)}
 .ladder{font-family:var(--mono);font-size:13px}
 .ladder .row{display:flex;justify-content:space-between;padding:3px 8px;border-radius:6px}
 .ladder .row.r{color:var(--dn)}.ladder .row.s{color:var(--up)}
@@ -123,7 +126,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
   <section class="card" id="c-ladder"><h3>壓力 / 支撐</h3><div class="ladder" id="ladder"></div></section>
   <section class="card" id="c-flow"><h3>主力 / 散戶 分流</h3><div class="flow" id="flow"></div>
     <div class="fs" id="fs"><div class="ctl" id="ctl"></div><div class="small" id="fs-big-t"></div><canvas id="fs-big"></canvas><div class="small" id="fs-small-t"></div><canvas id="fs-small"></canvas></div></section>
-  <section class="card" id="c-book"><h3>五檔</h3><div class="book" id="book"></div></section>
+  <section class="card" id="c-book"><h3>五檔</h3><div class="book" id="book"></div><div id="walls"></div></section>
   <section class="card" id="c-group"><h3>族群</h3><div id="group"></div></section>
   <section class="card" id="c-warr"><h3>權證</h3><div id="warr"></div></section>
   <section class="card span2" id="c-chart"><h3>勝率曲線（每次估算）</h3><canvas id="chart" height="220"></canvas></section>
@@ -237,7 +240,11 @@ function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];c
     const bids=q.bids||[],asks=q.asks||[];const mx=Math.max(1,...bids.map(b=>b[1]),...asks.map(a=>a[1]));const bv=bids.reduce((s,b)=>s+b[1],0),av=asks.reduce((s,a)=>s+a[1],0);
     $('book').innerHTML=`<div><div class="small muted">委買</div>${bids.map(([p,v])=>`<div class="lv bid"><span>${fp(p)}</span><i style="width:${v/mx*100}%"></i><span>${v}</span></div>`).join('')}</div>
       <div><div class="small muted">委賣</div>${asks.map(([p,v])=>`<div class="lv ask"><span>${fp(p)}</span><i style="width:${v/mx*100}%"></i><span>${v}</span></div>`).join('')}</div>`
-      +(bv+av?`<div class="small muted">五檔買 ${bv} / 賣 ${av}（不平衡 ${f((bv-av)/(bv+av),2)}）</div>`:'');}
+      +(bv+av?`<div class="small muted">五檔買 ${bv} / 賣 ${av}（不平衡 ${f((bv-av)/(bv+av),2)}）</div>`:'');
+    const ws=(LIVE.walls&&LIVE.walls[CUR])||{};
+    $('walls').innerHTML=['bid','ask'].map(k=>{const w=ws[k];if(!w)return '';const vc=/^真/.test(w.verdict||'')?'real':/^假/.test(w.verdict||'')?'fake':'';
+      return `<div class="wall ${k} ${w.status?'ended':''}">${k==='bid'?'買單牆':'賣單牆'} <b>${fp(w.px)}</b>：<b>${w.size0}</b>→<b>${w.last}</b> 張（${esc(w.since)} 起）· 被吃 <b>${w.traded}</b> · 撤 <b>${w.pulled}</b> · 補 <b>${w.refilled}</b> → <span class="v ${vc}">${esc(w.status||w.verdict||'')}</span></div>`;}).join('')
+      ||'<div class="small muted" style="margin-top:6px">五檔沒有特別大的掛單（牆＝某檔 ≥2 倍其他四檔平均且 ≥30 張）</div>';}
   const fl=LIVE.flow[CUR]||ev.flow;
   if(fl){const vol=fl.volume||1;const row=(lab,net,p)=>{const w=Math.min(50,Math.abs(p||0)*2.5);return `<div class="row"><span>${lab}</span><div class="track"><i class="${(net||0)>=0?'p':'n'}" style="width:${w}%"></i></div><b class="num ${cls(net)}">${net>0?'+':''}${net??0} <span class="muted">${pct(p,1)}</span></b></div>`};
     const th=fl.thresholds||{};
@@ -272,7 +279,10 @@ function drawFlowSeries(fl){const fs=(LIVE&&LIVE.flow_series&&LIVE.flow_series[C
 // 建議做空/做多橫幅：快迴圈確認進場條件成立才出現，會一直閃到到目標/過停損/逾時
 let SIG_KEY=null;
 function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$('signal');
-  if(!sg){el.className='signal hidden';el.innerHTML='';if(SIG_KEY){SIG_KEY=null;document.title=document.title.replace(/^▶[^ ]* /,'');}return;}
+  if(!sg){if(SIG_KEY){SIG_KEY=null;document.title=document.title.replace(/^▶[^ ]* /,'');}
+    const t=LIVE.time||'';if(t>='13:05'&&t<'13:30'){el.className='signal ended';el.style.animation='none';el.innerHTML='<span class="d">尾盤 13:05 後不發新進場訊號：當沖平倉主導，只處理出場或順回補方向小部位</span>';}
+    else{el.className='signal hidden';el.innerHTML='';}return;}
+  el.style.animation='';
   const ended=!!sg.status;el.className=`signal ${sg.side} ${ended?'ended':''}`;
   const key=sg.side+sg.price+sg.since;if(key!==SIG_KEY){SIG_KEY=key;document.title=`▶${sg.side==='short'?'空':'多'}${fp(sg.price)} `+document.title.replace(/^▶[^ ]* /,'');}
   el.innerHTML=`<span class="h">▶ 建議${esc(sg.label)}</span><span class="px">${fp(sg.price)}</span>

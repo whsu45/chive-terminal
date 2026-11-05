@@ -584,6 +584,19 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx=None):
         warns.append("開盤首 10 分鐘：位置、VWAP、相對強弱都還是雜訊，盤中因子只計一半，不追單")
     elif hhmm >= "13:20" and ph["key"] == "late":
         warns.append("尾盤最後 10 分鐘：13:25 起收盤試撮不能撤單，當沖部位現在處理")
+    elif hhmm >= "13:00" and ph["key"] == "late":
+        warns.append("13:00 後：當沖做多的要賣、做空的要補，漲跌是平倉推的，不照一般劇本開新倉；只處理出場，或順回補方向小部位、10 分鐘內出")
+    # 尾盤回補盤：今天跌深（≤-4%）、散戶在砍、主力最近 10 分鐘淨額回升 → 空單回補推的反彈，勿追空；反之漲多日多單出場
+    if hhmm >= "12:50" and flow and flow.get("hist"):
+        hist = flow["hist"]; t_now = now.timestamp()
+        past = [r for r in hist if t_now - r[0] >= 540]
+        if past:
+            d10 = hist[-1][1] - past[-1][1]
+            sn_ = flow.get("small_net_pct") or 0
+            if chg <= -4 and d10 > 0 and sn_ < 0:
+                F.append(("尾盤空單回補", 0.3, f"跌 {chg:.1f}%、散戶淨賣 {sn_:.1f}% 量、主力 10 分鐘回補 {d10:+} 張：當沖空單在補，尾盤反彈是回補不是看多，勿追空也勿追多"))
+            elif chg >= 4 and d10 < 0 and sn_ > 0:
+                F.append(("尾盤多單出場", -0.3, f"漲 {chg:.1f}%、散戶淨買 {sn_:.1f}% 量、主力 10 分鐘出 {d10:+} 張：當沖多單在跑，尾盤拉回是平倉不是轉空，勿追"))
     elif ph["key"] == "closed":
         warns.append("已收盤，以下僅供復盤")
     return F, warns, info

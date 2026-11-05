@@ -327,6 +327,7 @@ class Monitor:
         self._last_quotes = None
         self.peer_hist = {c: {} for c in codes}     # code -> {peer: [[epoch, chg_pct], ...]}，給 model 算族群 10 分鐘趨勢
         self.signals = {}                            # code -> 目前的「建議做空/做多」訊號（快迴圈每 3 秒檢查進場確認條件）
+        self.walls = {}                              # code -> {"bid": 牆, "ask": 牆}：五檔裡特別大的那一檔，追蹤被吃/被撤/補單判真假
         self._fs_cache = {}                          # code -> (epoch, 每分鐘主力/散戶累積淨額序列)，10 秒重算一次給「大戶散戶」圖
         self.pending = []                            # 警示結果追蹤：每則 ⚠/▶ 記下當時狀態，10/30 分鐘後補上漲跌，寫 logs/alert_outcomes.jsonl
         self._tracked = set()
@@ -508,9 +509,13 @@ class Monitor:
         if not (ev and p and bars and len(bars) >= 4):
             return None
         hhmm = now.strftime("%H:%M")
-        if hhmm < "09:10" or hhmm >= "13:20":
-            return None
+        if hhmm < "09:10" or hhmm >= "13:05":
+            return None   # 13:05 起當沖平倉主導，不照一般劇本開新倉（只處理出場）
         completed = [b for b in bars if b[0] != now.strftime("%H:%M")]
+        walls = self.walls.get(c, {})
+        def real_wall(key):
+            w = walls.get(key)
+            return w if (w and not w.get("status") and str(w.get("verdict", "")).startswith("真")) else None
         if len(completed) < 3:
             return None
         last = completed[-1]
@@ -549,6 +554,9 @@ class Monitor:
         if s and ps >= 60 and ps > pl and mom != "up" and not (info.get("warrant_surge_5m") and (info.get("book_imb") or 0) > 0.35):
             trig, entry, stop, t1, t2 = s["trigger_px"], s["entry_px"], s["stop"], s["t1"], s["t2"]
             touched = any(b[2] >= trig - tick for b in recent)
+            rw = real_wall("bid")
+            if rw and t1 < rw["px"] < p:
+                touched = False   # 真支撐擋在目標前面，空單不發
             if touched and not thin and last[4] <= entry and t1 < p <= entry + tick and p < stop:
                 return make("short", p, "做空", stop, t1, t2, f"反彈 {trig} 不過，1 分 K 收 {last[4]} 確認（空方 {ps:.0f}%）")
             bd = s.get("bd_trigger")
@@ -558,6 +566,9 @@ class Monitor:
         if l and pl >= 60 and pl > ps and mom != "down":
             trig, entry, stop, t1, t2 = l["trigger_px"], l["entry_px"], l["stop"], l["t1"], l["t2"]
             touched = any(b[3] <= trig + tick for b in recent)
+            rw = real_wall("ask")
+            if rw and p < rw["px"] < t1:
+                touched = False
             if touched and not thin and last[4] >= entry and entry - tick <= p < t1 and p > stop:
                 return make("long", p, "做多", stop, t1, t2, f"回測 {trig} 守住，1 分 K 收 {last[4]} 確認（多方 {pl:.0f}%）")
             bo = l.get("bo_trigger")
@@ -651,6 +662,71 @@ class Monitor:
             else:
                 keep.append(rec)
         self.pending = keep
+
+    def _track_walls(self, c, q, flow, now):
+        """
+        掛單牆追蹤（11/05 晶豪科 13:00 215 掛 103 張）：五檔中最大的一檔若 ≥2 倍其他四檔平均且 ≥max(30, 0.5% 今量) 就開始追，
+        每 3 秒記：現在大小、出現後在該價成交多少（被吃）、掛單減少卻沒成交的量（撤單）、被吃後補回的量（補單）。
+        真支撐 = 被吃 ≥30% 仍在且撤單少；假支撐 = 價格靠近時撤掉、幾乎沒成交；吃穿 = 價格穿過牆。狀態變化時發 ⚠。
+        """
+        p = q.get("ref")
+        if not p:
+            return
+        vol = (flow or {}).get("volume") or q.get("v") or 0
+        min_sz = max(30, 0.005 * vol)
+        W = self.walls.setdefault(c, {})
+        out = {}
+        for side, key, lab in (("bids", "bid", "買單牆"), ("asks", "ask", "賣單牆")):
+            levels = q.get(side) or []
+            w = W.get(key)
+            if w and w.get("status") and now.timestamp() - w["end_ts"] > 180:
+                W.pop(key, None); w = None
+            if w and not w.get("status"):
+                cur = dict(levels).get(w["px"])
+                traded = self.flow_src.traded_at(c, w["px"], w["since_ts"])[0] if self.flow_src else 0
+                d_tr = traded - w["traded"]
+                if cur is None:
+                    cur = 0
+                drop = w["last"] - cur
+                if drop > 0:
+                    w["pulled"] += max(0, drop - d_tr)
+                elif drop < 0:
+                    w["refilled"] += -drop
+                w["traded"], w["last"], w["now"] = traded, cur, p
+                through = (p < w["px"]) if key == "bid" else (p > w["px"])
+                if through and traded >= 0.5 * w["size0"]:
+                    w["status"] = f"✘ 被吃穿（成交 {traded} 張）"
+                elif cur <= 0.2 * w["size0"] and traded < 0.3 * w["size0"] and not through:
+                    w["status"] = f"✘ 撤單（成交只 {traded} 張，少掉 {w['pulled']} 張沒成交）→ 假{ '支撐' if key=='bid' else '壓力'}"
+                elif through:
+                    w["status"] = "離開五檔"
+                if w.get("status"):
+                    w["end_ts"] = now.timestamp()
+                    self._add_alert(c, now, f"⚠ {lab} {w['px']}（{w['size0']} 張）{w['status']}")
+                else:
+                    if w["traded"] >= 0.3 * w["size0"] and w["pulled"] < 0.3 * w["size0"]:
+                        v = "真" + ("支撐" if key == "bid" else "壓力") + "傾向"
+                        if w.get("verdict") != v:
+                            self._add_alert(c, now, f"⚠ {lab} {w['px']} 被打到成交 {w['traded']} 張仍掛 {cur} 張（補回 {w['refilled']}）：{v}，" + ("空單目標別設在它下面" if key == "bid" else "多單目標別設在它上面"))
+                        w["verdict"] = v
+                    elif w["pulled"] >= 0.5 * w["size0"] and w["traded"] < 0.2 * w["size0"]:
+                        w["verdict"] = "假" + ("支撐" if key == "bid" else "壓力") + "傾向（撤單中）"
+                    elif w["traded"] < 0.1 * w["size0"]:
+                        w["verdict"] = "未測試"
+                    else:
+                        w["verdict"] = "測試中"
+            elif not w and len(levels) >= 3:
+                sizes = [v for _, v in levels]
+                mx = max(sizes); i = sizes.index(mx)
+                others = [v for j, v in enumerate(sizes) if j != i]
+                avg = sum(others) / len(others) if others else 0
+                if mx >= min_sz and mx >= 2 * avg:
+                    w = {"px": levels[i][0], "size0": mx, "last": mx, "since": now.strftime("%H:%M:%S"), "since_ts": now.timestamp(),
+                         "traded": 0, "pulled": 0, "refilled": 0, "verdict": "未測試", "status": None, "now": p, "level": i + 1}
+                    W[key] = w
+            if w:
+                out[key] = w
+        return out
 
     def _record_peers(self, c, peers_q, now):
         """每次拿到族群報價就記一筆漲跌 %（≥20 秒一筆，留 90 分鐘），給 model 算族群 10 分鐘趨勢。"""
@@ -802,7 +878,7 @@ class Monitor:
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
-                "signal": {}, "flow_series": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
+                "signal": {}, "flow_series": {}, "walls": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
                 "mis_fail": getattr(self, "_mis_fail", 0)}
         for k in ("t00", "o00"):
             q = quotes.get(k)
@@ -862,6 +938,12 @@ class Monitor:
                         self._add_alert(c, now, w)
             if self.wq.get(c):
                 live["warrants"][c] = self.wq[c]
+            try:
+                ws = self._track_walls(c, q, flow, now)
+                if ws:
+                    live["walls"][c] = ws
+            except Exception as e:
+                print(f"[fast] 掛單牆追蹤失敗：{str(e)[:100]}")
             try:
                 sig = self._signal(c, WEB.latest.get(c), live["series"].get(c) or [], q, now)
                 if sig:

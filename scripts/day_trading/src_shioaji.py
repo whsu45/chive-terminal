@@ -421,6 +421,25 @@ def flow_history(code, step_sec=60):
     return out
 
 
+def traded_at(code, price, since_ts):
+    """自 since_ts（epoch）起在 price 這個價位成交的張數 (總, 外盤買, 內盤賣)。給掛單牆追蹤算「牆被吃了多少」。"""
+    with _lock:
+        acc = _state.get(code)
+        if not acc:
+            return (0, 0, 0)
+        ticks = acc["ticks"]
+        tot = b = s = 0
+        for ts, p, v, tt in reversed(ticks):
+            t = ts if isinstance(ts, dt.datetime) else ns_to_dt(ts)
+            if t.timestamp() < since_ts:
+                break
+            if abs(p - price) < 1e-6:
+                tot += v
+                if tt == 1: b += v
+                elif tt == 2: s += v
+        return (tot, b, s)
+
+
 def index_last(key):
     with _lock:
         acc = _idx.get(key)

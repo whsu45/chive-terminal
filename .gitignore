@@ -228,3 +228,4 @@ scripts/day_trading/logs/
 scripts/day_trading/.env
 *.swp
 *.swo
+scripts/day_trading/model_params.candidate.json

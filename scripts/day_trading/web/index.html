@@ -156,7 +156,7 @@ function drawJB(c,o){
   const X=m=>x0+(x1-x0)*m/270;
   // 範圍：上下各自依實際走勢（非對稱），昨收永遠在圖內；大跌日不會把線擠在下半部
   let up=0,dn=0;pts.forEach(p=>{up=Math.max(up,p.c-ref);dn=Math.max(dn,ref-p.c);if(o.stock){up=Math.max(up,p.h-ref);dn=Math.max(dn,ref-p.l);}});
-  const lv=[];if(o.plan){for(const side of ['short','long']){const pl=o.plan[side];if(!pl)continue;[pl.entry_px,pl.stop,pl.t1,pl.t2].forEach(v=>{if(v!=null&&Math.abs(v-ref)/ref<0.1)lv.push(v);});}}
+  const lv=[];if(o.plan){for(const side of ['short','long']){const pl=o.plan[side];if(!pl)continue;[pl.trigger_px,pl.entry_px,pl.stop,pl.t1,pl.t2].forEach(v=>{if(v!=null&&Math.abs(v-ref)/ref<0.1)lv.push(v);});}}
   lv.forEach(v=>{up=Math.max(up,v-ref);dn=Math.max(dn,ref-v);});
   const minDev=ref*0.004;up=Math.max(up,minDev)*1.12;dn=Math.max(dn,minDev)*1.12;
   const Y=v=>y0+(y1-y0)*(up-(v-ref))/(up+dn);
@@ -188,7 +188,7 @@ function drawJB(c,o){
   if(o.plan){const act=o.side;const draw=(side)=>{const pl=o.plan[side];if(!pl)return;const on=side===act;const col=side==='short'?'#2ecc71':'#ff4d4f';g.globalAlpha=on?1:.35;
       const line=(v,lab,color,dash,w)=>{if(v==null||Math.abs(v-ref)/ref>=0.1)return;g.setLineDash(dash);g.strokeStyle=color;g.lineWidth=F(w);g.beginPath();g.moveTo(x0,Y(v));g.lineTo(x1,Y(v));g.stroke();g.setLineDash([]);
         const txt=lab+' '+fp(v);const tw=g.measureText(txt).width+F(6);g.fillStyle='#0f1115';g.fillRect(x1-tw-F(2),Y(v)-F(7),tw,F(13));g.fillStyle=color;g.fillText(txt,x1-tw+F(1),Y(v)+F(4));};
-      line(pl.entry_px,side==='short'?'空':'多',col,[],on?1.8:1);line(pl.stop,'損','#ffb020',[F(5),F(3)],1.2);line(pl.t1,'T1',col,[F(2),F(3)],1);line(pl.t2,'T2',col,[F(2),F(3)],1);g.globalAlpha=1;};
+      line(pl.trigger_px,side==='short'?'壓':'撐','#9aa4b2',[F(6),F(4)],1.1);line(pl.entry_px,side==='short'?'空進':'多進',col,[],on?1.8:1);line(pl.stop,'損','#ffb020',[F(5),F(3)],1.2);line(pl.t1,'T1',col,[F(2),F(3)],1);line(pl.t2,'T2',col,[F(2),F(3)],1);g.globalAlpha=1;};
     draw(act==='short'?'long':'short');draw(act);}
   // 最新價
   const last=pts[pts.length-1];const lp=o.last??last.c;const lc=lp>=ref?'#ff4d4f':'#2ecc71';
@@ -200,7 +200,7 @@ function drawAll(){if(!LIVE||!LIVE.quotes)return;const ev=STATE&&STATE.latest[CU
     $(tid).innerHTML=`${nm} <b class="num ${cls(ix?.chg)}">${ix?f(ix.ref,0):'-'} ${ix?chgTxt(ix.ref,ix.y,0):''}</b>${LIVE.index_stream?'':' <span class="small muted">(MIS 取樣)</span>'}`;
     drawJB($(id),{series:s,y:ix?.y,last:ix?.ref,stock:false});}
   const q=LIVE.quotes[CUR];const s=LIVE.series[CUR]||[];
-  $('t-stk').innerHTML=`${CUR} ${esc(q?.name||ev?.name||'')} <b class="num ${cls(q?.chg_pct)}">${q?fp(q.ref):'-'} ${q?chgTxt(q.ref,q.y,dec(q.ref)):''}</b> <span class="small muted">— 價 · <span style="color:var(--vwap)">VWAP</span> · ${LIVE.shioaji?'逐筆分K':'MIS 取樣'} · 線：<span class="dn">空</span>/<span class="up">多</span> 進場、<span style="color:var(--warn)">損</span>、T1/T2</span>`;
+  $('t-stk').innerHTML=`${CUR} ${esc(q?.name||ev?.name||'')} <b class="num ${cls(q?.chg_pct)}">${q?fp(q.ref):'-'} ${q?chgTxt(q.ref,q.y,dec(q.ref)):''}</b> <span class="small muted">— 價 · <span style="color:var(--vwap)">VWAP</span> · ${LIVE.shioaji?'逐筆分K':'MIS 取樣'} · 線：<span style="color:#9aa4b2">壓/撐</span>＝要先測試的價位、<span class="dn">空進</span>/<span class="up">多進</span>＝測試失敗後才掛的進場價、<span style="color:var(--warn)">損</span>、T1/T2</span>`;
   drawJB($('jb-stk'),{series:s,y:q?.y,last:q?.ref,stock:true,plan:ev?.plan,side:activeSide(ev)});}
 window.addEventListener('resize',()=>{drawAll();drawChart();});
 

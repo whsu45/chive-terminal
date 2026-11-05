@@ -15,11 +15,27 @@ def fetch(ex_codes):
       t 時間, z 成交價(可能 '-'), o 開, h 高, l 低, y 昨收, v 累積量(張),
       bids/asks: [(price, vol)...] 五檔, u 漲停, w 跌停, n 名稱, ex 市場
     """
-    j = http.get_json(MIS_URL, params={"ex_ch": "|".join(ex_codes), "json": "1", "delay": "0"},
-                      referer="https://mis.twse.com.tw/stock/index.jsp", retries=1, timeout=8)
+    params = {"ex_ch": "|".join(ex_codes), "json": "1", "delay": "0"}
+    j = http.get_json(MIS_URL, params=params, referer="https://mis.twse.com.tw/stock/index.jsp", retries=1, timeout=8)
+    arr = j.get("msgArray") or []
+    if not arr:
+        # 先開一次首頁拿 session cookie 再重試（有些網路環境沒有 cookie 時 MIS 回空陣列）
+        try:
+            http.get("https://mis.twse.com.tw/stock/index.jsp", retries=0, timeout=8)
+            j = http.get_json(MIS_URL, params=params, referer="https://mis.twse.com.tw/stock/index.jsp", retries=0, timeout=8)
+            arr = j.get("msgArray") or []
+        except http.HttpError:
+            pass
+    if not arr:
+        # 沒有任何一檔：不是代碼錯，是 MIS 這次沒給資料（限流、公司網路代理擋掉、session 問題…）。
+        # 丟 HttpError 讓呼叫端走備援（盤前資料改用證交所/櫃買收盤檔、盤中改用永豐串流），並把 MIS 實際回應印出來
+        import json as _json
+        raise http.HttpError(f"MIS 回應裡沒有報價（rtcode={j.get('rtcode')} {j.get('rtmessage') or ''}）：{_json.dumps(j, ensure_ascii=False)[:200]}")
     out = {}
-    for s in j.get("msgArray", []):
+    for s in arr:
         code = s.get("c")
+        if not code:
+            continue
         z = http.to_float(s.get("z"))
         bids = list(zip([http.to_float(x) for x in _split(s.get("b"))], [http.to_int(x) for x in _split(s.get("g"))]))
         asks = list(zip([http.to_float(x) for x in _split(s.get("a"))], [http.to_int(x) for x in _split(s.get("f"))]))

@@ -56,6 +56,23 @@ def markets_for(codes):
             q = {}
         for c, v in q.items():
             out[c] = {"ex": v["ex"], "name": v["name"], "y": v["y"]}
+    missing = [c for c in codes if c not in out]
+    if missing:
+        # 備援：MIS 沒給的，用前一交易日的證交所 / 櫃買收盤檔判定市場、名稱、昨收（盤前資料只需要這三個）
+        try:
+            prev = cal.prev_trading_day(cal.today_tw())
+            tw = _safe(lambda: src_twse.all_quotes(prev), {}, "twse 收盤檔")
+            tp = _safe(lambda: src_tpex.daily_quotes(prev), {}, "tpex 收盤檔")
+            for c in missing:
+                if c in tw and tw[c].get("c"):
+                    out[c] = {"ex": "tse", "name": tw[c]["name"], "y": tw[c]["c"]}
+                elif c in tp and tp[c].get("c"):
+                    out[c] = {"ex": "otc", "name": tp[c]["name"], "y": tp[c]["c"]}
+            got = [c for c in missing if c in out]
+            if got:
+                print(f"  [prep] MIS 沒給 {','.join(got)}，改用 {prev} 收盤檔判定上市櫃與昨收")
+        except Exception as e:
+            print(f"  [warn] 收盤檔備援失敗：{str(e)[:100]}")
     return out
 
 

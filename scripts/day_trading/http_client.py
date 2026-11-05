@@ -38,6 +38,11 @@ def _ssl_context():
 
 _CTX = _ssl_context()
 
+# 帶 cookie 的 opener：MIS 偶爾要先有首頁的 session cookie 才回報價（見 src_mis.fetch 的重試）
+import http.cookiejar as _cj
+_JAR = _cj.CookieJar()
+_OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(_JAR), urllib.request.HTTPSHandler(context=_CTX))
+
 
 def _err_text(url, e):
     """SSL 失敗要把原因印完整（原本只印到「<urlopen error [SSL: 」就被截斷）。"""
@@ -83,7 +88,7 @@ def get(url, params=None, headers=None, referer=None, retries=2, timeout=HTTP_TI
     for i in range(retries + 1):
         try:
             req = urllib.request.Request(url, headers=h)
-            with urllib.request.urlopen(req, timeout=timeout, context=_CTX) as r:
+            with _OPENER.open(req, timeout=timeout) as r:
                 data = r.read()
             if cache_ttl > 0:
                 os.makedirs(os.path.dirname(cp), exist_ok=True)
@@ -112,7 +117,7 @@ def post(url, data, headers=None, referer=None, retries=2, timeout=HTTP_TIMEOUT,
     for i in range(retries + 1):
         try:
             req = urllib.request.Request(url, data=body, headers=h, method="POST")
-            with urllib.request.urlopen(req, timeout=timeout, context=_CTX) as r:
+            with _OPENER.open(req, timeout=timeout) as r:
                 out = r.read()
             if cache_ttl > 0:
                 os.makedirs(os.path.dirname(cp), exist_ok=True)

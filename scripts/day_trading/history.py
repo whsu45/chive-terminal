@@ -1,0 +1,107 @@
+"""
+個股交戰紀錄（logs/stock_history.json）：當沖要做熟悉的股票，所以每檔記
+  - 監控過哪些天（同一天開幾次 monitor 都算一天；launches 另計）
+  - 每一次「建議做空/做多」訊號的結果：贏 / 輸 / 平、5 分鐘內就反向（估錯）、可疑原因
+  - 使用者備註（notes），例如「連三次開高走低」
+model.evaluate 會拿 summary() 當參考：該股某一邊的訊號勝率夠差就壓那一邊的勝率並警告；儀表板開「交戰紀錄」卡。
+"""
+import os
+import json
+import threading
+import datetime as dt
+
+from config import LOG_DIR
+
+PATH = os.path.join(LOG_DIR, "stock_history.json")
+_lock = threading.Lock()
+
+
+def _load():
+    try:
+        with open(PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _save(db):
+    os.makedirs(LOG_DIR, exist_ok=True)
+    tmp = PATH + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(db, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, PATH)
+
+
+def record_launch(code, name=None, market=None, group=None, today=None):
+    """monitor 啟動時呼叫：記監控日（一天算一次）與啟動次數。回該股紀錄。"""
+    today = today or dt.date.today().isoformat()
+    with _lock:
+        db = _load()
+        e = db.setdefault(code, {"name": name, "market": market, "group": group, "days": [], "launches": 0, "signals": [], "notes": []})
+        if name: e["name"] = name
+        if market: e["market"] = market
+        if group: e["group"] = group
+        if today not in e["days"]:
+            e["days"].append(today)
+            e["days"].sort()
+        e["launches"] = e.get("launches", 0) + 1
+        _save(db)
+        return e
+
+
+def record_signal(code, rec):
+    """訊號結案時呼叫：rec = {date,time,side,price,stop,t1,t2,verdict,fast_adverse,ret_5m,ret_10m,ret_30m,suspects,why}。"""
+    with _lock:
+        db = _load()
+        e = db.setdefault(code, {"name": None, "market": None, "group": None, "days": [], "launches": 0, "signals": [], "notes": []})
+        key = (rec.get("date"), rec.get("time"), rec.get("side"))
+        if any((s.get("date"), s.get("time"), s.get("side")) == key for s in e["signals"]):
+            return
+        e["signals"].append(rec)
+        e["signals"] = e["signals"][-300:]
+        _save(db)
+
+
+def add_note(code, text):
+    with _lock:
+        db = _load()
+        e = db.setdefault(code, {"name": None, "market": None, "group": None, "days": [], "launches": 0, "signals": [], "notes": []})
+        e["notes"].append({"date": dt.date.today().isoformat(), "text": text})
+        _save(db)
+
+
+def get(code):
+    return _load().get(code)
+
+
+def summary(code, e=None):
+    """給 model / 儀表板用的摘要。"""
+    e = e or get(code)
+    if not e:
+        return None
+    sig = e.get("signals") or []
+    def side_stats(side):
+        xs = [s for s in sig if s.get("side") == side]
+        w = sum(1 for s in xs if s.get("verdict") == "win")
+        l = sum(1 for s in xs if s.get("verdict") == "loss")
+        fa = sum(1 for s in xs if s.get("fast_adverse"))
+        return {"n": len(xs), "win": w, "loss": l, "flat": len(xs) - w - l, "fast_adverse": fa,
+                "win_rate": (w / (w + l) * 100) if (w + l) else None}
+    # 失敗原因排行（只數輸的）
+    reasons = {}
+    for s in sig:
+        if s.get("verdict") == "loss" or s.get("fast_adverse"):
+            for r in s.get("suspects") or []:
+                reasons[r] = reasons.get(r, 0) + 1
+    top = sorted(reasons.items(), key=lambda x: -x[1])[:5]
+    return {"code": code, "name": e.get("name"), "group": e.get("group"), "days": len(e.get("days") or []),
+            "first": (e.get("days") or [None])[0], "last": (e.get("days") or [None])[-1], "launches": e.get("launches", 0),
+            "short": side_stats("short"), "long": side_stats("long"), "n_signals": len(sig),
+            "recent": sig[-8:], "loss_reasons": top, "notes": (e.get("notes") or [])[-5:]}
+
+
+def all_summary():
+    db = _load()
+    out = [summary(c, e) for c, e in db.items()]
+    out.sort(key=lambda s: (-s["days"], -s["n_signals"]))
+    return out

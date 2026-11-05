@@ -70,6 +70,9 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .wall{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--panel2);font-size:12px;border-left:4px solid var(--line)}
 .wall.bid{border-left-color:var(--up)}.wall.ask{border-left-color:var(--dn)}.wall.ended{opacity:.6}
 .wall b{font-family:var(--mono)}.wall .v{font-weight:700}.wall .v.real{color:var(--up)}.wall .v.fake{color:var(--warn)}
+.hist .kv b{font-size:14px}.hist table{width:100%;font-size:12px;border-collapse:collapse;margin-top:6px}.hist td{padding:2px 4px}.hist td.n{text-align:right;font-family:var(--mono)}
+.hist .wl{font-weight:700}.hist .note{font-size:12px;color:var(--muted);margin-top:4px}
+.tab .days{font-size:11px;color:var(--muted);margin-left:4px}
 .ladder{font-family:var(--mono);font-size:13px}
 .ladder .row{display:flex;justify-content:space-between;padding:3px 8px;border-radius:6px}
 .ladder .row.r{color:var(--dn)}.ladder .row.s{color:var(--up)}
@@ -128,6 +131,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
   <section class="card" id="c-factors"><h3>因子（滑鼠停留看理由）</h3><div id="factors"></div></section>
   <section class="card" id="c-book"><h3>五檔</h3><div class="book" id="book"></div><div id="walls"></div></section>
   <section class="card" id="c-group"><h3>族群</h3><div id="group"></div></section>
+  <section class="card" id="c-hist"><h3>交戰紀錄 <span class="small muted">（做熟悉的股票）</span></h3><div id="hist"></div></section>
   <section class="card" id="c-warr"><h3>權證</h3><div id="warr"></div></section>
   <section class="card span2" id="c-chart"><h3>勝率曲線（每次估算）</h3><canvas id="chart" height="220"></canvas></section>
   <section class="card" id="c-pre"><h3>盤前摘要</h3><pre id="pre" class="small" style="white-space:pre-wrap;margin:0;color:var(--muted)"></pre></section>
@@ -255,6 +259,20 @@ function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];c
   drawFlowSeries(fl);
   renderAlerts(ev);renderWarr(ev);drawAll();}
 
+// 交戰紀錄：監控天數、過去建議訊號的勝敗、常見失誤、最近幾筆、備註；下方列常做個股（/api/watchlist）
+let WATCH=null,WATCH_T=0;
+async function loadWatch(){if(Date.now()-WATCH_T<60000)return;WATCH_T=Date.now();try{const r=await fetch('/api/watchlist?_='+Date.now());WATCH=await r.json();renderHist();}catch(e){}}
+function renderHist(){const h=(STATE.daily[CUR]||{}).history;const el=$('hist');if(!el)return;loadWatch();
+  if(!h){el.innerHTML='<span class="muted">尚無紀錄</span>';return;}
+  const wl=s=>s&&(s.win+s.loss)?`<span class="wl"><span class="up">${s.win}勝</span> <span class="dn">${s.loss}敗</span>${s.flat?` ${s.flat}平`:''}</span> <span class="muted">勝率 ${f(s.win_rate,0)}%${s.fast_adverse?`，估錯 ${s.fast_adverse}`:''}</span>`:(s&&s.n?`${s.n} 筆（${s.flat} 平）`:'<span class="muted">無</span>');
+  const v=r=>({win:'<span class="up">✔ 贏</span>',loss:'<span class="dn">✘ 輸</span>',flat:'— 平'}[r.verdict]||'')+(r.fast_adverse?' <span class="stale">估錯</span>':'');
+  el.innerHTML=`<div class="hist"><div class="kv"><div>監控天數<b class="num">${h.days}</b></div><div>首次<b class="num">${esc((h.first||'').slice(5))}</b></div><div>啟動次數<b class="num">${h.launches}</b></div><div>訊號數<b class="num">${h.n_signals}</b></div></div>
+    <div style="margin-top:8px">建議做空：${wl(h.short)}</div><div>建議做多：${wl(h.long)}</div>
+    ${h.loss_reasons&&h.loss_reasons.length?`<div class="note">常見失誤：${h.loss_reasons.map(([r,n])=>`${esc(r)} ×${n}`).join('、')}</div>`:''}
+    ${h.recent&&h.recent.length?`<table>${h.recent.slice().reverse().map(r=>`<tr><td class="muted">${esc((r.date||'').slice(5))} ${esc((r.time||'').slice(0,5))}</td><td>${esc(r.label||r.side)}</td><td class="n">${fp(r.price)}</td><td>${v(r)}</td><td class="n ${cls(r.ret_30m)}">${pct(r.ret_30m,1)}</td></tr>`).join('')}</table>`:'<div class="note">還沒有建議訊號的結果</div>'}
+    ${h.notes&&h.notes.length?`<div class="note">備註：${h.notes.map(n=>esc(n.text)).join('；')}</div>`:''}
+    ${WATCH&&WATCH.length?`<div class="note" style="border-top:1px dashed var(--line);margin-top:8px;padding-top:6px">常做個股：${WATCH.slice(0,8).map(w=>`${w.code} ${esc(w.name||'')} <b>${w.days}</b>天${(w.short.win+w.short.loss+w.long.win+w.long.loss)?`（${w.short.win+w.long.win}勝${w.short.loss+w.long.loss}敗）`:''}`).join(' · ')}</div>`:''}</div>`;}
+
 // 大戶散戶累積買賣超（籌碼K線同款）：上=大戶（主力）累積淨額、下=散戶累積淨額；紅=買超、綠=賣超；頂端大戶/散戶成交量比
 function drawFlowSeries(fl){const fs=(LIVE&&LIVE.flow_series&&LIVE.flow_series[CUR])||[];const box=$('fs');if(!fl||!fs.length){box.style.display='none';return;}box.style.display='';
   const bigV=(fl.big_buy||0)+(fl.big_sell||0),smV=(fl.small_buy||0)+(fl.small_sell||0),tot=bigV+smV||1;const bigCtl=bigV>=smV;
@@ -306,7 +324,8 @@ function renderWarr(ev){const w=(LIVE&&LIVE.warrants&&LIVE.warrants[CUR])||ev.wa
 // ---------------------------------------------------------------- 估算區（每 interval 秒）
 function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   $('tabs').innerHTML=STATE.codes.map(c=>{const lq=LIVE&&LIVE.quotes[c];const e=STATE.latest[c];const ch=lq?lq.chg_pct:e?.info?.chg_pct;
-    return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||'')} <span class="num ${cls(ch)}">${pct(ch)}</span></div>`}).join('');
+    const hd=(STATE.daily[c]||{}).history;return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||'')} <span class="num ${cls(ch)}">${pct(ch)}</span>${hd?`<span class="days">${hd.days}天</span>`:''}</div>`}).join('');
+  renderHist();
   if(!LIVE){const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
     $('shioaji').innerHTML=STATE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';}
   $('pre').textContent=STATE.describe?.[CUR]||'';

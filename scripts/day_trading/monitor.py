@@ -22,6 +22,7 @@ from config import LOG_DIR, load_env
 import prep
 import model
 import indicators as I
+import history
 import src_mis
 import src_warrants as W
 import http_client as hc   # 別名不能叫 http：下面 import http.server 會把它蓋掉
@@ -112,6 +113,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._send(WEB.live_json())
         if path.startswith("/api/history/"):
             return self._send(WEB.history_json(path.rsplit("/", 1)[-1]))
+        if path == "/api/watchlist":
+            return self._send(json.dumps(history.all_summary(), ensure_ascii=False, default=str))
         self._send('{"error":"not found"}', code=404)
 
 
@@ -338,6 +341,15 @@ class Monitor:
             print(prep.describe(self.daily[c]))
             dd = self.daily[c]
             WEB.daily[c] = {k: dd.get(k) for k in ("code", "name", "market", "group", "peers", "limit_up", "limit_down", "tech", "flags", "insti_sum", "margin", "sbl")}
+            try:
+                he = history.record_launch(c, dd.get("name"), dd.get("market"), dd.get("group"))
+                dd["history"] = history.summary(c, he)
+                WEB.daily[c]["history"] = dd["history"]
+                hs = dd["history"]
+                print(f"  交戰紀錄：監控 {hs['days']} 天（首次 {hs['first']}）、建議做空 {hs['short']['win']}勝{hs['short']['loss']}敗、做多 {hs['long']['win']}勝{hs['long']['loss']}敗"
+                      + (f"；常見失誤：{'、'.join(r for r, _ in hs['loss_reasons'])}" if hs['loss_reasons'] else ""))
+            except Exception as e:
+                print(f"  [warn] 交戰紀錄: {str(e)[:80]}")
             WEB.daily[c]["warrants"] = {k: v for k, v in (dd.get("warrants") or {}).items() if k != "list"}
             WEB.describe[c] = prep.describe(dd)
             pc = (self.daily[c].get("tech") or {}).get("close")
@@ -620,8 +632,24 @@ class Monitor:
                 continue
             if (now - ts).total_seconds() > 120:
                 continue   # 啟動時補發的歷史警示沒有當時狀態，不追蹤
+            typ = self._alert_type(txt)
+            extra = {}
+            if typ in ("建議做空", "建議做多"):
+                sg = self.signals.get(c) or {}
+                ev = WEB.latest.get(c) or {}
+                inf = ev.get("info") or {}
+                walls = self.walls.get(c, {})
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label")},
+                         "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
+                                      "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
+                                      "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
+                                      "warrant_surge": inf.get("warrant_surge_5m"), "small_net_pct": inf.get("small_net_pct"),
+                                      "p_long": ev.get("p_long"), "p_short": ev.get("p_short"),
+                                      "wall_bid": {k: walls["bid"].get(k) for k in ("px", "verdict", "last")} if walls.get("bid") and not walls["bid"].get("status") else None,
+                                      "wall_ask": {k: walls["ask"].get(k) for k in ("px", "verdict", "last")} if walls.get("ask") and not walls["ask"].get("status") else None},
+                         "factors": [f[0] for f in (ev.get("intraday_factors") or [])]}
             self.pending.append({"date": now.strftime("%Y-%m-%d"), "code": c, "name": self.daily[c]["name"], "time": t, "ts": ts.timestamp(),
-                                 "type": self._alert_type(txt), "text": txt[:120], "price": p,
+                                 "type": typ, "text": txt[:120], "price": p, **extra,
                                  "chg_pct": (p / q["y"] - 1) * 100 if q.get("y") else None,
                                  "range_pos": ((p - q["l"]) / (q["h"] - q["l"])) if (q.get("h") and q.get("l") and q["h"] != q["l"]) else None,
                                  "big_net": big_now, "big_net_10m": big_10, "small_net": flow["small_net"] if flow else None,
@@ -657,11 +685,100 @@ class Monitor:
                                  "min_pct": (min(b[3] for b in win) / rec["price"] - 1) * 100,
                                  "partial": age < horizon * 60}
             if "30m" in rec["out"] or (closed and age > 60):
+                if rec.get("sig"):
+                    self._judge_signal(rec, bmap, m0)
                 with open(os.path.join(LOG_DIR, "alert_outcomes.jsonl"), "a", encoding="utf-8") as f:
                     f.write(json.dumps(rec, ensure_ascii=False) + "\n")
             else:
                 keep.append(rec)
         self.pending = keep
+
+    @staticmethod
+    def _suspects(side, feat):
+        """訊號失敗時的可疑原因（當時就看得到的條件）。"""
+        S = []
+        f = feat or {}
+        short = side == "short"
+        it, gt = f.get("idx_trend_10m"), f.get("group_trend_10m")
+        if it is not None and ((it > 0.2) if short else (it < -0.2)):
+            S.append("大盤 10 分鐘反向")
+        if gt is not None and ((gt > 0.3) if short else (gt < -0.3)):
+            S.append("族群 10 分鐘反向")
+        if f.get("momentum") == ("up" if short else "down"):
+            S.append("進場時有反向動能")
+        bi = f.get("book_imb")
+        if bi is not None and ((bi > 0.3) if short else (bi < -0.3)):
+            S.append("五檔反向厚")
+        if f.get("warrant_surge") and short:
+            S.append("權證急漲中")
+        b10 = f.get("big_net_10m")
+        if b10 is not None and ((b10 > 0) if short else (b10 < 0)):
+            S.append("主力 10 分鐘反向")
+        sn = f.get("small_net_pct")
+        if sn is not None and ((sn < -3) if short else (sn > 3)):
+            S.append("散戶已同向擁擠")
+        if f.get("phase") == "late":
+            S.append("尾盤")
+        vp = f.get("vol_pace")
+        if vp is not None and vp < 0.6:
+            S.append("量縮")
+        rp = f.get("range_pos")
+        if rp is not None and ((rp < 0.15) if short else (rp > 0.85)):
+            S.append("已在日內極端位置追單")
+        w = f.get("wall_bid" if short else "wall_ask")
+        if w and str(w.get("verdict", "")).startswith("真"):
+            S.append("真牆擋在前面")
+        return S
+
+    def _judge_signal(self, rec, bmap, m0):
+        """建議訊號的輸贏：30 分鐘內先到目標 1 = win、先到停損 = loss、都沒到 = flat；
+        5 分鐘內反向走掉停損距離一半以上 = fast_adverse（估錯，即使之後賺回來也要記）。"""
+        sg = rec["sig"]; side = sg.get("side"); px = rec["price"]
+        stop, t1 = sg.get("stop"), sg.get("t1")
+        if not (side and stop and t1 and px):
+            return
+        short = side == "short"
+        first_stop = first_t1 = None
+        adverse5 = 0.0
+        for i in range(1, 31):
+            b = bmap.get(m0 + i)
+            if not b:
+                continue
+            hi, lo = b[2], b[3]
+            if short:
+                if first_stop is None and hi >= stop: first_stop = i
+                if first_t1 is None and lo <= t1: first_t1 = i
+                if i <= 5: adverse5 = max(adverse5, hi - px)
+            else:
+                if first_stop is None and lo <= stop: first_stop = i
+                if first_t1 is None and hi >= t1: first_t1 = i
+                if i <= 5: adverse5 = max(adverse5, px - lo)
+        if first_t1 is not None and (first_stop is None or first_t1 < first_stop):
+            verdict = "win"
+        elif first_stop is not None:
+            verdict = "loss"
+        else:
+            verdict = "flat"
+        risk = abs(stop - px)
+        fast_adverse = bool(risk and adverse5 >= 0.5 * risk)
+        feat = dict(rec.get("features") or {})
+        feat.update({"book_imb": rec.get("book_imb"), "big_net_10m": rec.get("big_net_10m"), "small_net_pct": feat.get("small_net_pct", rec.get("small_net")),
+                     "phase": rec.get("phase"), "range_pos": rec.get("range_pos")})
+        suspects = self._suspects(side, feat) if (verdict == "loss" or fast_adverse) else []
+        rec["verdict"] = verdict; rec["fast_adverse"] = fast_adverse; rec["adverse5"] = adverse5
+        rec["first_stop_min"] = first_stop; rec["first_t1_min"] = first_t1; rec["suspects"] = suspects
+        out = {"date": rec["date"], "time": rec["time"], "side": side, "label": sg.get("label"), "price": px, "stop": stop, "t1": t1, "t2": sg.get("t2"),
+               "verdict": verdict, "fast_adverse": fast_adverse, "first_stop_min": first_stop, "first_t1_min": first_t1,
+               "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
+               "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors")}
+        try:
+            with open(os.path.join(LOG_DIR, "signal_outcomes.jsonl"), "a", encoding="utf-8") as f:
+                f.write(json.dumps({"code": rec["code"], "name": rec.get("name"), **out}, ensure_ascii=False) + "\n")
+            history.record_signal(rec["code"], out)
+            wl = {"win": "✔ 贏", "loss": "✘ 輸", "flat": "— 平"}[verdict] + ("（5 分鐘內反向，估錯）" if fast_adverse else "")
+            self._add_alert(rec["code"], dt.datetime.now(), f"{wl}：{sg.get('label')} @{px}" + (f"，可疑原因：{'、'.join(suspects)}" if suspects else ""))
+        except Exception as e:
+            print(f"[fast] 訊號結案寫入失敗：{str(e)[:80]}")
 
     def _track_walls(self, c, q, flow, now):
         """
@@ -696,6 +813,8 @@ class Monitor:
                 through = (p < w["px"]) if key == "bid" else (p > w["px"])
                 if through and traded >= 0.5 * w["size0"]:
                     w["status"] = f"✘ 被吃穿（成交 {traded} 張）"
+                elif cur <= 0.2 * w["size0"] and traded >= 0.5 * w["size0"] and not through:
+                    w["status"] = f"被吃光但價守住（成交 {traded} 張，補回 {w['refilled']}）：牆沒了，下一檔才是支撐" if key == "bid" else f"被吃光但價沒過（成交 {traded} 張）：牆沒了，上一檔才是壓力"
                 elif cur <= 0.2 * w["size0"] and traded < 0.3 * w["size0"] and not through:
                     w["status"] = f"✘ 撤單（成交只 {traded} 張，少掉 {w['pulled']} 張沒成交）→ 假{ '支撐' if key=='bid' else '壓力'}"
                 elif through:

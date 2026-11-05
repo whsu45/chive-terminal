@@ -3,8 +3,44 @@
 每個因子都回傳 (名稱, 分數, 說明)，分數正 = 偏多、負 = 偏空，絕對值約 0.2~0.8。
 這是經驗規則模型，不是回測最佳化；重點是把判斷流程固定下來、每 3 分鐘重算。
 """
+import os
+import json
 import datetime as dt
 import indicators as I
+
+
+_PARAMS = {"mtime": None, "data": {}}
+PARAMS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model_params.json")
+
+
+def load_params():
+    """因子權重倍數等可演化參數（evolve.py 產生 model_params.json）。沒有檔案就全部 1.0。
+    {"multipliers": {因子名: 倍數}, "scale": 11, "daily_w": 0.8}；檔案改了會自動重載。"""
+    try:
+        mt = os.path.getmtime(PARAMS_PATH)
+    except OSError:
+        _PARAMS["data"] = {}; _PARAMS["mtime"] = None
+        return _PARAMS["data"]
+    if mt != _PARAMS["mtime"]:
+        try:
+            with open(PARAMS_PATH, encoding="utf-8") as f:
+                _PARAMS["data"] = json.load(f)
+        except Exception:
+            _PARAMS["data"] = {}
+        _PARAMS["mtime"] = mt
+    return _PARAMS["data"]
+
+
+def apply_params(factors, params):
+    m = params.get("multipliers") or {}
+    out = []
+    for f in factors:
+        k = m.get(f[0])
+        if k is None or k == 1:
+            out.append(f)
+        else:
+            out.append((f[0], round(f[1] * k, 3), f[2] + f"（權重 ×{k:.2f}）"))
+    return out
 
 
 def _clamp(x, lo, hi):
@@ -655,17 +691,41 @@ def warrant_factors(d, q, wq, info, now):
 
 def evaluate(d, q, idx, peers_q, flow, samples, now=None, warrants=None, ctx=None):
     now = now or dt.datetime.now()
+    params = load_params()
     DF, dwarn = daily_factors(d)
     IF, iwarn, info = intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx)
     IF += warrant_factors(d, q, warrants, info, now)
+    DF, IF = apply_params(DF, params), apply_params(IF, params)
     daily_bias = sum(f[1] for f in DF)
     intra_bias = sum(f[1] for f in IF)
     # 盤中訊號在開盤後權重較高；試撮期間盤中訊號打對折
     hhmm_ = now.strftime("%H:%M")
     w_intra = 0.5 if hhmm_ < "09:00" else (0.5 if hhmm_ < "09:10" else 1.0)  # 試撮與首 10 分鐘的盤中訊號只算一半
-    bias = _clamp(daily_bias * 0.8 + intra_bias * w_intra, -3.5, 3.5)
-    p_long = 50 + 11 * bias
-    p_short = 50 - 11 * bias
+    scale = float(params.get("scale") or 11)
+    daily_w = float(params.get("daily_w") or 0.8)
+    bias = _clamp(daily_bias * daily_w + intra_bias * w_intra, -3.5, 3.5)
+    p_long = 50 + scale * bias
+    p_short = 50 - scale * bias
+    # 個股交戰紀錄（history.summary）：這檔過去的建議訊號某一邊勝率差，就壓那一邊；夠好就小幅加
+    hs = d.get("history") or {}
+    info["history"] = {k: hs.get(k) for k in ("days", "short", "long", "n_signals")} if hs else None
+    for side_key, sign in (("short", -1), ("long", 1)):
+        st = (hs.get(side_key) or {}) if hs else {}
+        wr, n = st.get("win_rate"), (st.get("win", 0) + st.get("loss", 0))
+        if wr is None or n < 4:
+            continue
+        lab = "做空" if side_key == "short" else "做多"
+        if wr <= 35:
+            adj = -8
+            iwarn.append(f"⚠ 個股戰績：此股過去{lab}訊號 {st['win']} 勝 {st['loss']} 敗（勝率 {wr:.0f}%），這邊的劇本在它身上不靈，勝率已扣 8")
+        elif wr >= 65 and n >= 6:
+            adj = 4
+        else:
+            continue
+        if side_key == "short":
+            p_short += adj
+        else:
+            p_long += adj
     pace = info.get("vol_pace")
     chop = 0
     if pace is not None and pace < 0.6:

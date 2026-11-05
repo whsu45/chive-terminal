@@ -327,6 +327,7 @@ class Monitor:
         self._last_quotes = None
         self.peer_hist = {c: {} for c in codes}     # code -> {peer: [[epoch, chg_pct], ...]}，給 model 算族群 10 分鐘趨勢
         self.signals = {}                            # code -> 目前的「建議做空/做多」訊號（快迴圈每 3 秒檢查進場確認條件）
+        self._fs_cache = {}                          # code -> (epoch, 每分鐘主力/散戶累積淨額序列)，10 秒重算一次給「大戶散戶」圖
         self.pending = []                            # 警示結果追蹤：每則 ⚠/▶ 記下當時狀態，10/30 分鐘後補上漲跌，寫 logs/alert_outcomes.jsonl
         self._tracked = set()
         self._sig_seen = {}                          # (code, side, px) -> epoch，同一個點 15 分鐘內不重發
@@ -801,7 +802,7 @@ class Monitor:
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
-                "signal": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
+                "signal": {}, "flow_series": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
                 "mis_fail": getattr(self, "_mis_fail", 0)}
         for k in ("t00", "o00"):
             q = quotes.get(k)
@@ -844,6 +845,15 @@ class Monitor:
                 for w in fW:
                     self._add_alert(c, now, w)
                 live["flow"][c] = {k: v for k, v in flow.items() if k != "hist"}
+                # 大戶/散戶累積買賣超分鐘序列（籌碼K線「大戶散戶」那張圖）：全日逐筆重算一次 O(n)，10 秒一次就夠
+                t_fs, fs = self._fs_cache.get(c, (0, None))
+                if time.time() - t_fs >= 10 or fs is None:
+                    try:
+                        fs = self.flow_src.flow_history(c)
+                    except Exception:
+                        fs = fs or []
+                    self._fs_cache[c] = (time.time(), fs)
+                live["flow_series"][c] = [[dt.datetime.fromtimestamp(r[0]).strftime("%H:%M"), r[1], r[2], r[4]] for r in fs]
             if do_wq:
                 wq = self._warrant_snapshot(c, q, now, 1)
                 if wq:

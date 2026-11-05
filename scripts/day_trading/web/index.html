@@ -60,6 +60,13 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .plan .box h4{margin:0 0 6px;font-size:13px}
 .plan .box .entry{font-size:13px;color:var(--fg);margin-bottom:6px}
 .plan table{width:100%;font-size:13px;border-collapse:collapse}.plan td{padding:2px 0}.plan td:last-child{text-align:right}
+.fs{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.fs canvas{width:100%;height:88px;display:block;margin:2px 0 8px}
+.fs .small{font-size:12px;color:var(--muted)}.fs .small b{font-family:var(--mono);font-weight:600}
+.ctl{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:6px}
+.ctl .tag{padding:2px 8px;border-radius:6px;font-weight:700;color:#0f1115;background:#f5a623}.ctl .tag.retail{background:#8b93a3}
+.ctl .track{flex:1;height:8px;border-radius:4px;background:#3a4150;overflow:hidden;display:flex}.ctl .track i{display:block;height:100%;background:#f5a623}
+.ctl b{font-family:var(--mono)}
 .ladder{font-family:var(--mono);font-size:13px}
 .ladder .row{display:flex;justify-content:space-between;padding:3px 8px;border-radius:6px}
 .ladder .row.r{color:var(--dn)}.ladder .row.s{color:var(--up)}
@@ -114,7 +121,8 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
   <section class="card" id="c-factors"><h3>因子（滑鼠停留看理由）</h3><div id="factors"></div></section>
   <section class="card" id="c-plan"><h3>進出場計畫（已畫在個股江波圖）</h3><div class="plan" id="plan"></div></section>
   <section class="card" id="c-ladder"><h3>壓力 / 支撐</h3><div class="ladder" id="ladder"></div></section>
-  <section class="card" id="c-flow"><h3>主力 / 散戶 分流</h3><div class="flow" id="flow"></div></section>
+  <section class="card" id="c-flow"><h3>主力 / 散戶 分流</h3><div class="flow" id="flow"></div>
+    <div class="fs" id="fs"><div class="ctl" id="ctl"></div><div class="small" id="fs-big-t"></div><canvas id="fs-big"></canvas><div class="small" id="fs-small-t"></div><canvas id="fs-small"></canvas></div></section>
   <section class="card" id="c-book"><h3>五檔</h3><div class="book" id="book"></div></section>
   <section class="card" id="c-group"><h3>族群</h3><div id="group"></div></section>
   <section class="card" id="c-warr"><h3>權證</h3><div id="warr"></div></section>
@@ -237,7 +245,29 @@ function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];c
       +`<div class="small muted" style="margin-top:6px">外盤 ${fl.buy_vol} / 內盤 ${fl.sell_vol} · VWAP ${f(fl.vwap,2)} · 門檻 大單 ≥${th.big_lots} 張（${f(th.big_amount/1e4,0)} 萬${th.p95?'，P95 '+th.p95:''}）散戶 &lt;${th.small_lots} 張</div>`
       +(fl.iceberg||[]).filter(x=>x.regular||x.share_cnt>=0.2).map(x=>`<div class="alert" style="margin-top:6px">規律小單：${x.size} 張 × ${x.count} 筆 ${x.side}，共 ${x.volume} 張${x.avg_gap_s?`，每 ${f(x.avg_gap_s,0)} 秒`:''}${x.regular?' ← 機器單':''}</div>`).join('');}
   else $('flow').innerHTML='<span class="muted">需要永豐串流（.env 填金鑰）</span>';
+  drawFlowSeries(fl);
   renderAlerts(ev);renderWarr(ev);drawAll();}
+
+// 大戶散戶累積買賣超（籌碼K線同款）：上=大戶（主力）累積淨額、下=散戶累積淨額；紅=買超、綠=賣超；頂端大戶/散戶成交量比
+function drawFlowSeries(fl){const fs=(LIVE&&LIVE.flow_series&&LIVE.flow_series[CUR])||[];const box=$('fs');if(!fl||!fs.length){box.style.display='none';return;}box.style.display='';
+  const bigV=(fl.big_buy||0)+(fl.big_sell||0),smV=(fl.small_buy||0)+(fl.small_sell||0),tot=bigV+smV||1;const bigCtl=bigV>=smV;
+  $('ctl').innerHTML=`<span class="tag ${bigCtl?'':'retail'}">${bigCtl?'大戶控盤':'散戶控盤'}</span><span>大 <b>${bigV}</b></span><div class="track"><i style="width:${bigV/tot*100}%"></i></div><span><b>${smV}</b> 散</span>`;
+  const last=fs[fs.length-1],prev=fs.length>1?fs[fs.length-2]:last;
+  const lab=(nm,cum,d)=>`${nm}累積<span class="${cum>=0?'up':'dn'}">${cum>=0?'買超':'賣超'} <b>${Math.abs(cum)}</b></span> 張 · 本分鐘 ${nm}<span class="${d>=0?'up':'dn'}">${d>=0?'買進':'賣出'} <b>${Math.abs(d)}</b></span> 張`;
+  $('fs-big-t').innerHTML=lab('大戶',last[1],last[1]-prev[1]);$('fs-small-t').innerHTML=lab('散戶',last[2],last[2]-prev[2]);
+  const draw=(cv,idx)=>{const dpr=window.devicePixelRatio||1;const W=cv.width=cv.clientWidth*dpr,H=cv.height=cv.clientHeight*dpr;const g=cv.getContext('2d');g.clearRect(0,0,W,H);const F=px=>px*dpr;g.font=`${F(10)}px ${getComputedStyle(document.body).fontFamily}`;
+    const padL=F(4),padR=F(40),padT=F(4),padB=F(4);const x0=padL,x1=W-padR,y0=padT,y1=H-padB;
+    const mins=t=>{const [h,m]=t.split(':').map(Number);return Math.min(270,Math.max(0,(h-9)*60+m));};const X=m=>x0+(x1-x0)*m/270;
+    const vals=fs.map(r=>r[idx]);let hi=Math.max(0,...vals),lo=Math.min(0,...vals);if(hi===lo){hi=1;lo=-1;}const pad=(hi-lo)*0.08;hi+=pad;lo-=pad;
+    const Y=v=>y0+(y1-y0)*(1-(v-lo)/(hi-lo));const Y0=Y(0);
+    // 時段格線
+    g.strokeStyle='#232833';g.lineWidth=F(1);[60,90,120,180,240].forEach(m=>{g.setLineDash(m===90||m===180?[F(2),F(3)]:[]);g.beginPath();g.moveTo(X(m),y0);g.lineTo(X(m),y1);g.stroke();});g.setLineDash([]);
+    g.strokeStyle='#3a4150';g.beginPath();g.moveTo(x0,Y0);g.lineTo(x1,Y0);g.stroke();
+    // 柱狀面積：每分鐘一根，紅買超綠賣超
+    const bw=Math.max(F(1),(x1-x0)/270);
+    fs.forEach(r=>{const v=r[idx];if(!v)return;const x=X(mins(r[0]));g.fillStyle=v>0?'#ff4d4f':'#2ecc71';const y=Y(v);g.fillRect(x,Math.min(y,Y0),bw,Math.abs(Y0-y));});
+    g.fillStyle='#8b93a3';g.fillText(String(Math.round(hi-pad)),x1+F(4),y0+F(9));g.fillText(String(Math.round(lo+pad)),x1+F(4),y1-F(1));g.fillText('0',x1+F(4),Y0+F(3));};
+  draw($('fs-big'),1);draw($('fs-small'),2);}
 
 // 建議做空/做多橫幅：快迴圈確認進場條件成立才出現，會一直閃到到目標/過停損/逾時
 let SIG_KEY=null;

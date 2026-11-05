@@ -206,6 +206,14 @@ def _flow_dynamics(flow, now):
         elif ref[1] > 0 and -delta >= max(min_abs, 0.4 * abs(ref[1])):
             F.append(("主力急出", -0.5, f"主力淨買 {mins} 分鐘內由 {ref[1]:+} 掉到 {big_now:+}（出掉 {-delta} 張）：拉的人在跑"))
             warns.append(f"⚠ 主力 {mins} 分鐘內出掉 {-delta} 張（{ref[1]:+} → {big_now:+}），多單先減半或停利")
+        # 同向加速：已經淨賣還在幾分鐘內再倒一大批（或已淨買再大買）。11/05 晶豪科 09:03 -181 → 09:06 -352（3 分鐘 171 張、當時量的 13%），
+        # 價 224 → 219；上面兩條只抓「翻向」，這種加速原本漏掉
+        elif ref[1] <= 0 and -delta >= max(2 * min_abs, 0.5 * abs(ref[1])):
+            F.append(("主力加速出貨", -0.4, f"主力淨賣 {mins} 分鐘內由 {ref[1]:+} 擴大到 {big_now:+}（再倒 {-delta} 張）：賣壓在加速，不是尾聲"))
+            warns.append(f"⚠ 主力 {mins} 分鐘內再倒 {-delta} 張（{ref[1]:+} → {big_now:+}），多單不接、空單順勢，反彈不過前高加碼")
+        elif ref[1] >= 0 and delta >= max(2 * min_abs, 0.5 * abs(ref[1])):
+            F.append(("主力加速吃貨", 0.4, f"主力淨買 {mins} 分鐘內由 {ref[1]:+} 擴大到 {big_now:+}（再買 {delta} 張）：買盤在加速"))
+            warns.append(f"⚠ 主力 {mins} 分鐘內再買 {delta} 張（{ref[1]:+} → {big_now:+}），空單不追、多單順勢")
 
     # (2) 10 分鐘內「回補 → 再倒」且價格從高點回落 ≥2%：拉高出貨型態
     win = [hrec for hrec in hist if t_now - hrec[0] <= 600]
@@ -225,11 +233,131 @@ def _flow_dynamics(flow, now):
     return F, warns
 
 
-def intraday_factors(d, q, idx, peers_q, flow, samples, now):
+def _bars_from_samples(samples):
+    """沒有 Shioaji 分 K 時，用 MIS 10 秒取樣湊 1 分 K：[[HH:MM, o, h, l, c, vol, amt], ...]。"""
+    bars = {}
+    for t, px, cv in (samples or []):
+        if px is None:
+            continue
+        k = t.strftime("%H:%M")
+        b = bars.get(k)
+        if b is None:
+            bars[k] = [px, px, px, px, 0, 0.0]
+        else:
+            b[1] = max(b[1], px); b[2] = min(b[2], px); b[3] = px
+    return [[k] + v for k, v in sorted(bars.items())]
+
+
+def _momentum(bars, p, h, l, info):
+    """
+    反彈動能 / 殺盤動能：連續 ≥4 根 1 分 K 同向收盤、幅度 ≥1.2%，而且是從日低（日高）1.5% 內出發。
+    11/05 晶豪科復盤：09:22 213.5 起連 5 根紅 K 彈到 218.5，模型空方仍 77%，使用者在 218 空、三根後被拉到 220.5。
+    這種時候「反彈至 X 不過」的計畫要等 1 分 K 翻黑確認；紅 K 一斷訊號自動消失，不需要計時器。
+    """
+    F, warns = [], []
+    c = [b[4] for b in bars if b[4] is not None]
+    if len(c) < 5:
+        return F, warns
+    up = dn = 0
+    for i in range(len(c) - 1, 0, -1):
+        if c[i] > c[i - 1] and dn == 0:
+            up += 1
+        elif c[i] < c[i - 1] and up == 0:
+            dn += 1
+        else:
+            break
+    if up >= 4:
+        start = c[-1 - up]
+        rise = (c[-1] / start - 1) * 100
+        if rise >= 1.2 and (not l or start <= l * 1.015):
+            info["momentum"] = {"dir": "up", "bars": up, "pct": rise}
+            F.append(("反彈動能", 0.4, f"從 {start} 連 {up} 根 1 分 K 收紅、彈 {rise:.1f}%，空單別在反彈途中進，等 1 分 K 翻黑確認"))
+            warns.append(f"⚠ 反彈動能：連 {up} 根紅 K（{start}→{c[-1]}，+{rise:.1f}%），「反彈不過」的空點要等 1 分 K 翻黑再掛，不要碰到壓力就空")
+    elif dn >= 4:
+        start = c[-1 - dn]
+        fall = (1 - c[-1] / start) * 100
+        if fall >= 1.2 and (not h or start >= h * 0.985):
+            info["momentum"] = {"dir": "down", "bars": dn, "pct": fall}
+            F.append(("殺盤動能", -0.4, f"從 {start} 連 {dn} 根 1 分 K 收黑、跌 {fall:.1f}%，多單別在殺盤途中接，等 1 分 K 翻紅確認"))
+            warns.append(f"⚠ 殺盤動能：連 {dn} 根黑 K（{start}→{c[-1]}，-{fall:.1f}%），「回測守住」的多點要等 1 分 K 翻紅再掛")
+    return F, warns
+
+
+def _series_change(series, now, back_sec=600, tol_sec=240):
+    """[[HH:MM, close] 或 [HH:MM, o,h,l,c,...]] 最後一筆 vs 約 back_sec 秒前那筆的變化 %；資料不夠回 None。"""
+    pts = []
+    for b in series or []:
+        try:
+            hh, mm = b[0].split(":")
+            ts = now.replace(hour=int(hh), minute=int(mm), second=0, microsecond=0).timestamp()
+            close = b[1] if len(b) == 2 else b[4]
+            if close:
+                pts.append((ts, float(close)))
+        except Exception:
+            continue
+    if len(pts) < 3:
+        return None
+    t_last, c_last = pts[-1]
+    target = t_last - back_sec
+    ref = min(pts[:-1], key=lambda x: abs(x[0] - target))
+    if abs(ref[0] - target) > tol_sec:
+        return None
+    return (c_last / ref[1] - 1) * 100
+
+
+def _trend_factors(ctx, mkt_code, pc_now, now, info):
+    """
+    大盤與族群的「趨勢」（10 分鐘變化），補原本只看水位（今日漲跌 %）的盲點：
+    大盤 -3% 但最近 10 分鐘 V 轉 +0.6%，個股的「弱於大盤」還成立，可是空單進場時機已經不對。
+    """
+    F, warns = [], []
+    ctx = ctx or {}
+    ixs = (ctx.get("idx_series") or {}).get(mkt_code) or (ctx.get("idx_series") or {}).get("t00")
+    ch = _series_change(ixs, now)
+    if ch is not None:
+        info["idx_trend_10m"] = ch
+        nm = "櫃買" if mkt_code == "o00" else "加權"
+        if ch >= 0.6:
+            F.append(("大盤急拉", 0.35, f"{nm} 10 分鐘 {ch:+.2f}%，指數在 V 轉，空單進場時機不對"))
+        elif ch >= 0.3:
+            F.append(("大盤轉強", 0.2, f"{nm} 10 分鐘 {ch:+.2f}%"))
+        elif ch <= -0.6:
+            F.append(("大盤急殺", -0.35, f"{nm} 10 分鐘 {ch:+.2f}%，系統性賣壓，多單別接刀"))
+        elif ch <= -0.3:
+            F.append(("大盤轉弱", -0.2, f"{nm} 10 分鐘 {ch:+.2f}%"))
+    ph = ctx.get("peer_hist") or {}
+    t_now = now.timestamp()
+    deltas, names = [], []
+    for chg, code, name in pc_now:
+        hist = ph.get(code) or []
+        past = [r for r in hist if t_now - r[0] >= 480]
+        if not past:
+            continue
+        prev = past[-1]
+        if t_now - prev[0] > 900:
+            continue
+        deltas.append(chg - prev[1]); names.append(name or code)
+    if deltas:
+        gt = sum(deltas) / len(deltas)
+        info["group_trend_10m"] = gt
+        if gt >= 1.0:
+            F.append(("族群急拉", 0.45, f"族群 10 分鐘平均 {gt:+.2f}%（{len(deltas)} 檔），資金正在回流這個族群"))
+        elif gt >= 0.5:
+            F.append(("族群轉強", 0.3, f"族群 10 分鐘平均 {gt:+.2f}%"))
+        elif gt <= -1.0:
+            F.append(("族群急殺", -0.45, f"族群 10 分鐘平均 {gt:+.2f}%（{len(deltas)} 檔），整個族群在被倒"))
+        elif gt <= -0.5:
+            F.append(("族群轉弱", -0.3, f"族群 10 分鐘平均 {gt:+.2f}%"))
+    return F, warns
+
+
+def intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx=None):
     """
     q: 個股 MIS quote；idx: {t00:quote, o00:quote}；peers_q: {code: quote}；
     flow: shioaji 大單分流（可 None）；samples: 本程式歷次取樣 [(time, price, cumvol)]
+    ctx: monitor 另外提供的脈絡（可 None）：bars 個股 1 分 K、idx_series 指數分時、peer_hist 族群歷史、alerts 即時警示 [(epoch, text)]
     """
+    ctx = ctx or {}
     F, warns, info = [], [], {}
     t = d.get("tech") or {}
     y = q.get("y") or t.get("close")
@@ -375,6 +503,27 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now):
         elif imb < -0.35:
             F.append(("委賣厚", -0.15, f"五檔買 {bv} / 賣 {av}"))
 
+    # 權證急漲 + 委買厚 同時出現（5 分鐘內）：11/05 晶豪科 09:07、09:22 兩次都在 3 分鐘內拉 2–3%。
+    # 單看權證急漲只是提醒（校準：權證只跟當天同向），但加上五檔買盤變厚就是有人準備拉，空單先退一步
+    t_now = now.timestamp()
+    recent = [txt for ts, txt in (ctx.get("alerts") or []) if t_now - ts <= 300]
+    w_surge = any(("認購權證" in txt and "急漲" in txt) for txt in recent)
+    info["warrant_surge_5m"] = w_surge
+    if w_surge and info.get("book_imb", 0) > 0.35 and not pre_open:
+        F.append(("權證急漲+委買厚", 0.3, f"5 分鐘內認購權證急漲，且五檔買 {info.get('bid5')} / 賣 {info.get('ask5')}：散戶追價、避險買盤、掛單護盤同時出現，現股常在幾分鐘內急拉"))
+        warns.append("⚠ 權證急漲 + 委買變厚：空單等 5 分鐘再進，已有空單把停損收緊")
+
+    # 1 分 K 動能（反彈/殺盤途中不逆勢進場）
+    bars = ctx.get("bars") or _bars_from_samples(samples)
+    if not pre_open:
+        mF, mW = _momentum(bars, p, h_eff or h, l, info)
+        F += mF; warns += mW
+
+    # 大盤 / 族群 10 分鐘趨勢
+    if not pre_open:
+        tF, tW = _trend_factors(ctx, mkt_code, pc, now, info)
+        F += tF; warns += tW
+
     # 大單 / 散戶 / 藏單（shioaji）。門檻依金額與當日分布自動推算，見 src_shioaji.lot_thresholds
     # 2026-08-27~10-30 九檔 357 個樣本的校準（calibrate.py）：
     #   主力淨買% 對 09:20→09:50 報酬 IC ≈ -0.03（無預測力，各門檻皆然）→ 只給 ±0.15 當資訊
@@ -491,10 +640,10 @@ def warrant_factors(d, q, wq, info, now):
     return F
 
 
-def evaluate(d, q, idx, peers_q, flow, samples, now=None, warrants=None):
+def evaluate(d, q, idx, peers_q, flow, samples, now=None, warrants=None, ctx=None):
     now = now or dt.datetime.now()
     DF, dwarn = daily_factors(d)
-    IF, iwarn, info = intraday_factors(d, q, idx, peers_q, flow, samples, now)
+    IF, iwarn, info = intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx)
     IF += warrant_factors(d, q, warrants, info, now)
     daily_bias = sum(f[1] for f in DF)
     intra_bias = sum(f[1] for f in IF)
@@ -582,7 +731,11 @@ def build_plan(d, q, info, levels, p_long, p_short, now):
         stop = I.round_tick(r1[1] + pad, "up")
         tgt1 = s1[1] if s1 else I.round_tick(p - atr * 0.5, "down")
         tgt2 = below[1][1] if len(below) > 1 else I.round_tick(p - atr * 0.9, "down")
-        plan["short"] = {"entry": f"反彈至 {r1[1]} ({r1[0]}) 不過，{entry} 空", "entry_px": entry, "trigger_px": r1[1], "stop": stop,
+        mom = info.get("momentum") or {}
+        note_s = f"反彈動能中（連 {mom.get('bars')} 根紅 K）：先不進，等 1 分 K 翻黑" if mom.get("dir") == "up" else None
+        plan["short"] = {"entry": f"碰 {r1[1]} ({r1[0]}) 不過：1 分 K 收 {entry} 以下才進，{entry} 空；1 分 K 收過 {stop} 計畫作廢",
+                         "confirm": f"等價格碰 {r1[1]}，1 分 K 收在 {entry} 以下", "note": note_s,
+                         "entry_px": entry, "trigger_px": r1[1], "stop": stop,
                          "t1": tgt1, "t2": tgt2, "risk_pct": (stop - entry) / entry * 100,
                          "reward_pct": (entry - tgt1) / entry * 100,
                          "breakdown": f"備援：5分K收破 {s1[1]} ({s1[0]}) 追空，停損 {I.round_tick(s1[1] + pad, 'up')}，目標 {tgt2}" if s1 else None}
@@ -591,7 +744,11 @@ def build_plan(d, q, info, levels, p_long, p_short, now):
         stop = I.round_tick(s1[1] - pad, "down")
         tgt1 = r1[1] if r1 else I.round_tick(p + atr * 0.5, "up")
         tgt2 = above[1][1] if len(above) > 1 else I.round_tick(p + atr * 0.9, "up")
-        plan["long"] = {"entry": f"回測 {s1[1]} ({s1[0]}) 守住，{entry} 多", "entry_px": entry, "trigger_px": s1[1], "stop": stop,
+        mom = info.get("momentum") or {}
+        note_l = f"殺盤動能中（連 {mom.get('bars')} 根黑 K）：先不接，等 1 分 K 翻紅" if mom.get("dir") == "down" else None
+        plan["long"] = {"entry": f"回測 {s1[1]} ({s1[0]}) 守住：1 分 K 收 {entry} 以上才進，{entry} 多；1 分 K 收破 {stop} 計畫作廢",
+                        "confirm": f"等價格回測 {s1[1]}，1 分 K 收在 {entry} 以上", "note": note_l,
+                        "entry_px": entry, "trigger_px": s1[1], "stop": stop,
                         "t1": tgt1, "t2": tgt2, "risk_pct": (entry - stop) / entry * 100,
                         "reward_pct": (tgt1 - entry) / entry * 100,
                         "breakout": f"備援：5分K收過 {r1[1]} ({r1[0]}) 追多，停損 {I.round_tick(r1[1] - pad, 'down')}，目標 {tgt2}" if r1 else None}

@@ -46,7 +46,7 @@ class WebState:
         self.index = {}       # t00/o00 -> {ref, chg}
         self.codes = []
         self.updated = None
-        self.interval = 180
+        self.interval = 60
         self.shioaji = False
         self.live = {}        # 10 秒快迴圈：報價、分時序列、分流、即時警示
 
@@ -322,6 +322,9 @@ class Monitor:
         self.idx_bars = {"t00": {}, "o00": {}}       # 無指數串流時用 MIS 湊
         self.fast_thread = None
         self._last_wq_t = 0
+        self._last_mis_t = 0
+        self._last_quotes = None
+        self.peer_hist = {c: {} for c in codes}     # code -> {peer: [[epoch, chg_pct], ...]}，給 model 算族群 10 分鐘趨勢
         import src_shioaji
         for c in codes:
             self.daily[c] = prep.build(c, peers_arg, refresh)
@@ -363,6 +366,7 @@ class Monitor:
                 if ok:
                     self.flow_src = src_shioaji
                     WEB.shioaji = True
+                    self._backfill_flow(ok)
                     try:
                         idx_ok = src_shioaji.start_index_stream()
                         self.index_stream = bool(idx_ok)
@@ -411,10 +415,13 @@ class Monitor:
                 self.samples[c].append((now, q["ref"], q["v"]))
             idx = {k: quotes[k] for k in ("t00", "o00") if k in quotes}
             peers_q = {p: quotes[p] for p in d["peers"] if p in quotes}
+            self._record_peers(c, peers_q, now)
+            if self.flow_src:
+                self._overlay_shioaji(c, q)
             flow = self.flow_src.flow(c, price=q.get("ref")) if self.flow_src else None
             self._record_flow_hist(c, flow, q, now)
             wq = self.wq.get(c) if (self.fast_thread and c in self.wq) else self._warrant_snapshot(c, q, now, max(1, round(self.interval / 60)))
-            ev = model.evaluate(d, q, idx, peers_q, flow, self.samples[c], now, warrants=wq)
+            ev = model.evaluate(d, q, idx, peers_q, flow, self.samples[c], now, warrants=wq, ctx=self._ctx(c, now))
             if wq and wq.get("alerts"):
                 ev["warnings"] = wq["alerts"] + ev["warnings"]
             if self.fast_thread:
@@ -423,7 +430,61 @@ class Monitor:
             results.append(ev)
         return results
 
-    # ------------------------------------------------------------ 10 秒快迴圈（圖表、報價、分流、即時警示）
+    def _backfill_flow(self, codes):
+        """盤中才啟動：用回補的逐筆重建 09:00 起每分鐘的主力/散戶淨額，並把那段時間該出的分流警示補發（帶原本的時間戳）。"""
+        for c in codes:
+            try:
+                hist = self.flow_src.flow_history(c)
+            except Exception as e:
+                print(f"[shioaji] {c} 重建流量歷史失敗：{str(e)[:80]}"); continue
+            if len(hist) < 3:
+                continue
+            self.flow_hist[c] = hist[-120:]
+            n_alert = 0
+            for i in range(2, len(hist)):
+                ts = dt.datetime.fromtimestamp(hist[i][0])
+                _, fW = model._flow_dynamics({"hist": hist[max(0, i - 15):i + 1], "volume": hist[i][4]}, ts)
+                for w in fW:
+                    before = len(self.live_alerts.get(c, []))
+                    self._add_alert(c, ts, w)
+                    n_alert += len(self.live_alerts.get(c, [])) - before
+            t0 = dt.datetime.fromtimestamp(hist[0][0]).strftime("%H:%M"); t1 = dt.datetime.fromtimestamp(hist[-1][0]).strftime("%H:%M")
+            print(f"[shioaji] {c} 回補 {t0}–{t1} 主力/散戶流量 {len(hist)} 分鐘，補發歷史警示 {n_alert} 則")
+
+    def _record_peers(self, c, peers_q, now):
+        """每次拿到族群報價就記一筆漲跌 %（≥20 秒一筆，留 90 分鐘），給 model 算族群 10 分鐘趨勢。"""
+        ph = self.peer_hist.setdefault(c, {})
+        ts = now.timestamp()
+        for code, pq in (peers_q or {}).items():
+            if not (pq.get("ref") and pq.get("y")):
+                continue
+            L = ph.setdefault(code, [])
+            if L and ts - L[-1][0] < 20:
+                continue
+            L.append([ts, (pq["ref"] / pq["y"] - 1) * 100])
+            del L[:-300]
+
+    def _ctx(self, c, now):
+        """給 model.evaluate 的脈絡：個股 1 分 K、指數分時、族群歷史、即時警示（epoch）。"""
+        mkt = "o00" if self.daily[c]["market"] == "otc" else "t00"
+        if self.flow_src:
+            bars = self.flow_src.series(c)
+        else:
+            bars = [[kk] + v for kk, v in sorted(self.mis_bars[c].items()) if kk != "_v"]
+        if self.index_stream:
+            idx_series = {k: self.flow_src.index_series(k) for k in ("t00", "o00")}
+        else:
+            idx_series = {k: [[kk, v[3]] for kk, v in sorted(self.idx_bars[k].items()) if kk != "_v"] for k in ("t00", "o00")}
+        alerts = []
+        for t, txt in self.live_alerts.get(c, []):
+            try:
+                hh, mm, ss = t.split(":")
+                alerts.append((now.replace(hour=int(hh), minute=int(mm), second=int(ss), microsecond=0).timestamp(), txt))
+            except Exception:
+                continue
+        return {"bars": bars, "idx_series": idx_series, "peer_hist": self.peer_hist.get(c, {}), "alerts": alerts, "market": mkt}
+
+    # ------------------------------------------------------------ 快迴圈（圖表、報價、分流、即時警示；有永豐 3 秒，否則 10 秒）
     def _record_flow_hist(self, c, flow, q, now, min_gap=50):
         """每 ≥50 秒記一筆主力/散戶淨額，給 model._flow_dynamics 看劇變；兩個迴圈共用同一份。"""
         if not (flow and flow.get("volume")):
@@ -496,26 +557,50 @@ class Monitor:
                     out[k] = {"code": k, "ref": last, "z": last, "y": y, "bids": [], "asks": []}
         return out
 
-    def fast_tick(self):
-        """一輪快更新：MIS 報價 → 分時序列、分流、分流劇變警示；每 60 秒順便更新權證快照與警示。
-        MIS 失敗時改用 Shioaji 串流湊報價（圖表、分流不中斷，只少五檔與族群）。"""
-        now = dt.datetime.now()
+    def _overlay_shioaji(self, c, q):
+        """MIS 報價延遲 5–15 秒、10 秒才取一次；有永豐串流時成交價/高低/量/五檔都改用串流（逐筆即時），MIS 只剩昨收與族群。"""
         try:
-            quotes = src_mis.fetch(sorted(self.ex_codes))
-            self._mis_fail = 0
-        except hc.HttpError as e:
-            self._mis_fail = getattr(self, "_mis_fail", 0) + 1
-            if not self.flow_src:
-                raise
-            if self._mis_fail in (1, 10, 100):
-                print(f"[fast] MIS 失敗（第 {self._mis_fail} 次），改用 Shioaji 串流報價：{str(e)[:100]}")
-            quotes = self._quotes_from_shioaji(now)
-            if not quotes:
-                raise
+            st = self.flow_src.stats(c)
+            bk = self.flow_src.book(c)
+        except Exception:
+            return
+        if st and st.get("last"):
+            q["ref"] = st["last"]; q["z"] = st["last"]
+            if st.get("high"): q["h"] = max(st["high"], q.get("h") or 0)
+            if st.get("low"): q["l"] = min(st["low"], q.get("l") or st["low"])
+            if st.get("open") and not q.get("o"): q["o"] = st["open"]
+            if st.get("total_volume"): q["v"] = max(st["total_volume"], q.get("v") or 0)
+            q["src"] = "shioaji"
+        if bk and bk.get("bids"):
+            q["bids"], q["asks"] = bk["bids"], bk["asks"]
+            q["book_src"] = "shioaji"
+
+    def fast_tick(self):
+        """一輪快更新：報價 → 分時序列、分流、分流劇變警示；每 60 秒順便更新權證快照與警示。
+        MIS 每 10 秒抓一次（限流），有永豐串流時每 3 秒用串流覆寫成交價/高低/量/五檔；MIS 失敗時整份改用串流湊（只少族群）。"""
+        now = dt.datetime.now()
+        mis_due = (time.time() - self._last_mis_t >= 10) or not self._last_quotes
+        if mis_due:
+            try:
+                self._last_quotes = src_mis.fetch(sorted(self.ex_codes))
+                self._last_mis_t = time.time()
+                self._mis_fail = 0
+            except hc.HttpError as e:
+                self._mis_fail = getattr(self, "_mis_fail", 0) + 1
+                if not self.flow_src:
+                    raise
+                if self._mis_fail in (1, 10, 100):
+                    print(f"[fast] MIS 失敗（第 {self._mis_fail} 次），改用 Shioaji 串流報價：{str(e)[:100]}")
+                self._last_quotes = self._quotes_from_shioaji(now)
+                self._last_mis_t = time.time() - 5   # 5 秒後再試 MIS
+                if not self._last_quotes:
+                    raise
+        quotes = {k: dict(v) for k, v in self._last_quotes.items()}
         do_wq = time.time() - self._last_wq_t >= 60
         live = {"time": now.strftime("%H:%M:%S"), "phase": model.phase_of(now), "index": {}, "index_series": {},
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
+                "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
                 "mis_fail": getattr(self, "_mis_fail", 0)}
         for k in ("t00", "o00"):
             q = quotes.get(k)
@@ -538,17 +623,12 @@ class Monitor:
                 self.samples[c].append((now, q["ref"], q["v"]))
                 if len(self.samples[c]) > 4000:
                     del self.samples[c][:1000]
-            if q.get("z") is None and self.flow_src:
-                # 沒成交價就用逐筆最後一筆（比五檔中點可靠）
-                try:
-                    last = self.flow_src.last_price(c)
-                except Exception:
-                    last = None
-                if last:
-                    q["ref"] = last
+            if self.flow_src:
+                self._overlay_shioaji(c, q)     # 成交價/高低/量/五檔改用逐筆串流（含 z='-' 延緩撮合時）
+            self._record_peers(c, {p_: quotes[p_] for p_ in self.daily[c]["peers"] if p_ in quotes}, now)
             if q.get("trial"):
                 self._add_alert(c, now, f"⚠ 延緩撮合（瞬間價格穩定措施）：試算價 {q['trial']} 超出今日區間 {q.get('l')}–{q.get('h')}，2 分鐘後恢復撮合，波動即將放大，掛單先撤")
-            lq = {k: q.get(k) for k in ("ref", "o", "h", "l", "v", "y", "bids", "asks", "name", "trial")}
+            lq = {k: q.get(k) for k in ("ref", "o", "h", "l", "v", "y", "bids", "asks", "name", "trial", "src", "book_src")}
             lq["chg_pct"] = (q["ref"] / q["y"] - 1) * 100 if q.get("y") else None
             live["quotes"][c] = lq
             if self.flow_src:
@@ -592,10 +672,12 @@ class Monitor:
             wait = 60 if (hhmm >= "13:35" or hhmm < "08:25") else every + backoff
             time.sleep(max(1, wait - (time.time() - t0)))
 
-    def start_fast(self, every=10):
+    def start_fast(self, every=None):
+        if every is None:
+            every = 3 if self.flow_src else 10
         self.fast_thread = threading.Thread(target=self.fast_loop, args=(every,), daemon=True)
         self.fast_thread.start()
-        print(f"[fast] 圖表/報價/分流每 {every} 秒更新；多空估算與進出場每 {self.interval} 秒")
+        print(f"[fast] 圖表/報價/分流每 {every} 秒更新（MIS 每 10 秒{'，永豐串流每 3 秒覆寫' if self.flow_src else ''}）；多空估算與進出場每 {self.interval} 秒")
 
     def log(self, ev):
         path = os.path.join(LOG_DIR, f"monitor_{dt.date.today():%Y%m%d}.jsonl")
@@ -648,7 +730,7 @@ def main():
     ap = argparse.ArgumentParser(description="台股當沖多空勝率監控")
     ap.add_argument("codes", nargs="+", help="股票代碼（可多檔）")
     ap.add_argument("--peers", default=None, help="自訂同族群代碼，逗號分隔；不給則查 groups.json")
-    ap.add_argument("--interval", type=int, default=180, help="輪詢秒數（預設 180 = 3 分鐘）")
+    ap.add_argument("--interval", type=int, default=60, help="多空估算間隔秒數（預設 60；圖表/報價另有 3–10 秒快迴圈）")
     ap.add_argument("--once", action="store_true", help="只跑一次")
     ap.add_argument("--json", action="store_true", help="輸出 JSON 行（給程式讀）")
     ap.add_argument("--verbose", action="store_true", help="印出每個因子的說明")

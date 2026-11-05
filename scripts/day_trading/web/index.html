@@ -45,6 +45,10 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .alert.hard{background:#3a1616;border-left-color:var(--up)}
 .alert.note{background:var(--panel2);border-left-color:var(--line);color:var(--muted)}
 .alert .t{font-family:var(--mono);color:var(--muted);margin-right:6px;font-size:12px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.alert.new{animation:blink .9s step-end infinite;box-shadow:0 0 0 1px var(--warn) inset}
+.alert.new.hard{box-shadow:0 0 0 1px var(--up) inset}
+.plan .box .note{font-size:12px;color:var(--warn);margin-bottom:6px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{padding:4px 8px;border-radius:999px;font-size:12px;background:var(--panel2);border:1px solid var(--line);cursor:help;white-space:nowrap}
 .chip.pos{border-color:#5a2426;background:#2a1517}.chip.neg{border-color:#1f5a3a;background:#122a1d}.chip.zero{opacity:.7}
@@ -140,7 +144,7 @@ async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());S
   const h=await fetch('/api/history/'+CUR+'?_='+Date.now());HIST[CUR]=await h.json();drawChart();}
   catch(e){$('foot').innerHTML='<span class="stale">連線中斷（monitor 還在跑嗎？）：'+esc(e)+'</span>';}}
 async function loadLive(){try{const r=await fetch('/api/live?_='+Date.now());const j=await r.json();LIVE=(j&&j.quotes)?j:null;if(STATE)renderLive();}catch(e){}}
-setInterval(loadState,10000);setInterval(loadLive,10000);loadState();setTimeout(loadLive,1500);
+setInterval(loadState,10000);setInterval(loadLive,3000);loadState();setTimeout(loadLive,1000);
 
 function activeSide(ev){if(!ev)return null;if(ev.p_short<=0)return 'long';return ev.p_short>=ev.p_long?'short':'long';}
 
@@ -207,8 +211,8 @@ window.addEventListener('resize',()=>{drawAll();drawChart();});
 // ---------------------------------------------------------------- 即時區（10 秒）
 function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
   const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
-  $('shioaji').innerHTML=LIVE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';
-  $('live-t').textContent=LIVE.time||'';
+  $('shioaji').innerHTML=LIVE.shioaji?`<span class="up">● 永豐串流 ${LIVE.fast_every||3} 秒</span>`:'<span class="muted">○ 公開報價 10 秒</span>';
+  const q0=LIVE.quotes[CUR];$('live-t').textContent=(LIVE.time||'')+(q0&&q0.src==='shioaji'?' 逐筆':(LIVE.mis_t?' MIS '+LIVE.mis_t:''));
   if(q){const rp=(q.h!=null&&q.l!=null&&q.h!==q.l)?Math.round((q.ref-q.l)/(q.h-q.l)*100)+'%':'-';
     $('price').innerHTML=`<div class="price"><span class="big num ${cls(q.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(q.chg_pct)}">${sgn(q.ref-q.y,dec(q.ref))} <span style="font-size:16px">${pct(q.chg_pct)}</span></span></div>
      <div class="kv"><div>開<b class="num">${fp(q.o)}</b></div><div>高<b class="num up">${fp(q.h)}</b></div><div>低<b class="num dn">${fp(q.l)}</b></div><div>昨收<b class="num">${fp(q.y)}</b></div>
@@ -227,10 +231,12 @@ function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];c
   else $('flow').innerHTML='<span class="muted">需要永豐串流（.env 填金鑰）</span>';
   renderAlerts(ev);renderWarr(ev);drawAll();}
 
+// 警示：全部帶時間戳（即時警示用產生時間、估算警示用估算時間），60 秒內的新警示閃爍
+function ageSec(t){if(!t)return 1e9;const [hh,mm,ss]=t.split(':').map(Number);const n=new Date();return (n.getHours()*3600+n.getMinutes()*60+n.getSeconds())-(hh*3600+mm*60+(ss||0));}
 function renderAlerts(ev){const live=(LIVE&&LIVE.alerts&&LIVE.alerts[CUR])||ev.live_alerts||[];const seen=new Set();const out=[];
-  live.slice().reverse().forEach(([t,w])=>{if(seen.has(w.slice(0,24)))return;seen.add(w.slice(0,24));out.push(`<div class="alert hard"><span class="t">${esc(t)}</span>${esc(w)}</div>`);});
-  (ev.warnings||[]).forEach(w=>{if(seen.has(w.slice(0,24)))return;seen.add(w.slice(0,24));const hard=/處置|⚠/.test(w);const note=/首 10 分鐘|尾盤|已收盤|試撮/.test(w)&&!hard;
-    out.push(`<div class="alert ${hard?'hard':note?'note':''}">${esc(w)}</div>`);});
+  live.slice().reverse().forEach(([t,w])=>{if(seen.has(w.slice(0,24)))return;seen.add(w.slice(0,24));const a=ageSec(t);out.push(`<div class="alert hard ${a<60?'new':''}"><span class="t">${esc(t)}</span>${esc(w)}</div>`);});
+  (ev.warnings||[]).forEach(w=>{if(seen.has(w.slice(0,24)))return;seen.add(w.slice(0,24));const hard=/處置|⚠/.test(w);const note=/首 10 分鐘|尾盤|已收盤|試撮/.test(w)&&!hard;const a=ageSec(ev.time);
+    out.push(`<div class="alert ${hard?'hard':note?'note':''} ${hard&&a<60?'new':''}"><span class="t">${esc(ev.time||'')}</span>${esc(w)}</div>`);});
   $('alerts').innerHTML=out.join('')||'<span class="muted">無</span>';}
 
 function renderWarr(ev){const w=(LIVE&&LIVE.warrants&&LIVE.warrants[CUR])||ev.warrants,wd=(STATE.daily[CUR]||{}).warrants||{};
@@ -260,7 +266,7 @@ function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   $('factors').innerHTML=`<div class="small muted" style="margin-bottom:4px">盤前</div><div class="chips">${(ev.daily_factors||[]).map(chip).join('')||'<span class="muted">無</span>'}</div>
    <div class="small muted" style="margin:8px 0 4px">盤中</div><div class="chips">${(ev.intraday_factors||[]).map(chip).join('')||'<span class="muted">無</span>'}</div>`;
   const pl=ev.plan||{};const act=activeSide(ev);
-  const box=(k,o,title)=>o?`<div class="box ${k} ${k===act?'':'dim'}"><h4>${title}${k===act?' <span class="small muted">主計畫</span>':''}</h4><div class="entry">${esc(o.entry)}</div><table>
+  const box=(k,o,title)=>o?`<div class="box ${k} ${k===act?'':'dim'}"><h4>${title}${k===act?' <span class="small muted">主計畫</span>':''}</h4>${o.note?`<div class="note">⚠ ${esc(o.note)}</div>`:''}<div class="entry">${esc(o.entry)}</div><table>
     <tr><td>停損</td><td class="num">${fp(o.stop)} <span class="muted">(${f(o.risk_pct,1)}%)</span></td></tr><tr><td>目標 1</td><td class="num">${fp(o.t1)} <span class="muted">(${f(o.reward_pct,1)}%)</span></td></tr><tr><td>目標 2</td><td class="num">${fp(o.t2)}</td></tr></table>
     ${o.breakdown||o.breakout?`<div class="small muted" style="margin-top:6px">${esc(o.breakdown||o.breakout)}</div>`:''}</div>`:'';
   $('plan').innerHTML=box('short',ev.p_short>0?pl.short:null,`空 <span class="num dn">${f(ev.p_short,0)}%</span>`)+box('long',pl.long,`多 <span class="num up">${f(ev.p_long,0)}%</span>`);

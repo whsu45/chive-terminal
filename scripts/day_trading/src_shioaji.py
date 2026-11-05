@@ -32,8 +32,9 @@ def available():
 
 
 def _new_acc():
-    return {"ticks": [], "last": None, "high": None, "low": None,
+    return {"ticks": [], "last": None, "high": None, "low": None, "open": None, "total_volume": None, "last_t": None,
             "bid_total": None, "ask_total": None, "bid_cnt": None, "ask_cnt": None,
+            "bids": [], "asks": [], "book_t": None,     # 五檔 [[price, vol] ×5]（BidAsk 串流）
             "bars": {}}   # "HH:MM" -> [o, h, l, c, vol, amt]（分 K，給江波圖）
 
 
@@ -194,10 +195,28 @@ def start_stream(codes, big_lot=None):
             with _lock:
                 _ingest(tick.code, tick.datetime, float(tick.close), int(tick.volume), int(tick.tick_type))
                 acc = _state[tick.code]
+                acc["last_t"] = tick.datetime
+                for src, dst in (("open", "open"), ("total_volume", "total_volume")):
+                    v = getattr(tick, src, None)
+                    if v:
+                        acc[dst] = float(v) if dst == "open" else int(v)
                 acc["bid_total"] = int(getattr(tick, "bid_side_total_vol", 0) or 0)
                 acc["ask_total"] = int(getattr(tick, "ask_side_total_vol", 0) or 0)
                 acc["bid_cnt"] = int(getattr(tick, "bid_side_total_cnt", 0) or 0)
                 acc["ask_cnt"] = int(getattr(tick, "ask_side_total_cnt", 0) or 0)
+        except Exception:
+            pass
+
+    @api.on_bidask_stk_v1()
+    def _on_bidask(exchange, ba):
+        try:
+            if getattr(ba, "simtrade", 0):
+                return
+            bids = [[float(p), int(v)] for p, v in zip(ba.bid_price, ba.bid_volume) if p]
+            asks = [[float(p), int(v)] for p, v in zip(ba.ask_price, ba.ask_volume) if p]
+            with _lock:
+                acc = _state.setdefault(ba.code, _new_acc())
+                acc["bids"], acc["asks"], acc["book_t"] = bids, asks, getattr(ba, "datetime", None)
         except Exception:
             pass
 
@@ -217,6 +236,10 @@ def start_stream(codes, big_lot=None):
             except Exception as e:
                 print(f"[shioaji] {code} 回補逐筆失敗：{e}")
             api.quote.subscribe(contract, quote_type=sj.constant.QuoteType.Tick, version=sj.constant.QuoteVersion.v1)
+            try:
+                api.quote.subscribe(contract, quote_type=sj.constant.QuoteType.BidAsk, version=sj.constant.QuoteVersion.v1)
+            except Exception as e:
+                print(f"[shioaji] {code} 五檔訂閱失敗（改用 MIS 五檔）：{str(e)[:80]}")
             ok.append(code)
         except Exception as e:
             print(f"[shioaji] {code} 訂閱失敗：{e}")
@@ -308,6 +331,62 @@ def last_price(code):
     with _lock:
         acc = _state.get(code)
         return acc["last"] if acc else None
+
+
+def book(code):
+    """五檔 {"bids": [[p,v]×5], "asks": [[p,v]×5], "t": datetime}；沒訂到回 None。"""
+    with _lock:
+        acc = _state.get(code)
+        if not acc or not (acc["bids"] or acc["asks"]):
+            return None
+        return {"bids": list(acc["bids"]), "asks": list(acc["asks"]), "t": acc["book_t"]}
+
+
+def stats(code):
+    """逐筆累積出的今日開高低收量 {"last","open","high","low","total_volume","t"}；沒資料回 None。"""
+    with _lock:
+        acc = _state.get(code)
+        if not acc or acc["last"] is None:
+            return None
+        tv = acc["total_volume"] or sum(b[4] for b in acc["bars"].values())
+        return {"last": acc["last"], "open": acc["open"] or (acc["bars"][min(acc["bars"])][0] if acc["bars"] else None),
+                "high": acc["high"], "low": acc["low"], "total_volume": tv, "t": acc["last_t"]}
+
+
+def flow_history(code, step_sec=60):
+    """
+    用回補的逐筆重建「每分鐘的主力/散戶淨額」：[[epoch, big_net, small_net, price, cum_vol], ...]。
+    盤中才打開 monitor 時，model._flow_dynamics 需要的歷史與 09:00 起的警示就靠這份重放，不會因為 09:30 才啟動就看不到 09:05 的主力急出。
+    分類門檻用當下全日分布（與 flow() 一致），規律小單不另外歸類（回補用途夠了）。
+    """
+    with _lock:
+        acc = _state.get(code)
+        if not acc or not acc["ticks"]:
+            return []
+        ticks = list(acc["ticks"])
+    th = lot_thresholds(acc["last"] or ticks[-1][1], [v for _, _, v, _ in ticks])
+    big, small = th["big_lots"], th["small_lots"]
+    out = []
+    bn = sn = vol = 0
+    bucket = None
+    for ts, p, v, tt in ticks:
+        t = ts if isinstance(ts, dt.datetime) else ns_to_dt(ts)
+        e = t.timestamp()
+        b = int(e // step_sec)
+        if bucket is not None and b != bucket:
+            out.append([bucket * step_sec + step_sec, bn, sn, last_p, vol])
+        bucket = b
+        vol += v
+        if tt in (1, 2):
+            sgn = 1 if tt == 1 else -1
+            if v >= big:
+                bn += sgn * v
+            elif v < small or v == 1:
+                sn += sgn * v
+        last_p = p
+    if bucket is not None:
+        out.append([bucket * step_sec + step_sec, bn, sn, last_p, vol])
+    return out
 
 
 def index_last(key):

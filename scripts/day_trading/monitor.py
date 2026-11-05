@@ -327,6 +327,8 @@ class Monitor:
         self._last_quotes = None
         self.peer_hist = {c: {} for c in codes}     # code -> {peer: [[epoch, chg_pct], ...]}，給 model 算族群 10 分鐘趨勢
         self.signals = {}                            # code -> 目前的「建議做空/做多」訊號（快迴圈每 3 秒檢查進場確認條件）
+        self.pending = []                            # 警示結果追蹤：每則 ⚠/▶ 記下當時狀態，10/30 分鐘後補上漲跌，寫 logs/alert_outcomes.jsonl
+        self._tracked = set()
         self._sig_seen = {}                          # (code, side, px) -> epoch，同一個點 15 分鐘內不重發
         import src_shioaji
         for c in codes:
@@ -562,6 +564,93 @@ class Monitor:
                 return make("long", p, "做多（突破追）", l["bo_stop"], l["bo_target"], l["bo_target"], f"5 分 K 帶量收過 {bo}（量 {f5[-1][5]} 張，多方 {pl:.0f}%）")
         return None
 
+    ALERT_TYPES = [("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
+                   ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
+                   ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
+                   ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
+                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("延緩撮合", r"延緩撮合")]
+
+    @classmethod
+    def _alert_type(cls, text):
+        import re
+        for name, pat in cls.ALERT_TYPES:
+            if re.search(pat, text):
+                return name
+        return "其他"
+
+    def _track_alerts(self, c, q, flow, bars, now):
+        """
+        警示結果追蹤（校準用）：每則新警示記下當時價格、日內位置、主力淨額與 10 分鐘變化、五檔不平衡；
+        之後用分 K 補上 10 / 30 分鐘後的價格與期間最高最低，寫到 logs/alert_outcomes.jsonl。
+        收盤（13:31）後還沒滿 30 分鐘的用現有資料結案並標 partial。alert_review.py 讀它統計各類警示的勝率。
+        """
+        p = q.get("ref")
+        if not p:
+            return
+        hist = self.flow_hist.get(c) or []
+        big_now = flow["big_net"] if flow else None
+        big_10 = None
+        if big_now is not None and hist:
+            past = [r for r in hist if now.timestamp() - r[0] >= 540]
+            if past:
+                big_10 = big_now - past[-1][1]
+        bids, asks = q.get("bids") or [], q.get("asks") or []
+        bv = sum(v for _, v in bids); av = sum(v for _, v in asks)
+        for t, txt in self.live_alerts.get(c, []):
+            key = (c, t, txt[:24])
+            if key in self._tracked:
+                continue
+            self._tracked.add(key)
+            try:
+                hh, mm, ss = t.split(":")
+                ts = now.replace(hour=int(hh), minute=int(mm), second=int(ss), microsecond=0)
+            except Exception:
+                continue
+            if (now - ts).total_seconds() > 120:
+                continue   # 啟動時補發的歷史警示沒有當時狀態，不追蹤
+            self.pending.append({"date": now.strftime("%Y-%m-%d"), "code": c, "name": self.daily[c]["name"], "time": t, "ts": ts.timestamp(),
+                                 "type": self._alert_type(txt), "text": txt[:120], "price": p,
+                                 "chg_pct": (p / q["y"] - 1) * 100 if q.get("y") else None,
+                                 "range_pos": ((p - q["l"]) / (q["h"] - q["l"])) if (q.get("h") and q.get("l") and q["h"] != q["l"]) else None,
+                                 "big_net": big_now, "big_net_10m": big_10, "small_net": flow["small_net"] if flow else None,
+                                 "book_imb": (bv - av) / (bv + av) if bv + av else None,
+                                 "phase": model.phase_of(now)["key"], "out": {}})
+        if not self.pending:
+            return
+        bmap = {}
+        for b in bars or []:
+            try:
+                hh, mm = b[0].split(":")
+                bmap[int(hh) * 60 + int(mm)] = b
+            except Exception:
+                pass
+        closed = now.strftime("%H:%M") >= "13:31"
+        keep = []
+        for rec in self.pending:
+            if rec["code"] != c:
+                keep.append(rec); continue
+            t0 = dt.datetime.fromtimestamp(rec["ts"])
+            m0 = t0.hour * 60 + t0.minute
+            age = (now - t0).total_seconds()
+            for horizon in (10, 30):
+                k = f"{horizon}m"
+                if k in rec["out"] or (age < horizon * 60 and not closed):
+                    continue
+                win = [bmap[m] for m in range(m0 + 1, m0 + horizon + 1) if m in bmap]
+                if not win:
+                    continue
+                px = win[-1][4]
+                rec["out"][k] = {"px": px, "ret_pct": (px / rec["price"] - 1) * 100,
+                                 "max_pct": (max(b[2] for b in win) / rec["price"] - 1) * 100,
+                                 "min_pct": (min(b[3] for b in win) / rec["price"] - 1) * 100,
+                                 "partial": age < horizon * 60}
+            if "30m" in rec["out"] or (closed and age > 60):
+                with open(os.path.join(LOG_DIR, "alert_outcomes.jsonl"), "a", encoding="utf-8") as f:
+                    f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+            else:
+                keep.append(rec)
+        self.pending = keep
+
     def _record_peers(self, c, peers_q, now):
         """每次拿到族群報價就記一筆漲跌 %（≥20 秒一筆，留 90 分鐘），給 model 算族群 10 分鐘趨勢。"""
         ph = self.peer_hist.setdefault(c, {})
@@ -769,6 +858,10 @@ class Monitor:
                     live["signal"][c] = sig
             except Exception as e:
                 print(f"[fast] 訊號判斷失敗：{str(e)[:100]}")
+            try:
+                self._track_alerts(c, q, flow, live["series"].get(c) or [], now)
+            except Exception as e:
+                print(f"[fast] 警示追蹤失敗：{str(e)[:100]}")
             live["alerts"][c] = list(self.live_alerts.get(c, []))[-12:]
         if do_wq:
             self._last_wq_t = time.time()

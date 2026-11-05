@@ -1,5 +1,45 @@
 [
  {
+  "date": "2026-11-05",
+  "composite": -8.14,
+  "sox": -9.58,
+  "top3Up": [
+   {
+    "key": "devices",
+    "title": "消費電子",
+    "pct": 1.77
+   },
+   {
+    "key": "internet",
+    "title": "網路平台",
+    "pct": -2.87
+   },
+   {
+    "key": "software",
+    "title": "軟體／雲端",
+    "pct": -4.48
+   }
+  ],
+  "top3Down": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -15.48
+   },
+   {
+    "key": "networking",
+    "title": "網通／光通訊",
+    "pct": -12.92
+   },
+   {
+    "key": "aiserver",
+    "title": "AI 伺服器／資料中心硬體",
+    "pct": -10.8
+   }
+  ],
+  "taiexNext": null
+ },
+ {
   "date": "2026-11-04",
   "composite": -1.24,
   "sox": -3.13,
@@ -1661,8 +1701,8 @@
     "pct": -1.18
    },
    {
-    "key": "software",
-    "title": "軟體／雲端",
+    "key": "ev",
+    "title": "電動車／自駕",
     "pct": 0.45
    }
   ],
@@ -1892,13 +1932,13 @@
   "sox": 0.45,
   "top3Up": [
    {
-    "key": "ev",
-    "title": "電動車／自駕",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 1.42
    },
    {
-    "key": "internet",
-    "title": "網路平台",
+    "key": "ev",
+    "title": "電動車／自駕",
     "pct": 1.42
    },
    {

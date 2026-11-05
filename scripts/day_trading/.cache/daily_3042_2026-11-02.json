@@ -1,0 +1,2469 @@
+{
+ "version": 3,
+ "code": "3042",
+ "name": "晶技",
+ "market": "tse",
+ "date": "2026-11-02",
+ "prev_date": "2026-10-30",
+ "group": "石英元件",
+ "peers": [
+  "2484",
+  "8081",
+  "3081",
+  "6165"
+ ],
+ "peers_arg": null,
+ "peer_info": {
+  "2484": {
+   "name": "希華",
+   "ex": "tse",
+   "y": 70.6,
+   "prev_chg_pct": -6.117021276595736,
+   "prev_vol": 5123
+  },
+  "8081": {
+   "name": "致新",
+   "ex": "tse",
+   "y": 266.0,
+   "prev_chg_pct": -2.025782688766109,
+   "prev_vol": 279
+  },
+  "3081": {
+   "name": "聯亞",
+   "ex": "otc",
+   "y": 2370.0,
+   "prev_chg_pct": -7.961165048543695,
+   "prev_vol": 4002
+  },
+  "6165": {
+   "name": "浪凡",
+   "ex": "tse",
+   "y": 42.9,
+   "prev_chg_pct": -1.0330578512396715,
+   "prev_vol": 3428
+  }
+ },
+ "tech": {
+  "date": "2026-10-30",
+  "close": 163.5,
+  "open": 166.5,
+  "high": 167.0,
+  "low": 159.0,
+  "vol": 6544,
+  "ma5": 171.3,
+  "ma10": 177.85,
+  "ma20": 194.525,
+  "ma60": 186.28333333333333,
+  "bb_up": 232.2151512334456,
+  "bb_dn": 156.83484876655442,
+  "atr14": 10.714285714285714,
+  "rsi14": 36.51437767692557,
+  "vol_ma5": 6390.8,
+  "vol_ma20": 14221.5,
+  "chg_pct": -6.034482758620685,
+  "high20": 235.5,
+  "low20": 159.0,
+  "high60": 235.5,
+  "low60": 146.0,
+  "prev_high": 179.0,
+  "prev_low": 172.0,
+  "ret5": -10.410958904109592,
+  "ret20": -21.58273381294964,
+  "streak": -2,
+  "atr_pct": 6.553079947575361
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-14",
+   "o": 173.0,
+   "h": 180.0,
+   "l": 171.5,
+   "c": 178.0,
+   "v": 6149,
+   "amt": 1084482238.0
+  },
+  {
+   "date": "2026-09-15",
+   "o": 175.0,
+   "h": 186.0,
+   "l": 175.0,
+   "c": 181.0,
+   "v": 8407,
+   "amt": 1531107407.0
+  },
+  {
+   "date": "2026-09-16",
+   "o": 183.0,
+   "h": 189.0,
+   "l": 181.5,
+   "c": 185.5,
+   "v": 13592,
+   "amt": 2519524263.0
+  },
+  {
+   "date": "2026-09-17",
+   "o": 186.0,
+   "h": 190.5,
+   "l": 178.5,
+   "c": 178.5,
+   "v": 12530,
+   "amt": 2297821170.0
+  },
+  {
+   "date": "2026-09-18",
+   "o": 183.0,
+   "h": 187.5,
+   "l": 182.0,
+   "c": 184.5,
+   "v": 10365,
+   "amt": 1912595575.0
+  },
+  {
+   "date": "2026-09-21",
+   "o": 186.5,
+   "h": 186.5,
+   "l": 183.0,
+   "c": 183.5,
+   "v": 4002,
+   "amt": 737439680.0
+  },
+  {
+   "date": "2026-09-22",
+   "o": 186.5,
+   "h": 188.0,
+   "l": 183.5,
+   "c": 183.5,
+   "v": 6734,
+   "amt": 1252562011.0
+  },
+  {
+   "date": "2026-09-23",
+   "o": 186.5,
+   "h": 201.5,
+   "l": 179.0,
+   "c": 198.0,
+   "v": 33266,
+   "amt": 6500133267.0
+  },
+  {
+   "date": "2026-09-24",
+   "o": 196.0,
+   "h": 212.0,
+   "l": 189.0,
+   "c": 203.0,
+   "v": 41859,
+   "amt": 8378508024.0
+  },
+  {
+   "date": "2026-09-29",
+   "o": 214.5,
+   "h": 222.5,
+   "l": 205.0,
+   "c": 208.5,
+   "v": 34407,
+   "amt": 7266342316.0
+  },
+  {
+   "date": "2026-09-30",
+   "o": 208.5,
+   "h": 218.5,
+   "l": 206.0,
+   "c": 210.0,
+   "v": 26893,
+   "amt": 5696932060.0
+  },
+  {
+   "date": "2026-10-01",
+   "o": 210.0,
+   "h": 224.0,
+   "l": 207.5,
+   "c": 218.5,
+   "v": 34574,
+   "amt": 7506531605.0
+  },
+  {
+   "date": "2026-10-02",
+   "o": 219.0,
+   "h": 232.5,
+   "l": 217.5,
+   "c": 230.5,
+   "v": 43452,
+   "amt": 9833111512.0
+  },
+  {
+   "date": "2026-10-05",
+   "o": 232.0,
+   "h": 235.5,
+   "l": 221.0,
+   "c": 222.0,
+   "v": 35474,
+   "amt": 8012034472.0
+  },
+  {
+   "date": "2026-10-06",
+   "o": 218.0,
+   "h": 218.5,
+   "l": 203.5,
+   "c": 204.5,
+   "v": 25656,
+   "amt": 5328002724.0
+  },
+  {
+   "date": "2026-10-07",
+   "o": 205.0,
+   "h": 213.0,
+   "l": 202.5,
+   "c": 210.5,
+   "v": 12723,
+   "amt": 2652748937.0
+  },
+  {
+   "date": "2026-10-08",
+   "o": 207.5,
+   "h": 215.0,
+   "l": 203.5,
+   "c": 211.0,
+   "v": 12700,
+   "amt": 2674343611.0
+  },
+  {
+   "date": "2026-10-12",
+   "o": 208.0,
+   "h": 209.5,
+   "l": 203.5,
+   "c": 204.5,
+   "v": 6926,
+   "amt": 1422904015.0
+  },
+  {
+   "date": "2026-10-13",
+   "o": 200.0,
+   "h": 202.0,
+   "l": 195.0,
+   "c": 195.5,
+   "v": 8388,
+   "amt": 1657426787.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 197.0,
+   "h": 209.0,
+   "l": 194.0,
+   "c": 205.0,
+   "v": 9898,
+   "amt": 2009286246.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 193.0,
+   "h": 199.5,
+   "l": 186.5,
+   "c": 189.5,
+   "v": 9936,
+   "amt": 1914841214.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 191.5,
+   "h": 193.0,
+   "l": 185.5,
+   "c": 188.0,
+   "v": 7800,
+   "amt": 1472071337.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 181.5,
+   "h": 186.5,
+   "l": 178.0,
+   "c": 182.5,
+   "v": 6244,
+   "amt": 1134487143.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 180.0,
+   "h": 187.0,
+   "l": 179.0,
+   "c": 179.5,
+   "v": 5138,
+   "amt": 939108827.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 184.5,
+   "h": 189.0,
+   "l": 179.5,
+   "c": 182.5,
+   "v": 6674,
+   "amt": 1228608110.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 183.5,
+   "h": 183.5,
+   "l": 168.5,
+   "c": 169.5,
+   "v": 12045,
+   "amt": 2102268666.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 173.0,
+   "h": 177.0,
+   "l": 170.5,
+   "c": 171.0,
+   "v": 7140,
+   "amt": 1231237685.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 175.0,
+   "h": 179.5,
+   "l": 175.0,
+   "c": 178.5,
+   "v": 3546,
+   "amt": 629402150.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 177.0,
+   "h": 179.0,
+   "l": 172.0,
+   "c": 174.0,
+   "v": 2679,
+   "amt": 468157641.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 166.5,
+   "h": 167.0,
+   "l": 159.0,
+   "c": 163.5,
+   "v": 6544,
+   "amt": 1064048296.0
+  }
+ ],
+ "limit_up": 179.5,
+ "limit_down": 147.5,
+ "insti": {
+  "2026-10-30": {
+   "foreign": 607,
+   "trust": -574,
+   "dealer": 83,
+   "total": 116
+  },
+  "2026-10-29": {
+   "foreign": -46,
+   "trust": 0,
+   "dealer": -50,
+   "total": -95
+  },
+  "2026-10-28": {
+   "foreign": 605,
+   "trust": -188,
+   "dealer": 132,
+   "total": 550
+  }
+ },
+ "insti_sum": {
+  "foreign": 1166,
+  "trust": -762,
+  "dealer": 165,
+  "total": 571
+ },
+ "margin": {
+  "fin_prev": 13072,
+  "fin_now": 12152,
+  "fin_chg": -920,
+  "short_prev": 1122,
+  "short_now": 1092,
+  "short_chg": -30,
+  "fin_limit": 79498
+ },
+ "sbl": {
+  "sbl_sell": 164,
+  "sbl_return": 884,
+  "sbl_bal": 10931
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": 43,
+   "daytrade_buy": 43,
+   "foreign_net": 308,
+   "top5_buy": 1338,
+   "top5_sell": -1709,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 745,
+     "sell": 254,
+     "net": 491,
+     "pct": 7.63
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 521,
+     "sell": 105,
+     "net": 416,
+     "pct": 6.47
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 248,
+     "sell": 36,
+     "net": 212,
+     "pct": 3.3
+    },
+    {
+     "broker": "港商麥格理",
+     "buy": 144,
+     "sell": 0,
+     "net": 144,
+     "pct": 2.24
+    },
+    {
+     "broker": "花旗環球",
+     "buy": 75,
+     "sell": 0,
+     "net": 75,
+     "pct": 1.17
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "美林",
+     "buy": 58,
+     "sell": 854,
+     "net": -796,
+     "pct": 12.38
+    },
+    {
+     "broker": "元大-蘆洲",
+     "buy": 2,
+     "sell": 330,
+     "net": -328,
+     "pct": 5.1
+    },
+    {
+     "broker": "國票-敦北法人",
+     "buy": 1,
+     "sell": 302,
+     "net": -301,
+     "pct": 4.68
+    },
+    {
+     "broker": "永豐金-匯立",
+     "buy": 0,
+     "sell": 152,
+     "net": -152,
+     "pct": 2.36
+    },
+    {
+     "broker": "凱基",
+     "buy": 5,
+     "sell": 137,
+     "net": -132,
+     "pct": 2.05
+    }
+   ],
+   "daytrade_buy_pct": 0.6570904645476773,
+   "foreign_net_pct": 4.706601466992665,
+   "top5_buy_pct": 20.446210268948654,
+   "top5_sell_pct": 26.115525672371636
+  },
+  "day_date": "2026/10/30",
+  "range4": {
+   "daytrade_net": 0,
+   "daytrade_buy": 0,
+   "foreign_net": 1320,
+   "top5_buy": 3306,
+   "top5_sell": -2310,
+   "daytrade_names": [],
+   "top_buyers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 3010,
+     "sell": 660,
+     "net": 2350,
+     "pct": 12.05
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 515,
+     "sell": 194,
+     "net": 321,
+     "pct": 1.65
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 1571,
+     "sell": 1277,
+     "net": 294,
+     "pct": 1.51
+    },
+    {
+     "broker": "台新-松德",
+     "buy": 213,
+     "sell": 16,
+     "net": 197,
+     "pct": 1.01
+    },
+    {
+     "broker": "港商麥格理",
+     "buy": 144,
+     "sell": 0,
+     "net": 144,
+     "pct": 0.74
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 1115,
+     "sell": 2016,
+     "net": -901,
+     "pct": 4.62
+    },
+    {
+     "broker": "美林",
+     "buy": 449,
+     "sell": 981,
+     "net": -532,
+     "pct": 2.73
+    },
+    {
+     "broker": "元大-蘆洲",
+     "buy": 24,
+     "sell": 351,
+     "net": -327,
+     "pct": 1.68
+    },
+    {
+     "broker": "國票-敦北法人",
+     "buy": 5,
+     "sell": 302,
+     "net": -297,
+     "pct": 1.52
+    },
+    {
+     "broker": "元大證券",
+     "buy": 831,
+     "sell": 1084,
+     "net": -253,
+     "pct": 1.3
+    }
+   ],
+   "daytrade_buy_pct": 0.0,
+   "foreign_net_pct": 6.630167261037721,
+   "top5_buy_pct": 16.605555276508113,
+   "top5_sell_pct": 11.602792706816013
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "永豐金-南京",
+    "count": 5,
+    "cum_net": 213,
+    "buy_days": 2,
+    "sell_days": 3,
+    "last_date": "2026-10-14",
+    "last_net": -58,
+    "scored": 5,
+    "win_rate": 0.8,
+    "avg_capture_pct": 3.6394670014720725,
+    "cum_net_pct": 0.07488661533593502,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "中國信託",
+    "count": 5,
+    "cum_net": 127,
+    "buy_days": 3,
+    "sell_days": 2,
+    "last_date": "2026-10-28",
+    "last_net": -193,
+    "scored": 5,
+    "win_rate": 0.8,
+    "avg_capture_pct": 2.2013426284710436,
+    "cum_net_pct": 0.044650704918609146,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "台新",
+    "count": 6,
+    "cum_net": -47,
+    "buy_days": 3,
+    "sell_days": 3,
+    "last_date": "2026-10-30",
+    "last_net": 18,
+    "scored": 5,
+    "win_rate": 0.8,
+    "avg_capture_pct": 1.336994562216125,
+    "cum_net_pct": -0.016524276623422283,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "永豐金-中壢",
+    "count": 4,
+    "cum_net": -80,
+    "buy_days": 1,
+    "sell_days": 3,
+    "last_date": "2026-10-29",
+    "last_net": -22,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 3.068762273411477,
+    "cum_net_pct": -0.028126428295186863,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "元大-松江",
+    "count": 4,
+    "cum_net": -418,
+    "buy_days": 2,
+    "sell_days": 2,
+    "last_date": "2026-10-14",
+    "last_net": 99,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 2.223616710046966,
+    "cum_net_pct": -0.1469605878423514,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "元大-竹科",
+    "count": 4,
+    "cum_net": 27,
+    "buy_days": 2,
+    "sell_days": 2,
+    "last_date": "2026-10-27",
+    "last_net": 48,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 0.5138553106420667,
+    "cum_net_pct": 0.009492669549625568,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "富邦-三重",
+    "count": 7,
+    "cum_net": 314,
+    "buy_days": 7,
+    "sell_days": 0,
+    "last_date": "2026-10-30",
+    "last_net": 74,
+    "scored": 6,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -1.0207477256152953,
+    "cum_net_pct": 0.11039623105860843,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "新光",
+    "count": 9,
+    "cum_net": -130,
+    "buy_days": 3,
+    "sell_days": 6,
+    "last_date": "2026-10-29",
+    "last_net": 14,
+    "scored": 9,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -1.8401701084006825,
+    "cum_net_pct": -0.045705445979678655,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "富邦-敦南",
+    "count": 7,
+    "cum_net": -240,
+    "buy_days": 3,
+    "sell_days": 4,
+    "last_date": "2026-10-29",
+    "last_net": -15,
+    "scored": 7,
+    "win_rate": 0.2857142857142857,
+    "avg_capture_pct": -1.3679706834985141,
+    "cum_net_pct": -0.0843792848855606,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "元大-南屯",
+    "count": 4,
+    "cum_net": -69,
+    "buy_days": 2,
+    "sell_days": 2,
+    "last_date": "2026-10-28",
+    "last_net": 30,
+    "scored": 4,
+    "win_rate": 0.25,
+    "avg_capture_pct": -0.7669045727280249,
+    "cum_net_pct": -0.02425904440459867,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": 18,
+  "winners_last_net_pct": 0.27506112469437655,
+  "winners_inventory": -1809,
+  "winners_inventory_pct": -0.6360088598249131,
+  "losers_last_net": 149,
+  "losers_last_net_pct": 2.2768948655256724,
+  "n_scored": 181
+ },
+ "warrants": {
+  "call_vol": 19744,
+  "put_vol": 60,
+  "call_amt": 10025540.0,
+  "put_amt": 121800.0,
+  "n_call": 268,
+  "n_put": 9,
+  "n_call_active": 100,
+  "n_put_active": 1,
+  "call_share": 0.996970309028479,
+  "amt_share": 0.975993708696072,
+  "hedge_net": 90,
+  "hedge_pct": 1.3753056234718826,
+  "call_amt_5d": 22955346.0,
+  "call_surge": 0.4367409665704886,
+  "list": [
+   {
+    "code": "030275",
+    "name": "晶技元大68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030332",
+    "name": "晶技富邦64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030420",
+    "name": "晶技群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030421",
+    "name": "晶技群益66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030501",
+    "name": "晶技凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030617",
+    "name": "晶技中信64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030637",
+    "name": "晶技永豐65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030638",
+    "name": "晶技永豐65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030639",
+    "name": "晶技永豐65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030640",
+    "name": "晶技永豐65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030692",
+    "name": "晶技台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030693",
+    "name": "晶技台新64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030708",
+    "name": "晶技國泰65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030718",
+    "name": "晶技統一6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030719",
+    "name": "晶技統一7A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030765",
+    "name": "晶技凱基64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030768",
+    "name": "晶技凱基64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030845",
+    "name": "晶技群益65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030892",
+    "name": "晶技富邦64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030954",
+    "name": "晶技元大64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031066",
+    "name": "晶技國票6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031231",
+    "name": "晶技凱基66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031351",
+    "name": "晶技元大64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031352",
+    "name": "晶技元大64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031353",
+    "name": "晶技元大64購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031354",
+    "name": "晶技元大65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031355",
+    "name": "晶技元大66購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033121",
+    "name": "晶技永豐64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033221",
+    "name": "晶技元大64購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033222",
+    "name": "晶技元大64購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033282",
+    "name": "晶技國票65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033283",
+    "name": "晶技國票65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033512",
+    "name": "晶技中信66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033538",
+    "name": "晶技永豐64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033756",
+    "name": "晶技元大64購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033847",
+    "name": "晶技凱基64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033998",
+    "name": "晶技群益65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033999",
+    "name": "晶技群益69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034185",
+    "name": "晶技元大64購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034330",
+    "name": "晶技群益64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034540",
+    "name": "晶技永豐64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034586",
+    "name": "晶技國票65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034761",
+    "name": "晶技元大64購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034915",
+    "name": "晶技凱基66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034977",
+    "name": "晶技國泰66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035058",
+    "name": "晶技元大64購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035064",
+    "name": "晶技元大64購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035166",
+    "name": "晶技永豐65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035282",
+    "name": "晶技富邦6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035782",
+    "name": "晶技凱基65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035875",
+    "name": "晶技元大64購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035876",
+    "name": "晶技元大64購23",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035877",
+    "name": "晶技元大64購24",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035937",
+    "name": "晶技富邦64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036075",
+    "name": "晶技元大64購25",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036213",
+    "name": "晶技國票65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036354",
+    "name": "晶技群益64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036355",
+    "name": "晶技群益64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036356",
+    "name": "晶技群益64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036357",
+    "name": "晶技群益64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036358",
+    "name": "晶技群益69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036359",
+    "name": "晶技群益69購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036360",
+    "name": "晶技群益72購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036489",
+    "name": "晶技永豐64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036573",
+    "name": "晶技凱基64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036663",
+    "name": "晶技台新64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036744",
+    "name": "晶技元大6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036933",
+    "name": "晶技永豐64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036994",
+    "name": "晶技國票65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037177",
+    "name": "晶技元大64購26",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037178",
+    "name": "晶技元大64購27",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062562",
+    "name": "晶技群益5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062599",
+    "name": "晶技國票5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063499",
+    "name": "晶技永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063726",
+    "name": "晶技凱基5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063903",
+    "name": "晶技永豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064017",
+    "name": "晶技統一64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064156",
+    "name": "晶技統一64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064157",
+    "name": "晶技統一74購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064158",
+    "name": "晶技統一74購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064177",
+    "name": "晶技國票5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064220",
+    "name": "晶技群益5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064221",
+    "name": "晶技群益5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071017",
+    "name": "晶技永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071023",
+    "name": "晶技國票61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071033",
+    "name": "晶技群益5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071044",
+    "name": "晶技富邦5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071059",
+    "name": "晶技元大5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071082",
+    "name": "晶技凱基5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071083",
+    "name": "晶技凱基5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071104",
+    "name": "晶技國泰61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071230",
+    "name": "晶技國票61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071304",
+    "name": "晶技凱基61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071312",
+    "name": "晶技國泰62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071360",
+    "name": "晶技國票61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071434",
+    "name": "晶技統一63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071435",
+    "name": "晶技統一65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071436",
+    "name": "晶技統一66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071437",
+    "name": "晶技統一6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071489",
+    "name": "晶技元大5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072752",
+    "name": "晶技中信66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072767",
+    "name": "晶技富邦5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072823",
+    "name": "晶技永豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072824",
+    "name": "晶技永豐5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072825",
+    "name": "晶技永豐5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072826",
+    "name": "晶技永豐5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072827",
+    "name": "晶技永豐5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072876",
+    "name": "晶技凱基5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072930",
+    "name": "晶技元大5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072931",
+    "name": "晶技元大63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073074",
+    "name": "晶技群益5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073127",
+    "name": "晶技元大5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073220",
+    "name": "晶技凱基5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073424",
+    "name": "晶技永豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073425",
+    "name": "晶技永豐63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073426",
+    "name": "晶技永豐66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073539",
+    "name": "晶技元大5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073540",
+    "name": "晶技元大66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073659",
+    "name": "晶技凱基61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073692",
+    "name": "晶技元大61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074420",
+    "name": "晶技元大64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074474",
+    "name": "晶技群益61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074502",
+    "name": "晶技富邦61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074524",
+    "name": "晶技永豐61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074525",
+    "name": "晶技永豐61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074526",
+    "name": "晶技永豐64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074527",
+    "name": "晶技永豐67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074565",
+    "name": "晶技國票61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074566",
+    "name": "晶技國票65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074593",
+    "name": "晶技台新61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074594",
+    "name": "晶技台新61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074595",
+    "name": "晶技台新61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074634",
+    "name": "晶技凱基61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074635",
+    "name": "晶技凱基61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074660",
+    "name": "晶技群益61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074700",
+    "name": "晶技元大64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075786",
+    "name": "晶技統一67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075820",
+    "name": "晶技元大63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075855",
+    "name": "晶技國票61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075901",
+    "name": "晶技凱基61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075902",
+    "name": "晶技凱基61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076043",
+    "name": "晶技元大61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076136",
+    "name": "晶技統一67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076176",
+    "name": "晶技元大65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076177",
+    "name": "晶技元大66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076198",
+    "name": "晶技中信61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076293",
+    "name": "晶技統一6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076329",
+    "name": "晶技凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076463",
+    "name": "晶技統一65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076529",
+    "name": "晶技凱基61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076597",
+    "name": "晶技富邦61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076639",
+    "name": "晶技國泰63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076662",
+    "name": "晶技元大63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076830",
+    "name": "晶技永豐61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076831",
+    "name": "晶技永豐64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076832",
+    "name": "晶技永豐64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076918",
+    "name": "晶技凱基63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076961",
+    "name": "晶技國票63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077021",
+    "name": "晶技元大63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077047",
+    "name": "晶技統一63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077180",
+    "name": "晶技群益61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077218",
+    "name": "晶技凱基63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077262",
+    "name": "晶技元大67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077316",
+    "name": "晶技台新61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077317",
+    "name": "晶技台新61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077467",
+    "name": "晶技元大67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077581",
+    "name": "晶技富邦67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077713",
+    "name": "晶技元大61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077764",
+    "name": "晶技凱基67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077944",
+    "name": "晶技元大61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078015",
+    "name": "晶技台新61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078016",
+    "name": "晶技台新61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078017",
+    "name": "晶技台新61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078199",
+    "name": "晶技元大66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078262",
+    "name": "晶技國票64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078391",
+    "name": "晶技富邦62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078453",
+    "name": "晶技富邦62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078676",
+    "name": "晶技永豐63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078846",
+    "name": "晶技永豐63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078847",
+    "name": "晶技永豐63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078989",
+    "name": "晶技群益62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079045",
+    "name": "晶技元大64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079253",
+    "name": "晶技凱基63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079254",
+    "name": "晶技凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079383",
+    "name": "晶技富邦65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079444",
+    "name": "晶技凱基63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079752",
+    "name": "晶技元大64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079840",
+    "name": "晶技台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080398",
+    "name": "晶技富邦62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080437",
+    "name": "晶技群益63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080438",
+    "name": "晶技群益63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080536",
+    "name": "晶技元大64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080595",
+    "name": "晶技國泰63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080622",
+    "name": "晶技群益62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081000",
+    "name": "晶技凱基66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081247",
+    "name": "晶技元大62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081282",
+    "name": "晶技台新68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081316",
+    "name": "晶技富邦68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081453",
+    "name": "晶技元大62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081555",
+    "name": "晶技凱基63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081601",
+    "name": "晶技國票67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081652",
+    "name": "晶技元大62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081653",
+    "name": "晶技元大66購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081724",
+    "name": "晶技凱基67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084250",
+    "name": "晶技中信67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084270",
+    "name": "晶技永豐63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084271",
+    "name": "晶技永豐63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084273",
+    "name": "晶技永豐64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084274",
+    "name": "晶技永豐69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084315",
+    "name": "晶技群益63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084316",
+    "name": "晶技群益65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084354",
+    "name": "晶技凱基66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084355",
+    "name": "晶技凱基69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084413",
+    "name": "晶技富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084484",
+    "name": "晶技元大63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084676",
+    "name": "晶技元大63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084783",
+    "name": "晶技群益63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084873",
+    "name": "晶技元大63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084874",
+    "name": "晶技元大63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084875",
+    "name": "晶技元大63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084959",
+    "name": "晶技凱基69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085076",
+    "name": "晶技永豐69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085119",
+    "name": "晶技元大64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085198",
+    "name": "晶技凱基67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085340",
+    "name": "晶技富邦63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085436",
+    "name": "晶技元大63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085515",
+    "name": "晶技群益63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085653",
+    "name": "晶技永豐64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085654",
+    "name": "晶技永豐66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085817",
+    "name": "晶技凱基63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085866",
+    "name": "晶技台新66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086064",
+    "name": "晶技群益63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086098",
+    "name": "晶技凱基67購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086262",
+    "name": "晶技群益63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086333",
+    "name": "晶技台新63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086342",
+    "name": "晶技富邦66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086484",
+    "name": "晶技群益63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086531",
+    "name": "晶技元大64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086581",
+    "name": "晶技凱基63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086736",
+    "name": "晶技元大63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086737",
+    "name": "晶技元大63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086738",
+    "name": "晶技元大64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086915",
+    "name": "晶技群益63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087063",
+    "name": "晶技凱基63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087127",
+    "name": "晶技元大66購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087234",
+    "name": "晶技群益63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087350",
+    "name": "晶技元大66購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087390",
+    "name": "晶技富邦63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087401",
+    "name": "晶技國泰64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087669",
+    "name": "晶技元大63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087797",
+    "name": "晶技凱基63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088086",
+    "name": "晶技群益63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088433",
+    "name": "晶技凱基63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088930",
+    "name": "晶技群益63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088965",
+    "name": "晶技台新63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089003",
+    "name": "晶技國票6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089068",
+    "name": "晶技凱基63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089142",
+    "name": "晶技元大63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089286",
+    "name": "晶技群益66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089350",
+    "name": "晶技凱基63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089385",
+    "name": "晶技富邦63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089425",
+    "name": "晶技元大63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089468",
+    "name": "晶技中信65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089496",
+    "name": "晶技永豐64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089498",
+    "name": "晶技永豐65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089549",
+    "name": "晶技國泰65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089632",
+    "name": "晶技群益64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089895",
+    "name": "晶技元大68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "03540T",
+    "name": "晶技國票61售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03752T",
+    "name": "晶技國票61售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03819T",
+    "name": "晶技群益63售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03834T",
+    "name": "晶技凱基61售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04049T",
+    "name": "晶技國票64售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04390T",
+    "name": "晶技群益63售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04475T",
+    "name": "晶技台新63售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04556T",
+    "name": "晶技永豐63售09",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04797T",
+    "name": "晶技永豐64售08",
+    "right": "put",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-10-30",
+  "breadth": {
+   "up": 92,
+   "down": 941
+  },
+  "foreign_amt_b": -1124.7,
+  "trust_amt_b": 236.2,
+  "tx_night": {
+   "contract": "202611",
+   "o": 45395.0,
+   "h": 45420.0,
+   "l": 44052.0,
+   "c": 44433.0,
+   "chg": -867.0,
+   "chg_pct": -1.91,
+   "vol": 44305,
+   "title": "2026/10/30"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 45410.0,
+   "h": 45597.0,
+   "l": 44908.0,
+   "c": 45301.0,
+   "chg": -1268.0,
+   "chg_pct": -2.72,
+   "vol": 34357,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -92241,
+   "raw": [
+    61741,
+    563174796,
+    63521,
+    578971872,
+    -1780,
+    -15797076,
+    6528,
+    59146319,
+    98769,
+    894942786,
+    -92241,
+    -835796467
+   ]
+  },
+  "us": {}
+ }
+}

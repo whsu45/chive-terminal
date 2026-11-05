@@ -1,0 +1,2179 @@
+{
+ "code": "1815",
+ "name": "富喬",
+ "market": "otc",
+ "date": "2026-11-02",
+ "prev_date": "2026-10-30",
+ "group": "PCB",
+ "peers": [
+  "3037",
+  "2383",
+  "2368",
+  "8046",
+  "3044",
+  "6274"
+ ],
+ "peers_arg": null,
+ "peer_info": {
+  "3037": {
+   "name": "欣興",
+   "ex": "tse",
+   "y": 989.0,
+   "prev_chg_pct": -4.903846153846159,
+   "prev_vol": 21074
+  },
+  "2383": {
+   "name": "台光電",
+   "ex": "tse",
+   "y": 4675.0,
+   "prev_chg_pct": -6.686626746506985,
+   "prev_vol": 3861
+  },
+  "2368": {
+   "name": "金像電",
+   "ex": "tse",
+   "y": 1020.0,
+   "prev_chg_pct": -8.520179372197312,
+   "prev_vol": 9016
+  },
+  "8046": {
+   "name": "南電",
+   "ex": "tse",
+   "y": 1190.0,
+   "prev_chg_pct": -4.800000000000004,
+   "prev_vol": 8269
+  },
+  "3044": {
+   "name": "健鼎",
+   "ex": "tse",
+   "y": 512.0,
+   "prev_chg_pct": -4.477611940298509,
+   "prev_vol": 2857
+  },
+  "6274": {
+   "name": "台燿",
+   "ex": "otc",
+   "y": 1265.0,
+   "prev_chg_pct": -8.992805755395683,
+   "prev_vol": 10939
+  }
+ },
+ "tech": {
+  "date": "2026-10-30",
+  "close": 126.5,
+  "open": 132.5,
+  "high": 133.5,
+  "low": 124.0,
+  "vol": 58882,
+  "ma5": 135.5,
+  "ma10": 140.0,
+  "ma20": 133.65,
+  "ma60": 117.76833333333335,
+  "bb_up": 154.43725571113225,
+  "bb_dn": 112.86274428886776,
+  "atr14": 12.392857142857142,
+  "rsi14": 47.02246814875548,
+  "vol_ma5": 94483.8,
+  "vol_ma20": 94624.6,
+  "chg_pct": -7.6642335766423315,
+  "high20": 161.5,
+  "low20": 113.5,
+  "high60": 161.5,
+  "low60": 65.6,
+  "prev_high": 149.0,
+  "prev_low": 136.5,
+  "ret5": -13.945578231292522,
+  "ret20": 9.051724137931028,
+  "streak": -2,
+  "atr_pct": 9.79672501411632
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-14",
+   "v": 52982,
+   "amt": 6449787.0,
+   "o": 126.0,
+   "h": 127.0,
+   "l": 119.5,
+   "c": 120.0
+  },
+  {
+   "date": "2026-09-15",
+   "v": 46009,
+   "amt": 5394510.0,
+   "o": 119.0,
+   "h": 121.5,
+   "l": 114.5,
+   "c": 114.5
+  },
+  {
+   "date": "2026-09-16",
+   "v": 43339,
+   "amt": 5142071.0,
+   "o": 115.5,
+   "h": 121.5,
+   "l": 115.5,
+   "c": 118.5
+  },
+  {
+   "date": "2026-09-17",
+   "v": 53669,
+   "amt": 6131500.0,
+   "o": 119.0,
+   "h": 119.5,
+   "l": 111.0,
+   "c": 112.0
+  },
+  {
+   "date": "2026-09-18",
+   "v": 96780,
+   "amt": 11763093.0,
+   "o": 118.0,
+   "h": 123.0,
+   "l": 117.5,
+   "c": 119.5
+  },
+  {
+   "date": "2026-09-21",
+   "v": 66579,
+   "amt": 8142390.0,
+   "o": 121.5,
+   "h": 124.5,
+   "l": 120.0,
+   "c": 121.0
+  },
+  {
+   "date": "2026-09-22",
+   "v": 70516,
+   "amt": 8780259.0,
+   "o": 125.0,
+   "h": 129.5,
+   "l": 120.0,
+   "c": 122.0
+  },
+  {
+   "date": "2026-09-23",
+   "v": 32612,
+   "amt": 3962678.0,
+   "o": 122.5,
+   "h": 124.5,
+   "l": 119.5,
+   "c": 120.0
+  },
+  {
+   "date": "2026-09-24",
+   "v": 28870,
+   "amt": 3367502.0,
+   "o": 119.5,
+   "h": 119.5,
+   "l": 115.0,
+   "c": 116.0
+  },
+  {
+   "date": "2026-09-29",
+   "v": 17119,
+   "amt": 1965752.0,
+   "o": 115.0,
+   "h": 117.0,
+   "l": 113.0,
+   "c": 116.0
+  },
+  {
+   "date": "2026-09-30",
+   "v": 16580,
+   "amt": 1935644.0,
+   "o": 117.0,
+   "h": 117.5,
+   "l": 116.0,
+   "c": 116.0
+  },
+  {
+   "date": "2026-10-01",
+   "v": 31722,
+   "amt": 3697444.0,
+   "o": 117.0,
+   "h": 119.5,
+   "l": 113.5,
+   "c": 116.0
+  },
+  {
+   "date": "2026-10-02",
+   "v": 43203,
+   "amt": 5185528.0,
+   "o": 116.5,
+   "h": 122.0,
+   "l": 116.0,
+   "c": 121.0
+  },
+  {
+   "date": "2026-10-05",
+   "v": 73508,
+   "amt": 9287960.0,
+   "o": 124.5,
+   "h": 128.5,
+   "l": 123.5,
+   "c": 128.5
+  },
+  {
+   "date": "2026-10-06",
+   "v": 74927,
+   "amt": 9676523.0,
+   "o": 129.0,
+   "h": 133.5,
+   "l": 126.5,
+   "c": 127.0
+  },
+  {
+   "date": "2026-10-07",
+   "v": 105100,
+   "amt": 14007446.0,
+   "o": 127.5,
+   "h": 139.0,
+   "l": 127.0,
+   "c": 132.5
+  },
+  {
+   "date": "2026-10-08",
+   "v": 96686,
+   "amt": 13047283.0,
+   "o": 132.5,
+   "h": 139.5,
+   "l": 129.0,
+   "c": 135.0
+  },
+  {
+   "date": "2026-10-12",
+   "v": 48878,
+   "amt": 6513205.0,
+   "o": 133.0,
+   "h": 137.0,
+   "l": 130.0,
+   "c": 133.0
+  },
+  {
+   "date": "2026-10-13",
+   "v": 59457,
+   "amt": 7639669.0,
+   "o": 130.0,
+   "h": 133.0,
+   "l": 124.0,
+   "c": 130.0
+  },
+  {
+   "date": "2026-10-14",
+   "v": 134934,
+   "amt": 18235605.0,
+   "o": 130.5,
+   "h": 140.5,
+   "l": 128.5,
+   "c": 134.0
+  },
+  {
+   "date": "2026-10-15",
+   "v": 59882,
+   "amt": 7682320.0,
+   "o": 128.0,
+   "h": 132.5,
+   "l": 125.0,
+   "c": 127.5
+  },
+  {
+   "date": "2026-10-16",
+   "v": 148955,
+   "amt": 20551081.0,
+   "o": 129.5,
+   "h": 140.0,
+   "l": 128.5,
+   "c": 140.0
+  },
+  {
+   "date": "2026-10-19",
+   "v": 197215,
+   "amt": 29279745.0,
+   "o": 140.0,
+   "h": 154.0,
+   "l": 136.0,
+   "c": 154.0
+  },
+  {
+   "date": "2026-10-20",
+   "v": 189090,
+   "amt": 29627789.0,
+   "o": 156.0,
+   "h": 161.5,
+   "l": 150.5,
+   "c": 154.0
+  },
+  {
+   "date": "2026-10-21",
+   "v": 139936,
+   "amt": 21019396.0,
+   "o": 158.0,
+   "h": 158.5,
+   "l": 145.0,
+   "c": 147.0
+  },
+  {
+   "date": "2026-10-22",
+   "v": 150488,
+   "amt": 22123562.0,
+   "o": 148.5,
+   "h": 156.0,
+   "l": 137.0,
+   "c": 139.0
+  },
+  {
+   "date": "2026-10-27",
+   "v": 74499,
+   "amt": 9974982.0,
+   "o": 141.0,
+   "h": 142.0,
+   "l": 128.5,
+   "c": 131.0
+  },
+  {
+   "date": "2026-10-28",
+   "v": 76336,
+   "amt": 10630199.0,
+   "o": 136.0,
+   "h": 144.0,
+   "l": 134.5,
+   "c": 144.0
+  },
+  {
+   "date": "2026-10-29",
+   "v": 112214,
+   "amt": 15898685.0,
+   "o": 146.0,
+   "h": 149.0,
+   "l": 136.5,
+   "c": 137.0
+  },
+  {
+   "date": "2026-10-30",
+   "v": 58882,
+   "amt": 7525273.0,
+   "o": 132.5,
+   "h": 133.5,
+   "l": 124.0,
+   "c": 126.5
+  }
+ ],
+ "limit_up": 139.0,
+ "limit_down": 114.0,
+ "insti": {
+  "2026-10-30": {
+   "foreign": -6645,
+   "trust": 1664,
+   "dealer": -229,
+   "total": -5209
+  },
+  "2026-10-29": {
+   "foreign": -7687,
+   "trust": 15,
+   "dealer": -472,
+   "total": -8144
+  },
+  "2026-10-28": {
+   "foreign": 96,
+   "trust": 124,
+   "dealer": 444,
+   "total": 664
+  }
+ },
+ "insti_sum": {
+  "foreign": -14236,
+  "trust": 1803,
+  "dealer": -257,
+  "total": -12689
+ },
+ "margin": {
+  "fin_prev": 51690,
+  "fin_now": 46017,
+  "fin_chg": -5673,
+  "short_prev": 1192,
+  "short_now": 575,
+  "short_chg": -617,
+  "fin_limit": 153675,
+  "fin_use_pct": 29.94
+ },
+ "sbl": null,
+ "brokers": {
+  "day": {
+   "daytrade_net": 86,
+   "daytrade_buy": 359,
+   "foreign_net": -6793,
+   "top5_buy": 2769,
+   "top5_sell": -8324,
+   "daytrade_names": [
+    "凱基-台北",
+    "富邦-建國"
+   ],
+   "top_buyers": [
+    {
+     "broker": "中國信託",
+     "buy": 1803,
+     "sell": 461,
+     "net": 1342,
+     "pct": 2.28
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 2199,
+     "sell": 1737,
+     "net": 462,
+     "pct": 0.78
+    },
+    {
+     "broker": "凱基-台北",
+     "buy": 3310,
+     "sell": 2951,
+     "net": 359,
+     "pct": 0.61
+    },
+    {
+     "broker": "國泰-敦南",
+     "buy": 1910,
+     "sell": 1582,
+     "net": 328,
+     "pct": 0.56
+    },
+    {
+     "broker": "凱基-桃園",
+     "buy": 627,
+     "sell": 349,
+     "net": 278,
+     "pct": 0.47
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "美商高盛",
+     "buy": 1732,
+     "sell": 5029,
+     "net": -3297,
+     "pct": 5.6
+    },
+    {
+     "broker": "群益金鼎",
+     "buy": 168,
+     "sell": 1841,
+     "net": -1673,
+     "pct": 2.84
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 385,
+     "sell": 1663,
+     "net": -1278,
+     "pct": 2.17
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 1585,
+     "sell": 2637,
+     "net": -1052,
+     "pct": 1.79
+    },
+    {
+     "broker": "港商野村",
+     "buy": 234,
+     "sell": 1258,
+     "net": -1024,
+     "pct": 1.74
+    }
+   ],
+   "daytrade_buy_pct": 0.6096939641995855,
+   "foreign_net_pct": -11.536632587208315,
+   "top5_buy_pct": 4.702625590163378,
+   "top5_sell_pct": 14.136748072416019
+  },
+  "day_date": "2026/10/30",
+  "range4": {
+   "daytrade_net": -1046,
+   "daytrade_buy": 0,
+   "foreign_net": -19148,
+   "top5_buy": 8727,
+   "top5_sell": -24791,
+   "daytrade_names": [
+    "凱基-台北",
+    "富邦-建國"
+   ],
+   "top_buyers": [
+    {
+     "broker": "兆豐證券",
+     "buy": 3312,
+     "sell": 102,
+     "net": 3210,
+     "pct": 1.0
+    },
+    {
+     "broker": "中國信託",
+     "buy": 3114,
+     "sell": 1432,
+     "net": 1682,
+     "pct": 0.52
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 8735,
+     "sell": 7190,
+     "net": 1545,
+     "pct": 0.48
+    },
+    {
+     "broker": "元大證券",
+     "buy": 33476,
+     "sell": 32183,
+     "net": 1293,
+     "pct": 0.4
+    },
+    {
+     "broker": "元大-西屯",
+     "buy": 1462,
+     "sell": 465,
+     "net": 997,
+     "pct": 0.31
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 12116,
+     "sell": 18986,
+     "net": -6870,
+     "pct": 2.13
+    },
+    {
+     "broker": "富邦證券",
+     "buy": 11911,
+     "sell": 16686,
+     "net": -4775,
+     "pct": 1.48
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 10262,
+     "sell": 14932,
+     "net": -4670,
+     "pct": 1.45
+    },
+    {
+     "broker": "港商野村",
+     "buy": 1229,
+     "sell": 5702,
+     "net": -4473,
+     "pct": 1.39
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 2070,
+     "sell": 6073,
+     "net": -4003,
+     "pct": 1.24
+    }
+   ],
+   "daytrade_buy_pct": 0.0,
+   "foreign_net_pct": -5.9478583920156805,
+   "top5_buy_pct": 2.7108293392062275,
+   "top5_sell_pct": 7.700718476940711
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "凱基-桃園",
+    "count": 7,
+    "cum_net": 36,
+    "buy_days": 4,
+    "sell_days": 3,
+    "last_date": "2026-10-30",
+    "last_net": 278,
+    "scored": 6,
+    "win_rate": 0.8333333333333334,
+    "avg_capture_pct": 2.5317779389583444,
+    "cum_net_pct": 0.0019022537479682874,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "富邦-陽明",
+    "count": 4,
+    "cum_net": -158,
+    "buy_days": 2,
+    "sell_days": 2,
+    "last_date": "2026-10-12",
+    "last_net": -378,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 2.0349549746995406,
+    "cum_net_pct": -0.00834878033830526,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "富邦證券",
+    "count": 16,
+    "cum_net": 9268,
+    "buy_days": 10,
+    "sell_days": 6,
+    "last_date": "2026-10-30",
+    "last_net": 151,
+    "scored": 15,
+    "win_rate": 0.6666666666666666,
+    "avg_capture_pct": 1.7668110863529376,
+    "cum_net_pct": 0.489724659338058,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "中國信託",
+    "count": 7,
+    "cum_net": 1712,
+    "buy_days": 5,
+    "sell_days": 2,
+    "last_date": "2026-10-30",
+    "last_net": 1342,
+    "scored": 6,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -1.6047536361663486,
+    "cum_net_pct": 0.09046273379226966,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "富邦-桃園",
+    "count": 6,
+    "cum_net": -93,
+    "buy_days": 3,
+    "sell_days": 3,
+    "last_date": "2026-10-29",
+    "last_net": 225,
+    "scored": 6,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -3.0362867618034213,
+    "cum_net_pct": -0.004914155515584742,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "國泰-敦南",
+    "count": 17,
+    "cum_net": -1476,
+    "buy_days": 11,
+    "sell_days": 6,
+    "last_date": "2026-10-30",
+    "last_net": 328,
+    "scored": 16,
+    "win_rate": 0.3125,
+    "avg_capture_pct": -0.8898844226628351,
+    "cum_net_pct": -0.07799240366669978,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "群益金鼎-士林",
+    "count": 4,
+    "cum_net": -911,
+    "buy_days": 2,
+    "sell_days": 2,
+    "last_date": "2026-10-13",
+    "last_net": -218,
+    "scored": 4,
+    "win_rate": 0.25,
+    "avg_capture_pct": -1.5330601329680338,
+    "cum_net_pct": -0.04813758789997527,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": 429,
+  "winners_last_net_pct": 0.7285757956591149,
+  "winners_inventory": 9146,
+  "winners_inventory_pct": 0.483278132747721,
+  "losers_last_net": 1397,
+  "losers_last_net_pct": 2.3725416935566046,
+  "n_scored": 169
+ },
+ "warrants": {
+  "call_vol": 33198,
+  "put_vol": 2619,
+  "call_amt": 29484790.0,
+  "put_amt": 1410180.0,
+  "n_call": 221,
+  "n_put": 13,
+  "n_call_active": 148,
+  "n_put_active": 9,
+  "call_share": 0.9268782980149092,
+  "amt_share": 0.9087113533368053,
+  "hedge_net": -310,
+  "hedge_pct": -0.5264766821779151,
+  "call_amt_5d": 67517974.0,
+  "call_surge": 0.4366954198003631,
+  "list": [
+   {
+    "code": "702592",
+    "name": "富喬國票5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "702593",
+    "name": "富喬國票62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "702627",
+    "name": "富喬富邦5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "702641",
+    "name": "富喬中信5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703354",
+    "name": "富喬凱基5B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703355",
+    "name": "富喬凱基61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703371",
+    "name": "富喬國票5B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703372",
+    "name": "富喬國票61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703380",
+    "name": "富喬群益5B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703389",
+    "name": "富喬統一65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703401",
+    "name": "富喬中信61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703418",
+    "name": "富喬元大5B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703419",
+    "name": "富喬元大5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703420",
+    "name": "富喬元大61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704256",
+    "name": "富喬永豐5B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704257",
+    "name": "富喬永豐5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704258",
+    "name": "富喬永豐64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704287",
+    "name": "富喬統一61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704288",
+    "name": "富喬統一61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704289",
+    "name": "富喬統一61購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704290",
+    "name": "富喬統一61購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704291",
+    "name": "富喬統一64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704292",
+    "name": "富喬統一65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704293",
+    "name": "富喬統一6C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704294",
+    "name": "富喬統一71購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704295",
+    "name": "富喬統一71購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705307",
+    "name": "富喬富邦5B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705311",
+    "name": "富喬統一62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705312",
+    "name": "富喬統一62購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705331",
+    "name": "富喬元大5B購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705347",
+    "name": "富喬永豐61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705348",
+    "name": "富喬永豐65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "707964",
+    "name": "富喬富邦61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "707972",
+    "name": "富喬元大5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "707978",
+    "name": "富喬國票5B購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709200",
+    "name": "富喬永豐61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709201",
+    "name": "富喬永豐66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709202",
+    "name": "富喬永豐68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709210",
+    "name": "富喬凱基5B購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709211",
+    "name": "富喬凱基61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709212",
+    "name": "富喬凱基61購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709236",
+    "name": "富喬國泰5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709241",
+    "name": "富喬富邦5B購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709248",
+    "name": "富喬元大5B購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709249",
+    "name": "富喬元大5B購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709250",
+    "name": "富喬元大5B購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709260",
+    "name": "富喬群益5B購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709311",
+    "name": "富喬群益5B購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709328",
+    "name": "富喬元大61購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709366",
+    "name": "富喬凱基62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709413",
+    "name": "富喬元大5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709458",
+    "name": "富喬富邦66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709496",
+    "name": "富喬凱基5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709512",
+    "name": "富喬元大61購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709550",
+    "name": "富喬元大61購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709562",
+    "name": "富喬群益5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709586",
+    "name": "富喬元大64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709595",
+    "name": "富喬國票5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709650",
+    "name": "富喬凱基5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709658",
+    "name": "富喬台新5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709659",
+    "name": "富喬台新5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709680",
+    "name": "富喬群益5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709730",
+    "name": "富喬元大64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709779",
+    "name": "富喬凱基5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709811",
+    "name": "富喬中信5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709914",
+    "name": "富喬統一64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709915",
+    "name": "富喬統一64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709916",
+    "name": "富喬統一66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709967",
+    "name": "富喬統一66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709972",
+    "name": "富喬台新5C購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710022",
+    "name": "富喬統一63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710023",
+    "name": "富喬統一65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710024",
+    "name": "富喬統一6C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710031",
+    "name": "富喬富邦63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710143",
+    "name": "富喬凱基5C購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710200",
+    "name": "富喬永豐5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710231",
+    "name": "富喬群益5C購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710237",
+    "name": "富喬中信66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710267",
+    "name": "富喬凱基63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710340",
+    "name": "富喬元大65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710369",
+    "name": "富喬國泰61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710386",
+    "name": "富喬元大65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710436",
+    "name": "富喬凱基63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710445",
+    "name": "富喬元大5C購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710482",
+    "name": "富喬元大61購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710483",
+    "name": "富喬元大62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710484",
+    "name": "富喬元大62購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710567",
+    "name": "富喬永豐61購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710568",
+    "name": "富喬永豐66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710586",
+    "name": "富喬元大64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710587",
+    "name": "富喬元大65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710608",
+    "name": "富喬凱基61購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710630",
+    "name": "富喬元大61購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710631",
+    "name": "富喬元大64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710770",
+    "name": "富喬凱基61購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711059",
+    "name": "富喬台新61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711272",
+    "name": "富喬富邦61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711291",
+    "name": "富喬台新61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711536",
+    "name": "富喬富邦61購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711769",
+    "name": "富喬國票63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711820",
+    "name": "富喬富邦67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711877",
+    "name": "富喬凱基61購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711885",
+    "name": "富喬國泰63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711886",
+    "name": "富喬國泰63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711957",
+    "name": "富喬永豐63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711973",
+    "name": "富喬凱基62購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711985",
+    "name": "富喬元大67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711991",
+    "name": "富喬永豐65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712135",
+    "name": "富喬元大64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712139",
+    "name": "富喬中信64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712179",
+    "name": "富喬統一6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712211",
+    "name": "富喬中信64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712320",
+    "name": "富喬中信64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712329",
+    "name": "富喬永豐64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712330",
+    "name": "富喬永豐67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712379",
+    "name": "富喬富邦62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712385",
+    "name": "富喬統一65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712404",
+    "name": "富喬凱基68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712454",
+    "name": "富喬台新65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712467",
+    "name": "富喬凱基63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712491",
+    "name": "富喬元大63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712494",
+    "name": "富喬元大64購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712506",
+    "name": "富喬國票66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712511",
+    "name": "富喬國泰63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714969",
+    "name": "富喬凱基63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714970",
+    "name": "富喬凱基63購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714971",
+    "name": "富喬凱基63購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714972",
+    "name": "富喬凱基63購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714973",
+    "name": "富喬凱基63購09",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714974",
+    "name": "富喬凱基63購10",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714984",
+    "name": "富喬國票64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714985",
+    "name": "富喬國票65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714996",
+    "name": "富喬元大63購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714997",
+    "name": "富喬元大63購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715019",
+    "name": "富喬永豐63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715020",
+    "name": "富喬永豐63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715021",
+    "name": "富喬永豐63購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715022",
+    "name": "富喬永豐64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715034",
+    "name": "富喬中信64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715035",
+    "name": "富喬國泰64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715036",
+    "name": "富喬國泰64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715038",
+    "name": "富喬富邦63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715052",
+    "name": "富喬統一68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715053",
+    "name": "富喬統一69購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715054",
+    "name": "富喬統一6A購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715055",
+    "name": "富喬統一79購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715088",
+    "name": "富喬凱基65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715160",
+    "name": "富喬富邦6C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715193",
+    "name": "富喬永豐65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715208",
+    "name": "富喬台新63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715209",
+    "name": "富喬台新63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715250",
+    "name": "富喬永豐64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715276",
+    "name": "富喬元大63購10",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715277",
+    "name": "富喬元大63購11",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715278",
+    "name": "富喬元大63購12",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715279",
+    "name": "富喬元大64購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715316",
+    "name": "富喬統一6C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715317",
+    "name": "富喬統一6C購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715337",
+    "name": "富喬台新63購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715338",
+    "name": "富喬台新63購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715357",
+    "name": "富喬凱基65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715358",
+    "name": "富喬凱基67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715368",
+    "name": "富喬康和63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715384",
+    "name": "富喬元大63購13",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715385",
+    "name": "富喬元大63購14",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715456",
+    "name": "富喬凱基65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715478",
+    "name": "富喬台新66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715494",
+    "name": "富喬元大63購15",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715495",
+    "name": "富喬元大63購16",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715510",
+    "name": "富喬國票64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715529",
+    "name": "富喬國泰64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715530",
+    "name": "富喬國泰64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715591",
+    "name": "富喬元大69購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715665",
+    "name": "富喬富邦66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715675",
+    "name": "富喬台新64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715730",
+    "name": "富喬元大6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715840",
+    "name": "富喬國票64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715841",
+    "name": "富喬國票64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715869",
+    "name": "富喬元大64購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715912",
+    "name": "富喬凱基66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716159",
+    "name": "富喬元大64購09",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716249",
+    "name": "富喬凱基6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716321",
+    "name": "富喬富邦6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716333",
+    "name": "富喬國票66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716361",
+    "name": "富喬元大64購10",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716482",
+    "name": "富喬凱基65購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716483",
+    "name": "富喬凱基66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716496",
+    "name": "富喬中信6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716562",
+    "name": "富喬凱基64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716603",
+    "name": "富喬元大64購11",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716626",
+    "name": "富喬國票65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716635",
+    "name": "富喬中信64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716646",
+    "name": "富喬永豐65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716647",
+    "name": "富喬永豐66購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716648",
+    "name": "富喬永豐67購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716707",
+    "name": "富喬元大64購12",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716743",
+    "name": "富喬國泰65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716750",
+    "name": "富喬統一6A購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716751",
+    "name": "富喬統一7A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716756",
+    "name": "富喬富邦64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716772",
+    "name": "富喬台新64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716773",
+    "name": "富喬台新64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716914",
+    "name": "富喬凱基64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716932",
+    "name": "富喬永豐67購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716933",
+    "name": "富喬永豐6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716956",
+    "name": "富喬元大64購13",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716965",
+    "name": "富喬富邦7A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717007",
+    "name": "富喬台新67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717008",
+    "name": "富喬台新6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717027",
+    "name": "富喬凱基65購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717047",
+    "name": "富喬元大64購14",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717048",
+    "name": "富喬元大64購15",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717049",
+    "name": "富喬元大64購16",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717067",
+    "name": "富喬永豐71購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717068",
+    "name": "富喬永豐74購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717069",
+    "name": "富喬永豐77購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717070",
+    "name": "富喬永豐7A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717103",
+    "name": "富喬國票65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717152",
+    "name": "富喬國泰67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717168",
+    "name": "富喬富邦7A購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "733983",
+    "name": "富喬統一5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "72610U",
+    "name": "富喬國票5C售02",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72614U",
+    "name": "富喬中信5C售02",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72868U",
+    "name": "富喬群益5C售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72921U",
+    "name": "富喬台新5C售03",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72928U",
+    "name": "富喬凱基5C售04",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73033U",
+    "name": "富喬台新62售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73036U",
+    "name": "富喬國票63售02",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73037U",
+    "name": "富喬國票65售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73145U",
+    "name": "富喬凱基63售08",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73148U",
+    "name": "富喬永豐63售02",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73153U",
+    "name": "富喬元大63售09",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73161U",
+    "name": "富喬台新63售03",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73162U",
+    "name": "富喬台新63售04",
+    "right": "put",
+    "ex": "otc"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-10-30",
+  "breadth": {
+   "up": 92,
+   "down": 941
+  },
+  "foreign_amt_b": -1124.7,
+  "trust_amt_b": 236.2,
+  "tx_night": {
+   "contract": "202611",
+   "o": 45395.0,
+   "h": 45420.0,
+   "l": 44052.0,
+   "c": 44433.0,
+   "chg": -867.0,
+   "chg_pct": -1.91,
+   "vol": 44305,
+   "title": "2026/10/30"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 45410.0,
+   "h": 45597.0,
+   "l": 44908.0,
+   "c": 45301.0,
+   "chg": -1268.0,
+   "chg_pct": -2.72,
+   "vol": 34357,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -92241,
+   "raw": [
+    61741,
+    563174796,
+    63521,
+    578971872,
+    -1780,
+    -15797076,
+    6528,
+    59146319,
+    98769,
+    894942786,
+    -92241,
+    -835796467
+   ]
+  },
+  "us": {}
+ }
+}

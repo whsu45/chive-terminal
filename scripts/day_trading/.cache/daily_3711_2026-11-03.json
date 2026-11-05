@@ -1,0 +1,3221 @@
+{
+ "version": 4,
+ "code": "3711",
+ "name": "日月光投控",
+ "market": "tse",
+ "date": "2026-11-03",
+ "prev_date": "2026-11-02",
+ "group": "台積電供應鏈",
+ "peers": [
+  "2330",
+  "6239",
+  "3374",
+  "2449"
+ ],
+ "peers_arg": null,
+ "peer_info": {
+  "2330": {
+   "name": "台積電",
+   "ex": "tse",
+   "y": 2330.0,
+   "prev_chg_pct": -1.6877637130801704,
+   "prev_vol": 41165
+  },
+  "6239": {
+   "name": "力成",
+   "ex": "tse",
+   "y": 257.5,
+   "prev_chg_pct": 0.5859375,
+   "prev_vol": 6445
+  },
+  "3374": {
+   "name": "精材",
+   "ex": "otc",
+   "y": 471.5,
+   "prev_chg_pct": -3.381147540983609,
+   "prev_vol": 3114
+  },
+  "2449": {
+   "name": "京元電子",
+   "ex": "tse",
+   "y": 263.0,
+   "prev_chg_pct": 3.747534516765283,
+   "prev_vol": 13000
+  }
+ },
+ "tech": {
+  "date": "2026-11-02",
+  "close": 674.0,
+  "open": 655.0,
+  "high": 692.0,
+  "low": 645.0,
+  "vol": 24738,
+  "ma5": 674.2,
+  "ma10": 671.0,
+  "ma20": 700.85,
+  "ma60": 646.3833333333333,
+  "bb_up": 772.1585548864931,
+  "bb_dn": 629.5414451135069,
+  "atr14": 37.857142857142854,
+  "rsi14": 48.78325202261965,
+  "vol_ma5": 23284.2,
+  "vol_ma20": 17506.75,
+  "chg_pct": 0.8982035928143617,
+  "high20": 765.0,
+  "low20": 624.0,
+  "high60": 765.0,
+  "low60": 564.0,
+  "prev_high": 675.0,
+  "prev_low": 624.0,
+  "ret5": 3.0581039755351647,
+  "ret20": -4.125177809388337,
+  "streak": 1,
+  "atr_pct": 5.616786774056804
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-15",
+   "o": 601.0,
+   "h": 608.0,
+   "l": 592.0,
+   "c": 592.0,
+   "v": 14790,
+   "amt": 8853707627.0
+  },
+  {
+   "date": "2026-09-16",
+   "o": 599.0,
+   "h": 610.0,
+   "l": 597.0,
+   "c": 605.0,
+   "v": 9509,
+   "amt": 5743004885.0
+  },
+  {
+   "date": "2026-09-17",
+   "o": 615.0,
+   "h": 628.0,
+   "l": 612.0,
+   "c": 614.0,
+   "v": 11193,
+   "amt": 6927741135.0
+  },
+  {
+   "date": "2026-09-18",
+   "o": 631.0,
+   "h": 643.0,
+   "l": 627.0,
+   "c": 638.0,
+   "v": 27928,
+   "amt": 17781433434.0
+  },
+  {
+   "date": "2026-09-21",
+   "o": 655.0,
+   "h": 674.0,
+   "l": 655.0,
+   "c": 663.0,
+   "v": 17093,
+   "amt": 11328964828.0
+  },
+  {
+   "date": "2026-09-22",
+   "o": 691.0,
+   "h": 711.0,
+   "l": 690.0,
+   "c": 693.0,
+   "v": 24987,
+   "amt": 17480581870.0
+  },
+  {
+   "date": "2026-09-23",
+   "o": 710.0,
+   "h": 711.0,
+   "l": 689.0,
+   "c": 693.0,
+   "v": 15367,
+   "amt": 10713399227.0
+  },
+  {
+   "date": "2026-09-24",
+   "o": 685.0,
+   "h": 699.0,
+   "l": 680.0,
+   "c": 699.0,
+   "v": 10964,
+   "amt": 7573312111.0
+  },
+  {
+   "date": "2026-09-29",
+   "o": 685.0,
+   "h": 693.0,
+   "l": 678.0,
+   "c": 687.0,
+   "v": 14276,
+   "amt": 9777704689.0
+  },
+  {
+   "date": "2026-09-30",
+   "o": 716.0,
+   "h": 723.0,
+   "l": 703.0,
+   "c": 703.0,
+   "v": 14687,
+   "amt": 10400841185.0
+  },
+  {
+   "date": "2026-10-01",
+   "o": 700.0,
+   "h": 710.0,
+   "l": 693.0,
+   "c": 710.0,
+   "v": 8885,
+   "amt": 6245817713.0
+  },
+  {
+   "date": "2026-10-02",
+   "o": 711.0,
+   "h": 722.0,
+   "l": 704.0,
+   "c": 713.0,
+   "v": 12603,
+   "amt": 8985469213.0
+  },
+  {
+   "date": "2026-10-05",
+   "o": 747.0,
+   "h": 758.0,
+   "l": 729.0,
+   "c": 742.0,
+   "v": 17970,
+   "amt": 13353811094.0
+  },
+  {
+   "date": "2026-10-06",
+   "o": 743.0,
+   "h": 755.0,
+   "l": 733.0,
+   "c": 744.0,
+   "v": 9721,
+   "amt": 7200225912.0
+  },
+  {
+   "date": "2026-10-07",
+   "o": 735.0,
+   "h": 748.0,
+   "l": 728.0,
+   "c": 732.0,
+   "v": 8235,
+   "amt": 6050438417.0
+  },
+  {
+   "date": "2026-10-08",
+   "o": 732.0,
+   "h": 752.0,
+   "l": 715.0,
+   "c": 744.0,
+   "v": 15989,
+   "amt": 11716900652.0
+  },
+  {
+   "date": "2026-10-12",
+   "o": 745.0,
+   "h": 765.0,
+   "l": 736.0,
+   "c": 762.0,
+   "v": 15942,
+   "amt": 12035039565.0
+  },
+  {
+   "date": "2026-10-13",
+   "o": 749.0,
+   "h": 751.0,
+   "l": 731.0,
+   "c": 740.0,
+   "v": 16379,
+   "amt": 12118985385.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 755.0,
+   "h": 763.0,
+   "l": 742.0,
+   "c": 747.0,
+   "v": 13529,
+   "amt": 10155876182.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 696.0,
+   "h": 699.0,
+   "l": 673.0,
+   "c": 673.0,
+   "v": 39164,
+   "amt": 26671853888.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 652.0,
+   "h": 678.0,
+   "l": 652.0,
+   "c": 671.0,
+   "v": 19278,
+   "amt": 12900573901.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 640.0,
+   "h": 675.0,
+   "l": 639.0,
+   "c": 670.0,
+   "v": 14628,
+   "amt": 9647566503.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 669.0,
+   "h": 680.0,
+   "l": 655.0,
+   "c": 660.0,
+   "v": 12383,
+   "amt": 8256092793.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 684.0,
+   "h": 687.0,
+   "l": 668.0,
+   "c": 684.0,
+   "v": 11053,
+   "amt": 7502129273.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 690.0,
+   "h": 699.0,
+   "l": 652.0,
+   "c": 654.0,
+   "v": 17955,
+   "amt": 12045518329.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 654.0,
+   "h": 668.0,
+   "l": 642.0,
+   "c": 651.0,
+   "v": 25852,
+   "amt": 16887676393.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 672.0,
+   "h": 698.0,
+   "l": 672.0,
+   "c": 695.0,
+   "v": 20317,
+   "amt": 14008441475.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 709.0,
+   "h": 709.0,
+   "l": 676.0,
+   "c": 683.0,
+   "v": 13169,
+   "amt": 9053350036.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 654.0,
+   "h": 675.0,
+   "l": 624.0,
+   "c": 668.0,
+   "v": 32345,
+   "amt": 21250730276.0
+  },
+  {
+   "date": "2026-11-02",
+   "o": 655.0,
+   "h": 692.0,
+   "l": 645.0,
+   "c": 674.0,
+   "v": 24738,
+   "amt": 16635072928.0
+  }
+ ],
+ "limit_up": 741.0,
+ "limit_down": 607.0,
+ "insti": {
+  "2026-11-02": {
+   "foreign": -5193,
+   "trust": 5678,
+   "dealer": 153,
+   "total": 639
+  },
+  "2026-10-30": {
+   "foreign": -12157,
+   "trust": 7173,
+   "dealer": -73,
+   "total": -5055
+  },
+  "2026-10-29": {
+   "foreign": -3504,
+   "trust": 1141,
+   "dealer": 224,
+   "total": -2138
+  }
+ },
+ "insti_sum": {
+  "foreign": -20854,
+  "trust": 13992,
+  "dealer": 304,
+  "total": -6554
+ },
+ "margin": {
+  "fin_prev": 10443,
+  "fin_now": 10664,
+  "fin_chg": 221,
+  "short_prev": 160,
+  "short_now": 195,
+  "short_chg": 35,
+  "fin_limit": 1122022
+ },
+ "sbl": {
+  "sbl_sell": 1599,
+  "sbl_return": 266,
+  "sbl_bal": 12458
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": -349,
+   "daytrade_buy": 0,
+   "foreign_net": -2779,
+   "top5_buy": 5012,
+   "top5_sell": -7757,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 3795,
+     "sell": 2598,
+     "net": 1197,
+     "pct": 4.86
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 1356,
+     "sell": 181,
+     "net": 1175,
+     "pct": 4.77
+    },
+    {
+     "broker": "統一",
+     "buy": 1242,
+     "sell": 72,
+     "net": 1170,
+     "pct": 4.75
+    },
+    {
+     "broker": "大和國泰",
+     "buy": 861,
+     "sell": 26,
+     "net": 835,
+     "pct": 3.39
+    },
+    {
+     "broker": "美林",
+     "buy": 1341,
+     "sell": 706,
+     "net": 635,
+     "pct": 2.58
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 546,
+     "sell": 3804,
+     "net": -3258,
+     "pct": 13.24
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 297,
+     "sell": 2459,
+     "net": -2162,
+     "pct": 8.78
+    },
+    {
+     "broker": "永豐金-匯立",
+     "buy": 62,
+     "sell": 1161,
+     "net": -1099,
+     "pct": 4.46
+    },
+    {
+     "broker": "香港上海匯豐",
+     "buy": 41,
+     "sell": 685,
+     "net": -644,
+     "pct": 2.62
+    },
+    {
+     "broker": "元大證券",
+     "buy": 2066,
+     "sell": 2660,
+     "net": -594,
+     "pct": 2.41
+    }
+   ],
+   "daytrade_buy_pct": 0.0,
+   "foreign_net_pct": -11.23372948500283,
+   "top5_buy_pct": 20.260328239954724,
+   "top5_sell_pct": 31.356617349826177
+  },
+  "day_date": "2026/11/02",
+  "range4": {
+   "daytrade_net": -185,
+   "daytrade_buy": 0,
+   "foreign_net": -13391,
+   "top5_buy": 13208,
+   "top5_sell": -21593,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "統一",
+     "buy": 5748,
+     "sell": 258,
+     "net": 5490,
+     "pct": 6.11
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 3721,
+     "sell": 828,
+     "net": 2893,
+     "pct": 3.22
+    },
+    {
+     "broker": "元大證券",
+     "buy": 10397,
+     "sell": 8295,
+     "net": 2102,
+     "pct": 2.34
+    },
+    {
+     "broker": "群益金鼎",
+     "buy": 2507,
+     "sell": 1034,
+     "net": 1473,
+     "pct": 1.64
+    },
+    {
+     "broker": "大和國泰",
+     "buy": 1276,
+     "sell": 26,
+     "net": 1250,
+     "pct": 1.39
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 4066,
+     "sell": 11223,
+     "net": -7157,
+     "pct": 7.97
+    },
+    {
+     "broker": "永豐金-匯立",
+     "buy": 1090,
+     "sell": 6527,
+     "net": -5437,
+     "pct": 6.05
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 2289,
+     "sell": 7524,
+     "net": -5235,
+     "pct": 5.83
+    },
+    {
+     "broker": "美林",
+     "buy": 2734,
+     "sell": 5456,
+     "net": -2722,
+     "pct": 3.03
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 6050,
+     "sell": 7092,
+     "net": -1042,
+     "pct": 1.16
+    }
+   ],
+   "daytrade_buy_pct": 0.0,
+   "foreign_net_pct": -14.785412227141737,
+   "top5_buy_pct": 14.583356336053175,
+   "top5_sell_pct": 23.841491017897955
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "兆豐-民生",
+    "count": 4,
+    "cum_net": -3,
+    "buy_days": 2,
+    "sell_days": 2,
+    "last_date": "2026-10-29",
+    "last_net": -131,
+    "scored": 4,
+    "win_rate": 1.0,
+    "avg_capture_pct": 3.5653799441531797,
+    "cum_net_pct": -0.0008568123723706571,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "台新-台北",
+    "count": 7,
+    "cum_net": -486,
+    "buy_days": 2,
+    "sell_days": 5,
+    "last_date": "2026-10-21",
+    "last_net": -151,
+    "scored": 7,
+    "win_rate": 0.8571428571428571,
+    "avg_capture_pct": 2.6693457326872405,
+    "cum_net_pct": -0.13880360432404645,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "中國信託-高雄",
+    "count": 4,
+    "cum_net": -153,
+    "buy_days": 1,
+    "sell_days": 3,
+    "last_date": "2026-10-28",
+    "last_net": -69,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 1.139132682124097,
+    "cum_net_pct": -0.04369743099090351,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "永豐金-匯立",
+    "count": 19,
+    "cum_net": -7789,
+    "buy_days": 5,
+    "sell_days": 14,
+    "last_date": "2026-11-02",
+    "last_net": -1099,
+    "scored": 18,
+    "win_rate": 0.7222222222222222,
+    "avg_capture_pct": 0.627005010993032,
+    "cum_net_pct": -2.224570522798349,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "美商高盛",
+    "count": 18,
+    "cum_net": -4444,
+    "buy_days": 7,
+    "sell_days": 11,
+    "last_date": "2026-11-02",
+    "last_net": -200,
+    "scored": 17,
+    "win_rate": 0.7058823529411765,
+    "avg_capture_pct": 0.880526398385837,
+    "cum_net_pct": -1.2692247276050668,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常勝"
+   },
+   {
+    "broker": "法銀巴黎",
+    "count": 9,
+    "cum_net": -414,
+    "buy_days": 4,
+    "sell_days": 5,
+    "last_date": "2026-10-30",
+    "last_net": 150,
+    "scored": 9,
+    "win_rate": 0.6666666666666666,
+    "avg_capture_pct": 1.5406286307222798,
+    "cum_net_pct": -0.11824010738715068,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "花旗環球",
+    "count": 15,
+    "cum_net": 1078,
+    "buy_days": 7,
+    "sell_days": 8,
+    "last_date": "2026-10-30",
+    "last_net": -523,
+    "scored": 15,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -1.106106147553106,
+    "cum_net_pct": 0.30788124580518944,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常敗"
+   },
+   {
+    "broker": "群益金鼎",
+    "count": 13,
+    "cum_net": 3663,
+    "buy_days": 10,
+    "sell_days": 3,
+    "last_date": "2026-10-30",
+    "last_net": 421,
+    "scored": 13,
+    "win_rate": 0.3076923076923077,
+    "avg_capture_pct": -0.5561994878274877,
+    "cum_net_pct": 1.0461679066645722,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "大和國泰",
+    "count": 8,
+    "cum_net": 3490,
+    "buy_days": 7,
+    "sell_days": 1,
+    "last_date": "2026-11-02",
+    "last_net": 835,
+    "scored": 7,
+    "win_rate": 0.2857142857142857,
+    "avg_capture_pct": -0.6109503509071438,
+    "cum_net_pct": 0.9967583931911976,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常敗"
+   },
+   {
+    "broker": "港商野村",
+    "count": 16,
+    "cum_net": -1051,
+    "buy_days": 11,
+    "sell_days": 5,
+    "last_date": "2026-11-02",
+    "last_net": 537,
+    "scored": 15,
+    "win_rate": 0.26666666666666666,
+    "avg_capture_pct": -1.5738460890536996,
+    "cum_net_pct": -0.30016993445385354,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": -1299,
+  "winners_last_net_pct": -5.251030802813485,
+  "winners_inventory": -13289,
+  "winners_inventory_pct": -3.795393205477887,
+  "losers_last_net": 1518,
+  "losers_last_net_pct": 6.13630851321853,
+  "n_scored": 126
+ },
+ "warrants": {
+  "call_vol": 41209,
+  "put_vol": 690,
+  "call_amt": 45873840.0,
+  "put_amt": 470810.0,
+  "n_call": 375,
+  "n_put": 27,
+  "n_call_active": 229,
+  "n_put_active": 11,
+  "call_share": 0.9835318265352395,
+  "amt_share": 0.9796822286930638,
+  "hedge_net": 252,
+  "hedge_pct": 1.0186757215619695,
+  "call_amt_5d": 29863570.0,
+  "call_surge": 1.536113733220777,
+  "list": [
+   {
+    "code": "030355",
+    "name": "日月光台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030432",
+    "name": "日月光群益64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030777",
+    "name": "日月光凱基64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030852",
+    "name": "日月光群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031046",
+    "name": "日月光永豐64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031047",
+    "name": "日月光永豐66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031069",
+    "name": "日月光國票65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031105",
+    "name": "日月光統一6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031169",
+    "name": "日月光群益65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031363",
+    "name": "日月光元大64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031364",
+    "name": "日月光元大64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031454",
+    "name": "日月光台新64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031455",
+    "name": "日月光台新64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031566",
+    "name": "日月光群益65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031622",
+    "name": "日月光凱基64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031725",
+    "name": "日月光元大64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031726",
+    "name": "日月光元大64購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031788",
+    "name": "日月光國泰65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031789",
+    "name": "日月光國泰65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031927",
+    "name": "日月光元大64購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032282",
+    "name": "日月光元大64購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032283",
+    "name": "日月光元大64購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032440",
+    "name": "日月光凱基65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032634",
+    "name": "日月光中信65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032679",
+    "name": "日月光永豐64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032842",
+    "name": "日月光台新64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032843",
+    "name": "日月光台新64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032905",
+    "name": "日月光國票68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033018",
+    "name": "日月光富邦6A購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033405",
+    "name": "日月光凱基64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033497",
+    "name": "日月光群益64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033855",
+    "name": "日月光凱基68購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034007",
+    "name": "日月光群益65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034096",
+    "name": "日月光國票66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034335",
+    "name": "日月光群益64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034920",
+    "name": "日月光凱基69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034981",
+    "name": "日月光國泰65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035079",
+    "name": "日月光元大64購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035082",
+    "name": "日月光元大68購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035084",
+    "name": "日月光元大69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035176",
+    "name": "日月光永豐64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035285",
+    "name": "日月光富邦6A購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035459",
+    "name": "日月光群益66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035789",
+    "name": "日月光凱基64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035790",
+    "name": "日月光凱基66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035942",
+    "name": "日月光富邦6A購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036083",
+    "name": "日月光元大64購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036217",
+    "name": "日月光國票65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036260",
+    "name": "日月光台新64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036261",
+    "name": "日月光台新6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036370",
+    "name": "日月光群益64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036371",
+    "name": "日月光群益64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036372",
+    "name": "日月光群益65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036373",
+    "name": "日月光群益66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036374",
+    "name": "日月光群益66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036499",
+    "name": "日月光永豐64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036580",
+    "name": "日月光凱基66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036757",
+    "name": "日月光元大64購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036758",
+    "name": "日月光元大64購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036759",
+    "name": "日月光元大64購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036868",
+    "name": "日月光統一5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036895",
+    "name": "日月光統一6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036940",
+    "name": "日月光永豐64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037321",
+    "name": "日月光永豐65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037384",
+    "name": "日月光凱基66購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037536",
+    "name": "日月光國票66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037572",
+    "name": "日月光富邦68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043669",
+    "name": "日月光統一5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043901",
+    "name": "日月光統一6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "047330",
+    "name": "日月光元大5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "047584",
+    "name": "日月光富邦5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "048036",
+    "name": "日月光元大5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "050370",
+    "name": "日月光富邦5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "051267",
+    "name": "日月光統一65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052484",
+    "name": "日月光富邦61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052677",
+    "name": "日月光統一64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053452",
+    "name": "日月光富邦61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053530",
+    "name": "日月光統一61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053531",
+    "name": "日月光統一71購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054489",
+    "name": "日月光統一71購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056640",
+    "name": "日月光統一62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056825",
+    "name": "日月光國票5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056865",
+    "name": "日月光統一61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057009",
+    "name": "日月光統一72購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057070",
+    "name": "日月光凱基5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057178",
+    "name": "日月光統一62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057180",
+    "name": "日月光統一72購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057533",
+    "name": "日月光統一63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057758",
+    "name": "日月光永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057907",
+    "name": "日月光國票65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058887",
+    "name": "日月光富邦5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059461",
+    "name": "日月光元大5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059726",
+    "name": "日月光元大5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059846",
+    "name": "日月光富邦5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060875",
+    "name": "日月光元大5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060929",
+    "name": "日月光富邦61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061988",
+    "name": "日月光元富63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063844",
+    "name": "日月光富邦62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063875",
+    "name": "日月光群益62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063904",
+    "name": "日月光永豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063954",
+    "name": "日月光凱基61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064137",
+    "name": "日月光兆豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064140",
+    "name": "日月光富邦64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064141",
+    "name": "日月光富邦6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064165",
+    "name": "日月光統一62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064166",
+    "name": "日月光統一64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064223",
+    "name": "日月光群益5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064348",
+    "name": "日月光永豐61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064372",
+    "name": "日月光國票5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064429",
+    "name": "日月光統一64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064430",
+    "name": "日月光統一74購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064431",
+    "name": "日月光統一74購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065371",
+    "name": "日月光國票5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065741",
+    "name": "日月光元大5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066047",
+    "name": "日月光兆豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066158",
+    "name": "日月光永豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066369",
+    "name": "日月光台新5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066435",
+    "name": "日月光統一61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066546",
+    "name": "日月光群益5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066612",
+    "name": "日月光富邦61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066724",
+    "name": "日月光富邦65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066725",
+    "name": "日月光富邦75購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066775",
+    "name": "日月光國泰5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066776",
+    "name": "日月光國泰5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067288",
+    "name": "日月光國票5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067496",
+    "name": "日月光凱基5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067701",
+    "name": "日月光群益5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067838",
+    "name": "日月光富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067869",
+    "name": "日月光元大5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068116",
+    "name": "日月光中信5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068199",
+    "name": "日月光凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068290",
+    "name": "日月光統一65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068422",
+    "name": "日月光群益5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068653",
+    "name": "日月光永豐5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068763",
+    "name": "日月光凱基5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068968",
+    "name": "日月光凱基61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069073",
+    "name": "日月光群益5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069105",
+    "name": "日月光永豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069136",
+    "name": "日月光元大5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069215",
+    "name": "日月光群益5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069255",
+    "name": "日月光台新5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069331",
+    "name": "日月光凱基5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069390",
+    "name": "日月光元大5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069392",
+    "name": "日月光元大63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069461",
+    "name": "日月光富邦5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069549",
+    "name": "日月光元大5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069550",
+    "name": "日月光元大63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069606",
+    "name": "日月光國票61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069618",
+    "name": "日月光台新5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069641",
+    "name": "日月光凱基5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069642",
+    "name": "日月光凱基5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069643",
+    "name": "日月光凱基64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069687",
+    "name": "日月光富邦5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069738",
+    "name": "日月光元大5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069757",
+    "name": "日月光國泰61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069882",
+    "name": "日月光群益5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069918",
+    "name": "日月光元大5C購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070329",
+    "name": "日月光元大5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070354",
+    "name": "日月光永豐5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070402",
+    "name": "日月光凱基64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070504",
+    "name": "日月光元大5C購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070505",
+    "name": "日月光元大64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070582",
+    "name": "日月光群益5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070661",
+    "name": "日月光富邦5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070778",
+    "name": "日月光元大61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070829",
+    "name": "日月光凱基5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070989",
+    "name": "日月光元大61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071105",
+    "name": "日月光國泰61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071124",
+    "name": "日月光永豐61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071180",
+    "name": "日月光凱基5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071271",
+    "name": "日月光元大5C購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071272",
+    "name": "日月光元大65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071348",
+    "name": "日月光富邦5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071446",
+    "name": "日月光統一64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071447",
+    "name": "日月光統一6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071493",
+    "name": "日月光元大5C購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071564",
+    "name": "日月光統一63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071565",
+    "name": "日月光統一66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071663",
+    "name": "日月光元大5C購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071694",
+    "name": "日月光永豐5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071831",
+    "name": "日月光凱基61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071862",
+    "name": "日月光群益5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072034",
+    "name": "日月光台新5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072235",
+    "name": "日月光元大5C購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072343",
+    "name": "日月光凱基5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072429",
+    "name": "日月光永豐66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072563",
+    "name": "日月光群益5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072591",
+    "name": "日月光永豐61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072592",
+    "name": "日月光永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072626",
+    "name": "日月光台新5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072661",
+    "name": "日月光凱基5C購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072740",
+    "name": "日月光群益5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072785",
+    "name": "日月光國票61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072932",
+    "name": "日月光元大5C購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073048",
+    "name": "日月光凱基5C購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073356",
+    "name": "日月光群益5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073379",
+    "name": "日月光凱基5C購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073429",
+    "name": "日月光永豐5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073544",
+    "name": "日月光元大5C購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073696",
+    "name": "日月光元大61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073745",
+    "name": "日月光凱基61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073829",
+    "name": "日月光國票64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073875",
+    "name": "日月光群益61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073940",
+    "name": "日月光中信62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074178",
+    "name": "日月光台新61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074227",
+    "name": "日月光元大64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074503",
+    "name": "日月光富邦61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074543",
+    "name": "日月光國泰62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074544",
+    "name": "日月光國泰62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074596",
+    "name": "日月光台新61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074808",
+    "name": "日月光元大61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074809",
+    "name": "日月光元大64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074947",
+    "name": "日月光凱基61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074987",
+    "name": "日月光統一65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074988",
+    "name": "日月光統一67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075210",
+    "name": "日月光群益62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075243",
+    "name": "日月光統一65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075290",
+    "name": "日月光元大63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075324",
+    "name": "日月光永豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075357",
+    "name": "日月光凱基61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075396",
+    "name": "日月光台新61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075421",
+    "name": "日月光統一67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075422",
+    "name": "日月光統一6C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075460",
+    "name": "日月光群益61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075485",
+    "name": "日月光富邦67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075534",
+    "name": "日月光元大63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075824",
+    "name": "日月光元大63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075959",
+    "name": "日月光凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076007",
+    "name": "日月光永豐61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076180",
+    "name": "日月光元大61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076199",
+    "name": "日月光中信61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076236",
+    "name": "日月光永豐61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076237",
+    "name": "日月光永豐61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076238",
+    "name": "日月光永豐61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076406",
+    "name": "日月光國泰62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076536",
+    "name": "日月光凱基63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076604",
+    "name": "日月光富邦77購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076665",
+    "name": "日月光元大61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076713",
+    "name": "日月光凱基61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076839",
+    "name": "日月光永豐61購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076888",
+    "name": "日月光群益61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077027",
+    "name": "日月光元大61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077186",
+    "name": "日月光群益61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077223",
+    "name": "日月光凱基63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077321",
+    "name": "日月光台新61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077472",
+    "name": "日月光元大61購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077473",
+    "name": "日月光元大61購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077556",
+    "name": "日月光凱基61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077657",
+    "name": "日月光永豐61購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077831",
+    "name": "日月光中信61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077894",
+    "name": "日月光凱基63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077946",
+    "name": "日月光元大61購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077999",
+    "name": "日月光富邦61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078070",
+    "name": "日月光凱基62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078114",
+    "name": "日月光國票62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078206",
+    "name": "日月光元大62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078300",
+    "name": "日月光元大64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078432",
+    "name": "日月光永豐63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078433",
+    "name": "日月光永豐64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078517",
+    "name": "日月光國泰63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078590",
+    "name": "日月光台新62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078637",
+    "name": "日月光元大64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078706",
+    "name": "日月光統一6B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078732",
+    "name": "日月光凱基63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078778",
+    "name": "日月光群益62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078949",
+    "name": "日月光凱基63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079113",
+    "name": "日月光群益67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079309",
+    "name": "日月光國票66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079385",
+    "name": "日月光富邦62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079449",
+    "name": "日月光凱基64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079592",
+    "name": "日月光元大63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079593",
+    "name": "日月光元大63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079594",
+    "name": "日月光元大64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079671",
+    "name": "日月光群益67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079709",
+    "name": "日月光凱基64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079843",
+    "name": "日月光台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079844",
+    "name": "日月光台新68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079964",
+    "name": "日月光群益63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080245",
+    "name": "日月光群益62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080275",
+    "name": "日月光凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080399",
+    "name": "日月光富邦65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080446",
+    "name": "日月光群益62購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080541",
+    "name": "日月光元大64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080667",
+    "name": "日月光凱基64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080775",
+    "name": "日月光元大63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080776",
+    "name": "日月光元大64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080839",
+    "name": "日月光永豐63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080924",
+    "name": "日月光元大63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080925",
+    "name": "日月光元大63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080926",
+    "name": "日月光元大64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080954",
+    "name": "日月光群益62購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081210",
+    "name": "日月光凱基66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081255",
+    "name": "日月光元大62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081256",
+    "name": "日月光元大68購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081317",
+    "name": "日月光富邦62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081459",
+    "name": "日月光元大68購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081507",
+    "name": "日月光群益62購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081560",
+    "name": "日月光凱基63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081663",
+    "name": "日月光元大62購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081664",
+    "name": "日月光元大62購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081838",
+    "name": "日月光台新65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081868",
+    "name": "日月光凱基68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081971",
+    "name": "日月光群益62購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082070",
+    "name": "日月光元大65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082172",
+    "name": "日月光國票63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082210",
+    "name": "日月光群益62購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082272",
+    "name": "日月光凱基63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082549",
+    "name": "日月光群益62購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082703",
+    "name": "日月光台新62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082773",
+    "name": "日月光凱基65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082791",
+    "name": "日月光中信63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082801",
+    "name": "日月光永豐63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082818",
+    "name": "日月光富邦65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082849",
+    "name": "日月光群益63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083015",
+    "name": "日月光元大63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083016",
+    "name": "日月光元大63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083017",
+    "name": "日月光元大63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083160",
+    "name": "日月光凱基68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083286",
+    "name": "日月光群益63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083324",
+    "name": "日月光國票67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083501",
+    "name": "日月光永豐63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083974",
+    "name": "日月光永豐66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084134",
+    "name": "日月光群益63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084220",
+    "name": "日月光國票64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084278",
+    "name": "日月光永豐63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084319",
+    "name": "日月光群益63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084362",
+    "name": "日月光凱基63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084619",
+    "name": "日月光台新63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084748",
+    "name": "日月光凱基63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084809",
+    "name": "日月光統一69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084837",
+    "name": "日月光永豐63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084881",
+    "name": "日月光元大63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084919",
+    "name": "日月光群益63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085006",
+    "name": "日月光富邦69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085126",
+    "name": "日月光元大63購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085385",
+    "name": "日月光永豐64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085519",
+    "name": "日月光群益63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085543",
+    "name": "日月光凱基63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085734",
+    "name": "日月光元大63購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085824",
+    "name": "日月光凱基63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085943",
+    "name": "日月光永豐63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085961",
+    "name": "日月光富邦79購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086071",
+    "name": "日月光群益63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086125",
+    "name": "日月光台新63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086303",
+    "name": "日月光凱基63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086489",
+    "name": "日月光群益63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086972",
+    "name": "日月光凱基63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087137",
+    "name": "日月光元大66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087168",
+    "name": "日月光富邦63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087185",
+    "name": "日月光台新63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087242",
+    "name": "日月光群益63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087361",
+    "name": "日月光元大66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087441",
+    "name": "日月光凱基63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087467",
+    "name": "日月光群益63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087759",
+    "name": "日月光群益63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087902",
+    "name": "日月光永豐64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088101",
+    "name": "日月光群益63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088150",
+    "name": "日月光凱基63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088199",
+    "name": "日月光中信63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088217",
+    "name": "日月光永豐63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088254",
+    "name": "日月光國票69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088485",
+    "name": "日月光富邦66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088622",
+    "name": "日月光元大63購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088836",
+    "name": "日月光凱基63購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088837",
+    "name": "日月光凱基66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088896",
+    "name": "日月光統一69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088897",
+    "name": "日月光統一79購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088937",
+    "name": "日月光群益63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089081",
+    "name": "日月光凱基63購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089298",
+    "name": "日月光群益63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089432",
+    "name": "日月光元大63購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089580",
+    "name": "日月光元大64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089772",
+    "name": "日月光凱基64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089773",
+    "name": "日月光凱基64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089990",
+    "name": "日月光富邦64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "03164T",
+    "name": "日月光中信5B售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03221T",
+    "name": "日月光台新5B售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03414T",
+    "name": "日月光凱基5B售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03429T",
+    "name": "日月光群益5B售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03467T",
+    "name": "日月光台新5C售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03572T",
+    "name": "日月光國票61售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03585T",
+    "name": "日月光凱基5C售08",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03652T",
+    "name": "日月光群益5C售08",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03694T",
+    "name": "日月光國票62售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03699T",
+    "name": "日月光富邦66售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03755T",
+    "name": "日月光台新61售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03761T",
+    "name": "日月光群益61售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03904T",
+    "name": "日月光國票63售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03941T",
+    "name": "日月光元大61售09",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03968T",
+    "name": "日月光群益61售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03996T",
+    "name": "日月光凱基61售09",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04082T",
+    "name": "日月光台新62售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04086T",
+    "name": "日月光中信62售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04238T",
+    "name": "日月光元大62售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04575T",
+    "name": "日月光台新63售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04613T",
+    "name": "日月光群益63售12",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04780T",
+    "name": "日月光台新64售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04819T",
+    "name": "日月光富邦6A售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04889T",
+    "name": "日月光中信64售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04902T",
+    "name": "日月光台新64售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04936T",
+    "name": "日月光群益6A售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04968T",
+    "name": "日月光群益69售01",
+    "right": "put",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-02",
+  "breadth": {
+   "up": 518,
+   "down": 447
+  },
+  "foreign_amt_b": -735.2,
+  "trust_amt_b": 338.2,
+  "tx_night": {
+   "contract": "202611",
+   "o": 45227.0,
+   "h": 45487.0,
+   "l": 44271.0,
+   "c": 44310.0,
+   "chg": -917.0,
+   "chg_pct": -2.03,
+   "vol": 38487,
+   "title": "2026/11/02"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 45000.0,
+   "h": 45332.0,
+   "l": 44700.0,
+   "c": 45256.0,
+   "chg": -44.0,
+   "chg_pct": -0.1,
+   "vol": 44305,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -89379,
+   "raw": [
+    57787,
+    519492760,
+    54986,
+    494358727,
+    2801,
+    25134032,
+    8952,
+    80977983,
+    98331,
+    889533996,
+    -89379,
+    -808556013
+   ]
+  },
+  "us": {}
+ }
+}

@@ -18,13 +18,25 @@ def _cache_path(key):
     return os.path.join(CACHE_DIR, "http", hashlib.md5(key.encode()).hexdigest() + ".bin")
 
 
+def _cache_fresh(cp, cache_ttl):
+    """檔案快取是否仍可用：在 TTL 內，而且是「今天」寫的。
+    日資料（月 K、法人、融資）每個交易日都會多一列，昨天 09:18 抓的月 K 到今天 09:00 仍在 24 小時 TTL 內，
+    會讓盤前少掉昨天那根 K（6148 2026-11-05 昨收顯示 40.95，實際 44.2），所以跨日一律重抓。"""
+    if cache_ttl <= 0 or not os.path.exists(cp):
+        return False
+    mt = os.path.getmtime(cp)
+    if time.time() - mt >= cache_ttl:
+        return False
+    return time.localtime(mt).tm_yday == time.localtime().tm_yday and time.localtime(mt).tm_year == time.localtime().tm_year
+
+
 def get(url, params=None, headers=None, referer=None, retries=2, timeout=HTTP_TIMEOUT, cache_ttl=0):
     """GET 回 bytes。cache_ttl>0 時以秒為單位使用檔案快取（日資料用）。"""
     if params:
         url = url + ("&" if "?" in url else "?") + urllib.parse.urlencode(params)
     key = "GET " + url
     cp = _cache_path(key)
-    if cache_ttl > 0 and os.path.exists(cp) and time.time() - os.path.getmtime(cp) < cache_ttl:
+    if _cache_fresh(cp, cache_ttl):
         with open(cp, "rb") as f:
             return f.read()
     h = {"User-Agent": USER_AGENT, "Accept": "*/*"}
@@ -53,7 +65,7 @@ def post(url, data, headers=None, referer=None, retries=2, timeout=HTTP_TIMEOUT,
     body = urllib.parse.urlencode(data).encode()
     key = "POST " + url + " " + body.decode()
     cp = _cache_path(key)
-    if cache_ttl > 0 and os.path.exists(cp) and time.time() - os.path.getmtime(cp) < cache_ttl:
+    if _cache_fresh(cp, cache_ttl):
         with open(cp, "rb") as f:
             return f.read()
     h = {"User-Agent": USER_AGENT, "Content-Type": "application/x-www-form-urlencoded"}

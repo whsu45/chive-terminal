@@ -41,7 +41,7 @@ def load_ticks(api, code, date):
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     c = S.get_contract(api, code)
-    t = api.ticks(contract=c, date=date.isoformat())
+    t = S.fetch_ticks(api, c, date.isoformat(), "校準") if hasattr(S, "fetch_ticks") else api.ticks(contract=c, date=date.isoformat())
     rows = []
     for ts, p, v, tt in zip(t.ts, t.close, t.volume, t.tick_type):
         d = S.ns_to_dt(ts)

@@ -21,6 +21,7 @@ import traceback
 from config import LOG_DIR, load_env
 import prep
 import model
+import indicators as I
 import src_mis
 import src_warrants as W
 import http_client as hc   # 別名不能叫 http：下面 import http.server 會把它蓋掉
@@ -325,6 +326,8 @@ class Monitor:
         self._last_mis_t = 0
         self._last_quotes = None
         self.peer_hist = {c: {} for c in codes}     # code -> {peer: [[epoch, chg_pct], ...]}，給 model 算族群 10 分鐘趨勢
+        self.signals = {}                            # code -> 目前的「建議做空/做多」訊號（快迴圈每 3 秒檢查進場確認條件）
+        self._sig_seen = {}                          # (code, side, px) -> epoch，同一個點 15 分鐘內不重發
         import src_shioaji
         for c in codes:
             self.daily[c] = prep.build(c, peers_arg, refresh)
@@ -374,7 +377,8 @@ class Monitor:
                     except Exception as e:
                         print(f"[shioaji] 指數串流失敗：{str(e)[:80]}")
                     u = src_shioaji.usage()
-                    print(f"[shioaji] 串流已啟動 {ok}" + (f"，今日流量 {u['used_mb']:.0f}/{u['limit_mb']:.0f} MB" if u else ""))
+                    print(f"[shioaji] 串流已啟動 {ok}" + (f"，今日流量 {u['used_mb']:.0f}/{u['limit_mb']:.0f} MB" if u else "")
+                          + f"；今日 ticks 已用 {src_shioaji.ticks_usage()}/{src_shioaji.TICKS_DAILY_LIMIT}（每次啟動每檔用 1 次）")
             else:
                 print("[shioaji] 未安裝或 .env 無金鑰，大單/散戶分流停用（其餘功能正常）")
 
@@ -450,6 +454,108 @@ class Monitor:
                     n_alert += len(self.live_alerts.get(c, [])) - before
             t0 = dt.datetime.fromtimestamp(hist[0][0]).strftime("%H:%M"); t1 = dt.datetime.fromtimestamp(hist[-1][0]).strftime("%H:%M")
             print(f"[shioaji] {c} 回補 {t0}–{t1} 主力/散戶流量 {len(hist)} 分鐘，補發歷史警示 {n_alert} 則")
+
+    @staticmethod
+    def _five_min(completed):
+        """1 分 K → 已完成的 5 分 K [[HH:MM, o,h,l,c,vol], ...]（最後一個 5 分鐘桶若還沒結束就不算）。"""
+        buckets = {}
+        for b in completed:
+            hh, mm = b[0].split(":")
+            k = f"{hh}:{int(mm) // 5 * 5:02d}"
+            x = buckets.get(k)
+            if x is None:
+                buckets[k] = [k, b[1], b[2], b[3], b[4], b[5] or 0]
+            else:
+                x[2] = max(x[2], b[2]); x[3] = min(x[3], b[3]); x[4] = b[4]; x[5] += b[5] or 0
+        out = [buckets[k] for k in sorted(buckets)]
+        if out and completed:
+            hh, mm = completed[-1][0].split(":")
+            if int(mm) % 5 != 4:      # 這個 5 分鐘桶還沒收完（最後一根不是 x4 分）
+                out = out[:-1]
+        return out
+
+    def _signal(self, c, ev, bars, q, now):
+        """
+        「建議做空 / 做多」：模型那一邊勝率 ≥60%，而且進場確認條件**已經發生**，才掛出來：
+          主計畫：最近 12 根 1 分 K 碰過壓力（支撐），且最後一根完成的 1 分 K 收在進場價之下（之上），現價還在進場價附近、沒到目標也沒過停損；
+          備援：最後一根完成的 5 分 K 帶量（≥1.5 倍前 6 根均量）收破支撐 / 收過壓力，現價離觸發價 1% 內。
+        反彈動能中不給空訊號、殺盤動能中不給多訊號；09:10 前、13:20 後不給。
+        訊號會留著直到：到目標 1（✔）、過停損（✘）、或 20 分鐘逾時，結束後再顯示 2 分鐘。
+        """
+        p = q.get("ref")
+        cur = self.signals.get(c)
+        if cur and p:
+            if not cur.get("status"):
+                short = cur["side"] == "short"
+                if (p <= cur["t1"]) if short else (p >= cur["t1"]):
+                    cur["status"] = f"✔ 到目標 1 {cur['t1']}"
+                elif (p >= cur["stop"]) if short else (p <= cur["stop"]):
+                    cur["status"] = f"✘ 過停損 {cur['stop']}，失效"
+                elif now.timestamp() - cur["since_ts"] > 1200:
+                    cur["status"] = "逾時 20 分鐘，訊號取消"
+                if cur.get("status"):
+                    cur["end_ts"] = now.timestamp()
+                    self._add_alert(c, now, f"{cur['status']}：{cur['label']} @{cur['price']}")
+            if cur.get("status") and now.timestamp() - cur["end_ts"] > 120:
+                del self.signals[c]
+                cur = None
+            if cur:
+                cur["now"] = p
+                return cur
+        if not (ev and p and bars and len(bars) >= 4):
+            return None
+        hhmm = now.strftime("%H:%M")
+        if hhmm < "09:10" or hhmm >= "13:20":
+            return None
+        completed = [b for b in bars if b[0] != now.strftime("%H:%M")]
+        if len(completed) < 3:
+            return None
+        last = completed[-1]
+        recent = completed[-12:]
+        f5 = self._five_min(completed)
+        plan = ev.get("plan") or {}
+        info = ev.get("info") or {}
+        mom = (info.get("momentum") or {}).get("dir")
+        tick = I.tick_size(p)
+        ps, pl = ev.get("p_short", 0), ev.get("p_long", 0)
+
+        def vol_ok():
+            if len(f5) < 4:
+                return False
+            prev = [x[5] for x in f5[-7:-1]]
+            return bool(prev) and f5[-1][5] >= 1.5 * (sum(prev) / len(prev))
+
+        def make(side, price, label, stop, t1, t2, why):
+            key = (c, side, round(price, 2))
+            if now.timestamp() - self._sig_seen.get(key, 0) < 900:
+                return None
+            self._sig_seen[key] = now.timestamp()
+            sig = {"side": side, "price": price, "label": label, "stop": stop, "t1": t1, "t2": t2, "why": why,
+                   "since": now.strftime("%H:%M:%S"), "since_ts": now.timestamp(), "now": p,
+                   "p": ps if side == "short" else pl}
+            self.signals[c] = sig
+            self._add_alert(c, now, f"▶ 建議{label} @{price}：{why}；停損 {stop}，目標 {t1} / {t2}")
+            return sig
+
+        s = plan.get("short")
+        if s and ps >= 60 and ps > pl and mom != "up" and not (info.get("warrant_surge_5m") and (info.get("book_imb") or 0) > 0.35):
+            trig, entry, stop, t1, t2 = s["trigger_px"], s["entry_px"], s["stop"], s["t1"], s["t2"]
+            touched = any(b[2] >= trig - tick for b in recent)
+            if touched and last[4] <= entry and t1 < p <= entry + tick and p < stop:
+                return make("short", p, "做空", stop, t1, t2, f"反彈 {trig} 不過，1 分 K 收 {last[4]} 確認（空方 {ps:.0f}%）")
+            bd = s.get("bd_trigger")
+            if bd and f5 and f5[-1][4] < bd and vol_ok() and s.get("bd_target") and s["bd_target"] < p < bd and (bd - p) / p < 0.01:
+                return make("short", p, "做空（破線追）", s["bd_stop"], s["bd_target"], s["bd_target"], f"5 分 K 帶量收破 {bd}（量 {f5[-1][5]} 張，空方 {ps:.0f}%）")
+        l = plan.get("long")
+        if l and pl >= 60 and pl > ps and mom != "down":
+            trig, entry, stop, t1, t2 = l["trigger_px"], l["entry_px"], l["stop"], l["t1"], l["t2"]
+            touched = any(b[3] <= trig + tick for b in recent)
+            if touched and last[4] >= entry and entry - tick <= p < t1 and p > stop:
+                return make("long", p, "做多", stop, t1, t2, f"回測 {trig} 守住，1 分 K 收 {last[4]} 確認（多方 {pl:.0f}%）")
+            bo = l.get("bo_trigger")
+            if bo and f5 and f5[-1][4] > bo and vol_ok() and l.get("bo_target") and bo < p < l["bo_target"] and (p - bo) / p < 0.01:
+                return make("long", p, "做多（突破追）", l["bo_stop"], l["bo_target"], l["bo_target"], f"5 分 K 帶量收過 {bo}（量 {f5[-1][5]} 張，多方 {pl:.0f}%）")
+        return None
 
     def _record_peers(self, c, peers_q, now):
         """每次拿到族群報價就記一筆漲跌 %（≥20 秒一筆，留 90 分鐘），給 model 算族群 10 分鐘趨勢。"""
@@ -601,6 +707,7 @@ class Monitor:
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
+                "signal": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
                 "mis_fail": getattr(self, "_mis_fail", 0)}
         for k in ("t00", "o00"):
             q = quotes.get(k)
@@ -651,6 +758,12 @@ class Monitor:
                         self._add_alert(c, now, w)
             if self.wq.get(c):
                 live["warrants"][c] = self.wq[c]
+            try:
+                sig = self._signal(c, WEB.latest.get(c), live["series"].get(c) or [], q, now)
+                if sig:
+                    live["signal"][c] = sig
+            except Exception as e:
+                print(f"[fast] 訊號判斷失敗：{str(e)[:100]}")
             live["alerts"][c] = list(self.live_alerts.get(c, []))[-12:]
         if do_wq:
             self._last_wq_t = time.time()

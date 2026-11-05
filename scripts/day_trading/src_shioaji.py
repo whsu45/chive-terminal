@@ -13,7 +13,39 @@ import time
 import threading
 import datetime as dt
 
-from config import load_env
+from config import load_env, CACHE_DIR
+
+TICKS_DAILY_LIMIT = 10   # 永豐官方：盤中 ticks 歷史查詢每日 10 次（kbars 270 次）
+
+
+def _ticks_usage_path():
+    return os.path.join(CACHE_DIR, f"ticks_usage_{dt.date.today():%Y%m%d}.json")
+
+
+def ticks_usage():
+    """今天這台機器呼叫過幾次 api.ticks（本機計數檔，跨程式累加；永豐沒有查詢額度的 API）。"""
+    try:
+        import json
+        with open(_ticks_usage_path()) as f:
+            return int(json.load(f).get("count", 0))
+    except Exception:
+        return 0
+
+
+def fetch_ticks(api, contract, date, why=""):
+    """所有 api.ticks 都走這裡：先記一次，再查。啟動時印「今日 ticks 已用 N/10」。"""
+    import json
+    n = ticks_usage() + 1
+    try:
+        os.makedirs(CACHE_DIR, exist_ok=True)
+        with open(_ticks_usage_path(), "w") as f:
+            json.dump({"count": n, "last": dt.datetime.now().isoformat(), "why": why}, f)
+    except Exception:
+        pass
+    code = getattr(contract, "code", "?")
+    flag = "  ⚠ 快到上限，今天不要再重啟" if n >= TICKS_DAILY_LIMIT - 2 else ""
+    print(f"[shioaji] ticks 歷史查詢 {code} {date}（{why or '回補'}）→ 今日 ticks 已用 {n}/{TICKS_DAILY_LIMIT}{flag}")
+    return api.ticks(contract=contract, date=date)
 
 _api = None
 _lock = threading.Lock()
@@ -228,7 +260,7 @@ def start_stream(codes, big_lot=None):
                 continue
             # 回補今日逐筆（1 次額度）
             try:
-                t = api.ticks(contract=contract, date=today)
+                t = fetch_ticks(api, contract, today, "盤中啟動回補")
                 with _lock:
                     _state[code] = _new_acc()
                     for ts, c, v, tt in zip(t.ts, t.close, t.volume, t.tick_type):

@@ -54,7 +54,7 @@ def main():
         raise SystemExit("需要永豐金鑰才能重播。")
     code = a.code
     c = S.get_contract(api, code)
-    t = api.ticks(contract=c, date=date.isoformat())
+    t = S.fetch_ticks(api, c, date.isoformat(), "重播") if hasattr(S, "fetch_ticks") else api.ticks(contract=c, date=date.isoformat())
     ticks = [(S.ns_to_dt(ts), float(p), int(v), int(tt)) for ts, p, v, tt in zip(t.ts, t.close, t.volume, t.tick_type)]
     ticks = [x for x in ticks if x[0].time() >= dt.time(9, 0)]
     if not ticks:

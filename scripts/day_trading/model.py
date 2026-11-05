@@ -738,7 +738,8 @@ def build_plan(d, q, info, levels, p_long, p_short, now):
                          "entry_px": entry, "trigger_px": r1[1], "stop": stop,
                          "t1": tgt1, "t2": tgt2, "risk_pct": (stop - entry) / entry * 100,
                          "reward_pct": (entry - tgt1) / entry * 100,
-                         "breakdown": f"備援：5分K收破 {s1[1]} ({s1[0]}) 追空，停損 {I.round_tick(s1[1] + pad, 'up')}，目標 {tgt2}" if s1 else None}
+                         "breakdown": f"備援：5分K帶量收破 {s1[1]} ({s1[0]}) 追空，停損 {I.round_tick(s1[1] + pad, 'up')}，目標 {tgt2}" if s1 else None,
+                         "bd_trigger": s1[1] if s1 else None, "bd_stop": I.round_tick(s1[1] + pad, "up") if s1 else None, "bd_target": tgt2 if s1 else None}
     if s1:
         entry = I.round_tick(s1[1] + tick, "up")
         stop = I.round_tick(s1[1] - pad, "down")
@@ -751,5 +752,6 @@ def build_plan(d, q, info, levels, p_long, p_short, now):
                         "entry_px": entry, "trigger_px": s1[1], "stop": stop,
                         "t1": tgt1, "t2": tgt2, "risk_pct": (entry - stop) / entry * 100,
                         "reward_pct": (tgt1 - entry) / entry * 100,
-                        "breakout": f"備援：5分K收過 {r1[1]} ({r1[0]}) 追多，停損 {I.round_tick(r1[1] - pad, 'down')}，目標 {tgt2}" if r1 else None}
+                        "breakout": f"備援：5分K帶量收過 {r1[1]} ({r1[0]}) 追多，停損 {I.round_tick(r1[1] - pad, 'down')}，目標 {tgt2}" if r1 else None,
+                        "bo_trigger": r1[1] if r1 else None, "bo_stop": I.round_tick(r1[1] - pad, "down") if r1 else None, "bo_target": tgt2 if r1 else None}
     return plan

@@ -1,6 +1,6 @@
 {
  "quote_date": "2026-11-05",
- "members_fetched": "2026-11-05",
+ "members_fetched": "2026-11-06",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -177,7 +177,7 @@
      "volume": 1884
     }
    ],
-   "avg_pct": 0.07,
+   "avg_pct": 0.08,
    "up": 5,
    "down": 9,
    "flat": 0
@@ -1508,18 +1508,6 @@
    "desc": "電源供應器概念股指以電源供應器與電力轉換產品為主要營收的台股，產品從 PC 與伺服器電源、Power Shelf 機櫃電源、UPS 不斷電系統，到資料中心的高壓直流（HVDC）供電架構。",
    "members": [
     {
-     "code": "2413",
-     "name": "環科",
-     "market": "上市",
-     "open": 49.9,
-     "high": 50.2,
-     "low": 46.0,
-     "close": 49.0,
-     "change": 0.0,
-     "pct": 0.0,
-     "volume": 1371
-    },
-    {
      "code": "3032",
      "name": "偉訓",
      "market": "上市",
@@ -1530,6 +1518,18 @@
      "change": 0.0,
      "pct": 0.0,
      "volume": 634
+    },
+    {
+     "code": "2413",
+     "name": "環科",
+     "market": "上市",
+     "open": 49.9,
+     "high": 50.2,
+     "low": 46.0,
+     "close": 49.0,
+     "change": 0.0,
+     "pct": 0.0,
+     "volume": 1371
     },
     {
      "code": "3015",
@@ -3534,7 +3534,7 @@
      "volume": 2516
     }
    ],
-   "avg_pct": -3.73,
+   "avg_pct": -3.72,
    "up": 1,
    "down": 7,
    "flat": 0

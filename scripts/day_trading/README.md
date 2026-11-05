@@ -112,6 +112,11 @@ py -3 -m pip install -r requirements.txt   # 要用永豐串流才需要
 - `.env` 用記事本存成 UTF-8 也沒關係，程式會吃掉 BOM。
 - 儀表板只綁 127.0.0.1，第一次啟動不會跳防火牆詢問；`--web` 會自動開預設瀏覽器，不要就加 `--no-open`。
 - 快取與紀錄放在 `scripts\day_trading\.cache\`、`logs\`，路徑都用 `os.path` 組，沒有寫死的斜線。
+- **`[SSL: CERTIFICATE_VERIFY_FAILED]`／「連不上證交所 MIS」**：公司網路或防毒軟體在做 HTTPS 檢查，換上了自己的根憑證，
+  Python 不認得。錯誤訊息會印出完整原因。處理順序：
+  1. `py -3 -m pip install -U certifi`（程式會自動加讀）
+  2. 跟 IT 要公司根憑證（Base64 的 .pem/.crt），設 `set DAYTRADE_CA_BUNDLE=C:\path\corp-root.pem`（Git Bash：`export DAYTRADE_CA_BUNDLE=/c/path/corp-root.pem`）
+  3. 換一個沒有 HTTPS 檢查的網路（例如手機熱點）確認是不是公司網路造成
 
 ## 永豐 Shioaji（選用）
 

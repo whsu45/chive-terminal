@@ -1,6 +1,7 @@
 """只用標準庫的 HTTP 小工具：重試、UA、Referer、簡單檔案快取。"""
 import json
 import os
+import ssl
 import time
 import hashlib
 import urllib.request
@@ -12,6 +13,40 @@ from config import CACHE_DIR, HTTP_TIMEOUT, USER_AGENT
 
 class HttpError(Exception):
     pass
+
+
+def _ssl_context():
+    """
+    完整驗證憑證，只是多加信任來源：系統憑證庫 + certifi（有裝的話）+ DAYTRADE_CA_BUNDLE / SSL_CERT_FILE 指定的 PEM。
+    公司網路 / 防毒做 HTTPS 檢查時會換上自己的根憑證，把那張根憑證加進來才連得到證交所。
+    """
+    ctx = ssl.create_default_context()
+    try:
+        import certifi
+        ctx.load_verify_locations(certifi.where())
+    except Exception:
+        pass
+    for var in ("DAYTRADE_CA_BUNDLE", "SSL_CERT_FILE", "REQUESTS_CA_BUNDLE"):
+        p = os.environ.get(var)
+        if p and os.path.exists(p):
+            try:
+                ctx.load_verify_locations(p)
+            except Exception as e:
+                print(f"[http] 讀不到 {var}={p}：{e}")
+    return ctx
+
+
+_CTX = _ssl_context()
+
+
+def _err_text(url, e):
+    """SSL 失敗要把原因印完整（原本只印到「<urlopen error [SSL: 」就被截斷）。"""
+    reason = getattr(e, "reason", e)
+    if isinstance(reason, ssl.SSLError) or isinstance(e, ssl.SSLError):
+        host = urllib.parse.urlparse(url).netloc
+        return (f"{host} SSL 憑證驗證失敗：{getattr(reason, 'verify_message', None) or reason}。"
+                f"多半是公司網路或防毒軟體的 HTTPS 檢查：跟 IT 要公司根憑證，設 DAYTRADE_CA_BUNDLE 指向它（見 README「Windows」段）")
+    return f"{url}: {e}"
 
 
 def _cache_path(key):
@@ -48,7 +83,7 @@ def get(url, params=None, headers=None, referer=None, retries=2, timeout=HTTP_TI
     for i in range(retries + 1):
         try:
             req = urllib.request.Request(url, headers=h)
-            with urllib.request.urlopen(req, timeout=timeout) as r:
+            with urllib.request.urlopen(req, timeout=timeout, context=_CTX) as r:
                 data = r.read()
             if cache_ttl > 0:
                 os.makedirs(os.path.dirname(cp), exist_ok=True)
@@ -58,7 +93,7 @@ def get(url, params=None, headers=None, referer=None, retries=2, timeout=HTTP_TI
         except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as e:
             last = e
             time.sleep(0.8 * (i + 1))
-    raise HttpError(f"{url}: {last}")
+    raise HttpError(_err_text(url, last))
 
 
 def post(url, data, headers=None, referer=None, retries=2, timeout=HTTP_TIMEOUT, cache_ttl=0):
@@ -77,7 +112,7 @@ def post(url, data, headers=None, referer=None, retries=2, timeout=HTTP_TIMEOUT,
     for i in range(retries + 1):
         try:
             req = urllib.request.Request(url, data=body, headers=h, method="POST")
-            with urllib.request.urlopen(req, timeout=timeout) as r:
+            with urllib.request.urlopen(req, timeout=timeout, context=_CTX) as r:
                 out = r.read()
             if cache_ttl > 0:
                 os.makedirs(os.path.dirname(cp), exist_ok=True)
@@ -87,7 +122,7 @@ def post(url, data, headers=None, referer=None, retries=2, timeout=HTTP_TIMEOUT,
         except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as e:
             last = e
             time.sleep(0.8 * (i + 1))
-    raise HttpError(f"{url}: {last}")
+    raise HttpError(_err_text(url, last))
 
 
 def get_json(url, params=None, **kw):

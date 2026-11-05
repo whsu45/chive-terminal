@@ -45,11 +45,21 @@ def markets_for(codes):
     for c in codes:
         ex += [f"tse_{c}.tw", f"otc_{c}.tw"]
     out = {}
+    global _MIS_ERR
+    _MIS_ERR = None
     for i in range(0, len(ex), 40):
-        q = _safe(lambda: src_mis.fetch(ex[i:i + 40]), {}, "mis")
+        try:
+            q = src_mis.fetch(ex[i:i + 40])
+        except Exception as e:
+            _MIS_ERR = str(e)
+            print(f"  [warn] mis: {_MIS_ERR}")
+            q = {}
         for c, v in q.items():
             out[c] = {"ex": v["ex"], "name": v["name"], "y": v["y"]}
     return out
+
+
+_MIS_ERR = None
 
 
 PREP_VERSION = 5  # 快取結構版本：欄位有增減就 +1，舊快取會自動重建
@@ -69,6 +79,8 @@ def build(code, peers_arg=None, refresh=False):
     gname, peers = resolve_peers(code, peers_arg)
     mk = markets_for([code] + peers)
     if code not in mk:
+        if _MIS_ERR:
+            raise SystemExit(f"連不上證交所 MIS，不是代碼錯：{_MIS_ERR}")
         raise SystemExit(f"MIS 查不到 {code}，請確認代碼。")
     market = mk[code]["ex"]
     name = mk[code]["name"]

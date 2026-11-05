@@ -5,7 +5,7 @@
     python3 alert_review.py                  # 全部
     python3 alert_review.py --code 3006      # 只看一檔
     python3 alert_review.py --days 10        # 最近 10 個交易日
-    python3 alert_review.py --type 認購權證急漲 --detail   # 列出每一筆
+    python3 alert_review.py --type call-surge --detail      # 只看認購權證急漲，列出每一筆（--type 可用英文別名，見 TYPE_ALIASES）
 條件欄位：range_pos（0=日低 1=日高）、big_net_10m（主力 10 分鐘淨額變化）、book_imb（五檔不平衡），
 可用 --low（日低 25% 內）/--cover（主力 10 分鐘淨額上升）過濾，驗證「權證急漲 + 低檔 + 主力停賣」這種組合。
 """
@@ -15,6 +15,30 @@ import argparse
 import datetime as dt
 from collections import defaultdict
 from config import LOG_DIR
+
+
+# --type 可用英文別名（也接受中文全名；逗號分隔多個）
+TYPE_ALIASES = {
+    "call-surge": "認購權證急漲", "call-drop": "認購權證急跌", "put-surge": "認售權證急漲", "warrant-burst": "權證爆量",
+    "cover": "主力急回補", "dump": "主力急出", "dump-accel": "主力加速出貨", "buy-accel": "主力加速吃貨", "pump-dump": "主力拉高出貨",
+    "bounce": "反彈動能", "selloff": "殺盤動能", "call-book": "權證急漲+委買厚",
+    "short": "建議做空", "long": "建議做多", "halt": "延緩撮合", "other": "其他",
+}
+
+
+def resolve_types(arg):
+    out = []
+    for t in (arg or "").split(","):
+        t = t.strip()
+        if not t:
+            continue
+        if t in TYPE_ALIASES:
+            out.append(TYPE_ALIASES[t])
+        elif t in TYPE_ALIASES.values():
+            out.append(t)
+        else:
+            raise SystemExit(f"不認識的類型 {t!r}；可用：" + ", ".join(f"{k}={v}" for k, v in TYPE_ALIASES.items()))
+    return out
 
 
 def load():
@@ -45,7 +69,7 @@ def stat(rs, k):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--code", default=None)
-    ap.add_argument("--type", default=None, help="只看某類警示")
+    ap.add_argument("--type", default=None, help="只看某類警示，英文別名或中文，逗號分隔多個：" + ", ".join(f"{k}={v}" for k, v in TYPE_ALIASES.items()))
     ap.add_argument("--days", type=int, default=None)
     ap.add_argument("--low", action="store_true", help="只看當時價在日內區間 25% 以下的")
     ap.add_argument("--high", action="store_true", help="只看當時價在日內區間 75% 以上的")
@@ -56,7 +80,8 @@ def main():
     if a.code:
         rows = [r for r in rows if r["code"] == a.code]
     if a.type:
-        rows = [r for r in rows if r["type"] == a.type]
+        want = set(resolve_types(a.type))
+        rows = [r for r in rows if r["type"] in want]
     if a.days:
         days = sorted({r["date"] for r in rows})[-a.days:]
         rows = [r for r in rows if r["date"] in days]

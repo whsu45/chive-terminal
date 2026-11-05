@@ -45,6 +45,12 @@ def main(push=True):
     print(f"已 commit {sha}：{msg}")
     if push:
         r = subprocess.run(["git", "push"], cwd=root, capture_output=True, text=True, timeout=120)
+        if r.returncode != 0 and "non-fast-forward" in (r.stderr + r.stdout) or "fetch first" in (r.stderr + r.stdout):
+            # GitHub Actions 每天會自動 commit data/*.json，先把遠端拉下來 rebase 再推
+            pr = subprocess.run(["git", "pull", "--rebase", "--autostash", "-q"], cwd=root, capture_output=True, text=True, timeout=180)
+            if pr.returncode != 0:
+                print(f"遠端有新 commit 且 rebase 失敗，請手動處理：{(pr.stderr or pr.stdout).strip()[:200]}"); return 1
+            r = subprocess.run(["git", "push"], cwd=root, capture_output=True, text=True, timeout=120)
         if r.returncode != 0:
             print(f"push 失敗（commit 已留在本機，下次再推）：{(r.stderr or r.stdout).strip()[:200]}"); return 1
         print("已 push 到 GitHub")

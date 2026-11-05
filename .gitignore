@@ -225,6 +225,7 @@ data/orb/
 # day_trading 本機監控：金鑰與原始 HTTP/逐筆快取不進 git；每日資料（估算紀錄、警示/訊號結果、交戰紀錄、盤前資料）要進 git
 # （sync_logs.py 收盤後自動 commit + push）
 scripts/day_trading/.env
+!scripts/day_trading/.cache/
 scripts/day_trading/.cache/*
 !scripts/day_trading/.cache/daily_*.json
 !scripts/day_trading/.cache/calibration_*.json

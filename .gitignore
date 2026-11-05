@@ -222,10 +222,14 @@ __marimo__/
 # ORB 短沖資料：CI 每次部署由 Yahoo 5 分 K 重新產生
 data/orb/
 
-# day_trading 本機監控：快取、紀錄、金鑰一律不進 git
-scripts/day_trading/.cache/
-scripts/day_trading/logs/
+# day_trading 本機監控：金鑰與原始 HTTP/逐筆快取不進 git；每日資料（估算紀錄、警示/訊號結果、交戰紀錄、盤前資料）要進 git
+# （sync_logs.py 收盤後自動 commit + push）
 scripts/day_trading/.env
+scripts/day_trading/.cache/*
+!scripts/day_trading/.cache/daily_*.json
+!scripts/day_trading/.cache/calibration_*.json
+scripts/day_trading/logs/*.log
+scripts/day_trading/logs/*.tmp
 *.swp
 *.swo
 scripts/day_trading/model_params.candidate.json

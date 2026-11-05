@@ -1108,6 +1108,19 @@ class Monitor:
         self.fast_thread.start()
         print(f"[fast] 圖表/報價/分流每 {every} 秒更新（MIS 每 10 秒{'，永豐串流每 3 秒覆寫' if self.flow_src else ''}）；多空估算與進出場每 {self.interval} 秒")
 
+    def _sync_logs_once(self):
+        """收盤後把今天的資料 commit + push 回 GitHub（一天一次；LOG_SYNC=0 關掉）。"""
+        today = dt.date.today().isoformat()
+        if os.environ.get("LOG_SYNC", "1") == "0" or getattr(self, "_synced", None) == today:
+            return
+        self._synced = today
+        try:
+            r = subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "sync_logs.py")],
+                               capture_output=True, text=True, timeout=180)
+            print(f"[sync] {r.stdout.strip()[-300:]}" + (f" {r.stderr.strip()[-200:]}" if r.returncode else ""))
+        except Exception as e:
+            print(f"[sync] 失敗：{str(e)[:120]}")
+
     def log(self, ev):
         path = os.path.join(LOG_DIR, f"monitor_{dt.date.today():%Y%m%d}.jsonl")
         rec = {k: v for k, v in ev.items() if k not in ("quote",)}
@@ -1146,6 +1159,7 @@ class Monitor:
                 if self.calibrate_after_close:
                     run_calibration("收盤後補跑校準")
                     self.calibrate_after_close = False
+                self._sync_logs_once()
                 if not self.web:
                     print("已收盤，監控結束。")
                     break

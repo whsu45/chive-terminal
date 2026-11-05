@@ -68,6 +68,10 @@ MIS 每 10 秒抓一次（限流），**有 Shioaji 時每 3 秒用逐筆串流�
 統計各類警示之後漲跌的比率，用來決定哪些警示該升格成訊號。11/05 晶豪科五次認購權證急漲：2 次後跌 3%、1 次漲 2.6%、2 次持平，
 成功那次是低檔雙底 + 主力停賣 + 委買厚，所以單獨的權證急漲只當提醒。
 
+**每日資料進 git**：收盤後（13:35）monitor 自動跑 `sync_logs.py`，把 `logs/*.jsonl|json`（估算紀錄、警示/訊號結果、交戰紀錄）、
+`.cache/daily_*.json`（盤前資料）、`model_params.json` commit 並 push 到 GitHub；`.env`、`.cache/http/`、`.cache/ticks/` 永遠不進。
+手動：`python3 sync_logs.py`（`--no-push` 只 commit）；`LOG_SYNC=0` 關掉自動同步。
+
 **ticks 額度**：永豐盤中 `api.ticks` 每日 10 次，每次啟動每檔用 1 次（回補當日逐筆）。所有呼叫都經過 `src_shioaji.fetch_ticks`
 記到 `.cache/ticks_usage_YYYYMMDD.json`，啟動時印「今日 ticks 已用 N/10」，儀表板右上也顯示；≥8 會變橘色，當天就別再重啟。
 

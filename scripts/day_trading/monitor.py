@@ -525,6 +525,11 @@ class Monitor:
             prev = [x[5] for x in f5[-7:-1]]
             return bool(prev) and f5[-1][5] >= 1.5 * (sum(prev) / len(prev))
 
+        # 午盤量縮時 1 分 K 的「確認」沒有意義（11/05 晶豪科 12:03 五分鐘只成交 118 張）：最近 3 根合計要有 20 根均量的一半
+        v20 = [b[5] or 0 for b in completed[-20:]]
+        avg20 = sum(v20) / len(v20) if v20 else 0
+        thin = avg20 > 0 and sum((b[5] or 0) for b in completed[-3:]) < 1.5 * avg20
+
         def make(side, price, label, stop, t1, t2, why):
             key = (c, side, round(price, 2))
             if now.timestamp() - self._sig_seen.get(key, 0) < 900:
@@ -541,7 +546,7 @@ class Monitor:
         if s and ps >= 60 and ps > pl and mom != "up" and not (info.get("warrant_surge_5m") and (info.get("book_imb") or 0) > 0.35):
             trig, entry, stop, t1, t2 = s["trigger_px"], s["entry_px"], s["stop"], s["t1"], s["t2"]
             touched = any(b[2] >= trig - tick for b in recent)
-            if touched and last[4] <= entry and t1 < p <= entry + tick and p < stop:
+            if touched and not thin and last[4] <= entry and t1 < p <= entry + tick and p < stop:
                 return make("short", p, "做空", stop, t1, t2, f"反彈 {trig} 不過，1 分 K 收 {last[4]} 確認（空方 {ps:.0f}%）")
             bd = s.get("bd_trigger")
             if bd and f5 and f5[-1][4] < bd and vol_ok() and s.get("bd_target") and s["bd_target"] < p < bd and (bd - p) / p < 0.01:
@@ -550,7 +555,7 @@ class Monitor:
         if l and pl >= 60 and pl > ps and mom != "down":
             trig, entry, stop, t1, t2 = l["trigger_px"], l["entry_px"], l["stop"], l["t1"], l["t2"]
             touched = any(b[3] <= trig + tick for b in recent)
-            if touched and last[4] >= entry and entry - tick <= p < t1 and p > stop:
+            if touched and not thin and last[4] >= entry and entry - tick <= p < t1 and p > stop:
                 return make("long", p, "做多", stop, t1, t2, f"回測 {trig} 守住，1 分 K 收 {last[4]} 確認（多方 {pl:.0f}%）")
             bo = l.get("bo_trigger")
             if bo and f5 and f5[-1][4] > bo and vol_ok() and l.get("bo_target") and bo < p < l["bo_target"] and (p - bo) / p < 0.01:

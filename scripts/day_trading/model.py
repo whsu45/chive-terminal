@@ -726,11 +726,18 @@ def build_plan(d, q, info, levels, p_long, p_short, now):
     s1 = below[0] if below else None
     plan = {"resistance": above, "support": below}
     pad = max(tick * 2, round(atr * 0.15, 2))
+    # 目標至少要離進場價 max(3 tick, 0.5%, 0.2 ATR)：11/05 晶豪科 12:03 壓力 VWAP 219.93、支撐布林下 218.99，
+    # 空單進場 219.0、目標 1 變 218.99（差 1 tick），「建議做空」一分鐘就 ✔ 到目標、什麼都沒賺。太近的價位跳過當目標
+    min_gain = max(tick * 3, p * 0.005, atr * 0.2)
+    def targets(cands, entry, down):
+        ok = [v for _, v in cands if (entry - v if down else v - entry) >= min_gain]
+        return ok[0] if ok else None, (ok[1] if len(ok) > 1 else None)
     if r1:
         entry = I.round_tick(r1[1] - tick, "down")
         stop = I.round_tick(r1[1] + pad, "up")
-        tgt1 = s1[1] if s1 else I.round_tick(p - atr * 0.5, "down")
-        tgt2 = below[1][1] if len(below) > 1 else I.round_tick(p - atr * 0.9, "down")
+        t1c, t2c = targets(below, entry, True)
+        tgt1 = t1c or I.round_tick(entry - max(min_gain, atr * 0.5), "down")
+        tgt2 = t2c or I.round_tick(entry - atr * 0.9, "down")
         mom = info.get("momentum") or {}
         note_s = f"反彈動能中（連 {mom.get('bars')} 根紅 K）：先不進，等 1 分 K 翻黑" if mom.get("dir") == "up" else None
         plan["short"] = {"entry": f"碰 {r1[1]} ({r1[0]}) 不過：1 分 K 收 {entry} 以下才進，{entry} 空；1 分 K 收過 {stop} 計畫作廢",
@@ -743,8 +750,9 @@ def build_plan(d, q, info, levels, p_long, p_short, now):
     if s1:
         entry = I.round_tick(s1[1] + tick, "up")
         stop = I.round_tick(s1[1] - pad, "down")
-        tgt1 = r1[1] if r1 else I.round_tick(p + atr * 0.5, "up")
-        tgt2 = above[1][1] if len(above) > 1 else I.round_tick(p + atr * 0.9, "up")
+        t1c, t2c = targets(above, entry, False)
+        tgt1 = t1c or I.round_tick(entry + max(min_gain, atr * 0.5), "up")
+        tgt2 = t2c or I.round_tick(entry + atr * 0.9, "up")
         mom = info.get("momentum") or {}
         note_l = f"殺盤動能中（連 {mom.get('bars')} 根黑 K）：先不接，等 1 分 K 翻紅" if mom.get("dir") == "down" else None
         plan["long"] = {"entry": f"回測 {s1[1]} ({s1[0]}) 守住：1 分 K 收 {entry} 以上才進，{entry} 多；1 分 K 收破 {stop} 計畫作廢",

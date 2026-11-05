@@ -823,6 +823,11 @@ class Monitor:
                     w["end_ts"] = now.timestamp()
                     self._add_alert(c, now, f"⚠ {lab} {w['px']}（{w['size0']} 張）{w['status']}")
                 else:
+                    # 破線預告：被吃超過六成、剩不到四成、補單補不回來 → 牆快沒了
+                    if w["traded"] >= 0.6 * w["size0"] and cur <= 0.4 * w["size0"] and w["refilled"] < 0.3 * w["size0"] and not w.get("warned_thin"):
+                        w["warned_thin"] = True
+                        self._add_alert(c, now, f"⚠ {lab} {w['px']} 快被吃完（{w['size0']} → 剩 {cur} 張，成交 {w['traded']}、只補 {w['refilled']}）："
+                                        + ("破線在即，多單先減、空單準備順勢" if key == "bid" else "突破在即，空單先減、多單準備順勢"))
                     if w["traded"] >= 0.3 * w["size0"] and w["pulled"] < 0.3 * w["size0"]:
                         v = "真" + ("支撐" if key == "bid" else "壓力") + "傾向"
                         if w.get("verdict") != v:

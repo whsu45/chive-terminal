@@ -828,7 +828,9 @@ class Monitor:
                         w["warned_thin"] = True
                         self._add_alert(c, now, f"⚠ {lab} {w['px']} 快被吃完（{w['size0']} → 剩 {cur} 張，成交 {w['traded']}、只補 {w['refilled']}）："
                                         + ("破線在即，多單先減、空單準備順勢" if key == "bid" else "突破在即，空單先減、多單準備順勢"))
-                    if w["traded"] >= 0.3 * w["size0"] and w["pulled"] < 0.3 * w["size0"]:
+                    if w.get("warned_thin"):
+                        w["verdict"] = f"被吃到剩 {cur} 張，快{'破' if key == 'bid' else '過'}"
+                    elif w["traded"] >= 0.3 * w["size0"] and w["pulled"] < 0.3 * w["size0"] and (cur >= 0.5 * w["size0"] or w["refilled"] >= 0.3 * w["size0"]):
                         v = "真" + ("支撐" if key == "bid" else "壓力") + "傾向"
                         if w.get("verdict") != v:
                             self._add_alert(c, now, f"⚠ {lab} {w['px']} 被打到成交 {w['traded']} 張仍掛 {cur} 張（補回 {w['refilled']}）：{v}，" + ("空單目標別設在它下面" if key == "bid" else "多單目標別設在它上面"))

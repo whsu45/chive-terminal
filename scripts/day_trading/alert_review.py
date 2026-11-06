@@ -75,6 +75,7 @@ def main():
     ap.add_argument("--high", action="store_true", help="只看當時價在日內區間 75%% 以上的")
     ap.add_argument("--cover", action="store_true", help="只看主力 10 分鐘淨額上升（回補/停賣）的")
     ap.add_argument("--detail", action="store_true")
+    ap.add_argument("--src", choices=["shioaji", "mis", "unknown"], default=None, help="只看某資料來源：shioaji 永豐串流、mis 公開報價 10 秒、unknown 舊紀錄")
     a = ap.parse_args()
     rows = load()
     if a.code:
@@ -82,6 +83,8 @@ def main():
     if a.type:
         want = set(resolve_types(a.type))
         rows = [r for r in rows if r["type"] in want]
+    if a.src:
+        rows = [r for r in rows if (r.get("src") or "unknown") == a.src]
     if a.days:
         days = sorted({r["date"] for r in rows})[-a.days:]
         rows = [r for r in rows if r["date"] in days]

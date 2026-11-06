@@ -49,7 +49,10 @@ def main(push=True):
             # GitHub Actions 每天會自動 commit data/*.json，先把遠端拉下來 rebase 再推
             pr = subprocess.run(["git", "pull", "--rebase", "--autostash", "-q"], cwd=root, capture_output=True, text=True, timeout=180)
             if pr.returncode != 0:
-                print(f"遠端有新 commit 且 rebase 失敗，請手動處理：{(pr.stderr or pr.stdout).strip()[:200]}"); return 1
+                # 常見原因：兩台機器同一天都寫了同一個 logs 檔。不要把 repo 卡在 rebase 中途，退回去、commit 留在本機
+                subprocess.run(["git", "rebase", "--abort"], cwd=root, capture_output=True, text=True)
+                print(f"遠端有新 commit 且 rebase 衝突（多半是另一台也推了同一天的 logs），已取消 rebase，commit 留在本機請手動合併："
+                      f"{(pr.stderr or pr.stdout).strip()[:200]}"); return 1
             r = subprocess.run(["git", "push"], cwd=root, capture_output=True, text=True, timeout=120)
         if r.returncode != 0:
             print(f"push 失敗（commit 已留在本機，下次再推）：{(r.stderr or r.stdout).strip()[:200]}"); return 1

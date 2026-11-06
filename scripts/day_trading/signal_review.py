@@ -3,6 +3,7 @@
 進場訊號（▶ 建議做空/做多）的輸贏統計與失敗原因：讀 logs/signal_outcomes.jsonl。
     python3 signal_review.py                 # 全部：各檔、各方向的 勝/敗/平、5 分鐘內反向（估錯）比率、失敗原因排行
     python3 signal_review.py --code 3006 --detail
+    python3 signal_review.py --src mis       # 只看 MIS 10 秒快照模式（沒永豐金鑰的機器）的訊號；預設全部，但分來源列一次
 贏 = 30 分鐘內先到目標 1；輸 = 先到停損；平 = 都沒到；fast_adverse = 5 分鐘內反向走掉停損距離一半（即使後來賺也算估錯）。
 「原因提升度」= 某條件在輸單出現的比率 ÷ 在贏單出現的比率，>1.5 代表該條件出現時訊號特別容易錯，應該加進模型的過濾條件。
 """
@@ -37,10 +38,13 @@ def main():
     ap.add_argument("--code", default=None)
     ap.add_argument("--days", type=int, default=None)
     ap.add_argument("--detail", action="store_true")
+    ap.add_argument("--src", choices=["shioaji", "mis", "unknown"], default=None, help="只看某資料來源（unknown = 加來源欄位前的舊紀錄）")
     a = ap.parse_args()
     rows = load()
     if a.code:
         rows = [r for r in rows if r["code"] == a.code]
+    if a.src:
+        rows = [r for r in rows if (r.get("src") or "unknown") == a.src]
     if a.days:
         days = sorted({r["date"] for r in rows})[-a.days:]
         rows = [r for r in rows if r["date"] in days]
@@ -61,6 +65,10 @@ def main():
         rs = [r for r in rows if r["side"] == side]
         if rs:
             line("  建議做空" if side == "short" else "  建議做多", rs)
+    srcs = sorted({r.get("src") or "unknown" for r in rows})
+    if len(srcs) > 1:
+        for sv in srcs:
+            line({"shioaji": "  來源 永豐串流", "mis": "  來源 MIS 10 秒", "unknown": "  來源 舊紀錄"}[sv], [r for r in rows if (r.get("src") or "unknown") == sv])
     by = defaultdict(list)
     for r in rows:
         by[(r["code"], r.get("name"))].append(r)
@@ -87,7 +95,7 @@ def main():
         print()
         for r in sorted(rows, key=lambda r: (r["date"], r["time"])):
             mark = {"win": "✔", "loss": "✘", "flat": "—"}[r["verdict"]] + ("!" if r.get("fast_adverse") else " ")
-            print(f"{mark} {r['date']} {r['time']} {r['code']} {r.get('label')} @{r['price']} 停 {r['stop']} 目 {r['t1']} | 10分 {r.get('ret_10m') if r.get('ret_10m') is None else round(r['ret_10m'], 2)}% 30分 {r.get('ret_30m') if r.get('ret_30m') is None else round(r['ret_30m'], 2)}%"
+            print(f"{mark} {r['date']} {r['time']} {(r.get('src') or '?')[:3]} {r['code']} {r.get('label')} @{r['price']} 停 {r['stop']} 目 {r['t1']} | 10分 {r.get('ret_10m') if r.get('ret_10m') is None else round(r['ret_10m'], 2)}% 30分 {r.get('ret_30m') if r.get('ret_30m') is None else round(r['ret_30m'], 2)}%"
                   + (f" | 可疑：{'、'.join(r['suspects'])}" if r.get("suspects") else ""))
 
 

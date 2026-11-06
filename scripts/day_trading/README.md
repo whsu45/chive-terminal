@@ -63,6 +63,11 @@ MIS 每 10 秒抓一次（限流），**有 Shioaji 時每 3 秒用逐筆串流�
 先 walk-forward（最後一天當測試）看有沒有變差，再 `--apply` 寫 `model_params.json`，`model.evaluate` 自動載入（因子說明會標「權重 ×k」）。
 樣本 <300 拒絕套用；幾天的資料只反映那幾天的盤勢，倍數先當方向參考，和「因子方向命中率」表一起看。
 
+**資料來源標記**（`src`）：每筆估算（`monitor_*.jsonl`）、警示結果、訊號結果、交戰紀錄都標 `shioaji`（永豐逐筆串流）或 `mis`（沒有永豐金鑰，只有證交所公開報價 10 秒快照）。
+MIS 模式的 1 分 K 是快照拼的、會漏高低點，也算不出主力/散戶分流與即時五檔，所以同一檔同一時間兩台機器掛出的進場點可能不同。
+交戰紀錄勝率與 `evolve.py` 預設**排除 `mis`**（`--include-mis` 才納入）；`signal_review.py` / `alert_review.py` 分來源列，可用 `--src mis|shioaji|unknown` 篩（unknown = 加欄位前的舊紀錄）。
+兩台機器同一天都跑 monitor 時，收盤自動同步會因為寫同一個 logs 檔而 rebase 衝突：`sync_logs.py` 會取消 rebase、commit 留在本機，需手動合併。
+
 **警示結果追蹤**（校準用）：快迴圈對每則 ⚠/▶ 警示記下當時價格、日內位置、主力淨額與 10 分鐘變化、五檔不平衡，
 10 / 30 分鐘後用分 K 補上報酬與期間最高最低，寫 `logs/alert_outcomes.jsonl`；`python3 alert_review.py`（`--type 認購權證急漲 --low --cover --detail`）
 統計各類警示之後漲跌的比率，用來決定哪些警示該升格成訊號。11/05 晶豪科五次認購權證急漲：2 次後跌 3%、1 次漲 2.6%、2 次持平，

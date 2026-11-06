@@ -79,7 +79,10 @@ def summary(code, e=None):
     e = e or get(code)
     if not e:
         return None
-    sig = e.get("signals") or []
+    all_sig = e.get("signals") or []
+    # 勝率只算永豐串流（或舊紀錄沒標來源）的訊號；MIS 10 秒快照模式的訊號時機不準，另外計數不進勝率
+    sig = [s for s in all_sig if s.get("src") != "mis"]
+    n_mis = len(all_sig) - len(sig)
     def side_stats(side):
         xs = [s for s in sig if s.get("side") == side]
         w = sum(1 for s in xs if s.get("verdict") == "win")
@@ -97,7 +100,7 @@ def summary(code, e=None):
     return {"code": code, "name": e.get("name"), "group": e.get("group"), "days": len(e.get("days") or []),
             "first": (e.get("days") or [None])[0], "last": (e.get("days") or [None])[-1], "launches": e.get("launches", 0),
             "short": side_stats("short"), "long": side_stats("long"), "n_signals": len(sig),
-            "recent": sig[-8:], "loss_reasons": top, "notes": (e.get("notes") or [])[-5:]}
+            "n_mis": n_mis, "recent": all_sig[-8:], "loss_reasons": top, "notes": (e.get("notes") or [])[-5:]}
 
 
 def all_summary():

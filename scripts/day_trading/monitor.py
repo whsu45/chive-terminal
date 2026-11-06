@@ -649,7 +649,7 @@ class Monitor:
                                       "wall_ask": {k: walls["ask"].get(k) for k in ("px", "verdict", "last")} if walls.get("ask") and not walls["ask"].get("status") else None},
                          "factors": [f[0] for f in (ev.get("intraday_factors") or [])]}
             self.pending.append({"date": now.strftime("%Y-%m-%d"), "code": c, "name": self.daily[c]["name"], "time": t, "ts": ts.timestamp(),
-                                 "type": typ, "text": txt[:120], "price": p, **extra,
+                                 "type": typ, "text": txt[:120], "price": p, "src": self.src, **extra,
                                  "chg_pct": (p / q["y"] - 1) * 100 if q.get("y") else None,
                                  "range_pos": ((p - q["l"]) / (q["h"] - q["l"])) if (q.get("h") and q.get("l") and q["h"] != q["l"]) else None,
                                  "big_net": big_now, "big_net_10m": big_10, "small_net": flow["small_net"] if flow else None,
@@ -767,7 +767,7 @@ class Monitor:
         suspects = self._suspects(side, feat) if (verdict == "loss" or fast_adverse) else []
         rec["verdict"] = verdict; rec["fast_adverse"] = fast_adverse; rec["adverse5"] = adverse5
         rec["first_stop_min"] = first_stop; rec["first_t1_min"] = first_t1; rec["suspects"] = suspects
-        out = {"date": rec["date"], "time": rec["time"], "side": side, "label": sg.get("label"), "price": px, "stop": stop, "t1": t1, "t2": sg.get("t2"),
+        out = {"date": rec["date"], "time": rec["time"], "src": rec.get("src"), "side": side, "label": sg.get("label"), "price": px, "stop": stop, "t1": t1, "t2": sg.get("t2"),
                "verdict": verdict, "fast_adverse": fast_adverse, "first_stop_min": first_stop, "first_t1_min": first_t1,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors")}
@@ -1108,6 +1108,12 @@ class Monitor:
         self.fast_thread.start()
         print(f"[fast] 圖表/報價/分流每 {every} 秒更新（MIS 每 10 秒{'，永豐串流每 3 秒覆寫' if self.flow_src else ''}）；多空估算與進出場每 {self.interval} 秒")
 
+    @property
+    def src(self):
+        """這台的盤中資料來源：shioaji = 永豐逐筆串流（K 線/分流/五檔都即時）；mis = 只有證交所公開報價 10 秒快照（K 線粗、沒有分流）。
+        寫進每筆估算、警示、訊號紀錄，統計與演化時分開（MIS 模式的訊號時機和勝率都不準，不該混進模型評分）。"""
+        return "shioaji" if self.flow_src else "mis"
+
     def _sync_logs_once(self):
         """收盤後把今天的資料 commit + push 回 GitHub（一天一次；LOG_SYNC=0 關掉）。"""
         today = dt.date.today().isoformat()
@@ -1125,6 +1131,7 @@ class Monitor:
         path = os.path.join(LOG_DIR, f"monitor_{dt.date.today():%Y%m%d}.jsonl")
         rec = {k: v for k, v in ev.items() if k not in ("quote",)}
         rec["quote"] = {k: ev["quote"].get(k) for k in ("ref", "o", "h", "l", "v", "bids", "asks")}
+        rec["src"] = self.src
         with open(path, "a", encoding="utf-8") as f:
             f.write(json.dumps(rec, ensure_ascii=False, default=str) + "\n")
 

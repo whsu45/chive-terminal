@@ -231,6 +231,8 @@ scripts/day_trading/.cache/*
 !scripts/day_trading/.cache/calibration_*.json
 scripts/day_trading/logs/*.log
 scripts/day_trading/logs/*.tmp
+# 持倉面板記的實際交易（排隊價、成交價、出場價）：個人交易紀錄，repo 是公開的，只留本機
+scripts/day_trading/logs/trades.jsonl
 *.swp
 *.swo
 scripts/day_trading/model_params.candidate.json

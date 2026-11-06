@@ -117,6 +117,26 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._send(json.dumps(history.all_summary(), ensure_ascii=False, default=str))
         self._send('{"error":"not found"}', code=404)
 
+    def do_POST(self):
+        """持倉面板：POST /api/position。只綁 127.0.0.1；要求 JSON（跨站表單送不了）且 Origin 是本機。"""
+        path = urllib.parse.urlparse(self.path).path
+        mon = getattr(WEB, "monitor", None)
+        if path != "/api/position" or not mon:
+            return self._send('{"error":"not found"}', code=404)
+        origin = self.headers.get("Origin") or ""
+        host = (urllib.parse.urlparse(origin).hostname or "") if origin else "127.0.0.1"
+        if host not in ("127.0.0.1", "localhost") or "application/json" not in (self.headers.get("Content-Type") or ""):
+            return self._send('{"error":"forbidden"}', code=403)
+        n = int(self.headers.get("Content-Length") or 0)
+        if n > 4096:
+            return self._send('{"error":"too large"}', code=413)
+        try:
+            body = json.loads(self.rfile.read(n) or b"{}")
+        except Exception:
+            return self._send('{"error":"bad json"}', code=400)
+        ok, res = mon.position_action(body)
+        self._send(json.dumps(res, ensure_ascii=False, default=str), code=200 if ok else 400)
+
 
 def _port_holder(port):
     """誰佔了這個 port → (pid, 指令) 或 None。macOS/Linux 用 lsof+ps，Windows 用 netstat+PowerShell。"""
@@ -336,6 +356,14 @@ class Monitor:
         self.pending = []                            # 警示結果追蹤：每則 ⚠/▶ 記下當時狀態，10/30 分鐘後補上漲跌，寫 logs/alert_outcomes.jsonl
         self._tracked = set()
         self._sig_seen = {}                          # (code, side, px) -> epoch，同一個點 15 分鐘內不重發
+        self.positions = {}                          # code -> 使用者自己的單（持倉面板）：queued / holding / closed / cancelled / skipped
+        self._pos_stack = {}                         # code -> 之前的狀態（復原用）
+        self._pos_last_act = {}
+        self.user_trades = {}                        # (code, 訊號時間) -> 使用者這筆的結果，訊號結案時附上
+        self.pos_alerts = {}                         # code -> 持倉提醒（只顯示，不寫 log）
+        self.pos_lock = threading.Lock()
+        WEB.monitor = self
+        self._load_positions()
         import src_shioaji
         for c in codes:
             self.daily[c] = prep.build(c, peers_arg, refresh)
@@ -537,13 +565,252 @@ class Monitor:
         hi = I.round_tick(base + tick, "up")
         return (lo, hi) if lo <= hi else None
 
+    BURST_SEC, BURST_TICKS = 15, 3
+
+    def _burst_through(self, c, cur, p):
+        """
+        掛單被大單砸穿（撤單警告）：等回的掛單還沒成交，價格已到掛單價 1 tick 內，而且最近 15 秒是被**大單**從 ≥3 tick 外一路砸過來的
+        （做多看內盤大單賣、做空看外盤大單買）→ 叫使用者撤單，這筆不算進場。
+        回測（backtest_entry.py --burst-cancel，9 檔 × 42 天，3156 筆成交）：會被撤的 117 筆若照成交每筆淨 −0.37%（前後半段 −0.50% / −0.26%），
+        全部平均 −0.22%。門檻放寬到「30 秒 ≥2 tick」會撤 506 筆、但那些只比平均差 0.02%，等於只是少做，所以只撤真的砸很兇的。
+        慢慢回到掛單價、或砸下來但沒有大單的，不撤。
+        要逐筆內外盤，只在永豐串流模式運作（MIS 10 秒快照看不出誰砸的）。回 None 或 {status, alert, ...}。
+        """
+        lo, hi = cur["zone"]
+        lim = lo if cur["side"] == "short" else hi
+        b = self._burst_check(c, cur["side"], lim, p)
+        if not b:
+            return None
+        verb, side_txt, ext, big_vol, big = b["verb"], b["side_txt"], b["from"], b["big_vol"], b["big_lots"]
+        status = f"⚠ 撤單：{self.BURST_SEC} 秒內從 {ext} 被大單{verb}到 {p}（{side_txt} {big_vol} 張，≥{big} 張算大單）"
+        alert = (f"⚠ 撤單 {cur['label']} 掛 {lim}：{self.BURST_SEC} 秒內從 {ext} 被大單{verb}到 {p}（{side_txt} {big_vol} 張），"
+                 f"還沒成交的單先撤，這筆不進；已經成交的照停損 {cur['stop']} 走。"
+                 f"回測這種被大單{verb}穿才成交的單每筆淨 −0.37%，平均 −0.22%")
+        return {**b, "status": status, "alert": alert}
+
+    def _burst_check(self, c, side, lim, p):
+        """_burst_through 的核心：價格到 lim 1 tick 內、最近 BURST_SEC 秒被大單從 ≥BURST_TICKS tick 外衝過來 → 回細節，否則 None。"""
+        if not self.flow_src or not p or not lim:
+            return None
+        short = side == "short"
+        tk = I.tick_size(lim)
+        if (p < lim - tk) if short else (p > lim + tk):
+            return None                                   # 還沒靠近掛單價
+        try:
+            ticks, big = self.flow_src.recent_ticks(c, self.BURST_SEC)
+        except Exception:
+            return None
+        if not ticks or not big:
+            return None
+        ext = min(t[1] for t in ticks) if short else max(t[1] for t in ticks)
+        run = ((lim - ext) if short else (ext - lim)) / tk
+        agg_tt = 1 if short else 2
+        big_vol = sum(t[2] for t in ticks if t[3] == agg_tt and t[2] >= big)
+        if run < self.BURST_TICKS or big_vol <= 0:
+            return None
+        return {"time": dt.datetime.now().strftime("%H:%M:%S"), "px": p, "from": ext, "run_ticks": round(run, 1),
+                "big_vol": big_vol, "big_lots": big, "verb": "拉" if short else "砸", "side_txt": "外盤大單買" if short else "內盤大單賣"}
+
+    # ──────────────────────────────────────────────── 持倉面板（使用者自己的單）
+    # 使用者在儀表板點選「排在哪個價 → 成交 → 出場」，模型就改盯他真正的排隊價與成交價：
+    #   排隊中：撤單警告看他的排隊價（不是模型的掛單價）；價格到了提示按「成交」
+    #   持倉中：只看停損/目標（不因中途回吐叫他跑），到停損明確叫出場、13:20 提醒平倉，即時算扣成本後的損益
+    # 沒點任何東西：不假設他有單，訊號結果一律標「模型假設」。事件寫 logs/trades.jsonl（重啟時重放當天事件恢復狀態）。
+    COST_PCT = 0.235          # 當沖來回成本 %（手續費 0.1425%×2 打 3 折 + 證交稅 0.15%）
+    POS_ACTIONS = ("queue", "fill", "cancel", "skip", "exit", "undo")
+
+    @staticmethod
+    def _step(px, n, side):
+        """從 px 往「更划算」的方向走 n tick：做多往下、做空往上（跨價位級距時 tick 大小跟著變）。"""
+        for _ in range(n):
+            px = round(px - I.tick_size(px - 1e-9), 2) if side == "long" else round(px + I.tick_size(px), 2)
+        return px
+
+    def _pos_choices(self, sg):
+        """訊號的三個排隊價：模型價、再划算 1 tick、2 tick（不超過停損那側）。"""
+        base = sg["price"] if sg.get("filled_at_alert", True) else (sg["zone"][1] if sg["side"] == "long" else sg["zone"][0])
+        out = []
+        for n in range(3):
+            px = self._step(base, n, sg["side"])
+            if (px > sg["stop"]) if sg["side"] == "long" else (px < sg["stop"]):
+                out.append(px)
+        return out
+
+    def _pos_apply(self, c, ev, replay=False):
+        """套用一個持倉事件（即時或重放）。回 (ok, 錯誤訊息)。"""
+        act = ev["action"]
+        cur = self.positions.get(c)
+        stack = self._pos_stack.setdefault(c, [])
+        if act == "undo":
+            if not stack:
+                return False, "沒有可以復原的動作"
+            self.positions[c] = stack.pop()
+            back = self.positions[c]
+            if back and back.get("sig_since") and back["state"] in ("queued", "holding"):
+                self.user_trades.pop((c, back["sig_since"]), None)    # 復原了出場/撤單 → 結果還沒定
+            return True, None
+        if act == "queue":
+            if cur and cur["state"] in ("queued", "holding"):
+                return False, "已經有一筆排隊或持倉"
+            new = {"state": "queued", "side": ev["side"], "label": ev.get("label"), "q_px": ev["price"], "stop": ev["stop"],
+                   "t1": ev["t1"], "t2": ev.get("t2"), "sig_since": ev.get("sig_since"), "model_px": ev.get("model_px"),
+                   "queued_at": ev["time"], "flags": {}}
+        elif act == "skip":
+            new = {"state": "skipped", "sig_since": ev.get("sig_since"), "side": ev.get("side"), "closed_ts": ev["ts"], "flags": {}}
+        elif act in ("fill", "cancel"):
+            if not cur or cur["state"] != "queued":
+                return False, "沒有排隊中的單"
+            new = dict(cur, flags={})
+            if act == "fill":
+                new.update(state="holding", fill_px=ev["price"], filled_at=ev["time"])
+            else:
+                new.update(state="cancelled", closed_at=ev["time"], closed_ts=ev["ts"])
+        elif act == "exit":
+            if not cur or cur["state"] != "holding":
+                return False, "沒有持倉"
+            sgn = 1 if cur["side"] == "long" else -1
+            ret = sgn * (ev["price"] / cur["fill_px"] - 1) * 100
+            new = dict(cur, flags={}, state="closed", exit_px=ev["price"], closed_at=ev["time"], closed_ts=ev["ts"],
+                       ret_pct=round(ret, 3), net_pct=round(ret - self.COST_PCT, 3),
+                       ticks=round(sgn * (ev["price"] - cur["fill_px"]) / I.tick_size(cur["fill_px"]), 1))
+        else:
+            return False, "不認得的動作"
+        stack.append(cur)
+        del stack[:-20]
+        self.positions[c] = new
+        if new["state"] in ("closed", "cancelled", "skipped") and new.get("sig_since"):
+            self.user_trades[(c, new["sig_since"])] = {k: new.get(k) for k in ("state", "side", "q_px", "fill_px", "exit_px", "ret_pct", "net_pct", "ticks")}
+        return True, None
+
+    def _load_positions(self):
+        """重啟時重放今天的持倉事件。"""
+        path = os.path.join(LOG_DIR, "trades.jsonl")
+        if not os.path.exists(path):
+            return
+        today = dt.date.today().isoformat()
+        for line in open(path, encoding="utf-8"):
+            try:
+                ev = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if ev.get("date") == today and ev.get("code") in self.codes:
+                self._pos_apply(ev["code"], ev, replay=True)
+        for c, p in self.positions.items():
+            if p and p["state"] in ("queued", "holding"):
+                print(f"[持倉] {c} 恢復：{'排隊' if p['state'] == 'queued' else '持倉'} {p['label']} {p.get('fill_px') or p['q_px']}")
+
+    def position_action(self, body):
+        """儀表板 POST /api/position：{code, action, price?}。回 (ok, {position} 或 {error})。"""
+        c = str(body.get("code") or "")
+        act = body.get("action")
+        if c not in self.codes or act not in self.POS_ACTIONS:
+            return False, {"error": "參數錯誤"}
+        now = dt.datetime.now()
+        with self.pos_lock:
+            cur = self.positions.get(c)
+            ev = {"date": now.date().isoformat(), "time": now.strftime("%H:%M:%S"), "ts": now.timestamp(), "code": c,
+                  "name": self.daily[c]["name"], "src": self.src, "action": act}
+            if act in ("queue", "fill", "exit"):
+                try:
+                    px = round(float(body.get("price")), 2)
+                except (TypeError, ValueError):
+                    return False, {"error": "價格錯誤"}
+                if px <= 0:
+                    return False, {"error": "價格錯誤"}
+                ev["price"] = px
+            if act in ("queue", "skip"):
+                sg = self.signals.get(c)
+                if not sg:
+                    return False, {"error": "現在沒有訊號"}
+                ev.update(side=sg["side"], label=sg["label"], stop=sg["stop"], t1=sg["t1"], t2=sg.get("t2"), sig_since=sg["since"],
+                          model_px=sg["price"], zone=sg.get("zone"))
+            elif cur:
+                ev.update(side=cur.get("side"), label=cur.get("label"), sig_since=cur.get("sig_since"))
+                if act == "exit":
+                    ev.update(entry_px=cur.get("fill_px"), stop=cur.get("stop"), t1=cur.get("t1"))
+            ok, err = self._pos_apply(c, ev)
+            if not ok:
+                return False, {"error": err}
+            p = self.positions.get(c)
+            if act == "exit" and p:
+                ev.update(ret_pct=p["ret_pct"], net_pct=p["net_pct"], ticks=p["ticks"])
+            try:
+                with open(os.path.join(LOG_DIR, "trades.jsonl"), "a", encoding="utf-8") as f:
+                    f.write(json.dumps(ev, ensure_ascii=False) + "\n")
+            except Exception as e:
+                print(f"[持倉] 寫入失敗：{str(e)[:80]}")
+            self._pos_last_act[c] = now.timestamp()
+            return True, {"position": self._pos_view(c, (WEB.live.get("quotes") or {}).get(c, {}).get("ref") if WEB.live else None, now)}
+
+    def _pos_view(self, c, p, now):
+        """給儀表板的持倉狀態（含即時損益、距停損/目標幾 tick、可選的排隊價）。"""
+        pos = self.positions.get(c)
+        sg = self.signals.get(c)
+        can_undo = now.timestamp() - self._pos_last_act.get(c, 0) < 60 and bool(self._pos_stack.get(c))
+        if pos and pos["state"] in ("closed", "cancelled", "skipped") and now.timestamp() - pos.get("closed_ts", 0) > 180:
+            pos = None                                         # 結束 3 分鐘後收起來
+        if not pos or (pos["state"] in ("closed", "cancelled", "skipped") and sg and sg["since"] != pos.get("sig_since") and not sg.get("status")):
+            if sg and not sg.get("status"):
+                return {"state": "none", "side": sg["side"], "label": sg["label"], "choices": self._pos_choices(sg),
+                        "sig_since": sg["since"], "can_undo": can_undo}
+            return {"state": "none", "can_undo": can_undo} if can_undo else None
+        v = {k: v for k, v in pos.items() if k != "flags"}
+        v["now"] = p; v["can_undo"] = can_undo
+        v["burst"] = pos["flags"].get("burst")
+        v["hint"] = pos["flags"].get("hint")
+        if pos["state"] == "holding" and p:
+            sgn = 1 if pos["side"] == "long" else -1
+            tk = I.tick_size(pos["fill_px"])
+            ret = sgn * (p / pos["fill_px"] - 1) * 100
+            v.update(pnl_ticks=round(sgn * (p - pos["fill_px"]) / tk, 1), pnl_pct=round(ret, 2), net_pct=round(ret - self.COST_PCT, 2),
+                     to_stop=round(sgn * (p - pos["stop"]) / tk, 1), to_t1=round(sgn * (pos["t1"] - p) / tk, 1))
+        return v
+
+    def _pos_watch(self, c, q, now):
+        """快迴圈每輪：排隊中盯撤單、持倉中盯停損/目標/尾盤。回儀表板要的狀態。"""
+        p = q.get("ref")
+        with self.pos_lock:
+            pos = self.positions.get(c)
+            if pos and p:
+                fl = pos["flags"]
+                short = pos["side"] == "short"
+                if pos["state"] == "queued":
+                    qp = pos["q_px"]
+                    if not fl.get("burst"):
+                        b = self._burst_check(c, pos["side"], qp, p)
+                        if b:
+                            fl["burst"] = b
+                            self._pos_alert(c, now, f"⚠ 撤單 你排的{pos['label']} {qp}：{self.BURST_SEC} 秒內從 {b['from']} 被大單{b['verb']}到 {p}"
+                                                    f"（{b['side_txt']} {b['big_vol']} 張），還沒成交就先撤；已經成交的照停損 {pos['stop']} 走")
+                    if (p >= qp) if short else (p <= qp):
+                        fl["hint"] = f"價格到了 {qp}，成交了就按「成交」"
+                    elif (p <= pos["t1"]) if short else (p >= pos["t1"]):
+                        fl["hint"] = f"沒回到 {qp} 就到目標 {pos['t1']}，建議撤單不追"
+                    elif now.strftime("%H:%M") >= "13:05":
+                        fl["hint"] = "13:05 後不進場，建議撤單"
+                    else:
+                        fl.pop("hint", None)
+                elif pos["state"] == "holding":
+                    if not fl.get("stop") and ((p >= pos["stop"]) if short else (p <= pos["stop"])):
+                        fl["stop"] = True; fl["hint"] = f"⛔ 停損 {pos['stop']} 到了，照紀律出場"
+                        self._pos_alert(c, now, f"⛔ 你的{pos['label']} {pos['fill_px']} 到停損 {pos['stop']}（現價 {p}）：照紀律出場，不要凹單、不要攤平")
+                    elif not fl.get("t1") and ((p <= pos["t1"]) if short else (p >= pos["t1"])):
+                        fl["t1"] = True; fl["hint"] = f"✔ 目標 1 {pos['t1']} 到了，照計畫出場"
+                        self._pos_alert(c, now, f"✔ 你的{pos['label']} {pos['fill_px']} 到目標 1 {pos['t1']}（現價 {p}）：照計畫出場")
+                    if not fl.get("late") and now.strftime("%H:%M") >= "13:20":
+                        fl["late"] = True; fl["hint"] = "⏰ 13:25 前一定要平倉"
+                        self._pos_alert(c, now, f"⏰ 你的{pos['label']} {pos['fill_px']} 還沒平倉：13:25 前一定要出")
+            return self._pos_view(c, p, now)
+
     def _signal(self, c, ev, bars, q, now):
         """
         「建議做空 / 做多」：模型那一邊勝率 ≥60%，而且進場確認條件**已經發生**，才掛出來：
           主計畫：最近 12 根 1 分 K 碰過壓力（支撐），且最後一根完成的 1 分 K 收在進場價之下（之上），現價還在進場價附近、沒到目標也沒過停損；
           備援：最後一根完成的 5 分 K 帶量（≥1.5 倍前 6 根均量）收破支撐 / 收過壓力，現價離觸發價 1% 內。
         反彈動能中不給空訊號、殺盤動能中不給多訊號；09:10 前、13:20 後不給。
-        訊號會留著直到：到目標 1（✔）、過停損（✘）、或 20 分鐘逾時，結束後再顯示 2 分鐘。
+        訊號會留著直到：到目標 1（✔）、過停損（✘）、或成交後 30 分鐘（記平，跟結案判定一致），結束後再顯示 2 分鐘。
+        進場後只看停損/目標，不因中途回吐提早出場（回測 8 組「浮盈回吐一半＋反向主動量就出」都比原本差）；
+        防護都放在進場前：追價上限、逆勢過濾、掛單被大單砸穿就撤（_burst_through）。
         追價上限（11/06：6 個訊號掛出時已從停損往目標走了 25–75%，兩筆輸的報酬風險比都 <1）：
           進場區 = 觸發價 ～ 進場價 + 1/3 停損距離，且在區內任何價位報酬風險比 ≥1.5（_entry_zone）；
           現價在區內 → 直接「建議做多 @現價」；已追出區外 → 「建議做多 掛 X–Y（等回）」，價格回到區內才算成交，
@@ -557,7 +824,13 @@ class Monitor:
                 if not cur.get("filled", True):
                     # 等回掛單：價格回到進場區才算進場；先到目標 1、20 分鐘沒回來、13:05 後都算未成交（不算輸贏）
                     lo, hi = cur["zone"]
-                    if (p >= lo) if short else (p <= hi):
+                    burst = self._burst_through(c, cur, p)
+                    if burst:
+                        cur["status"] = burst["status"]; cur["cancelled"] = burst
+                        for rec in self.pending:           # 結案時改判「撤單驗證」：照樣算假設成交的結果，不進勝率
+                            if rec["code"] == c and rec.get("sig") and rec.get("time") == cur["since"] and rec["sig"].get("side") == cur["side"]:
+                                rec["sig"]["cancelled"] = burst
+                    elif (p >= lo) if short else (p <= hi):
                         cur.update(filled=True, fill_px=p, fill_ts=now.timestamp(), price=p)
                         self._add_alert(c, now, f"▶ 掛單成交 {cur['label']} @{p}（進場區 {lo}–{hi}）：停損 {cur['stop']}，目標 {cur['t1']} / {cur['t2']}")
                     elif (p <= cur["t1"]) if short else (p >= cur["t1"]):
@@ -570,11 +843,12 @@ class Monitor:
                     cur["status"] = f"✔ 到目標 1 {cur['t1']}"
                 elif (p >= cur["stop"]) if short else (p <= cur["stop"]):
                     cur["status"] = f"✘ 過停損 {cur['stop']}，失效"
-                elif now.timestamp() - (cur.get("fill_ts") or cur["since_ts"]) > 1200:
-                    cur["status"] = "逾時 20 分鐘，訊號取消"
+                elif now.timestamp() - (cur.get("fill_ts") or cur["since_ts"]) > 1800:
+                    # 跟結案判定一致：成交後 30 分鐘內沒到目標也沒到停損 = 平。進場後只看停損/目標，不因中途回吐提早跑
+                    cur["status"] = "⏱ 成交後 30 分鐘沒到目標也沒到停損，記平（停損/目標照設，13:25 前一定平倉）"
                 if cur.get("status"):
                     cur["end_ts"] = now.timestamp()
-                    self._add_alert(c, now, f"{cur['status']}：{cur['label']} @{cur['price']}")
+                    self._add_alert(c, now, f"{cur['status']}：{cur['label']} @{cur['price']}" if not cur.get("cancelled") else cur["cancelled"]["alert"])
             if cur.get("status") and now.timestamp() - cur["end_ts"] > 120:
                 del self.signals[c]
                 cur = None
@@ -682,7 +956,7 @@ class Monitor:
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
-                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("延緩撮合", r"延緩撮合")]
+                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合")]
 
     @classmethod
     def _alert_type(cls, text):
@@ -729,7 +1003,7 @@ class Monitor:
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "rr_now", "rr_zone", "blocked", "block_reason")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "rr_now", "rr_zone", "blocked", "block_reason", "cancelled")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -889,6 +1163,9 @@ class Monitor:
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors")}
         if sg.get("blocked"):
             out.update(blocked=True, block_reason=sg.get("block_reason"))
+        if sg.get("cancelled"):
+            out.update(cancelled=sg["cancelled"])
+        ut = self.user_trades.get((rec["code"], rec["time"]))   # 使用者自己的結果只放提醒，不寫進 signal_outcomes（公開 repo）
         try:
             with open(os.path.join(LOG_DIR, "signal_outcomes.jsonl"), "a", encoding="utf-8") as f:
                 f.write(json.dumps({"code": rec["code"], "name": rec.get("name"), **out}, ensure_ascii=False) + "\n")
@@ -897,9 +1174,24 @@ class Monitor:
                 res = {"win": "會 ✔ 贏 → 擋錯了", "loss": "會 ✘ 輸 → 擋對了", "flat": "會 — 平", "nofill": "不會成交"}[verdict]
                 self._add_alert(rec["code"], dt.datetime.now(), f"⏸ 過濾驗證：{rec['time']} 被擋的{sg.get('label')} @{rec['price']} 若進場{res}")
                 return
+            if sg.get("cancelled"):
+                # 撤單的不進交戰紀錄勝率，只回報「撤對了沒」（verdict 是假設掛單照樣成交的結果）
+                res = {"win": "會 ✔ 贏 → 撤錯了", "loss": "會 ✘ 輸 → 撤對了", "flat": "會 — 平", "nofill": "其實不會成交"}[verdict]
+                self._add_alert(rec["code"], dt.datetime.now(), f"⚠ 撤單驗證：{rec['time']} {sg.get('label')} 掛 {px} 若沒撤{res}")
+                return
             history.record_signal(rec["code"], out)
             wl = {"win": "✔ 贏", "loss": "✘ 輸", "flat": "— 平", "nofill": "○ 未成交"}[verdict] + ("（5 分鐘內反向，估錯）" if fast_adverse else "")
-            self._add_alert(rec["code"], dt.datetime.now(), f"{wl}：{sg.get('label')} @{px}" + (f"，可疑原因：{'、'.join(suspects)}" if suspects else ""))
+            # 使用者沒在持倉面板記這筆 → 明講是模型假設，不是他的損益
+            mine = ""
+            if ut and ut.get("state") == "closed":
+                mine = f"｜你的單 {ut.get('fill_px')}→{ut.get('exit_px')} 扣成本 {ut.get('net_pct'):+.2f}%"
+            elif ut:
+                mine = {"cancelled": "｜你撤單了", "skipped": "｜你沒做"}.get(ut.get("state"), "")
+            txt = f"{wl}：{sg.get('label')} @{px}" + (f"，可疑原因：{'、'.join(suspects)}" if suspects else "")
+            if ut:
+                self._pos_alert(rec["code"], dt.datetime.now(), txt + mine)
+            else:
+                self._add_alert(rec["code"], dt.datetime.now(), "（模型假設）" + txt)
         except Exception as e:
             print(f"[fast] 訊號結案寫入失敗：{str(e)[:80]}")
 
@@ -950,7 +1242,7 @@ class Monitor:
                     if w["traded"] >= 0.6 * w["size0"] and cur <= 0.4 * w["size0"] and w["refilled"] < 0.3 * w["size0"] and not w.get("warned_thin"):
                         w["warned_thin"] = True
                         self._add_alert(c, now, f"⚠ {lab} {w['px']} 快被吃完（{w['size0']} → 剩 {cur} 張，成交 {w['traded']}、只補 {w['refilled']}）："
-                                        + ("破線在即，多單先減、空單準備順勢" if key == "bid" else "突破在即，空單先減、多單準備順勢"))
+                                        + ("破線在即，多單不要新進、空單準備順勢（已進場的多單照原停損走）" if key == "bid" else "突破在即，空單不要新進、多單準備順勢（已進場的空單照原停損走）"))
                     if w.get("warned_thin"):
                         w["verdict"] = f"被吃到剩 {cur} 張，快{'破' if key == 'bid' else '過'}"
                     elif w["traded"] >= 0.3 * w["size0"] and w["pulled"] < 0.3 * w["size0"] and (cur >= 0.5 * w["size0"] or w["refilled"] >= 0.3 * w["size0"]):
@@ -1040,9 +1332,14 @@ class Monitor:
             print(f"  [warn] 權證盤中: {str(e)[:80]}")
             return None
 
-    def _add_alert(self, c, now, text):
+    def _pos_alert(self, c, now, text):
+        """持倉面板的提醒（你的單到停損、撤單…）：只顯示在儀表板，不進 live_alerts，
+        所以不會寫進 monitor_*.jsonl / alert_outcomes.jsonl 被推到公開 repo。"""
+        self._add_alert(c, now, text, store=self.pos_alerts)
+
+    def _add_alert(self, c, now, text, store=None):
         """即時警示：同一句 5 分鐘內不重複，最多留 30 筆。"""
-        L = self.live_alerts.setdefault(c, [])
+        L = (self.live_alerts if store is None else store).setdefault(c, [])
         key = text[:24]
         for t, txt in L[-10:]:
             if txt[:24] == key and (now - dt.datetime.strptime(t, "%H:%M:%S").replace(year=now.year, month=now.month, day=now.day)).total_seconds() < 300:
@@ -1127,7 +1424,7 @@ class Monitor:
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
-                "signal": {}, "sig_block": {}, "flow_series": {}, "walls": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
+                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
                 "mis_fail": getattr(self, "_mis_fail", 0)}
         for k in ("t00", "o00"):
             q = quotes.get(k)
@@ -1203,10 +1500,16 @@ class Monitor:
             except Exception as e:
                 print(f"[fast] 訊號判斷失敗：{str(e)[:100]}")
             try:
+                pv = self._pos_watch(c, q, now)
+                if pv:
+                    live["position"][c] = pv
+            except Exception as e:
+                print(f"[fast] 持倉面板失敗：{str(e)[:100]}")
+            try:
                 self._track_alerts(c, q, flow, live["series"].get(c) or [], now)
             except Exception as e:
                 print(f"[fast] 警示追蹤失敗：{str(e)[:100]}")
-            live["alerts"][c] = list(self.live_alerts.get(c, []))[-12:]
+            live["alerts"][c] = sorted(list(self.live_alerts.get(c, []))[-12:] + list(self.pos_alerts.get(c, []))[-6:], key=lambda a: a[0])
         if do_wq:
             self._last_wq_t = time.time()
         WEB.put_live(live)

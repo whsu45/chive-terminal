@@ -24,6 +24,7 @@ from collections import defaultdict
 from config import CACHE_DIR
 import indicators as I
 from monitor import Monitor
+from src_shioaji import lot_thresholds
 
 TICK_DIR = os.path.join(CACHE_DIR, "ticks")
 
@@ -127,7 +128,39 @@ def run_trade(bars, i_fill, px, side, stop, t1, skip_t1_first_bar):
 STRICT_FILL = False   # True：要價格穿過掛單價 1 tick 才算成交（排隊排不到的保守假設）
 
 
-def simulate(bars, sig):
+BURST = None          # (秒, tick)：掛單被大單砸穿就撤（monitor._burst_through），None = 不撤
+
+
+def burst_fill(rows, secs, big, t_from, side, lim, t1, gap):
+    """
+    逐筆模擬等回掛單（跟 monitor 一樣）：價格到掛單價 1 tick 內時，看最近 BURST[0] 秒是不是被大單從 ≥BURST[1] tick 外砸過來，
+    是就撤單；不是而且價格到了掛單價（嚴格成交再穿 1 tick）就成交。回 ("fill", 分鐘序) / ("cancel", None) / (None, None)。
+    """
+    import bisect
+    short = side == "short"
+    tk = I.tick_size(lim)
+    agg = 1 if short else 2
+    for q in range(bisect.bisect_left(secs, t_from), len(rows)):
+        sec, px = rows[q][0], rows[q][1]
+        if sec >= t_from + 20 * 60 or sec >= 785 * 60:
+            break
+        if (px <= t1) if short else (px >= t1):
+            break
+        near = (px >= lim - tk) if short else (px <= lim + tk)
+        if not near:
+            continue
+        if BURST:
+            w = rows[bisect.bisect_left(secs, sec - BURST[0]):q + 1]
+            ext = min(r[1] for r in w) if short else max(r[1] for r in w)
+            run = ((lim - ext) if short else (ext - lim)) / tk
+            if run >= BURST[1] and any(r[3] == agg and r[2] >= big for r in w):
+                return "cancel", None
+        if (px >= lim + gap) if short else (px <= lim - gap):
+            return "fill", sec // 60
+    return None, None
+
+
+def simulate(bars, sig, rows=None, secs=None, big=None):
     i, side, trig, entry, stop, t1 = sig
     short = side == "short"
     c = bars[i][4]
@@ -144,15 +177,24 @@ def simulate(bars, sig):
         else:
             lim = lo if short else hi
             new = (0.0, "nofill")
-            for j in range(i + 1, min(i + 21, len(bars))):
-                b = bars[j]
-                if b[0] >= 785:
-                    break                                      # 13:05 後不進場
-                gap = I.tick_size(lim) if STRICT_FILL else 0
-                if (b[2] >= lim + gap) if short else (b[3] <= lim - gap):
-                    new = run_trade(bars, j, lim, side, stop, t1, True); break
-                if (b[3] <= t1) if short else (b[2] >= t1):
-                    break
+            gap = I.tick_size(lim) if STRICT_FILL else 0
+            if rows is not None:
+                what, m = burst_fill(rows, secs, big, (bars[i][0] + 1) * 60, side, lim, t1, gap)
+                if what == "cancel":
+                    new = (0.0, "cancel")
+                elif what == "fill":
+                    j = next((k for k in range(i + 1, len(bars)) if bars[k][0] == m), None)
+                    if j is not None:
+                        new = run_trade(bars, j, lim, side, stop, t1, True)
+            else:
+                for j in range(i + 1, min(i + 21, len(bars))):
+                    b = bars[j]
+                    if b[0] >= 785:
+                        break                                      # 13:05 後不進場
+                    if (b[2] >= lim + gap) if short else (b[3] <= lim - gap):
+                        new = run_trade(bars, j, lim, side, stop, t1, True); break
+                    if (b[3] <= t1) if short else (b[2] >= t1):
+                        break
     return old, new, old_rr
 
 
@@ -162,10 +204,13 @@ def main():
     ap.add_argument("--cost", type=float, default=0.235, help="每筆成交的來回成本 %%（預設 0.235）")
     ap.add_argument("--live", type=float, default=None, help="改用「訊號當下」分類（不偷看收盤）：開盤到訊號時 |漲跌%%| ≥ 這個值算大行情，方向用開盤到訊號時")
     ap.add_argument("--strict-fill", action="store_true", help="掛單要被穿過 1 tick 才算成交（保守，排隊可能排不到）")
+    ap.add_argument("--burst-cancel", action="store_true", help="等回掛單被大單砸穿就撤（monitor 的撤單警告：15 秒內從 ≥3 tick 外被大單砸到掛單價 1 tick 內）")
     ap.add_argument("--detail", action="store_true")
     a = ap.parse_args()
-    global STRICT_FILL
+    global STRICT_FILL, BURST
     STRICT_FILL = a.strict_fill
+    if a.burst_cancel:
+        BURST = (Monitor.BURST_SEC, Monitor.BURST_TICKS)
     days = load_days()
     stat = defaultdict(lambda: {"old": [], "new": []})
     n_days = defaultdict(int)
@@ -179,6 +224,7 @@ def main():
             except Exception:
                 prev = None; continue
             bars = bars_1m(rows)
+            secs = [r[0] for r in rows]
             if len(bars) < 60:
                 prev = None; continue
             if prev:
@@ -193,10 +239,11 @@ def main():
                         big = abs(ref_ret) >= a.live
                     trend = "順勢" if (ref_ret > 0) == (side == "long") else "逆勢"
                     key = ("大行情" if big else "一般", trend)
-                    old, new, rr = simulate(bars, sig)
+                    old, new, rr = simulate(bars, sig, rows, secs, prev["big_lots"])
                     stat[key]["old"].append(old); stat[key]["new"].append(new)
                     details.append((code, d, hhmm(bars[sig[0]][0]), side, key, round(day_ret, 1), bars[sig[0]][4], sig, old, new, rr))
-            prev = {"close": bars[-1][4], "high": max(b[2] for b in bars), "low": min(b[3] for b in bars)}
+            prev = {"close": bars[-1][4], "high": max(b[2] for b in bars), "low": min(b[3] for b in bars),
+                    "big_lots": lot_thresholds(bars[-1][4], [r[2] for r in rows])["big_lots"]}   # 大單門檻用前一天的分布（不偷看當天）
 
     def summ(rs, cost):
         filled = [r for r in rs if r[1] in ("win", "loss", "flat")]
@@ -207,7 +254,8 @@ def main():
         return {"n": n, "fill": nf, "win": w, "loss": l, "wr": w / (w + l) * 100 if (w + l) else float("nan"),
                 "avg_trade": sum(net) / nf if nf else float("nan"), "per_sig": sum(net) / n if n else float("nan"),
                 "total": sum(net), "avg_loss": sum(losses) / len(losses) if losses else 0.0,
-                "skip": sum(1 for r in rs if r[1] == "skip"), "nofill": sum(1 for r in rs if r[1] == "nofill")}
+                "skip": sum(1 for r in rs if r[1] == "skip"), "nofill": sum(1 for r in rs if r[1] == "nofill"),
+                "cancel": sum(1 for r in rs if r[1] == "cancel")}
 
     print(f"樣本：{len(days)} 檔，{sum(n_days.values())} 個股日（大行情 {n_days['大行情']}、一般 {n_days['一般']}，大行情 = 開→收 ≥{a.big:g}%），成本每筆 {a.cost}%")
     if a.live is not None:
@@ -227,7 +275,7 @@ def main():
     allo = [r for k in stat for r in stat[k]["old"]]; alln = [r for k in stat for r in stat[k]["new"]]
     so, sn = summ(allo, a.cost), summ(alln, a.cost)
     print(f"{'全部':<12}{'舊':<4}{so['n']:>5}{so['fill']:>5}{so['win']:>4}{so['loss']:>4}{so['wr']:>6.0f}%{so['avg_trade']:>+9.2f}%{so['per_sig']:>+8.2f}%{so['total']:>+8.1f}%{so['avg_loss']:>+8.2f}%")
-    print(f"{'':<12}{'新':<4}{sn['n']:>5}{sn['fill']:>5}{sn['win']:>4}{sn['loss']:>4}{sn['wr']:>6.0f}%{sn['avg_trade']:>+9.2f}%{sn['per_sig']:>+8.2f}%{sn['total']:>+8.1f}%{sn['avg_loss']:>+8.2f}%  不發 {sn['skip']}、未成交 {sn['nofill']}")
+    print(f"{'':<12}{'新':<4}{sn['n']:>5}{sn['fill']:>5}{sn['win']:>4}{sn['loss']:>4}{sn['wr']:>6.0f}%{sn['avg_trade']:>+9.2f}%{sn['per_sig']:>+8.2f}%{sn['total']:>+8.1f}%{sn['avg_loss']:>+8.2f}%  不發 {sn['skip']}、未成交 {sn['nofill']}" + (f"、撤單 {sn['cancel']}" if sn['cancel'] else ""))
     print("\n每筆成交均 = 有成交的單平均淨報酬；每訊號均 = 總淨報酬 ÷ 訊號數（沒做的算 0）；平均虧損 = 虧錢那幾筆的平均淨報酬")
     if a.detail:
         print()

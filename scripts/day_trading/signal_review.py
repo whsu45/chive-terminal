@@ -33,6 +33,36 @@ def suspects_all(r):
     return Monitor._suspects(r["side"], r.get("features") or {})
 
 
+def load_trades(code=None):
+    """持倉面板記的出場事件（logs/trades.jsonl，action=exit），附上當初排隊時的模型建議價。被「復原」的出場不算。"""
+    path = os.path.join(LOG_DIR, "trades.jsonl")
+    if not os.path.exists(path):
+        return []
+    evs = []
+    for line in open(path, encoding="utf-8"):
+        try:
+            evs.append(json.loads(line))
+        except json.JSONDecodeError:
+            pass
+    out, last_q, stack = [], {}, {}
+    for e in evs:
+        k = (e.get("date"), e.get("code"))
+        if e.get("action") == "queue":
+            last_q[k] = e.get("model_px")
+        if e.get("action") == "undo":
+            if stack.get(k) and stack[k][-1] is not None:
+                out.remove(stack[k][-1])
+            if stack.get(k):
+                stack[k].pop()
+            continue
+        rec = None
+        if e.get("action") == "exit" and e.get("net_pct") is not None and (code is None or e.get("code") == code):
+            rec = dict(e, model_px=last_q.get(k))
+            out.append(rec)
+        stack.setdefault(k, []).append(rec)
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--code", default=None)
@@ -42,9 +72,11 @@ def main():
     a = ap.parse_args()
     rows = load()
     blocked = [r for r in rows if r.get("blocked")]
-    rows = [r for r in rows if not r.get("blocked")]      # 被逆勢過濾擋掉的不算訊號，最後另外列「擋對了沒」
+    cancelled = [r for r in rows if r.get("cancelled") and not r.get("blocked")]
+    rows = [r for r in rows if not r.get("blocked") and not r.get("cancelled")]   # 被逆勢過濾擋掉、被大單砸穿撤單的不算訊號，最後另外列「擋對/撤對了沒」
     if a.code:
         blocked = [r for r in blocked if r["code"] == a.code]
+        cancelled = [r for r in cancelled if r["code"] == a.code]
         rows = [r for r in rows if r["code"] == a.code]
     if a.src:
         rows = [r for r in rows if (r.get("src") or "unknown") == a.src]
@@ -100,6 +132,25 @@ def main():
         print(f"\n逆勢過濾驗證：擋掉 {len(blocked)} 筆，若照做會 贏 {w}（擋錯）、輸 {l}（擋對）、其餘平或未成交")
         for r in sorted(blocked, key=lambda r: (r["date"], r["time"])):
             print(f"  {r['date']} {r['time']} {r['code']} {r.get('label')} @{r.get('alert_px', r['price'])} → {r['verdict']}  理由：{r.get('block_reason')}")
+    if cancelled:
+        w = sum(1 for r in cancelled if r["verdict"] == "win"); l = sum(1 for r in cancelled if r["verdict"] == "loss")
+        print(f"\n撤單驗證（掛單被大單砸穿）：撤掉 {len(cancelled)} 筆，若沒撤會 贏 {w}（撤錯）、輸 {l}（撤對）、其餘平或未成交")
+        for r in sorted(cancelled, key=lambda r: (r["date"], r["time"])):
+            cx = r["cancelled"]
+            print(f"  {r['date']} {r['time']} {r['code']} {r.get('label')} 掛 {r['price']} → {r['verdict']}  "
+                  f"{cx.get('time')} 從 {cx.get('from')} 衝到 {cx.get('px')}（{cx.get('run_ticks')} tick，大單 {cx.get('big_vol')} 張）")
+    trades = load_trades(a.code)
+    if trades:
+        net = [t["net_pct"] for t in trades]
+        w = sum(1 for x in net if x > 0)
+        better = [t for t in trades if t.get("model_px") and t.get("entry_px")]
+        print(f"\n你的實際交易（持倉面板）：{len(trades)} 筆出場，扣成本後賺 {w} 筆、賠 {len(trades) - w} 筆，"
+              f"合計 {sum(net):+.2f}%、每筆 {sum(net) / len(net):+.2f}%")
+        if better:
+            gain = [((t["model_px"] - t["entry_px"]) if t["side"] == "long" else (t["entry_px"] - t["model_px"])) / t["model_px"] * 100 for t in better]
+            print(f"  成交價比模型建議價平均{'好' if sum(gain) >= 0 else '差'} {abs(sum(gain) / len(gain)):.2f}%（{len(better)} 筆）")
+        for t in trades[-10:]:
+            print(f"  {t['date']} {t['time']} {t['code']} {t.get('label')} {t.get('entry_px')}→{t['price']}  {t.get('ticks'):+} tick  扣成本 {t['net_pct']:+.2f}%")
     if a.detail:
         print()
         for r in sorted(rows, key=lambda r: (r["date"], r["time"])):

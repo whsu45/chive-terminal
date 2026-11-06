@@ -2,7 +2,7 @@
 """
 把每天本機拿到的資料 commit 回 GitHub：
   logs/*.jsonl、logs/*.json（monitor 估算紀錄、警示/訊號結果、交戰紀錄）、.cache/daily_*.json（盤前資料）、.cache/calibration_*.json
-不碰 .env、.cache/http/（原始 HTTP 快取 450MB）、.cache/ticks/。
+不碰 .env、.cache/http/（原始 HTTP 快取 450MB）、.cache/ticks/、logs/trades.jsonl（你的實際交易，個人資料）。
     python3 sync_logs.py            # add + commit + push
     python3 sync_logs.py --no-push  # 只 commit
 monitor.py 收盤後（13:35）會自動跑一次；環境變數 LOG_SYNC=0 關掉。
@@ -14,6 +14,7 @@ import subprocess
 import datetime as dt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+PRIVATE = {"trades.jsonl"}   # 持倉面板的實際交易紀錄：repo 是公開的，不推（也在 .gitignore）
 
 
 def git(*args, check=True):
@@ -28,7 +29,8 @@ def main(push=True):
     rel = os.path.relpath(HERE, root)
     paths = []
     for pat in ("logs/*.jsonl", "logs/*.json", ".cache/daily_*.json", ".cache/calibration_*.json", "model_params.json"):
-        paths += [os.path.relpath(p, root) for p in glob.glob(os.path.join(HERE, pat))]
+        paths += [os.path.relpath(p, root) for p in glob.glob(os.path.join(HERE, pat))
+                  if os.path.basename(p) not in PRIVATE]
     if not paths:
         print("沒有資料檔"); return 0
     subprocess.run(["git", "add", "--", *paths], cwd=root, capture_output=True, text=True)

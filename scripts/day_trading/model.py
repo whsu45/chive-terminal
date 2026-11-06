@@ -241,7 +241,7 @@ def _flow_dynamics(flow, now):
             warns.append(f"⚠ 主力 {mins} 分鐘內回補 {delta} 張（{ref[1]:+} → {big_now:+}），空單停損要執行、不要加碼攤平；多單勿追，先看是回補鎖單還是真轉向")
         elif ref[1] > 0 and -delta >= max(min_abs, 0.4 * abs(ref[1])):
             F.append(("主力急出", -0.5, f"主力淨買 {mins} 分鐘內由 {ref[1]:+} 掉到 {big_now:+}（出掉 {-delta} 張）：拉的人在跑"))
-            warns.append(f"⚠ 主力 {mins} 分鐘內出掉 {-delta} 張（{ref[1]:+} → {big_now:+}），多單先減半或停利")
+            warns.append(f"⚠ 主力 {mins} 分鐘內出掉 {-delta} 張（{ref[1]:+} → {big_now:+}），多單勿追、不要新進；已進場的照原停損/目標走，不提早砍")
         # 同向加速：已經淨賣還在幾分鐘內再倒一大批（或已淨買再大買）。11/05 晶豪科 09:03 -181 → 09:06 -352（3 分鐘 171 張、當時量的 13%），
         # 價 224 → 219；上面兩條只抓「翻向」，這種加速原本漏掉
         elif ref[1] <= 0 and -delta >= max(2 * min_abs, 0.5 * abs(ref[1])):
@@ -540,14 +540,14 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx=None):
             F.append(("委賣厚", -0.15, f"五檔買 {bv} / 賣 {av}"))
 
     # 權證急漲 + 委買厚 同時出現（5 分鐘內）：11/05 晶豪科 09:07、09:22 兩次都在 3 分鐘內拉 2–3%。
-    # 單看權證急漲只是提醒（校準：權證只跟當天同向），但加上五檔買盤變厚就是有人準備拉，空單先退一步
+    # 單看權證急漲只是提醒（校準：權證只跟當天同向），但加上五檔買盤變厚就是有人準備拉，空單先別進（已進場的照停損，不提早跑）
     t_now = now.timestamp()
     recent = [txt for ts, txt in (ctx.get("alerts") or []) if t_now - ts <= 300]
     w_surge = any(("認購權證" in txt and "急漲" in txt) for txt in recent)
     info["warrant_surge_5m"] = w_surge
     if w_surge and info.get("book_imb", 0) > 0.35 and not pre_open:
         F.append(("權證急漲+委買厚", 0.3, f"5 分鐘內認購權證急漲，且五檔買 {info.get('bid5')} / 賣 {info.get('ask5')}：散戶追價、避險買盤、掛單護盤同時出現，現股常在幾分鐘內急拉"))
-        warns.append("⚠ 權證急漲 + 委買變厚：空單等 5 分鐘再進，已有空單把停損收緊")
+        warns.append("⚠ 權證急漲 + 委買變厚：空單等 5 分鐘再進；已進場的空單照原停損走，不提早砍")
 
     # 1 分 K 動能（反彈/殺盤途中不逆勢進場）
     bars = ctx.get("bars") or _bars_from_samples(samples)

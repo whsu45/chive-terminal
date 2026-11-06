@@ -104,6 +104,29 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .signal .d{font-size:12px;color:var(--fg)}.signal .d b{font-family:var(--mono)}.signal .why{font-size:12px;color:var(--muted);flex-basis:100%}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 12px 1px currentColor}}
 .hint{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.pos{margin:-2px 0 10px;padding:8px 10px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
+.pos.hidden{display:none}
+.pos .lbl{color:var(--muted);font-size:12px}
+.pos button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:#262b36;color:var(--fg);padding:6px 12px;line-height:1.15}
+.pos button:hover{border-color:var(--accent)}
+.pos button.px{display:flex;flex-direction:column;align-items:center;min-width:72px;padding:5px 10px}
+.pos button.px b{font-family:var(--mono);font-size:17px}.pos button.px i{font-style:normal;font-size:10px;color:var(--muted)}
+.pos.long button.px.rec{border-color:var(--up)}.pos.short button.px.rec{border-color:var(--dn)}
+.pos button.go{background:#1b2a46;border-color:var(--accent);font-weight:700}
+.pos button.ghost{background:transparent;color:var(--muted)}
+.pos button.danger{background:#3a1616;border-color:var(--up);font-weight:700}
+.pos .st{font-weight:700}.pos .st b,.pos .m b{font-family:var(--mono)}
+.pos .m{color:var(--muted)}.pos .m b{color:var(--fg)}
+.pos .pnl{font-family:var(--mono);font-size:20px;font-weight:800}
+.pos .note{flex-basis:100%;font-size:11px;color:var(--muted)}
+.pos .hint{flex-basis:100%;font-weight:700;color:var(--warn)}
+.pos .undo{margin-left:auto;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline}
+.pos.alarm{border-color:var(--up);background:#3a1616;animation:posalarm 1s ease-in-out infinite}
+@keyframes posalarm{0%,100%{box-shadow:0 0 0 1px var(--up) inset}50%{box-shadow:0 0 0 3px var(--up) inset,0 0 14px 2px rgba(255,77,79,.45)}}
+.pos .rng{flex-basis:100%;height:6px;border-radius:3px;background:linear-gradient(90deg,#1f5a3a,#3a4150 40%,#3a4150 60%,#5a2426);position:relative}
+.pos .rng i{position:absolute;top:-4px;width:3px;height:14px;background:var(--fg);border-radius:2px}
+.pos .rng s{position:absolute;top:-4px;width:2px;height:14px;background:var(--muted);text-decoration:none}
+.pos .err{flex-basis:100%;color:var(--up);font-size:12px}
 </style>
 </head>
 <body>
@@ -123,7 +146,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
     <div class="card stock"><h3 id="t-stk">個股</h3><canvas id="jb-stk"></canvas></div>
   </section>
   <section class="card" id="c-price"><h3>即時 <span class="small muted" id="live-t"></span></h3><div id="price"></div></section>
-  <section class="card" id="c-verdict"><h3>多空勝率 <span class="small muted" id="eval-t"></span></h3><div id="signal" class="signal hidden"></div><div id="verdict"></div></section>
+  <section class="card" id="c-verdict"><h3>多空勝率 <span class="small muted" id="eval-t"></span></h3><div id="signal" class="signal hidden"></div><div id="pos" class="pos hidden"></div><div id="verdict"></div></section>
   <section class="card" id="c-alerts"><h3>警示</h3><div class="alerts" id="alerts"></div></section>
   <section class="card" id="c-flow"><h3>主力 / 散戶 分流</h3><div class="flow" id="flow"></div>
     <div class="fs" id="fs"><div class="ctl" id="ctl"></div><div class="small" id="fs-big-t"></div><canvas id="fs-big"></canvas><div class="small" id="fs-small-t"></div><canvas id="fs-small"></canvas></div></section>
@@ -236,6 +259,7 @@ function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];c
   const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
   $('shioaji').innerHTML=LIVE.shioaji?`<span class="up">● 永豐串流 ${LIVE.fast_every||3} 秒</span>${LIVE.ticks_used!=null?` <span class="small ${LIVE.ticks_used>=8?'stale':'muted'}">ticks ${LIVE.ticks_used}/${LIVE.ticks_limit||10}</span>`:''}`:'<span class="muted">○ 公開報價 10 秒</span>';
   renderSignal();
+  renderPos();
   const q0=LIVE.quotes[CUR];$('live-t').textContent=(LIVE.time||'')+(q0&&q0.src==='shioaji'?' 逐筆':(LIVE.mis_t?' MIS '+LIVE.mis_t:''));
   if(q){const rp=(q.h!=null&&q.l!=null&&q.h!==q.l)?Math.round((q.ref-q.l)/(q.h-q.l)*100)+'%':'-';
     $('price').innerHTML=`<div class="price"><span class="big num ${cls(q.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(q.chg_pct)}">${sgn(q.ref-q.y,dec(q.ref))} <span style="font-size:16px">${pct(q.chg_pct)}</span></span></div>
@@ -318,6 +342,37 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
     :`<span class="h">▶ 建議${esc(sg.label)}</span><span class="px">${fp(sg.price)}</span>
     <span class="d">停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · 勝率 <b>${f(sg.p,0)}%</b> · ${esc(sg.since)} 起 · 現價 <b>${fp(sg.now)}</b>${rr?' · '+rr:''}</span>
     <span class="why">${ended?'<b>'+esc(sg.status)+'</b> — ':''}${esc(sg.why)}</span>`;}
+
+// 持倉面板：點選「排在哪個價 → 成交 → 出場」，模型就改盯你的排隊價與成交價。沒點 = 不假設你有單，結果都標「模型假設」
+let POS_ERR='';
+async function posAct(action,price){POS_ERR='';
+  try{const r=await fetch('/api/position',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:CUR,action,price})});
+    const j=await r.json();if(!r.ok){POS_ERR=j.error||'失敗';}else if(LIVE){LIVE.position=LIVE.position||{};LIVE.position[CUR]=j.position;}}
+  catch(e){POS_ERR='連不到 monitor';}renderPos();}
+function renderPos(){const el=$('pos');const v=LIVE&&LIVE.position&&LIVE.position[CUR];
+  if(!v){el.className='pos hidden';el.innerHTML='';return;}
+  const L=v.side==='long',tk=L?'−':'+';const undo=v.can_undo?`<span class="undo" onclick="posAct('undo')">↶ 復原</span>`:'';
+  const err=POS_ERR?`<div class="err">${esc(POS_ERR)}</div>`:'';let h='',alarm=false;
+  if(v.state==='none'){
+    if(!v.choices){el.className='pos';el.innerHTML=`<span class="m">已記錄</span>${undo}${err}`;return;}
+    h=`<span class="lbl">我排在</span>`+v.choices.map((p,i)=>`<button class="px ${i===0?'rec':''}" onclick="posAct('queue',${p})"><b>${fp(p)}</b><i>${i===0?'建議價':tk+i+' tick'}</i></button>`).join('')
+      +`<button class="ghost" onclick="posAct('skip')">不做</button>${undo}<div class="note">沒點任何價位 = 模型不假設你有單，訊號結果都標「模型假設」</div>`;}
+  else if(v.state==='queued'){const gap=v.now!=null?Math.round(Math.abs(v.now-v.q_px)/(v.q_px>=500?1:v.q_px>=100?0.5:v.q_px>=50?0.1:v.q_px>=10?0.05:0.01)):null;
+    alarm=!!v.burst;
+    h=`<span class="st">排隊 ${esc(v.label)} <b>${fp(v.q_px)}</b></span><span class="m">現價 <b>${fp(v.now)}</b>${gap!=null?`（差 ${gap} tick）`:''} · 停損 <b>${fp(v.stop)}</b> · 目標 <b>${fp(v.t1)}</b></span>`
+      +`<button class="${alarm?'':'go'}" onclick="posAct('fill',${v.q_px})">✓ 成交 ${fp(v.q_px)}</button><button class="${alarm?'danger':''}" onclick="posAct('cancel')">✕ 撤單</button>${undo}`
+      +(alarm?`<div class="hint">⚠ ${esc(v.burst.time)} 大單${esc(v.burst.verb)}過來（15 秒內 ${fp(v.burst.from)} → ${fp(v.burst.px)}，${esc(v.burst.side_txt)} ${v.burst.big_vol} 張）→ 還沒成交就撤單</div>`:v.hint?`<div class="hint">${esc(v.hint)}</div>`:'');}
+  else if(v.state==='holding'){const c=v.pnl_ticks>0?'up':v.pnl_ticks<0?'dn':'flat';alarm=/停損/.test(v.hint||'');
+    const lo=L?v.stop:v.t1,hi=L?v.t1:v.stop;const pos=x=>Math.max(0,Math.min(100,(x-lo)/(hi-lo)*100));
+    h=`<span class="st">持倉 ${esc(v.label)} <b>${fp(v.fill_px)}</b></span><span class="pnl ${c}">${v.pnl_ticks!=null?(v.pnl_ticks>0?'+':'')+v.pnl_ticks+' tick':'-'}</span>`
+      +`<span class="m">扣成本 <b class="${cls(v.net_pct)}">${pct(v.net_pct)}</b> · 現價 <b>${fp(v.now)}</b> · 距停損 <b>${f(v.to_stop,0)}</b> tick · 距目標 <b>${f(v.to_t1,0)}</b> tick</span>`
+      +`<button class="go" onclick="posAct('exit',${v.now})">出場 @${fp(v.now)}</button><button onclick="posAct('exit',${v.stop})">停損 ${fp(v.stop)}</button><button onclick="posAct('exit',${v.t1})">目標 ${fp(v.t1)}</button>${undo}`
+      +(v.now!=null?`<div class="rng" title="左 ${fp(lo)}、右 ${fp(hi)}"><s style="left:${pos(v.fill_px)}%"></s><i style="left:${pos(v.now)}%"></i></div>`:'')
+      +(v.hint?`<div class="hint">${esc(v.hint)}</div>`:'<div class="note">進場後只看停損和目標，中途回吐不用跑</div>');}
+  else if(v.state==='closed'){h=`<span class="st">已出場 ${esc(v.label)} <b>${fp(v.fill_px)}</b> → <b>${fp(v.exit_px)}</b></span><span class="pnl ${cls(v.ticks)}">${v.ticks>0?'+':''}${v.ticks} tick</span><span class="m">扣成本 <b class="${cls(v.net_pct)}">${pct(v.net_pct)}</b></span>${undo}`;}
+  else if(v.state==='cancelled'){h=`<span class="m">已撤單 ${esc(v.label)} <b>${fp(v.q_px)}</b></span>${undo}`;}
+  else if(v.state==='skipped'){h=`<span class="m">這筆沒做</span>${undo}`;}
+  el.className=`pos ${v.side||''} ${alarm?'alarm':''}`;el.innerHTML=h+err;}
 
 // 警示：全部帶時間戳（即時警示用產生時間、估算警示用估算時間），60 秒內的新警示閃爍
 function ageSec(t){if(!t)return 1e9;const [hh,mm,ss]=t.split(':').map(Number);const n=new Date();return (n.getHours()*3600+n.getMinutes()*60+n.getSeconds())-(hh*3600+mm*60+(ss||0));}

@@ -1,0 +1,35 @@
+{
+ "2382": {
+  "name": "廣達",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-06"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3006": {
+  "name": "晶豪科",
+  "market": "tse",
+  "group": "DRAM原廠",
+  "days": [
+   "2026-11-06"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3105": {
+  "name": "穩懋",
+  "market": "otc",
+  "group": "化合物半導體",
+  "days": [
+   "2026-11-06"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ }
+}

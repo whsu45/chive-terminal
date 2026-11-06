@@ -99,6 +99,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .signal.hidden{display:none}
 .signal.short{background:#0d3a24;border-color:#2ecc71;color:#2ecc71}.signal.long{background:#471215;border-color:#ff4d4f;color:#ff4d4f}
 .signal.ended{animation:none;opacity:.75;border-style:dashed}
+.signal.wait{animation:none;background:transparent;border-style:dashed}.signal .zone{font-size:20px;font-weight:800;font-family:var(--mono)}
 .signal .h{font-size:16px;font-weight:700}.signal .px{font-size:22px;font-weight:800;font-family:var(--mono)}
 .signal .d{font-size:12px;color:var(--fg)}.signal .d b{font-family:var(--mono)}.signal .why{font-size:12px;color:var(--muted);flex-basis:100%}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 12px 1px currentColor}}
@@ -264,8 +265,8 @@ let WATCH=null,WATCH_T=0;
 async function loadWatch(){if(Date.now()-WATCH_T<60000)return;WATCH_T=Date.now();try{const r=await fetch('/api/watchlist?_='+Date.now());WATCH=await r.json();renderHist();}catch(e){}}
 function renderHist(){const h=(STATE.daily[CUR]||{}).history;const el=$('hist');if(!el)return;loadWatch();
   if(!h){el.innerHTML='<span class="muted">尚無紀錄</span>';return;}
-  const wl=s=>s&&(s.win+s.loss)?`<span class="wl"><span class="up">${s.win}勝</span> <span class="dn">${s.loss}敗</span>${s.flat?` ${s.flat}平`:''}</span> <span class="muted">勝率 ${f(s.win_rate,0)}%${s.fast_adverse?`，估錯 ${s.fast_adverse}`:''}</span>`:(s&&s.n?`${s.n} 筆（${s.flat} 平）`:'<span class="muted">無</span>');
-  const v=r=>({win:'<span class="up">✔ 贏</span>',loss:'<span class="dn">✘ 輸</span>',flat:'— 平'}[r.verdict]||'')+(r.fast_adverse?' <span class="stale">估錯</span>':'');
+  const wl=s=>s&&(s.win+s.loss)?`<span class="wl"><span class="up">${s.win}勝</span> <span class="dn">${s.loss}敗</span>${s.flat?` ${s.flat}平`:''}${s.nofill?` ${s.nofill}未成交`:''}</span> <span class="muted">勝率 ${f(s.win_rate,0)}%${s.fast_adverse?`，估錯 ${s.fast_adverse}`:''}</span>`:(s&&s.n?`${s.n} 筆（${s.flat} 平）`:'<span class="muted">無</span>');
+  const v=r=>({win:'<span class="up">✔ 贏</span>',loss:'<span class="dn">✘ 輸</span>',flat:'— 平',nofill:'<span class="muted">○ 未成交</span>'}[r.verdict]||'')+(r.fast_adverse?' <span class="stale">估錯</span>':'');
   el.innerHTML=`<div class="hist"><div class="kv"><div>監控天數<b class="num">${h.days}</b></div><div>首次<b class="num">${esc((h.first||'').slice(5))}</b></div><div>啟動次數<b class="num">${h.launches}</b></div><div>訊號數<b class="num">${h.n_signals}</b></div></div>
     <div style="margin-top:8px">建議做空：${wl(h.short)}</div><div>建議做多：${wl(h.long)}</div>
     ${h.loss_reasons&&h.loss_reasons.length?`<div class="note">常見失誤：${h.loss_reasons.map(([r,n])=>`${esc(r)} ×${n}`).join('、')}</div>`:''}
@@ -302,9 +303,17 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
     else{el.className='signal hidden';el.innerHTML='';}return;}
   el.style.animation='';
   const ended=!!sg.status;el.className=`signal ${sg.side} ${ended?'ended':''}`;
-  const key=sg.side+sg.price+sg.since;if(key!==SIG_KEY){SIG_KEY=key;document.title=`▶${sg.side==='short'?'空':'多'}${fp(sg.price)} `+document.title.replace(/^▶[^ ]* /,'');}
-  el.innerHTML=`<span class="h">▶ 建議${esc(sg.label)}</span><span class="px">${fp(sg.price)}</span>
-    <span class="d">停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · 勝率 <b>${f(sg.p,0)}%</b> · ${esc(sg.since)} 起 · 現價 <b>${fp(sg.now)}</b></span>
+  // 等回掛單（現價已追出進場區）：不閃、虛線框，顯示進場區；價格回到區內才變成實心閃爍的「建議做多 @成交價」
+  const waiting=sg.filled===false&&!ended;if(waiting)el.className+=' wait';
+  const zs=sg.zone?`${fp(sg.zone[0])}–${fp(sg.zone[1])}`:'';
+  const key=sg.side+sg.price+sg.since+(waiting?'w':'');if(key!==SIG_KEY){SIG_KEY=key;document.title=`▶${sg.side==='short'?'空':'多'}${waiting?'掛':''}${fp(sg.price)} `+document.title.replace(/^▶[^ ]* /,'');}
+  const rr=waiting?`報酬風險比 現價 <b>${f(sg.rr_now,1)}</b> → 掛價 <b>${f(sg.rr_zone,1)}</b>`:(sg.zone?`進場區 <b>${zs}</b>${sg.rr_zone!=null?` · 掛價報酬風險比 <b>${f(sg.rr_zone,1)}</b>`:''}`:'');
+  el.innerHTML=waiting
+    ?`<span class="h">▶ 建議${esc(sg.label)}：掛</span><span class="zone">${zs}</span>
+    <span class="d">現價 <b>${fp(sg.now)}</b> 已${sg.side==='short'?'殺低':'追高'}，等回進場區再進（20 分鐘沒回就取消）· 停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · ${rr} · ${esc(sg.since)} 起</span>
+    <span class="why">${esc(sg.why)}</span>`
+    :`<span class="h">▶ 建議${esc(sg.label)}</span><span class="px">${fp(sg.price)}</span>
+    <span class="d">停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · 勝率 <b>${f(sg.p,0)}%</b> · ${esc(sg.since)} 起 · 現價 <b>${fp(sg.now)}</b>${rr?' · '+rr:''}</span>
     <span class="why">${ended?'<b>'+esc(sg.status)+'</b> — ':''}${esc(sg.why)}</span>`;}
 
 // 警示：全部帶時間戳（即時警示用產生時間、估算警示用估算時間），60 秒內的新警示閃爍

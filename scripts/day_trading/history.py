@@ -88,7 +88,8 @@ def summary(code, e=None):
         w = sum(1 for s in xs if s.get("verdict") == "win")
         l = sum(1 for s in xs if s.get("verdict") == "loss")
         fa = sum(1 for s in xs if s.get("fast_adverse"))
-        return {"n": len(xs), "win": w, "loss": l, "flat": len(xs) - w - l, "fast_adverse": fa,
+        nf = sum(1 for s in xs if s.get("verdict") == "nofill")
+        return {"n": len(xs), "win": w, "loss": l, "flat": len(xs) - w - l - nf, "nofill": nf, "fast_adverse": fa,
                 "win_rate": (w / (w + l) * 100) if (w + l) else None}
     # 失敗原因排行（只數輸的）
     reasons = {}

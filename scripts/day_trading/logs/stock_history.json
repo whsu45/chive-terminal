@@ -342,6 +342,43 @@
      "量能爆增",
      "可轉債或其他避險買盤"
     ]
+   },
+   {
+    "date": "2026-11-06",
+    "time": "10:00:00",
+    "src": null,
+    "side": "long",
+    "label": "做多",
+    "price": 281.0,
+    "stop": 277.0,
+    "t1": 285.0,
+    "t2": null,
+    "zone": [
+     280.0,
+     281.0
+    ],
+    "alert_px": 281.0,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": null,
+    "rr_now": null,
+    "rr_zone": null,
+    "verdict": "win",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": 10,
+    "ret_10m": null,
+    "ret_30m": null,
+    "suspects": [],
+    "why": null,
+    "features": {
+     "book_imb": null,
+     "big_net_10m": null,
+     "small_net_pct": null,
+     "phase": null,
+     "range_pos": null
+    },
+    "factors": null
    }
   ],
   "notes": []

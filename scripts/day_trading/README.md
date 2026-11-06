@@ -250,6 +250,7 @@ monitor 每輪記住每檔權證的價量，跟上一輪比（成交量加權、
 | `review.py` | 讀 log 做復盤與訊號驗證 |
 | `alert_review.py` | 警示結果統計（各類 ⚠/▶ 之後 10/30 分鐘的漲跌比率） |
 | `signal_review.py` | 建議訊號的勝敗、估錯率、失敗原因提升度 |
+| `backtest_entry.py` | 進場規則回測：舊（確認後現價進）vs 新（追價上限＋進場區等回），分大行情/一般 × 順勢/逆勢；`--live 2` 不偷看收盤、`--strict-fill` 保守成交 |
 | `history.py` | 個股交戰紀錄（監控天數、訊號結果、備註） |
 | `evolve.py` | 基因演算法調因子權重 → `model_params.json` |
 | `winners.py` | 常勝主力：分點歷史勝率、昨日動作、庫存 |

@@ -41,7 +41,10 @@ def main():
     ap.add_argument("--src", choices=["shioaji", "mis", "unknown"], default=None, help="只看某資料來源（unknown = 加來源欄位前的舊紀錄）")
     a = ap.parse_args()
     rows = load()
+    blocked = [r for r in rows if r.get("blocked")]
+    rows = [r for r in rows if not r.get("blocked")]      # 被逆勢過濾擋掉的不算訊號，最後另外列「擋對了沒」
     if a.code:
+        blocked = [r for r in blocked if r["code"] == a.code]
         rows = [r for r in rows if r["code"] == a.code]
     if a.src:
         rows = [r for r in rows if (r.get("src") or "unknown") == a.src]
@@ -92,6 +95,11 @@ def main():
             pb = cb[s] / len(bad) * 100; pg = cg[s] / len(good) * 100 if good else 0
             lift = (pb / pg) if pg else float("inf") if pb else 0
             print(f"{s:<18}{pb:>9.0f}%{pg:>9.0f}%{lift:>8.1f}")
+    if blocked:
+        w = sum(1 for r in blocked if r["verdict"] == "win"); l = sum(1 for r in blocked if r["verdict"] == "loss")
+        print(f"\n逆勢過濾驗證：擋掉 {len(blocked)} 筆，若照做會 贏 {w}（擋錯）、輸 {l}（擋對）、其餘平或未成交")
+        for r in sorted(blocked, key=lambda r: (r["date"], r["time"])):
+            print(f"  {r['date']} {r['time']} {r['code']} {r.get('label')} @{r.get('alert_px', r['price'])} → {r['verdict']}  理由：{r.get('block_reason')}")
     if a.detail:
         print()
         for r in sorted(rows, key=lambda r: (r["date"], r["time"])):

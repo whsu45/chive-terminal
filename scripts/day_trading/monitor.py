@@ -330,6 +330,7 @@ class Monitor:
         self._last_quotes = None
         self.peer_hist = {c: {} for c in codes}     # code -> {peer: [[epoch, chg_pct], ...]}，給 model 算族群 10 分鐘趨勢
         self.signals = {}                            # code -> 目前的「建議做空/做多」訊號（快迴圈每 3 秒檢查進場確認條件）
+        self.sig_block = {}                          # code -> 最近一次被逆勢過濾擋掉的訊號（照樣追蹤假設進場的結果，驗證過濾有沒有擋對）
         self.walls = {}                              # code -> {"bid": 牆, "ask": 牆}：五檔裡特別大的那一檔，追蹤被吃/被撤/補單判真假
         self._fs_cache = {}                          # code -> (epoch, 每分鐘主力/散戶累積淨額序列)，10 秒重算一次給「大戶散戶」圖
         self.pending = []                            # 警示結果追蹤：每則 ⚠/▶ 記下當時狀態，10/30 分鐘後補上漲跌，寫 logs/alert_outcomes.jsonl
@@ -491,6 +492,30 @@ class Monitor:
         return out
 
     @staticmethod
+    def _against_trend(side, info):
+        """
+        逆勢過濾：大盤 / 族群最近 10 分鐘往訊號的反方向走就不發。
+          強烈反向（任一成立就擋）：大盤 10 分鐘 ≥0.6%、族群 10 分鐘平均 ≥1.0%（做空看上漲、做多看下跌）
+          溫和反向：大盤 ≥0.3% 或族群 ≥0.5%，而且另一個沒有同向支持（大盤 ≤-0.3% / 族群 ≤-0.5% 算支持）
+        門檻同 model._trend_factors 的「急拉/轉強」。11/06 界霖 09:41、09:57 兩筆空單（加權 10 分鐘 +1.01%、+0.42%）都輸，會被擋；
+        11:07 彰源空單（加權 −0.64% 同向）贏，照發。回字串＝擋的理由，None＝不擋。
+        """
+        sgn = 1 if side == "short" else -1
+        it, gt = info.get("idx_trend_10m"), info.get("group_trend_10m")
+        ai = it * sgn if it is not None else None     # >0：對這一邊不利
+        ag = gt * sgn if gt is not None else None
+        strong = ([f"大盤 10 分鐘 {it:+.2f}%"] if ai is not None and ai >= 0.6 else []) + \
+                 ([f"族群 10 分鐘 {gt:+.2f}%"] if ag is not None and ag >= 1.0 else [])
+        if strong:
+            return "、".join(strong) + " 強烈反向"
+        mild = ([f"大盤 10 分鐘 {it:+.2f}%"] if ai is not None and ai >= 0.3 else []) + \
+               ([f"族群 10 分鐘 {gt:+.2f}%"] if ag is not None and ag >= 0.5 else [])
+        support = (ai is not None and ai <= -0.3) or (ag is not None and ag <= -0.5)
+        if mild and not support:
+            return "、".join(mild) + " 反向"
+        return None
+
+    @staticmethod
     def _entry_zone(side, base, stop, t1, rr_min=1.5):
         """
         進場區（限價掛單範圍）：做多 = [觸發價（base 下 1 tick）, base + 1/3 停損距離]，上緣再壓到報酬風險比 ≥ rr_min 的價位；
@@ -596,7 +621,6 @@ class Monitor:
             key = (c, side, lo, hi)
             if now.timestamp() - self._sig_seen.get(key, 0) < 900:
                 return None
-            self._sig_seen[key] = now.timestamp()
             short = side == "short"
             inzone = (p >= lo) if short else (p <= hi)
             lim = lo if short else hi
@@ -609,6 +633,17 @@ class Monitor:
                    "p": ps if short else pl, "zone": [lo, hi], "filled": inzone, "filled_at_alert": inzone,
                    "fill_px": p if inzone else None, "fill_ts": now.timestamp() if inzone else None,
                    "alert_px": p, "chase": round(chase, 3), "rr_now": rr_now and round(rr_now, 2), "rr_zone": rr_zone and round(rr_zone, 2)}
+            blk = self._against_trend(side, info)
+            if blk:
+                bkey = ("block",) + key            # 被擋的另外去重：趨勢轉回來後同一個進場區還能正常發
+                if now.timestamp() - self._sig_seen.get(bkey, 0) < 900:
+                    return None
+                self._sig_seen[bkey] = now.timestamp()
+                sig.update(blocked=True, block_reason=blk)
+                self.sig_block[c] = sig
+                self._add_alert(c, now, f"⏸ 逆勢過濾：原本要建議{label} @{p}（{why.split('（')[0]}），但{blk}，不發；照樣追蹤假設進場的結果")
+                return None
+            self._sig_seen[key] = now.timestamp()
             self.signals[c] = sig
             if inzone:
                 self._add_alert(c, now, f"▶ 建議{label} @{p}：{why}；停損 {stop}，目標 {t1} / {t2}（報酬風險比 {rr_now:.1f}）")
@@ -647,7 +682,7 @@ class Monitor:
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
-                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("延緩撮合", r"延緩撮合")]
+                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("延緩撮合", r"延緩撮合")]
 
     @classmethod
     def _alert_type(cls, text):
@@ -689,12 +724,12 @@ class Monitor:
                 continue   # 啟動時補發的歷史警示沒有當時狀態，不追蹤
             typ = self._alert_type(txt)
             extra = {}
-            if typ in ("建議做空", "建議做多"):
-                sg = self.signals.get(c) or {}
+            if typ in ("建議做空", "建議做多", "逆勢過濾"):
+                sg = (self.sig_block.get(c) if typ == "逆勢過濾" else self.signals.get(c)) or {}
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "rr_now", "rr_zone")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "rr_now", "rr_zone", "blocked", "block_reason")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -852,9 +887,16 @@ class Monitor:
                "verdict": verdict, "fast_adverse": fast_adverse, "first_stop_min": first_stop, "first_t1_min": first_t1,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors")}
+        if sg.get("blocked"):
+            out.update(blocked=True, block_reason=sg.get("block_reason"))
         try:
             with open(os.path.join(LOG_DIR, "signal_outcomes.jsonl"), "a", encoding="utf-8") as f:
                 f.write(json.dumps({"code": rec["code"], "name": rec.get("name"), **out}, ensure_ascii=False) + "\n")
+            if sg.get("blocked"):
+                # 被擋的訊號不進交戰紀錄勝率，只回報「擋對了沒」
+                res = {"win": "會 ✔ 贏 → 擋錯了", "loss": "會 ✘ 輸 → 擋對了", "flat": "會 — 平", "nofill": "不會成交"}[verdict]
+                self._add_alert(rec["code"], dt.datetime.now(), f"⏸ 過濾驗證：{rec['time']} 被擋的{sg.get('label')} @{rec['price']} 若進場{res}")
+                return
             history.record_signal(rec["code"], out)
             wl = {"win": "✔ 贏", "loss": "✘ 輸", "flat": "— 平", "nofill": "○ 未成交"}[verdict] + ("（5 分鐘內反向，估錯）" if fast_adverse else "")
             self._add_alert(rec["code"], dt.datetime.now(), f"{wl}：{sg.get('label')} @{px}" + (f"，可疑原因：{'、'.join(suspects)}" if suspects else ""))
@@ -1085,7 +1127,7 @@ class Monitor:
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
-                "signal": {}, "flow_series": {}, "walls": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
+                "signal": {}, "sig_block": {}, "flow_series": {}, "walls": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
                 "mis_fail": getattr(self, "_mis_fail", 0)}
         for k in ("t00", "o00"):
             q = quotes.get(k)
@@ -1155,6 +1197,9 @@ class Monitor:
                 sig = self._signal(c, WEB.latest.get(c), live["series"].get(c) or [], q, now)
                 if sig:
                     live["signal"][c] = sig
+                blk = self.sig_block.get(c)
+                if blk and now.timestamp() - blk["since_ts"] < 300:
+                    live["sig_block"][c] = {k: blk.get(k) for k in ("side", "label", "alert_px", "since", "block_reason", "why")}
             except Exception as e:
                 print(f"[fast] 訊號判斷失敗：{str(e)[:100]}")
             try:

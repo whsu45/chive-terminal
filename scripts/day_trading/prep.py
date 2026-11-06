@@ -79,7 +79,7 @@ def markets_for(codes):
 _MIS_ERR = None
 
 
-PREP_VERSION = 5  # 快取結構版本：欄位有增減就 +1，舊快取會自動重建
+PREP_VERSION = 6  # 快取結構版本：欄位有增減就 +1，舊快取會自動重建
 
 
 def build(code, peers_arg=None, refresh=False):

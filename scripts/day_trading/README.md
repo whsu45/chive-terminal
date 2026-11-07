@@ -12,6 +12,7 @@ python3 monitor.py 3042 7704 --interval 180 # 多檔、估算改三分鐘一次�
 python3 monitor.py 3042 --once --verbose    # 跑一次並印每個因子的理由
 python3 monitor.py 3042 --once --json       # 單次、JSON 輸出（給程式或 AI 讀）
 python3 prep.py 3042 --refresh              # 只重抓盤前資料
+python3 theme_screener.py                   # 盤前選股：FinLab 概念股主題 → 前 3 多、前 3 空與理由（--top 5 / --json）
 python3 review.py                           # 收盤後復盤今天 monitor 的訊號與結果
 python3 replay.py 1815 --step 5             # 盤後重播：用永豐逐筆重建「若從 09:00 監控」每 5 分鐘的判斷
 python3 calibrate.py --apply                # 重新校準大單/散戶金額門檻（monitor 會在過舊時自動跑）
@@ -293,6 +294,7 @@ monitor 每輪記住每檔權證的價量，跟上一輪比（成交量加權、
 | `history.py` | 個股交戰紀錄（監控天數、訊號結果、備註） |
 | `evolve.py` | 基因演算法調因子權重 → `model_params.json` |
 | `winners.py` | 常勝主力：分點歷史勝率、昨日動作、庫存 |
+| `theme_screener.py` | 盤前選股：抓 FinLab 概念股主題成分股，配上成交值、ATR、量比、法人、融資券打分，列多空候選與觀察價位 |
 | `src_warrants.py` | 權證清單、日統計、發行商避險、盤中彙總 |
 | `replay.py` | 盤後重播（永豐逐筆重建當日每 N 分鐘的判斷與主力/散戶分流） |
 | `calibrate_warrants.py` | 驗證權證訊號與標的漲跌的關係 |

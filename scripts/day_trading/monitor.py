@@ -544,6 +544,26 @@ class Monitor:
             return "、".join(mild) + " 反向"
         return None
 
+    def _limit_block(self, c, side, p, t1, q):
+        """漲跌停：做多時價在漲停（委賣沒單 = 鎖死，根本買不到；有委賣也沒上漲空間）、或目標 1 超過漲停 → 擋；做空對稱看跌停。
+        回字串 = 擋的理由，None = 不擋。"""
+        d = self.daily.get(c) or {}
+        up, dn = d.get("limit_up"), d.get("limit_down")
+        tick = I.tick_size(p)
+        if side == "long" and up:
+            if p >= up - tick / 2:
+                asks = [a for a in (q.get("asks") or []) if a and a[0] and (a[1] or 0) > 0]
+                return f"漲停 {up} 鎖死、委賣沒單，買不到" if not asks else f"已在漲停 {up}，上面沒有空間"
+            if t1 > up:
+                return f"目標 {t1} 超過漲停 {up}，到不了"
+        if side == "short" and dn:
+            if p <= dn + tick / 2:
+                bids = [b for b in (q.get("bids") or []) if b and b[0] and (b[1] or 0) > 0]
+                return f"跌停 {dn} 鎖死、委買沒單，空不到" if not bids else f"已在跌停 {dn}，下面沒有空間"
+            if t1 < dn:
+                return f"目標 {t1} 低於跌停 {dn}，到不了"
+        return None
+
     @staticmethod
     def _entry_zone(side, base, stop, t1, rr_min=1.5):
         """
@@ -908,6 +928,14 @@ class Monitor:
                    "p": ps if short else pl, "zone": [lo, hi], "filled": inzone, "filled_at_alert": inzone,
                    "fill_px": p if inzone else None, "fill_ts": now.timestamp() if inzone else None,
                    "alert_px": p, "chase": round(chase, 3), "rr_now": rr_now and round(rr_now, 2), "rr_zone": rr_zone and round(rr_zone, 2)}
+            lim_why = self._limit_block(c, side, p, t1, q)
+            if lim_why:
+                # 漲停鎖死買不到、跌停鎖死空不到、目標超過漲跌停：不發，也不追蹤假設結果（根本成交不了）
+                lkey = ("limit", c, side)
+                if now.timestamp() - self._sig_seen.get(lkey, 0) >= 900:
+                    self._sig_seen[lkey] = now.timestamp()
+                    self._add_alert(c, now, f"⏸ 漲跌停過濾：原本要建議{label} @{p}，但{lim_why}，不發")
+                return None
             blk = self._against_trend(side, info)
             if blk:
                 bkey = ("block",) + key            # 被擋的另外去重：趨勢轉回來後同一個進場區還能正常發
@@ -957,7 +985,7 @@ class Monitor:
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
-                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合")]
+                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合")]
 
     @classmethod
     def _alert_type(cls, text):

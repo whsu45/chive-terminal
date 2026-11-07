@@ -43,6 +43,31 @@ def daily_history(code, months=5):
     return out
 
 
+def taiex_history(ref, months=3):
+    """加權指數日收盤（FMTQIK，每月一張表）→ [(YYYY-MM-DD, 收盤)]，舊到新，只取 ref 之前（不含 ref）。"""
+    out = []
+    y, m = ref.year, ref.month
+    months_list = []
+    for _ in range(months):
+        months_list.append((y, m))
+        m -= 1
+        if m == 0:
+            m, y = 12, y - 1
+    for y, m in reversed(months_list):
+        j = http.get_json(f"{BASE}/rwd/zh/afterTrading/FMTQIK", params={"date": f"{y}{m:02d}01", "response": "json"},
+                          cache_ttl=TTL_DAY)
+        for r in j.get("data", []) or []:
+            try:
+                ry, rm, rd = (int(x) for x in r[0].strip().split("/"))
+                d = f"{ry + 1911:04d}-{rm:02d}-{rd:02d}"
+            except (ValueError, AttributeError):
+                continue
+            c = http.to_float(r[4])
+            if c and d < ref.isoformat():
+                out.append((d, c))
+    return sorted(set(out))
+
+
 def t86(date):
     """三大法人買賣超（股）→ {code: {foreign, trust, dealer, total}}（張）。"""
     j = http.get_json(f"{BASE}/rwd/zh/fund/T86", params={"date": _ymd(date), "selectType": "ALL", "response": "json"},

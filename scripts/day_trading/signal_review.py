@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-進場訊號（▶ 建議做空/做多）的輸贏統計與失敗原因：讀 logs/signal_outcomes.jsonl。
+進場訊號（▶ 建議做空/做多）的輸贏統計與失敗原因：讀 logs/signal_outcomes*.jsonl（各台電腦合併）。
     python3 signal_review.py                 # 全部：各檔、各方向的 勝/敗/平、5 分鐘內反向（估錯）比率、失敗原因排行
     python3 signal_review.py --code 3006 --detail
     python3 signal_review.py --src mis       # 只看 MIS 10 秒快照模式（沒永豐金鑰的機器）的訊號；預設全部，但分來源列一次
@@ -11,20 +11,14 @@ import os
 import json
 import argparse
 from collections import defaultdict
-from config import LOG_DIR
+from config import LOG_DIR, dev_files, read_jsonl_devices, one_device
 
 
 def load():
-    path = os.path.join(LOG_DIR, "signal_outcomes.jsonl")
-    if not os.path.exists(path):
-        raise SystemExit(f"還沒有訊號結果：{path}")
-    rows = []
-    for line in open(path, encoding="utf-8"):
-        try:
-            rows.append(json.loads(line))
-        except json.JSONDecodeError:
-            pass
-    return rows
+    if not dev_files(LOG_DIR, "signal_outcomes", ".jsonl"):
+        raise SystemExit(f"還沒有訊號結果：{os.path.join(LOG_DIR, 'signal_outcomes')}*.jsonl")
+    # 各台電腦合併；同一天同一檔兩台都有時只算一台（永豐串流優先），不重複計
+    return one_device(read_jsonl_devices(LOG_DIR, "signal_outcomes"), key=lambda r: (r.get("date"), r.get("code")))
 
 
 def suspects_all(r):

@@ -225,6 +225,8 @@ data/orb/
 # day_trading 本機監控：金鑰與原始 HTTP/逐筆快取不進 git；每日資料（估算紀錄、警示/訊號結果、交戰紀錄、盤前資料）要進 git
 # （sync_logs.py 收盤後自動 commit + push）
 scripts/day_trading/.env
+# 每台電腦自己的裝置 ID（隨機產生）：進 git 會讓兩台拿到同一個 ID、紀錄又撞在一起
+scripts/day_trading/.device_id
 !scripts/day_trading/.cache/
 scripts/day_trading/.cache/*
 !scripts/day_trading/.cache/daily_*.json
@@ -236,3 +238,6 @@ scripts/day_trading/logs/trades.jsonl
 *.swp
 *.swo
 scripts/day_trading/model_params.candidate.json
+
+# 瀏覽器自動化留下的頁面快照/截圖（可能有個人持倉資訊，只留本機）
+.playwright-mcp/

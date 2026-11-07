@@ -17,7 +17,7 @@ import random
 import argparse
 import datetime as dt
 from collections import defaultdict
-from config import LOG_DIR
+from config import LOG_DIR, read_jsonl_devices, one_device
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -25,15 +25,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def load_rows(include_mis=False):
     """MIS 10 秒快照模式（沒永豐串流）的估算缺分流因子、K 線也粗，預設不拿來演化。"""
     rows = []
-    for path in sorted(glob.glob(os.path.join(LOG_DIR, "monitor_*.jsonl"))):
-        date = os.path.basename(path)[8:16]
-        for line in open(path, encoding="utf-8"):
-            try:
-                r = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            if not (r.get("price") and r.get("time") and r.get("code")):
-                continue
+    dates = sorted({os.path.basename(p)[8:16] for p in glob.glob(os.path.join(LOG_DIR, "monitor_*.jsonl"))})
+    for date in dates:
+        # 同一天各台電腦的紀錄合併；同一檔兩台都有時只用一台（永豐串流優先），不重複計
+        day = [r for r in read_jsonl_devices(LOG_DIR, f"monitor_{date}") if r.get("price") and r.get("time") and r.get("code")]
+        for r in one_device(day, key=lambda r: r["code"]):
             if r.get("src") == "mis" and not include_mis:
                 continue
             rows.append({"date": date, "code": r["code"], "time": r["time"][:8], "price": float(r["price"]),

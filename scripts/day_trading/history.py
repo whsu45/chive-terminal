@@ -1,5 +1,5 @@
 """
-個股交戰紀錄（logs/stock_history.json）：當沖要做熟悉的股票，所以每檔記
+個股交戰紀錄（logs/stock_history_<裝置ID>.json，讀取時合併各台）：當沖要做熟悉的股票，所以每檔記
   - 監控過哪些天（同一天開幾次 monitor 都算一天；launches 另計）
   - 每一次「建議做空/做多」訊號的結果：贏 / 輸 / 平、5 分鐘內就反向（估錯）、可疑原因
   - 使用者備註（notes），例如「連三次開高走低」
@@ -10,18 +10,26 @@ import json
 import threading
 import datetime as dt
 
-from config import LOG_DIR
+from config import LOG_DIR, dev_path, dev_files, one_device
 
-PATH = os.path.join(LOG_DIR, "stock_history.json")
+# 每台電腦寫自己的 stock_history_<裝置ID>.json（git 才不會兩台互撞）；讀取（get / summary / 儀表板）合併所有裝置的檔
+PATH = dev_path(LOG_DIR, "stock_history", ".json")
 _lock = threading.Lock()
+_EMPTY = lambda: {"name": None, "market": None, "group": None, "days": [], "launches": 0, "signals": [], "notes": []}
+
+
+def _read(path):
+    try:
+        with open(path, encoding="utf-8") as f:
+            d = json.load(f)
+        return d if isinstance(d, dict) else {}
+    except Exception:
+        return {}
 
 
 def _load():
-    try:
-        with open(PATH, encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return {}
+    """只讀這台自己的檔（寫入用）。"""
+    return _read(PATH)
 
 
 def _save(db):
@@ -32,12 +40,35 @@ def _save(db):
     os.replace(tmp, PATH)
 
 
+def _merged():
+    """所有裝置（含加裝置 ID 前的舊檔）合併：監控日取聯集、啟動次數相加、
+    訊號同一天兩台都有時只留一台的（避免重複計勝率）、備註全收。"""
+    out = {}
+    for dev, path in dev_files(LOG_DIR, "stock_history", ".json"):
+        for code, e in _read(path).items():
+            if not isinstance(e, dict):
+                continue
+            m = out.setdefault(code, _EMPTY())
+            for k in ("name", "market", "group"):
+                if e.get(k):
+                    m[k] = e[k]
+            m["days"] = sorted(set(m["days"]) | set(e.get("days") or []))
+            m["launches"] += e.get("launches", 0) or 0
+            m["signals"] += [dict(s, _dev=dev) for s in (e.get("signals") or []) if isinstance(s, dict)]
+            m["notes"] += [n for n in (e.get("notes") or []) if isinstance(n, dict)]
+    for m in out.values():
+        m["signals"] = sorted(one_device(m["signals"], key=lambda s: s.get("date")),
+                              key=lambda s: (s.get("date") or "", s.get("time") or ""))[-300:]
+        m["notes"].sort(key=lambda n: n.get("date") or "")
+    return out
+
+
 def record_launch(code, name=None, market=None, group=None, today=None):
     """monitor 啟動時呼叫：記監控日（一天算一次）與啟動次數。回該股紀錄。"""
     today = today or dt.date.today().isoformat()
     with _lock:
         db = _load()
-        e = db.setdefault(code, {"name": name, "market": market, "group": group, "days": [], "launches": 0, "signals": [], "notes": []})
+        e = db.setdefault(code, dict(_EMPTY(), name=name, market=market, group=group))
         if name: e["name"] = name
         if market: e["market"] = market
         if group: e["group"] = group
@@ -46,14 +77,14 @@ def record_launch(code, name=None, market=None, group=None, today=None):
             e["days"].sort()
         e["launches"] = e.get("launches", 0) + 1
         _save(db)
-        return e
+    return _merged().get(code, e)
 
 
 def record_signal(code, rec):
     """訊號結案時呼叫：rec = {date,time,side,price,stop,t1,t2,verdict,fast_adverse,ret_5m,ret_10m,ret_30m,suspects,why}。"""
     with _lock:
         db = _load()
-        e = db.setdefault(code, {"name": None, "market": None, "group": None, "days": [], "launches": 0, "signals": [], "notes": []})
+        e = db.setdefault(code, _EMPTY())
         key = (rec.get("date"), rec.get("time"), rec.get("side"))
         if any((s.get("date"), s.get("time"), s.get("side")) == key for s in e["signals"]):
             return
@@ -65,13 +96,13 @@ def record_signal(code, rec):
 def add_note(code, text):
     with _lock:
         db = _load()
-        e = db.setdefault(code, {"name": None, "market": None, "group": None, "days": [], "launches": 0, "signals": [], "notes": []})
+        e = db.setdefault(code, _EMPTY())
         e["notes"].append({"date": dt.date.today().isoformat(), "text": text})
         _save(db)
 
 
 def get(code):
-    return _load().get(code)
+    return _merged().get(code)
 
 
 def summary(code, e=None):
@@ -105,7 +136,7 @@ def summary(code, e=None):
 
 
 def all_summary():
-    db = _load()
+    db = _merged()
     out = [summary(c, e) for c, e in db.items()]
     out.sort(key=lambda s: (-s["days"], -s["n_signals"]))
     return out

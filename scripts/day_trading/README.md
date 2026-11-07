@@ -101,7 +101,15 @@ MIS 每 10 秒抓一次（限流），**有 Shioaji 時每 3 秒用逐筆串流�
 **資料來源標記**（`src`）：每筆估算（`monitor_*.jsonl`）、警示結果、訊號結果、交戰紀錄都標 `shioaji`（永豐逐筆串流）或 `mis`（沒有永豐金鑰，只有證交所公開報價 10 秒快照）。
 MIS 模式的 1 分 K 是快照拼的、會漏高低點，也算不出主力/散戶分流與即時五檔，所以同一檔同一時間兩台機器掛出的進場點可能不同。
 交戰紀錄勝率與 `evolve.py` 預設**排除 `mis`**（`--include-mis` 才納入）；`signal_review.py` / `alert_review.py` 分來源列，可用 `--src mis|shioaji|unknown` 篩（unknown = 加欄位前的舊紀錄）。
-兩台機器同一天都跑 monitor 時，收盤自動同步會因為寫同一個 logs 檔而 rebase 衝突：`sync_logs.py` 會取消 rebase、commit 留在本機，需手動合併。
+
+**多台電腦（裝置 ID）**：每台第一次執行時隨機產生一個裝置 ID，存在 `.device_id`（已 `.gitignore`，不能進 git，否則兩台會拿到同一個 ID）。
+monitor 啟動時會印出 `[裝置] ID xxxxxx`。每台寫自己的檔，所以兩台同一天都開 monitor、收盤各自推送也不會撞檔：
+`logs/monitor_YYYYMMDD_<ID>.jsonl`、`logs/alert_outcomes_<ID>.jsonl`、`logs/signal_outcomes_<ID>.jsonl`、`logs/stock_history_<ID>.json`、
+`.cache/daily_<代碼>_<日期>_<ID>.json`、`.cache/calibration_<日期>_<ID>.json`。不用電腦名稱，主機名不會出現在公開 repo。
+想取好認的名字可設環境變數 `DEVICE_ID=mac`（小寫英數與 `-`，最多 16 字）。
+讀取時（`review.py`、`alert_review.py`、`signal_review.py`、`evolve.py`、交戰紀錄）合併所有裝置，以及加 ID 前沒有後綴的舊檔；
+同一天同一檔兩台都有紀錄時**只算一台**（永豐串流筆數多的優先），不重複計勝率。盤前資料會先用自己的快取，沒有就沿用別台推上來的同日快取。
+`logs/trades.jsonl`（持倉面板）本來就只留本機，不受影響。
 
 **警示結果追蹤**（校準用）：快迴圈對每則 ⚠/▶ 警示記下當時價格、日內位置、主力淨額與 10 分鐘變化、五檔不平衡，
 10 / 30 分鐘後用分 K 補上報酬與期間最高最低，寫 `logs/alert_outcomes.jsonl`；`python3 alert_review.py`（`--type 認購權證急漲 --low --cover --detail`）

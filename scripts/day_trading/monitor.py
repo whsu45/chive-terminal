@@ -8,7 +8,7 @@
     python3 monitor.py 3042 --once --json        # 跑一次、輸出 JSON（給程式/AI 讀）
     python3 monitor.py 3042 7704 --interval 120  # 同時監控多檔
 
-每次評估都會 append 到 logs/monitor_YYYYMMDD.jsonl，收盤後可直接拿來復盤。
+每次評估都會 append 到 logs/monitor_YYYYMMDD_<裝置ID>.jsonl（裝置 ID 見 config.DEVICE_ID），收盤後可直接拿來復盤。
 """
 import sys
 import os
@@ -18,7 +18,7 @@ import argparse
 import datetime as dt
 import traceback
 
-from config import LOG_DIR, load_env
+from config import LOG_DIR, load_env, DEVICE_ID, dev_path
 import prep
 import model
 import indicators as I
@@ -334,6 +334,7 @@ class Monitor:
         self.interval = interval
         self.web = web
         WEB.codes = list(codes); WEB.interval = interval
+        print(f"[裝置] ID {DEVICE_ID}：今天的紀錄寫到 logs/*_{DEVICE_ID}.jsonl（換台電腦開就換 ID，git 不會撞檔）")
         self.daily = {}
         self.samples = {c: [] for c in codes}
         self.w_prev = {}
@@ -1053,7 +1054,7 @@ class Monitor:
             if ("30m" in rec["out"] and age >= need) or (closed and age > 60):
                 if rec.get("sig"):
                     self._judge_signal(rec, bmap, m0)
-                with open(os.path.join(LOG_DIR, "alert_outcomes.jsonl"), "a", encoding="utf-8") as f:
+                with open(dev_path(LOG_DIR, "alert_outcomes", ".jsonl"), "a", encoding="utf-8") as f:
                     f.write(json.dumps(rec, ensure_ascii=False) + "\n")
             else:
                 keep.append(rec)
@@ -1167,7 +1168,7 @@ class Monitor:
             out.update(cancelled=sg["cancelled"])
         ut = self.user_trades.get((rec["code"], rec["time"]))   # 使用者自己的結果只放提醒，不寫進 signal_outcomes（公開 repo）
         try:
-            with open(os.path.join(LOG_DIR, "signal_outcomes.jsonl"), "a", encoding="utf-8") as f:
+            with open(dev_path(LOG_DIR, "signal_outcomes", ".jsonl"), "a", encoding="utf-8") as f:
                 f.write(json.dumps({"code": rec["code"], "name": rec.get("name"), **out}, ensure_ascii=False) + "\n")
             if sg.get("blocked"):
                 # 被擋的訊號不進交戰紀錄勝率，只回報「擋對了沒」
@@ -1557,7 +1558,7 @@ class Monitor:
             print(f"[sync] 失敗：{str(e)[:120]}")
 
     def log(self, ev):
-        path = os.path.join(LOG_DIR, f"monitor_{dt.date.today():%Y%m%d}.jsonl")
+        path = dev_path(LOG_DIR, f"monitor_{dt.date.today():%Y%m%d}", ".jsonl")   # 各台寫各自的檔，git 不會撞
         rec = {k: v for k, v in ev.items() if k not in ("quote",)}
         rec["quote"] = {k: ev["quote"].get(k) for k in ("ref", "o", "h", "l", "v", "bids", "asks")}
         rec["src"] = self.src

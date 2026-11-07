@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 把每天本機拿到的資料 commit 回 GitHub：
-  logs/*.jsonl、logs/*.json（monitor 估算紀錄、警示/訊號結果、交戰紀錄）、.cache/daily_*.json（盤前資料）、.cache/calibration_*.json
+  logs/*.jsonl、logs/*.json（monitor 估算紀錄、警示/訊號結果、交戰紀錄；每台電腦一個裝置 ID 後綴，兩台不會撞檔）、.cache/daily_*.json（盤前資料）、.cache/calibration_*.json
 不碰 .env、.cache/http/（原始 HTTP 快取 450MB）、.cache/ticks/、logs/trades.jsonl（你的實際交易，個人資料）。
     python3 sync_logs.py            # add + commit + push
     python3 sync_logs.py --no-push  # 只 commit

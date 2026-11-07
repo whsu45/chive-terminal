@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-收盤後復盤：讀 logs/monitor_YYYYMMDD.jsonl，列出每檔的勝率曲線與價格走勢，
+收盤後復盤：讀 logs/monitor_YYYYMMDD*.jsonl（各台電腦合併），列出每檔的勝率曲線與價格走勢，
 並檢驗「當時模型偏空/偏多」在 N 分鐘後是否正確。
     python3 review.py                 # 今天
     python3 review.py 20261102 3042   # 指定日期/代碼
@@ -11,21 +11,15 @@ import os
 import json
 import argparse
 import datetime as dt
-from config import LOG_DIR
+from config import LOG_DIR, dev_files, read_jsonl_devices, one_device
 
 
 def load(date_str):
-    path = os.path.join(LOG_DIR, f"monitor_{date_str}.jsonl")
-    if not os.path.exists(path):
-        raise SystemExit(f"找不到 {path}")
-    rows = []
-    with open(path, "r", encoding="utf-8") as f:
-        for line in f:
-            try:
-                rows.append(json.loads(line))
-            except json.JSONDecodeError:
-                pass
-    return rows
+    stem = f"monitor_{date_str}"
+    if not dev_files(LOG_DIR, stem, ".jsonl"):
+        raise SystemExit(f"找不到 {os.path.join(LOG_DIR, stem)}*.jsonl")
+    # 各台電腦的紀錄合併；同一檔兩台都有時只看一台（永豐串流優先）
+    return one_device(read_jsonl_devices(LOG_DIR, stem), key=lambda r: r.get("code"))
 
 
 def main():

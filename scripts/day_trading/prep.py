@@ -10,7 +10,7 @@ import os
 import argparse
 import datetime as dt
 
-from config import CACHE_DIR, load_groups, find_groups_for
+from config import CACHE_DIR, load_groups, find_groups_for, dev_path, dev_files
 import http_client as http
 import tw_calendar as cal
 import src_mis, src_twse, src_tpex, src_moneydj, src_yahoo, src_taifex
@@ -85,12 +85,18 @@ PREP_VERSION = 6  # 快取結構版本：欄位有增減就 +1，舊快取會自
 def build(code, peers_arg=None, refresh=False):
     today = cal.today_tw()
     prev = cal.prev_trading_day(today)
-    cache = os.path.join(CACHE_DIR, f"daily_{code}_{today.isoformat()}.json")
-    if not refresh and os.path.exists(cache):
-        with open(cache, "r", encoding="utf-8") as f:
-            d = json.load(f)
-        if d.get("version") == PREP_VERSION and ((not peers_arg) or d.get("peers_arg") == peers_arg):
-            return d
+    stem = f"daily_{code}_{today.isoformat()}"
+    cache = dev_path(CACHE_DIR, stem, ".json")   # 寫這台自己的檔，兩台同一天都建盤前資料時 git 不會撞
+    if not refresh:
+        # 先用這台的，再用別台已推上來的（同一天的盤前資料內容一樣，省得重抓）
+        for _, path in sorted(dev_files(CACHE_DIR, stem, ".json"), key=lambda x: x[1] != cache):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+            except (OSError, ValueError):
+                continue
+            if d.get("version") == PREP_VERSION and ((not peers_arg) or d.get("peers_arg") == peers_arg):
+                return d
 
     print(f"[prep] 建立 {code} 盤前資料（前一交易日 {prev}）...")
     gname, peers = resolve_peers(code, peers_arg)

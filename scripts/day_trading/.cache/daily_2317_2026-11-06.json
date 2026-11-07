@@ -1,0 +1,4309 @@
+{
+ "version": 5,
+ "code": "2317",
+ "name": "鴻海",
+ "market": "tse",
+ "date": "2026-11-06",
+ "prev_date": "2026-11-05",
+ "group": null,
+ "peers": [],
+ "peers_arg": null,
+ "peer_info": {},
+ "tech": {
+  "date": "2026-11-05",
+  "close": 235.0,
+  "open": 239.0,
+  "high": 241.5,
+  "low": 234.0,
+  "vol": 50712,
+  "ma5": 243.4,
+  "ma10": 245.9,
+  "ma20": 245.4,
+  "ma60": 249.99166666666667,
+  "bb_up": 255.69368738596623,
+  "bb_dn": 235.10631261403378,
+  "atr14": 7.142857142857143,
+  "rsi14": 39.04962625572034,
+  "vol_ma5": 48239.2,
+  "vol_ma20": 45216.55,
+  "chg_pct": -2.083333333333337,
+  "high20": 266.5,
+  "low20": 234.0,
+  "high60": 274.5,
+  "low60": 234.0,
+  "prev_high": 247.5,
+  "prev_low": 236.5,
+  "ret5": -5.241935483870963,
+  "ret20": -7.480314960629919,
+  "streak": -3,
+  "atr_pct": 3.0395136778115504
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-18",
+   "o": 252.5,
+   "h": 253.0,
+   "l": 249.0,
+   "c": 250.5,
+   "v": 44803,
+   "amt": 11233127681.0
+  },
+  {
+   "date": "2026-09-21",
+   "o": 251.5,
+   "h": 252.0,
+   "l": 249.0,
+   "c": 250.0,
+   "v": 16771,
+   "amt": 4197031594.0
+  },
+  {
+   "date": "2026-09-22",
+   "o": 252.0,
+   "h": 254.0,
+   "l": 250.5,
+   "c": 253.0,
+   "v": 38635,
+   "amt": 9752564774.0
+  },
+  {
+   "date": "2026-09-23",
+   "o": 255.0,
+   "h": 257.0,
+   "l": 255.0,
+   "c": 256.0,
+   "v": 35754,
+   "amt": 9154003139.0
+  },
+  {
+   "date": "2026-09-24",
+   "o": 253.0,
+   "h": 253.0,
+   "l": 249.5,
+   "c": 250.5,
+   "v": 34510,
+   "amt": 8650715388.0
+  },
+  {
+   "date": "2026-09-29",
+   "o": 247.0,
+   "h": 254.0,
+   "l": 247.0,
+   "c": 250.5,
+   "v": 31188,
+   "amt": 7822109186.0
+  },
+  {
+   "date": "2026-09-30",
+   "o": 253.5,
+   "h": 254.0,
+   "l": 251.5,
+   "c": 251.5,
+   "v": 27366,
+   "amt": 6907802068.0
+  },
+  {
+   "date": "2026-10-01",
+   "o": 253.0,
+   "h": 254.0,
+   "l": 250.5,
+   "c": 254.0,
+   "v": 30526,
+   "amt": 7721055751.0
+  },
+  {
+   "date": "2026-10-02",
+   "o": 253.0,
+   "h": 253.0,
+   "l": 250.5,
+   "c": 251.0,
+   "v": 30466,
+   "amt": 7654181137.0
+  },
+  {
+   "date": "2026-10-05",
+   "o": 254.0,
+   "h": 256.0,
+   "l": 253.5,
+   "c": 254.0,
+   "v": 52629,
+   "amt": 13397868878.0
+  },
+  {
+   "date": "2026-10-06",
+   "o": 263.0,
+   "h": 266.5,
+   "l": 253.5,
+   "c": 256.0,
+   "v": 96969,
+   "amt": 25047906699.0
+  },
+  {
+   "date": "2026-10-07",
+   "o": 254.0,
+   "h": 254.5,
+   "l": 251.5,
+   "c": 252.0,
+   "v": 36168,
+   "amt": 9136581361.0
+  },
+  {
+   "date": "2026-10-08",
+   "o": 251.0,
+   "h": 251.0,
+   "l": 249.0,
+   "c": 249.0,
+   "v": 40251,
+   "amt": 10059109830.0
+  },
+  {
+   "date": "2026-10-12",
+   "o": 245.0,
+   "h": 246.0,
+   "l": 243.5,
+   "c": 244.5,
+   "v": 52408,
+   "amt": 12815704539.0
+  },
+  {
+   "date": "2026-10-13",
+   "o": 243.5,
+   "h": 243.5,
+   "l": 239.0,
+   "c": 240.0,
+   "v": 45072,
+   "amt": 10855827349.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 241.5,
+   "h": 246.0,
+   "l": 241.0,
+   "c": 243.0,
+   "v": 34513,
+   "amt": 8415365944.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 240.0,
+   "h": 240.0,
+   "l": 238.0,
+   "c": 239.5,
+   "v": 49562,
+   "amt": 11846228462.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 241.5,
+   "h": 247.0,
+   "l": 240.5,
+   "c": 244.0,
+   "v": 50144,
+   "amt": 12294478893.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 242.0,
+   "h": 242.5,
+   "l": 238.5,
+   "c": 239.5,
+   "v": 30432,
+   "amt": 7297201301.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 238.0,
+   "h": 244.5,
+   "l": 237.0,
+   "c": 241.5,
+   "v": 28509,
+   "amt": 6878317361.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 244.5,
+   "h": 250.0,
+   "l": 244.5,
+   "c": 250.0,
+   "v": 54598,
+   "amt": 13534908870.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 249.5,
+   "h": 250.5,
+   "l": 244.5,
+   "c": 245.0,
+   "v": 26653,
+   "amt": 6596707385.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 246.5,
+   "h": 248.5,
+   "l": 244.0,
+   "c": 247.5,
+   "v": 53652,
+   "amt": 13236331156.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 248.0,
+   "h": 252.0,
+   "l": 246.5,
+   "c": 251.5,
+   "v": 42846,
+   "amt": 10698110575.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 250.0,
+   "h": 253.5,
+   "l": 247.0,
+   "c": 248.0,
+   "v": 21358,
+   "amt": 5323436183.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 245.0,
+   "h": 246.0,
+   "l": 240.0,
+   "c": 245.5,
+   "v": 33591,
+   "amt": 8176481537.0
+  },
+  {
+   "date": "2026-11-02",
+   "o": 244.5,
+   "h": 252.0,
+   "l": 242.5,
+   "c": 251.0,
+   "v": 49948,
+   "amt": 12461195401.0
+  },
+  {
+   "date": "2026-11-03",
+   "o": 249.0,
+   "h": 250.0,
+   "l": 243.5,
+   "c": 245.5,
+   "v": 44139,
+   "amt": 10875210977.0
+  },
+  {
+   "date": "2026-11-04",
+   "o": 247.5,
+   "h": 247.5,
+   "l": 236.5,
+   "c": 240.0,
+   "v": 62806,
+   "amt": 15094838874.0
+  },
+  {
+   "date": "2026-11-05",
+   "o": 239.0,
+   "h": 241.5,
+   "l": 234.0,
+   "c": 235.0,
+   "v": 50712,
+   "amt": 12041857119.0
+  }
+ ],
+ "limit_up": 258.5,
+ "limit_down": 211.5,
+ "insti": {
+  "2026-11-05": {
+   "foreign": -11174,
+   "trust": 2349,
+   "dealer": 3122,
+   "total": -5701
+  },
+  "2026-11-04": {
+   "foreign": -16578,
+   "trust": 332,
+   "dealer": 2112,
+   "total": -14132
+  },
+  "2026-11-03": {
+   "foreign": 2393,
+   "trust": 427,
+   "dealer": 806,
+   "total": 3627
+  }
+ },
+ "insti_sum": {
+  "foreign": -25359,
+  "trust": 3108,
+  "dealer": 6040,
+  "total": -16206
+ },
+ "margin": {
+  "fin_prev": 53792,
+  "fin_now": 53773,
+  "fin_chg": -19,
+  "short_prev": 423,
+  "short_now": 553,
+  "short_chg": 130,
+  "fin_limit": 3518936
+ },
+ "sbl": {
+  "sbl_sell": 7150,
+  "sbl_return": 535,
+  "sbl_bal": 89651
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": -2169,
+   "daytrade_buy": 0,
+   "foreign_net": -9281,
+   "top5_buy": 9907,
+   "top5_sell": -17091,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 9445,
+     "sell": 5207,
+     "net": 4238,
+     "pct": 8.59
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 2420,
+     "sell": 405,
+     "net": 2015,
+     "pct": 4.09
+    },
+    {
+     "broker": "凱基",
+     "buy": 1559,
+     "sell": 75,
+     "net": 1484,
+     "pct": 3.01
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 2549,
+     "sell": 1352,
+     "net": 1197,
+     "pct": 2.43
+    },
+    {
+     "broker": "元大證券",
+     "buy": 3839,
+     "sell": 2866,
+     "net": 973,
+     "pct": 1.97
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 1370,
+     "sell": 8082,
+     "net": -6712,
+     "pct": 13.61
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 1647,
+     "sell": 7054,
+     "net": -5407,
+     "pct": 10.96
+    },
+    {
+     "broker": "凱基-台北",
+     "buy": 846,
+     "sell": 3015,
+     "net": -2169,
+     "pct": 4.4
+    },
+    {
+     "broker": "美林",
+     "buy": 265,
+     "sell": 1776,
+     "net": -1511,
+     "pct": 3.06
+    },
+    {
+     "broker": "花旗環球",
+     "buy": 508,
+     "sell": 1800,
+     "net": -1292,
+     "pct": 2.62
+    }
+   ],
+   "daytrade_buy_pct": 0.0,
+   "foreign_net_pct": -18.30138823158227,
+   "top5_buy_pct": 19.53581006467897,
+   "top5_sell_pct": 33.702082347373405
+  },
+  "day_date": "2026/11/05",
+  "range4": {
+   "daytrade_net": -5571,
+   "daytrade_buy": 0,
+   "foreign_net": -3079,
+   "top5_buy": 31795,
+   "top5_sell": -35679,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 28196,
+     "sell": 19162,
+     "net": 9034,
+     "pct": 4.41
+    },
+    {
+     "broker": "港商麥格理",
+     "buy": 11006,
+     "sell": 4391,
+     "net": 6615,
+     "pct": 3.23
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 7754,
+     "sell": 1607,
+     "net": 6147,
+     "pct": 3.0
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 15642,
+     "sell": 9716,
+     "net": 5926,
+     "pct": 2.89
+    },
+    {
+     "broker": "港商野村",
+     "buy": 5086,
+     "sell": 1013,
+     "net": 4073,
+     "pct": 1.99
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 9230,
+     "sell": 24445,
+     "net": -15215,
+     "pct": 7.43
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 13649,
+     "sell": 24405,
+     "net": -10756,
+     "pct": 5.25
+    },
+    {
+     "broker": "凱基-台北",
+     "buy": 5846,
+     "sell": 11417,
+     "net": -5571,
+     "pct": 2.72
+    },
+    {
+     "broker": "美林",
+     "buy": 5365,
+     "sell": 8484,
+     "net": -3119,
+     "pct": 1.52
+    },
+    {
+     "broker": "香港上海匯豐",
+     "buy": 807,
+     "sell": 1825,
+     "net": -1018,
+     "pct": 0.5
+    }
+   ],
+   "daytrade_buy_pct": 0.0,
+   "foreign_net_pct": -1.4831049348522434,
+   "top5_buy_pct": 15.315141735507334,
+   "top5_sell_pct": 17.186002263914645
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "凱基-高美館",
+    "count": 6,
+    "cum_net": -1031,
+    "buy_days": 0,
+    "sell_days": 6,
+    "last_date": "2026-11-05",
+    "last_net": -61,
+    "scored": 5,
+    "win_rate": 1.0,
+    "avg_capture_pct": 1.6481720379652565,
+    "cum_net_pct": -0.11400692887891713,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "元大-府城",
+    "count": 13,
+    "cum_net": 1102,
+    "buy_days": 7,
+    "sell_days": 6,
+    "last_date": "2026-11-05",
+    "last_net": 506,
+    "scored": 12,
+    "win_rate": 0.8333333333333334,
+    "avg_capture_pct": 1.2022264575467003,
+    "cum_net_pct": 0.12185803649327515,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "台新-台北",
+    "count": 7,
+    "cum_net": -1299,
+    "buy_days": 3,
+    "sell_days": 4,
+    "last_date": "2026-11-05",
+    "last_net": 212,
+    "scored": 6,
+    "win_rate": 0.8333333333333334,
+    "avg_capture_pct": 1.0153008938396952,
+    "cum_net_pct": -0.14364209564860653,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "元大-金華",
+    "count": 5,
+    "cum_net": -322,
+    "buy_days": 2,
+    "sell_days": 3,
+    "last_date": "2026-10-29",
+    "last_net": -207,
+    "scored": 5,
+    "win_rate": 0.8,
+    "avg_capture_pct": 1.3397166307571018,
+    "cum_net_pct": -0.03560643171582087,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "兆豐證券",
+    "count": 11,
+    "cum_net": 207,
+    "buy_days": 6,
+    "sell_days": 5,
+    "last_date": "2026-11-05",
+    "last_net": 199,
+    "scored": 10,
+    "win_rate": 0.8,
+    "avg_capture_pct": 1.1970700483536112,
+    "cum_net_pct": 0.022889848960170555,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "國泰-板橋",
+    "count": 5,
+    "cum_net": -176,
+    "buy_days": 2,
+    "sell_days": 3,
+    "last_date": "2026-11-02",
+    "last_net": -211,
+    "scored": 5,
+    "win_rate": 0.8,
+    "avg_capture_pct": 0.9673313313400953,
+    "cum_net_pct": -0.01946190056516917,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "港商野村",
+    "count": 13,
+    "cum_net": 3549,
+    "buy_days": 8,
+    "sell_days": 5,
+    "last_date": "2026-11-05",
+    "last_net": 709,
+    "scored": 12,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -0.37046359912048704,
+    "cum_net_pct": 0.39244480173741697,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常敗"
+   },
+   {
+    "broker": "港商麥格理",
+    "count": 19,
+    "cum_net": -78,
+    "buy_days": 10,
+    "sell_days": 9,
+    "last_date": "2026-11-05",
+    "last_net": -764,
+    "scored": 18,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -0.4389755387043546,
+    "cum_net_pct": -0.008625160477745426,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常敗"
+   },
+   {
+    "broker": "永豐金-匯立",
+    "count": 13,
+    "cum_net": 5745,
+    "buy_days": 7,
+    "sell_days": 6,
+    "last_date": "2026-11-05",
+    "last_net": 458,
+    "scored": 12,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -0.5193919341021693,
+    "cum_net_pct": 0.6352762428800959,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "統一",
+    "count": 12,
+    "cum_net": -687,
+    "buy_days": 4,
+    "sell_days": 8,
+    "last_date": "2026-11-03",
+    "last_net": -236,
+    "scored": 12,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -0.5349565370280085,
+    "cum_net_pct": -0.07596775959245011,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": 2053,
+  "winners_last_net_pct": 4.048351474996056,
+  "winners_inventory": -12209,
+  "winners_inventory_pct": -1.3500587727281272,
+  "losers_last_net": -16,
+  "losers_last_net_pct": -0.03155071777882947,
+  "n_scored": 140
+ },
+ "warrants": {
+  "call_vol": 62159,
+  "put_vol": 2877,
+  "call_amt": 59253220.0,
+  "put_amt": 1610120.0,
+  "n_call": 559,
+  "n_put": 30,
+  "n_call_active": 270,
+  "n_put_active": 18,
+  "call_share": 0.9557629620517867,
+  "amt_share": 0.9470906460276416,
+  "hedge_net": 3210,
+  "hedge_pct": 6.329862754377662,
+  "call_amt_5d": 46037994.0,
+  "call_surge": 1.287050430563938,
+  "list": [
+   {
+    "code": "030055",
+    "name": "鴻海凱基64購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030174",
+    "name": "鴻海凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030222",
+    "name": "鴻海元大64購24",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030223",
+    "name": "鴻海元大64購25",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030224",
+    "name": "鴻海元大64購26",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030389",
+    "name": "鴻海群益64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030473",
+    "name": "鴻海凱基64購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030793",
+    "name": "鴻海凱基68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030824",
+    "name": "鴻海群益64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030922",
+    "name": "鴻海元大64購27",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030967",
+    "name": "鴻海凱基68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031134",
+    "name": "鴻海群益64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031135",
+    "name": "鴻海群益66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031194",
+    "name": "鴻海凱基67購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031270",
+    "name": "鴻海元大64購28",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031273",
+    "name": "鴻海統一5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031274",
+    "name": "鴻海統一68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031520",
+    "name": "鴻海統一7A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031526",
+    "name": "鴻海凱基64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031597",
+    "name": "鴻海凱基65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031643",
+    "name": "鴻海凱基64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031690",
+    "name": "鴻海元大64購29",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031834",
+    "name": "鴻海凱基68購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031877",
+    "name": "鴻海元大64購30",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031990",
+    "name": "鴻海富邦66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032012",
+    "name": "鴻海群益64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032073",
+    "name": "鴻海台新64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032075",
+    "name": "鴻海凱基68購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032241",
+    "name": "鴻海元大64購31",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032332",
+    "name": "鴻海台新64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032333",
+    "name": "鴻海台新64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032334",
+    "name": "鴻海台新64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032385",
+    "name": "鴻海凱基64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032402",
+    "name": "鴻海凱基65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032625",
+    "name": "鴻海中信64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032743",
+    "name": "鴻海元大64購32",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032878",
+    "name": "鴻海國票65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032942",
+    "name": "鴻海統一68購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033042",
+    "name": "鴻海群益64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033149",
+    "name": "鴻海國泰65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033181",
+    "name": "鴻海元大67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033643",
+    "name": "鴻海台新6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033723",
+    "name": "鴻海元大67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033890",
+    "name": "鴻海富邦64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033943",
+    "name": "鴻海統一5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033944",
+    "name": "鴻海統一68購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034135",
+    "name": "鴻海元大67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034244",
+    "name": "鴻海台新64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034245",
+    "name": "鴻海台新64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034246",
+    "name": "鴻海台新64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034247",
+    "name": "鴻海台新64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034298",
+    "name": "鴻海群益64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034373",
+    "name": "鴻海凱基64購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034374",
+    "name": "鴻海凱基65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034509",
+    "name": "鴻海永豐64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034659",
+    "name": "鴻海台新64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034717",
+    "name": "鴻海元大67購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034817",
+    "name": "鴻海群益64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034896",
+    "name": "鴻海凱基64購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035012",
+    "name": "鴻海元大67購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035206",
+    "name": "鴻海國票66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035232",
+    "name": "鴻海台新6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035428",
+    "name": "鴻海群益66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035518",
+    "name": "鴻海永豐65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035652",
+    "name": "鴻海群益66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035724",
+    "name": "鴻海凱基67購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035830",
+    "name": "鴻海元大64購33",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035831",
+    "name": "鴻海元大67購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035870",
+    "name": "鴻海群益69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035929",
+    "name": "鴻海富邦66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036025",
+    "name": "鴻海元大64購34",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036026",
+    "name": "鴻海元大64購35",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036243",
+    "name": "鴻海台新64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036289",
+    "name": "鴻海群益65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036290",
+    "name": "鴻海群益65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036291",
+    "name": "鴻海群益66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036469",
+    "name": "鴻海永豐67購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036539",
+    "name": "鴻海凱基65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036618",
+    "name": "鴻海國票64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036687",
+    "name": "鴻海元大64購36",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036689",
+    "name": "鴻海元大64購37",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036795",
+    "name": "鴻海群益66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036851",
+    "name": "鴻海富邦72購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036854",
+    "name": "鴻海富邦77購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037143",
+    "name": "鴻海元大64購38",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037271",
+    "name": "鴻海中信68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037354",
+    "name": "鴻海凱基65購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037409",
+    "name": "鴻海元大65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037410",
+    "name": "鴻海元大65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037681",
+    "name": "鴻海富邦65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037777",
+    "name": "鴻海元大65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037778",
+    "name": "鴻海元大67購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037854",
+    "name": "鴻海凱基68購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037889",
+    "name": "鴻海國票65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037973",
+    "name": "鴻海群益67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038073",
+    "name": "鴻海永豐65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038074",
+    "name": "鴻海永豐66購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038274",
+    "name": "鴻海元大65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038313",
+    "name": "鴻海統一5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038404",
+    "name": "鴻海永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038539",
+    "name": "鴻海中信61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038642",
+    "name": "鴻海凱基66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038724",
+    "name": "鴻海國泰66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038725",
+    "name": "鴻海國泰6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038772",
+    "name": "鴻海元大65購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038773",
+    "name": "鴻海元大67購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038774",
+    "name": "鴻海元大69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039445",
+    "name": "鴻海統一6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041432",
+    "name": "鴻海統一5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041448",
+    "name": "鴻海永豐5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042406",
+    "name": "鴻海群益6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043125",
+    "name": "鴻海群益62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "044122",
+    "name": "鴻海元大5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "044791",
+    "name": "鴻海統一6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "046561",
+    "name": "鴻海永豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "046813",
+    "name": "鴻海富邦5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "046855",
+    "name": "鴻海元富5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "046914",
+    "name": "鴻海元大5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "047050",
+    "name": "鴻海元大5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "047205",
+    "name": "鴻海中信5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "047219",
+    "name": "鴻海富邦5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "047371",
+    "name": "鴻海中信5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "048099",
+    "name": "鴻海中信5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "048302",
+    "name": "鴻海凱基63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "048371",
+    "name": "鴻海富邦5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "048519",
+    "name": "鴻海凱基5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "048521",
+    "name": "鴻海凱基61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049056",
+    "name": "鴻海富邦5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049251",
+    "name": "鴻海凱基5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049623",
+    "name": "鴻海中信5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049636",
+    "name": "鴻海永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049637",
+    "name": "鴻海永豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049638",
+    "name": "鴻海永豐66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049787",
+    "name": "鴻海元富5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049903",
+    "name": "鴻海凱基6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "050198",
+    "name": "鴻海群益5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "050321",
+    "name": "鴻海凱基6C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "050351",
+    "name": "鴻海富邦5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052188",
+    "name": "鴻海統一71購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052287",
+    "name": "鴻海永豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052341",
+    "name": "鴻海群益5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052481",
+    "name": "鴻海富邦61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052648",
+    "name": "鴻海統一65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052935",
+    "name": "鴻海國泰5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053030",
+    "name": "鴻海富邦71購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053354",
+    "name": "鴻海元大5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053576",
+    "name": "鴻海元大5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054030",
+    "name": "鴻海永豐61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054560",
+    "name": "鴻海永豐5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054894",
+    "name": "鴻海國泰5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055141",
+    "name": "鴻海元大5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055259",
+    "name": "鴻海元大5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055473",
+    "name": "鴻海元大5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056119",
+    "name": "鴻海元大61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056286",
+    "name": "鴻海元大61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056390",
+    "name": "鴻海元富62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056391",
+    "name": "鴻海元富62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056549",
+    "name": "鴻海元大61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056606",
+    "name": "鴻海永豐5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056625",
+    "name": "鴻海統一62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056626",
+    "name": "鴻海統一65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056735",
+    "name": "鴻海群益5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056821",
+    "name": "鴻海元富5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057388",
+    "name": "鴻海群益5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057433",
+    "name": "鴻海兆豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057434",
+    "name": "鴻海兆豐63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057710",
+    "name": "鴻海元富63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057745",
+    "name": "鴻海永豐64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057746",
+    "name": "鴻海永豐66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057807",
+    "name": "鴻海凱基5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057898",
+    "name": "鴻海國票66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058038",
+    "name": "鴻海群益5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058039",
+    "name": "鴻海群益61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058557",
+    "name": "鴻海永豐65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058614",
+    "name": "鴻海統一66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058657",
+    "name": "鴻海元大61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058839",
+    "name": "鴻海統一73購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058882",
+    "name": "鴻海富邦69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058899",
+    "name": "鴻海元大61購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059040",
+    "name": "鴻海統一63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059041",
+    "name": "鴻海統一73購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059177",
+    "name": "鴻海元大61購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059299",
+    "name": "鴻海元大61購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059413",
+    "name": "鴻海統一63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059537",
+    "name": "鴻海群益5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059615",
+    "name": "鴻海元富63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059658",
+    "name": "鴻海中信63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059667",
+    "name": "鴻海永豐65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059668",
+    "name": "鴻海永豐68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059772",
+    "name": "鴻海國泰61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059924",
+    "name": "鴻海群益63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059925",
+    "name": "鴻海群益63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059926",
+    "name": "鴻海群益64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059927",
+    "name": "鴻海群益65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060203",
+    "name": "鴻海富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061156",
+    "name": "鴻海富邦73購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062167",
+    "name": "鴻海永豐5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062252",
+    "name": "鴻海群益62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062290",
+    "name": "鴻海元大62購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062338",
+    "name": "鴻海統一64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062339",
+    "name": "鴻海統一74購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062442",
+    "name": "鴻海富邦74購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062451",
+    "name": "鴻海群益5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062452",
+    "name": "鴻海群益5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062453",
+    "name": "鴻海群益5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062469",
+    "name": "鴻海元大64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062775",
+    "name": "鴻海群益63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062824",
+    "name": "鴻海元大61購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062825",
+    "name": "鴻海元大64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063025",
+    "name": "鴻海元大64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063065",
+    "name": "鴻海國泰67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063076",
+    "name": "鴻海統一5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063188",
+    "name": "鴻海群益62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063247",
+    "name": "鴻海元大61購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063248",
+    "name": "鴻海元大64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063333",
+    "name": "鴻海兆豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063941",
+    "name": "鴻海凱基67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064194",
+    "name": "鴻海台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064282",
+    "name": "鴻海凱基5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064608",
+    "name": "鴻海凱基5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064919",
+    "name": "鴻海富邦62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065278",
+    "name": "鴻海永豐61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065279",
+    "name": "鴻海永豐64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065280",
+    "name": "鴻海永豐66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065356",
+    "name": "鴻海國票5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065473",
+    "name": "鴻海凱基5C購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066097",
+    "name": "鴻海凱基5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066315",
+    "name": "鴻海凱基5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066316",
+    "name": "鴻海凱基5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066317",
+    "name": "鴻海凱基5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066420",
+    "name": "鴻海統一61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066473",
+    "name": "鴻海元大5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066474",
+    "name": "鴻海元大61購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066475",
+    "name": "鴻海元大64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066511",
+    "name": "鴻海國票5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066536",
+    "name": "鴻海群益5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066553",
+    "name": "鴻海台新5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066639",
+    "name": "鴻海元大5C購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066640",
+    "name": "鴻海元大61購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066641",
+    "name": "鴻海元大64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066692",
+    "name": "鴻海台新5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066711",
+    "name": "鴻海富邦75購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066890",
+    "name": "鴻海元大5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066891",
+    "name": "鴻海元大61購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067016",
+    "name": "鴻海元大5C購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067017",
+    "name": "鴻海元大61購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067059",
+    "name": "鴻海群益5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067060",
+    "name": "鴻海群益61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067098",
+    "name": "鴻海元大5C購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067099",
+    "name": "鴻海元大61購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067129",
+    "name": "鴻海凱基61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067130",
+    "name": "鴻海凱基61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067236",
+    "name": "鴻海永豐5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067237",
+    "name": "鴻海永豐67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067306",
+    "name": "鴻海凱基63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067307",
+    "name": "鴻海凱基64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067371",
+    "name": "鴻海元大5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067372",
+    "name": "鴻海元大5C購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067373",
+    "name": "鴻海元大63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067410",
+    "name": "鴻海中信65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067439",
+    "name": "鴻海富邦61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067480",
+    "name": "鴻海凱基61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067509",
+    "name": "鴻海元大5C購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067510",
+    "name": "鴻海元大63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067609",
+    "name": "鴻海中信65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067687",
+    "name": "鴻海群益5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067710",
+    "name": "鴻海元大5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067711",
+    "name": "鴻海元大5C購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067712",
+    "name": "鴻海元大61購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067751",
+    "name": "鴻海台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067846",
+    "name": "鴻海元大5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067847",
+    "name": "鴻海元大5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067848",
+    "name": "鴻海元大5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067883",
+    "name": "鴻海凱基61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067990",
+    "name": "鴻海統一5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067991",
+    "name": "鴻海統一65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068132",
+    "name": "鴻海元大5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068133",
+    "name": "鴻海元大5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068134",
+    "name": "鴻海元大5B購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068243",
+    "name": "鴻海統一65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068314",
+    "name": "鴻海台新65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068339",
+    "name": "鴻海群益5B購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068381",
+    "name": "鴻海統一62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068531",
+    "name": "鴻海凱基5C購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068559",
+    "name": "鴻海元大5B購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068716",
+    "name": "鴻海元大5B購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068929",
+    "name": "鴻海富邦61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069024",
+    "name": "鴻海元大5B購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069155",
+    "name": "鴻海凱基5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069297",
+    "name": "鴻海台新5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069338",
+    "name": "鴻海凱基5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069339",
+    "name": "鴻海凱基5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069431",
+    "name": "鴻海永豐6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069432",
+    "name": "鴻海永豐75購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069483",
+    "name": "鴻海凱基5B購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069532",
+    "name": "鴻海元大5B購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069610",
+    "name": "鴻海台新5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069620",
+    "name": "鴻海凱基5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069631",
+    "name": "鴻海凱基62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069668",
+    "name": "鴻海富邦5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069764",
+    "name": "鴻海永豐65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069765",
+    "name": "鴻海永豐69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069766",
+    "name": "鴻海永豐6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069823",
+    "name": "鴻海凱基5C購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069833",
+    "name": "鴻海群益5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069834",
+    "name": "鴻海群益62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069859",
+    "name": "鴻海群益5C購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069860",
+    "name": "鴻海群益5C購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069861",
+    "name": "鴻海群益5C購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069900",
+    "name": "鴻海元大5C購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069974",
+    "name": "鴻海永豐73購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069975",
+    "name": "鴻海永豐76購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069998",
+    "name": "鴻海台新5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069999",
+    "name": "鴻海台新5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070023",
+    "name": "鴻海凱基5C購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070054",
+    "name": "鴻海元大5C購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070055",
+    "name": "鴻海元大5C購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070056",
+    "name": "鴻海元大5C購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070057",
+    "name": "鴻海元大61購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070058",
+    "name": "鴻海元大64購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070116",
+    "name": "鴻海群益5C購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070117",
+    "name": "鴻海群益5C購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070118",
+    "name": "鴻海群益5C購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070119",
+    "name": "鴻海群益5C購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070120",
+    "name": "鴻海群益61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070160",
+    "name": "鴻海國票61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070207",
+    "name": "鴻海群益5C購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070241",
+    "name": "鴻海凱基64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070242",
+    "name": "鴻海凱基64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070280",
+    "name": "鴻海元大61購23",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070281",
+    "name": "鴻海元大64購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070360",
+    "name": "鴻海國票61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070386",
+    "name": "鴻海凱基5C購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070387",
+    "name": "鴻海凱基61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070447",
+    "name": "鴻海元大5C購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070448",
+    "name": "鴻海元大5C購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070449",
+    "name": "鴻海元大61購24",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070450",
+    "name": "鴻海元大64購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070552",
+    "name": "鴻海中信66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070618",
+    "name": "鴻海凱基5C購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070648",
+    "name": "鴻海富邦5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070649",
+    "name": "鴻海富邦64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070650",
+    "name": "鴻海富邦66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070651",
+    "name": "鴻海富邦76購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070750",
+    "name": "鴻海元大61購25",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070937",
+    "name": "鴻海國泰61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070938",
+    "name": "鴻海國泰62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070939",
+    "name": "鴻海國泰63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071030",
+    "name": "鴻海群益5C購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071070",
+    "name": "鴻海凱基5C購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071109",
+    "name": "鴻海永豐5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071110",
+    "name": "鴻海永豐67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071164",
+    "name": "鴻海凱基5C購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071165",
+    "name": "鴻海凱基5C購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071216",
+    "name": "鴻海國票61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071253",
+    "name": "鴻海元大61購26",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071278",
+    "name": "鴻海中信64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071290",
+    "name": "鴻海凱基5C購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071335",
+    "name": "鴻海富邦62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071375",
+    "name": "鴻海台新66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071535",
+    "name": "鴻海統一66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071536",
+    "name": "鴻海統一66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071537",
+    "name": "鴻海統一6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071817",
+    "name": "鴻海凱基5C購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071883",
+    "name": "鴻海元大61購27",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071933",
+    "name": "鴻海統一64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071934",
+    "name": "鴻海統一6C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072158",
+    "name": "鴻海凱基5C購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072194",
+    "name": "鴻海台新5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072226",
+    "name": "鴻海元大5C購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072328",
+    "name": "鴻海凱基5C購23",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072372",
+    "name": "鴻海群益5C購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072373",
+    "name": "鴻海群益5C購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072414",
+    "name": "鴻海永豐5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072415",
+    "name": "鴻海永豐65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072532",
+    "name": "鴻海元大5C購23",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072718",
+    "name": "鴻海群益5C購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072865",
+    "name": "鴻海凱基5C購24",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072956",
+    "name": "鴻海永豐5C購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073144",
+    "name": "鴻海中信66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073290",
+    "name": "鴻海永豐5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073291",
+    "name": "鴻海永豐61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073450",
+    "name": "鴻海統一63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073582",
+    "name": "鴻海國票62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073676",
+    "name": "鴻海元大61購28",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073770",
+    "name": "鴻海凱基61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073890",
+    "name": "鴻海台新61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074492",
+    "name": "鴻海中信65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074539",
+    "name": "鴻海群益63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074916",
+    "name": "鴻海國泰62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075053",
+    "name": "鴻海台新61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075054",
+    "name": "鴻海台新61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075079",
+    "name": "鴻海群益61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075098",
+    "name": "鴻海永豐67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075134",
+    "name": "鴻海凱基61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075194",
+    "name": "鴻海群益61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075311",
+    "name": "鴻海中信64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075375",
+    "name": "鴻海國票61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075887",
+    "name": "鴻海凱基61購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075987",
+    "name": "鴻海永豐6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075988",
+    "name": "鴻海永豐73購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076210",
+    "name": "鴻海永豐61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076211",
+    "name": "鴻海永豐66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076212",
+    "name": "鴻海永豐6B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076520",
+    "name": "鴻海凱基61購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076704",
+    "name": "鴻海凱基61購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076809",
+    "name": "鴻海永豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076810",
+    "name": "鴻海永豐63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076873",
+    "name": "鴻海群益61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076874",
+    "name": "鴻海群益61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076952",
+    "name": "鴻海國票64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077148",
+    "name": "鴻海國泰62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077226",
+    "name": "鴻海凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077303",
+    "name": "鴻海台新61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077375",
+    "name": "鴻海永豐61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077413",
+    "name": "鴻海凱基64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077636",
+    "name": "鴻海永豐61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077748",
+    "name": "鴻海凱基61購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077804",
+    "name": "鴻海統一67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077880",
+    "name": "鴻海凱基63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078046",
+    "name": "鴻海凱基62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078179",
+    "name": "鴻海元大62購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078180",
+    "name": "鴻海元大62購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078224",
+    "name": "鴻海永豐63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078225",
+    "name": "鴻海永豐64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078239",
+    "name": "鴻海國泰66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078280",
+    "name": "鴻海元大63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078281",
+    "name": "鴻海元大64購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078333",
+    "name": "鴻海群益62購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078347",
+    "name": "鴻海凱基63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078415",
+    "name": "鴻海永豐62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078460",
+    "name": "鴻海元大63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078461",
+    "name": "鴻海元大63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078551",
+    "name": "鴻海凱基63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078552",
+    "name": "鴻海凱基63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078588",
+    "name": "鴻海台新68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078612",
+    "name": "鴻海元大63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078659",
+    "name": "鴻海永豐64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078660",
+    "name": "鴻海永豐64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078716",
+    "name": "鴻海凱基64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079025",
+    "name": "鴻海元大64購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079192",
+    "name": "鴻海元大64購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079239",
+    "name": "鴻海凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079287",
+    "name": "鴻海國票68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079424",
+    "name": "鴻海凱基63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079493",
+    "name": "鴻海國泰67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079559",
+    "name": "鴻海元大63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079560",
+    "name": "鴻海元大64購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079651",
+    "name": "鴻海群益63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079690",
+    "name": "鴻海凱基64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079825",
+    "name": "鴻海台新65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079826",
+    "name": "鴻海台新68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079866",
+    "name": "鴻海中信65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080047",
+    "name": "鴻海富邦64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080048",
+    "name": "鴻海富邦66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080049",
+    "name": "鴻海富邦68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080050",
+    "name": "鴻海富邦78購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080417",
+    "name": "鴻海群益63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080470",
+    "name": "鴻海凱基64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080605",
+    "name": "鴻海群益63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080645",
+    "name": "鴻海凱基68購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080701",
+    "name": "鴻海台新65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080717",
+    "name": "鴻海永豐66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080718",
+    "name": "鴻海永豐68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080747",
+    "name": "鴻海元大63購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080748",
+    "name": "鴻海元大64購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080872",
+    "name": "鴻海台新62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080873",
+    "name": "鴻海台新65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080897",
+    "name": "鴻海元大64購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080980",
+    "name": "鴻海凱基63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081031",
+    "name": "鴻海富邦66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081227",
+    "name": "鴻海元大62購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081272",
+    "name": "鴻海中信68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081424",
+    "name": "鴻海元大62購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081425",
+    "name": "鴻海元大62購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081426",
+    "name": "鴻海元大62購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081528",
+    "name": "鴻海凱基68購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081634",
+    "name": "鴻海元大62購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081704",
+    "name": "鴻海凱基68購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081782",
+    "name": "鴻海元大62購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081783",
+    "name": "鴻海元大62購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081847",
+    "name": "鴻海凱基63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081848",
+    "name": "鴻海凱基63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081849",
+    "name": "鴻海凱基64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081924",
+    "name": "鴻海群益63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082099",
+    "name": "鴻海富邦62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082154",
+    "name": "鴻海國票63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082191",
+    "name": "鴻海群益62購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082239",
+    "name": "鴻海凱基63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082240",
+    "name": "鴻海凱基63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082619",
+    "name": "鴻海統一5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082621",
+    "name": "鴻海元大62購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082622",
+    "name": "鴻海元大62購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082869",
+    "name": "鴻海凱基65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082980",
+    "name": "鴻海元大63購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083179",
+    "name": "鴻海元大63購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083180",
+    "name": "鴻海元大63購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083241",
+    "name": "鴻海群益63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083309",
+    "name": "鴻海國票66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083340",
+    "name": "鴻海中信63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083526",
+    "name": "鴻海凱基63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083611",
+    "name": "鴻海台新63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083863",
+    "name": "鴻海富邦65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083999",
+    "name": "鴻海元大63購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084109",
+    "name": "鴻海群益63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084198",
+    "name": "鴻海國票64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084607",
+    "name": "鴻海台新63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084654",
+    "name": "鴻海元大63購23",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084719",
+    "name": "鴻海凱基65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085096",
+    "name": "鴻海元大63購24",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085358",
+    "name": "鴻海中信67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085498",
+    "name": "鴻海群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085764",
+    "name": "鴻海群益63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085765",
+    "name": "鴻海群益67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085803",
+    "name": "鴻海凱基67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085991",
+    "name": "鴻海元大66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086183",
+    "name": "鴻海元大66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086280",
+    "name": "鴻海凱基67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086473",
+    "name": "鴻海群益63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086509",
+    "name": "鴻海元大63購25",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086561",
+    "name": "鴻海凱基6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086657",
+    "name": "鴻海永豐63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086658",
+    "name": "鴻海永豐63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086715",
+    "name": "鴻海元大63購26",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086893",
+    "name": "鴻海群益63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086896",
+    "name": "鴻海群益65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086986",
+    "name": "鴻海統一67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087046",
+    "name": "鴻海凱基63購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087163",
+    "name": "鴻海富邦65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087205",
+    "name": "鴻海群益63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087291",
+    "name": "鴻海台新63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087325",
+    "name": "鴻海元大63購27",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087414",
+    "name": "鴻海凱基64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087521",
+    "name": "鴻海永豐63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087641",
+    "name": "鴻海元大63購28",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087728",
+    "name": "鴻海群益63購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088128",
+    "name": "鴻海凱基63購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088167",
+    "name": "鴻海統一6B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088300",
+    "name": "鴻海元大63購29",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088376",
+    "name": "鴻海群益63購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088412",
+    "name": "鴻海統一67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088468",
+    "name": "鴻海富邦65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088469",
+    "name": "鴻海富邦65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088535",
+    "name": "鴻海國泰64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088559",
+    "name": "鴻海元大63購30",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088562",
+    "name": "鴻海元大63購31",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088738",
+    "name": "鴻海群益64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088805",
+    "name": "鴻海凱基63購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088958",
+    "name": "鴻海台新63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089113",
+    "name": "鴻海元大63購32",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089114",
+    "name": "鴻海元大63購33",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089115",
+    "name": "鴻海元大66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089248",
+    "name": "鴻海台新63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089403",
+    "name": "鴻海元大66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089540",
+    "name": "鴻海富邦61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089560",
+    "name": "鴻海元大64購23",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089875",
+    "name": "鴻海元大65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089876",
+    "name": "鴻海元大65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089985",
+    "name": "鴻海富邦68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "03045T",
+    "name": "鴻海凱基5C售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03259T",
+    "name": "鴻海台新5B售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03513T",
+    "name": "鴻海台新5C售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03516T",
+    "name": "鴻海群益63售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03522T",
+    "name": "鴻海凱基5C售15",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03566T",
+    "name": "鴻海國票61售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03583T",
+    "name": "鴻海凱基5C售21",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03692T",
+    "name": "鴻海國票62售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03979T",
+    "name": "鴻海國票61售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04046T",
+    "name": "鴻海國票64售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04088T",
+    "name": "鴻海元大63售15",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04104T",
+    "name": "鴻海凱基63售10",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04124T",
+    "name": "鴻海台新62售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04451T",
+    "name": "鴻海台新63售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04462T",
+    "name": "鴻海群益63售14",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04581T",
+    "name": "鴻海台新63售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04640T",
+    "name": "鴻海群益64售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04864T",
+    "name": "鴻海台新64售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04914T",
+    "name": "鴻海群益64售10",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04979T",
+    "name": "鴻海台新64售12",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05004T",
+    "name": "鴻海群益6C售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05023T",
+    "name": "鴻海凱基64售18",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "07792U",
+    "name": "鴻海群益5B售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "07932U",
+    "name": "鴻海富邦61售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08405U",
+    "name": "鴻海凱基5C售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08410U",
+    "name": "鴻海凱基63售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08430U",
+    "name": "鴻海凱基65售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08704U",
+    "name": "鴻海群益61售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08936U",
+    "name": "鴻海群益63售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08959U",
+    "name": "鴻海凱基63售04",
+    "right": "put",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-05",
+  "breadth": {
+   "up": 167,
+   "down": 857
+  },
+  "foreign_amt_b": -1024.6,
+  "trust_amt_b": 225.9,
+  "tx_night": {
+   "contract": "202611",
+   "o": 41990.0,
+   "h": 42298.0,
+   "l": 38799.0,
+   "c": 38936.0,
+   "chg": -2946.0,
+   "chg_pct": -7.03,
+   "vol": 89296,
+   "title": "2026/11/05"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 43013.0,
+   "h": 43114.0,
+   "l": 41666.0,
+   "c": 41915.0,
+   "chg": -1288.0,
+   "chg_pct": -2.98,
+   "vol": 66939,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -95651,
+   "raw": [
+    98413,
+    842870287,
+    101388,
+    868529656,
+    -2975,
+    -25659369,
+    13388,
+    112151905,
+    109039,
+    913433737,
+    -95651,
+    -801281832
+   ]
+  },
+  "us": {}
+ }
+}

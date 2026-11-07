@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-警示結果統計：讀 logs/alert_outcomes.jsonl（monitor 快迴圈對每則 ⚠/▶ 警示記下當時狀態，10/30 分鐘後補上漲跌），
+警示結果統計：讀 logs/alert_outcomes*.jsonl（各台電腦合併）（monitor 快迴圈對每則 ⚠/▶ 警示記下當時狀態，10/30 分鐘後補上漲跌），
 按警示類型算「之後漲的比率、平均報酬、期間最大上下行」，用來決定哪些警示值得當訊號、哪些只是提醒。
     python3 alert_review.py                  # 全部
     python3 alert_review.py --code 3006      # 只看一檔
@@ -14,7 +14,7 @@ import json
 import argparse
 import datetime as dt
 from collections import defaultdict
-from config import LOG_DIR
+from config import LOG_DIR, dev_files, read_jsonl_devices, one_device
 
 
 # --type 可用英文別名（也接受中文全名；逗號分隔多個）
@@ -42,17 +42,10 @@ def resolve_types(arg):
 
 
 def load():
-    path = os.path.join(LOG_DIR, "alert_outcomes.jsonl")
-    if not os.path.exists(path):
-        raise SystemExit(f"還沒有資料：{path}（monitor --web 跑過一天後才會有）")
-    rows = []
-    with open(path, encoding="utf-8") as f:
-        for line in f:
-            try:
-                rows.append(json.loads(line))
-            except json.JSONDecodeError:
-                pass
-    return rows
+    if not dev_files(LOG_DIR, "alert_outcomes", ".jsonl"):
+        raise SystemExit(f"還沒有資料：{os.path.join(LOG_DIR, 'alert_outcomes')}*.jsonl（monitor --web 跑過一天後才會有）")
+    # 各台電腦合併；同一天同一檔兩台都有時只算一台（永豐串流優先），不重複計
+    return one_device(read_jsonl_devices(LOG_DIR, "alert_outcomes"), key=lambda r: (r.get("date"), r.get("code")))
 
 
 def stat(rs, k):
@@ -75,6 +68,7 @@ def main():
     ap.add_argument("--high", action="store_true", help="只看當時價在日內區間 75%% 以上的")
     ap.add_argument("--cover", action="store_true", help="只看主力 10 分鐘淨額上升（回補/停賣）的")
     ap.add_argument("--detail", action="store_true")
+    ap.add_argument("--src", choices=["shioaji", "mis", "unknown"], default=None, help="只看某資料來源：shioaji 永豐串流、mis 公開報價 10 秒、unknown 舊紀錄")
     a = ap.parse_args()
     rows = load()
     if a.code:
@@ -82,6 +76,8 @@ def main():
     if a.type:
         want = set(resolve_types(a.type))
         rows = [r for r in rows if r["type"] in want]
+    if a.src:
+        rows = [r for r in rows if (r.get("src") or "unknown") == a.src]
     if a.days:
         days = sorted({r["date"] for r in rows})[-a.days:]
         rows = [r for r in rows if r["date"] in days]

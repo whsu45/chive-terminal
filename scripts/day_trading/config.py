@@ -32,6 +32,89 @@ GROUPS_FILE = os.path.join(HERE, "groups.json")
 os.makedirs(CACHE_DIR, exist_ok=True)
 os.makedirs(LOG_DIR, exist_ok=True)
 
+# --- 裝置 ID：同一份 repo 可能在不同電腦開 monitor，每天的紀錄都會 commit 回 GitHub。
+#     各台寫各自的檔（monitor_YYYYMMDD_<id>.jsonl、alert_outcomes_<id>.jsonl…），git 就不會撞；讀的時候再合併。
+#     ID 第一次執行時隨機產生、存在 .device_id（已 .gitignore，不能進 git，否則兩台會拿到同一個 ID）。
+#     不用電腦名稱，避免把主機名推到公開 repo。想取好認的名字可設環境變數 DEVICE_ID=mac（小寫英數與 -，最多 16 字）。
+import re as _re
+import glob as _glob
+import secrets as _secrets
+
+DEVICE_FILE = os.path.join(HERE, ".device_id")
+_DEV_RE = r"[a-z0-9][a-z0-9-]{0,15}"
+
+
+def _device_id():
+    v = (os.environ.get("DEVICE_ID") or "").strip().lower()
+    if _re.fullmatch(_DEV_RE, v):
+        return v
+    try:
+        with open(DEVICE_FILE, encoding="utf-8") as f:
+            v = f.read().strip().lower()
+        if _re.fullmatch(_DEV_RE, v):
+            return v
+    except OSError:
+        pass
+    v = _secrets.token_hex(3)
+    try:
+        with open(DEVICE_FILE, "w", encoding="utf-8") as f:
+            f.write(v + "\n")
+    except OSError:
+        pass
+    return v
+
+
+DEVICE_ID = _device_id()
+
+
+def dev_path(dirname, stem, ext):
+    """這台電腦要寫的檔：<stem>_<裝置ID><ext>。"""
+    return os.path.join(dirname, f"{stem}_{DEVICE_ID}{ext}")
+
+
+def dev_files(dirname, stem, ext):
+    """所有裝置的同名檔 [(裝置ID, 路徑)]：沒有裝置 ID 的舊檔（加這機制前寫的）裝置記為 ""，排第一個。"""
+    out = []
+    legacy = os.path.join(dirname, stem + ext)
+    if os.path.exists(legacy):
+        out.append(("", legacy))
+    pat = _re.compile(_re.escape(stem) + "_(" + _DEV_RE + ")" + _re.escape(ext))
+    for p in sorted(_glob.glob(os.path.join(dirname, _glob.escape(stem) + "_*" + ext))):
+        m = pat.fullmatch(os.path.basename(p))
+        if m:
+            out.append((m.group(1), p))
+    return out
+
+
+def read_jsonl_devices(dirname, stem, ext=".jsonl"):
+    """讀所有裝置的 jsonl，每列加上 _dev（裝置ID）。壞行跳過。"""
+    rows = []
+    for dev, p in dev_files(dirname, stem, ext):
+        with open(p, encoding="utf-8") as f:
+            for line in f:
+                try:
+                    r = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if isinstance(r, dict):
+                    r["_dev"] = dev
+                    rows.append(r)
+    return rows
+
+
+def one_device(rows, key):
+    """兩台同一天都開了同一檔，紀錄會重複（只是時間點略有差）：同一個 key（通常是 (日期, 代碼)）只留一台的。
+    優先留永豐串流（src != mis）筆數多的那台，其次總筆數多的；結果去掉 _dev 欄位。"""
+    groups = {}
+    for r in rows:
+        groups.setdefault(key(r), {}).setdefault(r.get("_dev", ""), []).append(r)
+    pick = {k: max(by_dev, key=lambda d: (sum(1 for r in by_dev[d] if r.get("src") != "mis"), len(by_dev[d])))
+            for k, by_dev in groups.items()}
+    out = [r for r in rows if r.get("_dev", "") == pick[key(r)]]   # 保留原本順序
+    for r in out:
+        r.pop("_dev", None)
+    return out
+
 HTTP_TIMEOUT = 12
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/124 Safari/537.36"
 

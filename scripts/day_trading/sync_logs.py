@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 把每天本機拿到的資料 commit 回 GitHub：
-  logs/*.jsonl、logs/*.json（monitor 估算紀錄、警示/訊號結果、交戰紀錄）、.cache/daily_*.json（盤前資料）、.cache/calibration_*.json
-不碰 .env、.cache/http/（原始 HTTP 快取 450MB）、.cache/ticks/。
+  logs/*.jsonl、logs/*.json（monitor 估算紀錄、警示/訊號結果、交戰紀錄；每台電腦一個裝置 ID 後綴，兩台不會撞檔）、.cache/daily_*.json（盤前資料）、.cache/calibration_*.json
+不碰 .env、.cache/http/（原始 HTTP 快取 450MB）、.cache/ticks/、logs/trades.jsonl（你的實際交易，個人資料）。
     python3 sync_logs.py            # add + commit + push
     python3 sync_logs.py --no-push  # 只 commit
 monitor.py 收盤後（13:35）會自動跑一次；環境變數 LOG_SYNC=0 關掉。
@@ -14,6 +14,7 @@ import subprocess
 import datetime as dt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+PRIVATE = {"trades.jsonl"}   # 持倉面板的實際交易紀錄：repo 是公開的，不推（也在 .gitignore）
 
 
 def git(*args, check=True):
@@ -28,7 +29,8 @@ def main(push=True):
     rel = os.path.relpath(HERE, root)
     paths = []
     for pat in ("logs/*.jsonl", "logs/*.json", ".cache/daily_*.json", ".cache/calibration_*.json", "model_params.json"):
-        paths += [os.path.relpath(p, root) for p in glob.glob(os.path.join(HERE, pat))]
+        paths += [os.path.relpath(p, root) for p in glob.glob(os.path.join(HERE, pat))
+                  if os.path.basename(p) not in PRIVATE]
     if not paths:
         print("沒有資料檔"); return 0
     subprocess.run(["git", "add", "--", *paths], cwd=root, capture_output=True, text=True)
@@ -49,7 +51,10 @@ def main(push=True):
             # GitHub Actions 每天會自動 commit data/*.json，先把遠端拉下來 rebase 再推
             pr = subprocess.run(["git", "pull", "--rebase", "--autostash", "-q"], cwd=root, capture_output=True, text=True, timeout=180)
             if pr.returncode != 0:
-                print(f"遠端有新 commit 且 rebase 失敗，請手動處理：{(pr.stderr or pr.stdout).strip()[:200]}"); return 1
+                # 常見原因：兩台機器同一天都寫了同一個 logs 檔。不要把 repo 卡在 rebase 中途，退回去、commit 留在本機
+                subprocess.run(["git", "rebase", "--abort"], cwd=root, capture_output=True, text=True)
+                print(f"遠端有新 commit 且 rebase 衝突（多半是另一台也推了同一天的 logs），已取消 rebase，commit 留在本機請手動合併："
+                      f"{(pr.stderr or pr.stdout).strip()[:200]}"); return 1
             r = subprocess.run(["git", "push"], cwd=root, capture_output=True, text=True, timeout=120)
         if r.returncode != 0:
             print(f"push 失敗（commit 已留在本機，下次再推）：{(r.stderr or r.stdout).strip()[:200]}"); return 1

@@ -22,7 +22,7 @@ import math
 import argparse
 import datetime as dt
 
-from config import CACHE_DIR, ENV_FILE, load_env
+from config import CACHE_DIR, ENV_FILE, load_env, DEVICE_ID
 import tw_calendar as cal
 import src_shioaji as S
 
@@ -225,7 +225,7 @@ def main():
     print(f"  → BIG_LOT_AMOUNT={int(rec_big)}  SMALL_LOT_AMOUNT={int(rec_small)}")
     out = {"date": today.isoformat(), "codes": a.codes, "days": [d.isoformat() for d in days],
            "A": [list(r) for r in bestA], "B": [list(r) for r in bestB], "rec_big": rec_big, "rec_small": rec_small}
-    with open(os.path.join(CACHE_DIR, f"calibration_{today:%Y%m%d}.json"), "w") as f:
+    with open(os.path.join(CACHE_DIR, f"calibration_{today:%Y%m%d}_{DEVICE_ID}.json"), "w") as f:
         json.dump(out, f, ensure_ascii=False, indent=1, default=str)
     if a.apply and os.path.exists(ENV_FILE):
         lines = open(ENV_FILE, encoding="utf-8").read().splitlines()

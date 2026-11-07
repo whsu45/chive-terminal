@@ -17,21 +17,20 @@ import random
 import argparse
 import datetime as dt
 from collections import defaultdict
-from config import LOG_DIR
+from config import LOG_DIR, read_jsonl_devices, one_device
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def load_rows():
+def load_rows(include_mis=False):
+    """MIS 10 秒快照模式（沒永豐串流）的估算缺分流因子、K 線也粗，預設不拿來演化。"""
     rows = []
-    for path in sorted(glob.glob(os.path.join(LOG_DIR, "monitor_*.jsonl"))):
-        date = os.path.basename(path)[8:16]
-        for line in open(path, encoding="utf-8"):
-            try:
-                r = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            if not (r.get("price") and r.get("time") and r.get("code")):
+    dates = sorted({os.path.basename(p)[8:16] for p in glob.glob(os.path.join(LOG_DIR, "monitor_*.jsonl"))})
+    for date in dates:
+        # 同一天各台電腦的紀錄合併；同一檔兩台都有時只用一台（永豐串流優先），不重複計
+        day = [r for r in read_jsonl_devices(LOG_DIR, f"monitor_{date}") if r.get("price") and r.get("time") and r.get("code")]
+        for r in one_device(day, key=lambda r: r["code"]):
+            if r.get("src") == "mis" and not include_mis:
                 continue
             rows.append({"date": date, "code": r["code"], "time": r["time"][:8], "price": float(r["price"]),
                          "DF": [(f[0], float(f[1])) for f in (r.get("daily_factors") or [])],
@@ -150,9 +149,10 @@ def main():
     ap.add_argument("--lam", type=float, default=0.02, help="偏離 1.0 的懲罰（資料少時調大）")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--apply", action="store_true", help="寫入 model_params.json（否則只寫 candidate）")
+    ap.add_argument("--include-mis", action="store_true", help="連 MIS 10 秒快照模式的估算一起用（預設排除）")
     a = ap.parse_args()
 
-    rows = load_rows()
+    rows = load_rows(a.include_mis)
     data = with_forward(rows, a.horizon)
     if len(data) < 60:
         raise SystemExit(f"可用樣本只有 {len(data)} 筆，至少要 60 筆（多跑幾天 monitor 再來）")

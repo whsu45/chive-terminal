@@ -440,6 +440,28 @@ def traded_at(code, price, since_ts):
         return (tot, b, s)
 
 
+def recent_ticks(code, seconds=30):
+    """最近 seconds 秒的逐筆 [(epoch, price, vol, tick_type)]（時間由舊到新）與大單門檻（張，跟 flow() 同一套）。
+    給「掛單被大單砸穿」撤單警告用；沒資料回 ([], None)。"""
+    with _lock:
+        acc = _state.get(code)
+        if not acc or not acc["ticks"]:
+            return [], None
+        ticks = acc["ticks"]
+        cutoff = time.time() - seconds
+        out = []
+        for ts, p, v, tt in reversed(ticks):
+            e = (ts if isinstance(ts, dt.datetime) else ns_to_dt(ts)).timestamp()
+            if e < cutoff:
+                break
+            out.append((e, p, v, tt))
+        if not out:
+            return [], None
+        sizes = [v for _, _, v, _ in ticks]
+        last = acc["last"] or out[0][1]
+    return out[::-1], lot_thresholds(last, sizes)["big_lots"]
+
+
 def index_last(key):
     with _lock:
         acc = _idx.get(key)

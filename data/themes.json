@@ -1,6 +1,6 @@
 {
  "quote_date": "2026-11-06",
- "members_fetched": "2026-11-07",
+ "members_fetched": "2026-11-08",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -3784,18 +3784,6 @@
      "volume": 5437
     },
     {
-     "code": "3016",
-     "name": "嘉晶",
-     "market": "上市",
-     "open": 96.3,
-     "high": 102.0,
-     "low": 96.3,
-     "close": 97.5,
-     "change": -9.5,
-     "pct": -8.88,
-     "volume": 5810
-    },
-    {
      "code": "3532",
      "name": "台勝科",
      "market": "上市",
@@ -3806,6 +3794,18 @@
      "change": -25.0,
      "pct": -8.88,
      "volume": 3499
+    },
+    {
+     "code": "3016",
+     "name": "嘉晶",
+     "market": "上市",
+     "open": 96.3,
+     "high": 102.0,
+     "low": 96.3,
+     "close": 97.5,
+     "change": -9.5,
+     "pct": -8.88,
+     "volume": 5810
     },
     {
      "code": "6488",
@@ -3999,7 +3999,7 @@
      "volume": 28180
     }
    ],
-   "avg_pct": -7.26,
+   "avg_pct": -7.27,
    "up": 0,
    "down": 14,
    "flat": 0
@@ -4772,18 +4772,6 @@
      "volume": 10682
     },
     {
-     "code": "6213",
-     "name": "聯茂",
-     "market": "上市",
-     "open": 496.0,
-     "high": 496.0,
-     "low": 496.0,
-     "close": 496.0,
-     "change": -55.0,
-     "pct": -9.98,
-     "volume": 6365
-    },
-    {
      "code": "8046",
      "name": "南電",
      "market": "上市",
@@ -4794,6 +4782,18 @@
      "change": -97.0,
      "pct": -9.98,
      "volume": 11924
+    },
+    {
+     "code": "6213",
+     "name": "聯茂",
+     "market": "上市",
+     "open": 496.0,
+     "high": 496.0,
+     "low": 496.0,
+     "close": 496.0,
+     "change": -55.0,
+     "pct": -9.98,
+     "volume": 6365
     }
    ],
    "avg_pct": -7.85,

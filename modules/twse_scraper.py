@@ -18,6 +18,10 @@ def fetch_twse_intraday_taiex(session, target_date_str):
             if res_json.get('stat') == 'OK' and 'data' in res_json:
                 prices = []
                 for row in res_json['data']:
+                    # 09:00:00 那筆是開盤前、尚無成交時的指數 = 前一日收盤，不是開盤價；
+                    # 留著會把「收盤 − 昨收」當成盤中漲跌，昨收也會被算進當日高低點（11/6 開低反彈因此誤判走勢分歧）
+                    if str(row[0]).strip() == "09:00:00":
+                        continue
                     val = clean_float(row[1])
                     if val is not None:
                         prices.append(val)

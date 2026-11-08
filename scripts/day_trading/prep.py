@@ -17,7 +17,7 @@ import src_mis, src_twse, src_tpex, src_moneydj, src_yahoo, src_taifex
 import indicators as I
 import winners
 import src_warrants as W
-import weak_screen
+import theme_screener
 
 
 def _safe(fn, default=None, label=""):
@@ -129,14 +129,14 @@ def build(code, peers_arg=None, refresh=False):
         insti[d.isoformat()] = tbl.get(code, {"foreign": 0, "trust": 0, "dealer": 0, "total": 0})
     insti_sum = {k: sum(v.get(k, 0) for v in insti.values()) for k in ("foreign", "trust", "dealer", "total")}
 
-    # --- 弱勢股篩選（weak_screen.conditions，跟每晚清單同一套）：前一交易日收盤是否五條件全中 + 大盤是否偏弱 ---
+    # --- 弱勢股篩選（theme_screener.short_conditions，跟每晚清單同一套）：前一交易日收盤是否五條件全中 + 大盤是否偏弱 ---
     weak = None
     try:
         tx = src_twse.taiex_history(today, months=3)
         closes = [r["c"] for r in hist if r.get("c")]
         if hist and tx and tx[-1][0] == hist[-1]["date"]:
             last = insti.get(hist[-1]["date"]) or {}
-            weak = weak_screen.conditions(closes, [c for _, c in tx], last.get("foreign"), last.get("trust"))
+            weak = theme_screener.short_conditions(closes, [c for _, c in tx], last.get("foreign"), last.get("trust"))
     except Exception as e:
         print(f"  [warn] 弱勢股篩選: {str(e)[:120]}")
 

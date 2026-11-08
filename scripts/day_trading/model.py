@@ -187,7 +187,7 @@ def daily_factors(d):
     br = mc.get("breadth") or {}
     if br.get("down") and br.get("up") is not None and br["down"] > br["up"] * 6:
         F.append(("前日全面殺盤", 0.15, f"漲 {br['up']} / 跌 {br['down']}，超跌反彈日常見"))
-    # 弱勢股篩選（weak_screen.py，Threads 貼文條件經回測驗證）：前一交易日五條件全中
+    # 弱勢股篩選（theme_screener.short_conditions，Threads 貼文條件經回測驗證）：前一交易日五條件全中
     #   大盤弱（加權 < 20 日線）：隔天開盤空到收盤比所有 >100 元股票多 0.33%（41 天、461 筆，前後半都成立）→ 偏空
     #   大盤不弱：反而比隨便空差 0.37% → 不加分，只提醒別因為「弱」就空
     ws = d.get("weak_screen") or {}

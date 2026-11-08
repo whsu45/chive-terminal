@@ -127,6 +127,38 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .pos .rng i{position:absolute;top:-4px;width:3px;height:14px;background:var(--fg);border-radius:2px}
 .pos .rng s{position:absolute;top:-4px;width:2px;height:14px;background:var(--muted);text-decoration:none}
 .pos .err{flex-basis:100%;color:var(--up);font-size:12px}
+/* 選股模式 */
+.picker{max-width:1400px;margin:0 auto;padding:12px 16px}
+.picker.hidden,main.hidden{display:none}
+.pk-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.pk-head h2{margin:0;font-size:20px}
+.pk-mkt{padding:10px 12px;border-radius:10px;background:var(--panel);border:1px solid var(--line);margin-bottom:12px;font-size:13px}
+.pk-mkt b{font-family:var(--mono)}
+.pk-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:900px){.pk-cols{grid-template-columns:1fr}}
+.pk-col h3{margin:0 0 8px;font-size:15px}
+.pk-col.short h3{color:var(--dn)}.pk-col.long h3{color:var(--up)}
+.pk-col .off{font-size:12px;color:var(--warn);font-weight:400;margin-left:6px}
+.pk-card{display:grid;grid-template-columns:24px 1fr;gap:4px 8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.pk-card:hover{border-color:var(--accent)}
+.pk-card.on{border-color:var(--accent);background:#141c2c}
+.pk-card.dim{opacity:.6}
+.pk-card input{margin:4px 0 0;width:16px;height:16px;accent-color:var(--accent)}
+.pk-card .t{font-weight:700;font-size:15px}.pk-card .t .rk{font-family:var(--mono);color:var(--muted);margin-right:6px}
+.pk-card .bk{font-size:11px;color:var(--muted);font-weight:400;margin-left:6px}
+.pk-card .th{font-size:12px;color:var(--muted);margin-left:6px;font-weight:400}
+.pk-card .st{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.pk-card ul{margin:4px 0;padding-left:18px;font-size:13px}
+.pk-card .pl{font-size:12px;color:var(--fg);background:var(--panel2);border-radius:8px;padding:6px 8px}
+.pk-card > :not(input){grid-column:2}
+.pk-empty{color:var(--muted);font-size:13px;padding:10px 0}
+.pk-foot{position:sticky;bottom:0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px;margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.pk-foot input{font:inherit;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;width:220px}
+.pk-foot button{font:inherit;font-weight:700;cursor:pointer;border-radius:8px;border:1px solid var(--accent);background:#1b2a46;color:var(--fg);padding:8px 18px}
+.pk-foot button:disabled{opacity:.5;cursor:default}
+.pk-err{color:var(--up);font-size:13px}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid var(--muted);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -139,6 +171,17 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
     <span class="clock num" id="clock"></span>
   </div>
 </header>
+<section class="picker hidden" id="picker">
+  <div class="pk-head"><h2>今日當沖標的</h2><span class="small muted" id="pk-status"></span></div>
+  <div class="pk-mkt" id="pk-mkt"></div>
+  <div class="pk-cols"><div class="pk-col short" id="pk-short"></div><div class="pk-col long" id="pk-long"></div></div>
+  <div class="pk-foot">
+    <label class="small">自選代號 <input id="pk-manual" placeholder="例：2330, 3042" autocomplete="off"></label>
+    <span class="small muted" id="pk-count"></span>
+    <button id="pk-go" onclick="pickGo()">開始監控</button>
+    <span class="pk-err" id="pk-err"></span>
+  </div>
+</section>
 <main id="main">
   <section class="charts">
     <div class="card"><h3 id="t-tse">加權</h3><canvas id="jb-tse"></canvas></div>
@@ -186,11 +229,65 @@ function tick(){const n=new Date();$('clock').textContent=n.toLocaleTimeString('
 setInterval(tick,1000);tick();
 
 async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());STATE=await r.json();
+  if(!STATE.codes.length){loadPicker();return;}            // 選股模式：還沒選標的
+  showPicker(false);
   if(!CUR||!STATE.codes.includes(CUR))CUR=STATE.codes[0];render();
   const h=await fetch('/api/history/'+CUR+'?_='+Date.now());HIST[CUR]=await h.json();drawChart();}
   catch(e){$('foot').innerHTML='<span class="stale">連線中斷（monitor 還在跑嗎？）：'+esc(e)+'</span>';}}
 async function loadLive(){try{const r=await fetch('/api/live?_='+Date.now());const j=await r.json();LIVE=(j&&j.quotes)?j:null;if(STATE)renderLive();}catch(e){}}
 setInterval(loadState,10000);setInterval(loadLive,3000);loadState();setTimeout(loadLive,1000);
+
+// ---------------------------------------------------------------- 選股模式（monitor.py --web 不給代碼）
+let PICK=null, PICK_KEY='', PICK_SENT=false, PICK_T=null;
+function showPicker(on){$('picker').classList.toggle('hidden',!on);$('main').classList.toggle('hidden',on);}
+async function loadPicker(){
+  try{const r=await fetch('/api/screener?_='+Date.now());PICK=await r.json();}catch(e){return;}
+  if(PICK.status==='off')return;
+  showPicker(true);
+  const key=PICK.status+'|'+(PICK.finished||'')+'|'+(PICK.selected||'');
+  if(key!==PICK_KEY){PICK_KEY=key;renderPicker();}
+  clearTimeout(PICK_T);PICK_T=setTimeout(PICK.selected?loadState:loadPicker,2000);   // 跑選股或準備盤前資料時 2 秒輪詢
+}
+function pkCard(side,r,top,active,sel){
+  const on=sel?sel.includes(r.code):active&&r.rank<=top;   // 送出後依實際選定的顯示
+  const st=`收 ${fp(r.close)}｜昨 ${pct(r.chg1d)}｜10日 ${pct(r.r10,1)}｜20日 ${pct(r.r20,1)}｜${f(r.value_e8,0)} 億｜ATR ${f(r.atr_pct,1)}%`;
+  return `<label class="pk-card ${on?'on':''} ${active?'':'dim'}"><input type="checkbox" value="${esc(r.code)}" ${on?'checked':''} onchange="pkCount()">
+    <div class="t"><span class="rk">#${r.rank}</span>${esc(r.code)} ${esc(r.name)}${r.themes&&r.themes.length?`<span class="th">${esc(r.themes.slice(0,3).join('、'))}</span>`:''}${r.rank>top?'<span class="bk">備用</span>':''}</div>
+    <div class="st">${st}</div>
+    <ul>${r.reasons.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+    <div class="pl">→ ${esc(r.plan)}</div></label>`;}
+function renderPicker(){
+  const p=PICK||{};const res=p.result;const sent=!!p.selected;
+  $('pk-status').innerHTML=p.status==='running'?`<span class="spin"></span>執行選股中（${esc(p.started||'')} 開始；第一次要補抓全市場資料會久一點）…`
+    :p.status==='error'?`<span class="pk-err">選股失敗：${esc(p.error)}；仍可在下方手動輸入代碼</span>`
+    :res?`資料日 ${esc(res.date)}（${esc(p.finished||'')} 完成）`:'';
+  if(sent){$('pk-status').innerHTML=`<span class="spin"></span>已選定 ${esc(p.selected.join('、'))}，正在抓盤前資料、啟動監控（每檔約 10～30 秒）…`;}
+  if(res){const m=res.market;
+    const th=(res.themes||[]);
+    $('pk-mkt').innerHTML=`大盤：加權 <b>${f(m.idx,0)}</b>，20 日線 <b>${f(m.ma20,0)}</b>，10 日 <b class="${cls(m.r10)}">${pct(m.r10,1)}</b> → `
+      +(res.short_active?'<b class="dn">偏弱：做空有效、不做多</b>':'<b class="up">不弱：做多有效、不做空</b>')
+      +(th.length?`<div class="small muted" style="margin-top:4px">最強族群：${th.slice(0,3).map(t=>esc(t.name)+' '+pct(t.chg1d,1)).join('、')}｜最弱族群：${th.slice(-3).reverse().map(t=>esc(t.name)+' '+pct(t.chg1d,1)).join('、')}</div>`:'');
+    const col=(side,title,active)=>`<h3>${title}${active?'':'<span class="off">⚠ 大盤環境不符，回測此時會虧，只列參考</span>'}</h3>`
+      +((res[side]||[]).length?res[side].map(r=>pkCard(side,r,res.top,active,p.selected)).join(''):'<div class="pk-empty">沒有符合條件的標的</div>');
+    $('pk-short').innerHTML=col('short','▼ 做空：弱勢股',res.short_active);
+    $('pk-long').innerHTML=col('long','▲ 做多：強勢股急殺',res.long_active);
+  }else{$('pk-mkt').innerHTML=p.status==='running'?'等待選股結果…':'沒有選股結果';$('pk-short').innerHTML='';$('pk-long').innerHTML='';}
+  if(sent){const listed=new Set([...(res?.short||[]),...(res?.long||[])].map(r=>r.code));$('pk-manual').value=p.selected.filter(c=>!listed.has(c)).join(', ');}
+  $('pk-go').disabled=sent||PICK_SENT;$('pk-manual').disabled=sent;
+  document.querySelectorAll('#picker input[type=checkbox]').forEach(x=>x.disabled=sent);
+  pkCount();}
+function pkCodes(){const s=[...document.querySelectorAll('#picker input[type=checkbox]:checked')].map(x=>x.value);
+  const m=$('pk-manual').value.split(/[\s,，、]+/).map(x=>x.trim().toUpperCase()).filter(Boolean);return [...new Set([...s,...m])];}
+function pkCount(){document.querySelectorAll('#picker .pk-card').forEach(c=>c.classList.toggle('on',c.querySelector('input').checked));
+  const n=pkCodes().length;$('pk-count').textContent=n?`已選 ${n} 檔：${pkCodes().join('、')}`:'尚未選擇';}
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='pk-manual')pkCount();});
+async function pickGo(){const codes=pkCodes();$('pk-err').textContent='';
+  if(!codes.length){$('pk-err').textContent='請至少選一檔';return;}
+  PICK_SENT=true;$('pk-go').disabled=true;
+  try{const r=await fetch('/api/select',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({codes})});
+    const j=await r.json();if(!r.ok){PICK_SENT=false;$('pk-go').disabled=false;$('pk-err').textContent=j.error||'選擇失敗';return;}
+    loadPicker();}
+  catch(e){PICK_SENT=false;$('pk-go').disabled=false;$('pk-err').textContent='送出失敗：'+e;}}
 
 function activeSide(ev){if(!ev)return null;if(ev.p_short<=0)return 'long';return ev.p_short>=ev.p_long?'short':'long';}
 
@@ -395,7 +492,9 @@ function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   renderHist();
   if(!LIVE){const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
     $('shioaji').innerHTML=STATE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';}
-  $('pre').textContent=STATE.describe?.[CUR]||'';
+  const pk=(STATE.picks||{})[CUR];
+  $('pre').textContent=(pk?`【選股】${pk.side==='short'?'做空・弱勢股':'做多・強勢股急殺'} #${pk.rank}${pk.active?'':'（大盤環境不符）'}\n`
+    +pk.reasons.map(x=>'• '+x).join('\n')+`\n→ ${pk.plan}\n\n`:'')+(STATE.describe?.[CUR]||'');
   if(!ev){$('verdict').textContent='等待第一次估算…';if(!LIVE)$('price').textContent='等待報價…';return;}
   const i=ev.info||{};
   const age=(Date.now()-new Date(STATE.updated).getTime())/1000;const next=Math.max(0,Math.round(STATE.interval-age));

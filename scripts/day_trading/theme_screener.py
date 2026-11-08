@@ -432,6 +432,23 @@ def print_report(r):
     print("\n※ 回測是開盤進、收盤出的平均；實際進場仍用 monitor.py 看開盤量能與均價線。放空前確認可先賣後買。僅供研究，不構成投資建議。\n")
 
 
+def default_ref(date=None):
+    """篩選基準日：給 YYYY-MM-DD 就用它，否則今天；不是交易日往前找。當天資料還沒出時 load_store 會自動用前一個交易日。"""
+    ref = dt.date.fromisoformat(date) if date else cal.today_tw()
+    return ref if cal.is_trading_day(ref) else cal.prev_trading_day(ref)
+
+
+def to_dict(r):
+    """screen() 結果 → 可序列化 dict（--json 與 monitor 網頁選股共用）。rank ≤ top 為正選，其餘為備用。"""
+    def rows(side):
+        return [{**_row(side, f, r), "rank": k} for k, f in enumerate(r[side], 1)]
+    return {"date": r["date"], "top": r["top"],
+            "market": {k: (round(v, 2) if isinstance(v, float) else v) for k, v in r["mkt"].items()},
+            "short_active": r["mkt"]["weak"], "long_active": not r["mkt"]["weak"],
+            "short": rows("short"), "long": rows("long"), "punished": r["punished"],
+            "themes": [{"name": n, "chg1d": round(a, 2), "chg5d": round(b, 2)} for n, a, b in r["themes"]]}
+
+
 def main():
     ap = argparse.ArgumentParser(description="當沖盤前選股（弱勢股做空 / 強勢股急殺做多）")
     ap.add_argument("--top", type=int, default=3, help="多、空各取幾檔（預設 3）")
@@ -440,9 +457,7 @@ def main():
     ap.add_argument("--backtest", action="store_true", help="用快取的全市場資料回測")
     ap.add_argument("--days", type=int, default=None, help="回測前先確保快取有這麼多交易日（最多 %d）" % KEEP_DAYS)
     a = ap.parse_args()
-    ref = dt.date.fromisoformat(a.date) if a.date else cal.today_tw()
-    if not cal.is_trading_day(ref):
-        ref = cal.prev_trading_day(ref)
+    ref = default_ref(a.date)
     if a.backtest:
         store, dates = load_store(ref, n=min(a.days or 65, KEEP_DAYS))
         first, last, res = backtest(store, dates, a.top)
@@ -452,10 +467,7 @@ def main():
         return
     r = screen(ref, a.top)
     if a.json:
-        print(json.dumps({"date": r["date"], "market": {k: (round(v, 2) if isinstance(v, float) else v) for k, v in r["mkt"].items()},
-                          "short_active": r["mkt"]["weak"], "long_active": not r["mkt"]["weak"],
-                          "short": [_row("short", f, r) for f in r["short"]], "long": [_row("long", f, r) for f in r["long"]],
-                          "punished": r["punished"]}, ensure_ascii=False, indent=1))
+        print(json.dumps(to_dict(r), ensure_ascii=False, indent=1))
     else:
         print_report(r)
 

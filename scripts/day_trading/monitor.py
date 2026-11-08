@@ -3,6 +3,7 @@
 當沖多空監控：每 N 秒（預設 180）重算多空勝率、支撐壓力與進出場計畫，直到 Ctrl+C；
 --web 模式另有 10 秒快迴圈更新江波圖、報價、分流與即時警示。
 
+    python3 monitor.py --web                     # 選股模式：網頁先跑 theme_screener 列多空候選，勾選後才開始監控
     python3 monitor.py 3042                      # 用 groups.json 的族群
     python3 monitor.py 3042 --peers 2484,8081    # 自訂族群
     python3 monitor.py 3042 --once --json        # 跑一次、輸出 JSON（給程式/AI 讀）
@@ -51,6 +52,10 @@ class WebState:
         self.interval = 60
         self.shioaji = False
         self.live = {}        # 10 秒快迴圈：報價、分時序列、分流、即時警示
+        self.picker = {"status": "off"}   # 選股模式：off / running / done / error（theme_screener 結果）
+        self.selected = None              # 網頁選定的監控代碼
+        self.select_event = threading.Event()
+        self.picks = {}                   # code -> 選股理由（選股模式選的才有）
 
     def put_live(self, obj):
         with self.lock:
@@ -78,15 +83,61 @@ class WebState:
     def snapshot(self):
         with self.lock:
             return json.dumps({"codes": self.codes, "latest": self.latest, "daily": self.daily, "describe": self.describe,
-                               "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji},
+                               "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji,
+                               "picks": self.picks},
                               ensure_ascii=False, default=str)
 
     def history_json(self, code):
         with self.lock:
             return json.dumps(self.history.get(code, []), ensure_ascii=False, default=str)
 
+    def picker_json(self):
+        with self.lock:
+            return json.dumps({**self.picker, "selected": self.selected}, ensure_ascii=False, default=str)
 
+    def select(self, body):
+        """POST /api/select {codes: [...]}：選股模式下選定監控標的（只能選一次；要換標的請重開 monitor）。"""
+        codes = body.get("codes") if isinstance(body, dict) else None
+        if not isinstance(codes, list):
+            return False, {"error": "codes 要是代碼陣列"}
+        codes = list(dict.fromkeys(str(c).strip().upper() for c in codes if str(c).strip()))
+        bad = [c for c in codes if not (4 <= len(c) <= 6 and c.isalnum())]
+        if bad:
+            return False, {"error": f"代碼格式不對：{'、'.join(bad)}"}
+        if not 1 <= len(codes) <= MAX_PICK:
+            return False, {"error": f"請選 1～{MAX_PICK} 檔"}
+        with self.lock:
+            if self.selected is not None:
+                return False, {"error": "已經選過了；要換標的請重開 monitor"}
+            self.selected = codes
+            res = self.picker.get("result") or {}
+            for side in ("short", "long"):
+                for r in res.get(side) or []:
+                    if r["code"] in codes:
+                        self.picks[r["code"]] = {**r, "side": side, "active": res.get(f"{side}_active")}
+        self.select_event.set()
+        return True, {"selected": codes}
+
+
+MAX_PICK = 6   # 選股模式最多同時監控幾檔（每檔一條永豐串流與一次盤前資料）
 WEB = WebState()
+
+
+def run_screener(top=3):
+    """背景執行 theme_screener，結果放 WEB.picker 給網頁顯示。"""
+    with WEB.lock:
+        WEB.picker = {"status": "running", "started": dt.datetime.now().strftime("%H:%M:%S")}
+    try:
+        import theme_screener as TS
+        res = TS.to_dict(TS.screen(TS.default_ref(), top))
+        with WEB.lock:
+            WEB.picker = {"status": "done", "result": res, "finished": dt.datetime.now().strftime("%H:%M:%S")}
+        print(f"[選股] {res['date']} 完成：做空 {','.join(r['code'] for r in res['short'][:top]) or '無'}"
+              f"｜做多 {','.join(r['code'] for r in res['long'][:top]) or '無'}（{'大盤弱，做空有效' if res['short_active'] else '大盤不弱，做多有效'}）")
+    except BaseException as e:      # screen() 資料不足時會 SystemExit
+        with WEB.lock:
+            WEB.picker = {"status": "error", "error": str(e)[:300] or e.__class__.__name__}
+        print(f"[選股] 失敗：{str(e)[:200]}（網頁仍可手動輸入代碼）")
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
@@ -115,13 +166,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._send(WEB.history_json(path.rsplit("/", 1)[-1]))
         if path == "/api/watchlist":
             return self._send(json.dumps(history.all_summary(), ensure_ascii=False, default=str))
+        if path == "/api/screener":
+            return self._send(WEB.picker_json())
         self._send('{"error":"not found"}', code=404)
 
     def do_POST(self):
-        """持倉面板：POST /api/position。只綁 127.0.0.1；要求 JSON（跨站表單送不了）且 Origin 是本機。"""
+        """POST /api/position（持倉面板）、/api/select（選股模式選標的）。只綁 127.0.0.1；要求 JSON（跨站表單送不了）且 Origin 是本機。"""
         path = urllib.parse.urlparse(self.path).path
         mon = getattr(WEB, "monitor", None)
-        if path != "/api/position" or not mon:
+        if not ((path == "/api/position" and mon) or path == "/api/select"):
             return self._send('{"error":"not found"}', code=404)
         origin = self.headers.get("Origin") or ""
         host = (urllib.parse.urlparse(origin).hostname or "") if origin else "127.0.0.1"
@@ -134,7 +187,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(n) or b"{}")
         except Exception:
             return self._send('{"error":"bad json"}', code=400)
-        ok, res = mon.position_action(body)
+        ok, res = WEB.select(body) if path == "/api/select" else mon.position_action(body)
         self._send(json.dumps(res, ensure_ascii=False, default=str), code=200 if ok else 400)
 
 
@@ -1663,7 +1716,7 @@ class Monitor:
 
 def main():
     ap = argparse.ArgumentParser(description="台股當沖多空勝率監控")
-    ap.add_argument("codes", nargs="+", help="股票代碼（可多檔）")
+    ap.add_argument("codes", nargs="*", help="股票代碼（可多檔）；--web 不給代碼 = 選股模式，在網頁上選")
     ap.add_argument("--peers", default=None, help="自訂同族群代碼，逗號分隔；不給則查 groups.json")
     ap.add_argument("--interval", type=int, default=60, help="多空估算間隔秒數（預設 60；圖表/報價另有 3–10 秒快迴圈）")
     ap.add_argument("--once", action="store_true", help="只跑一次")
@@ -1678,6 +1731,8 @@ def main():
                     help="啟動本機網頁儀表板（預設 port 8770，只綁 127.0.0.1）")
     ap.add_argument("--no-open", action="store_true", help="--web 時不要自動開瀏覽器")
     a = ap.parse_args()
+    if not a.codes and not a.web:
+        ap.error("請給股票代碼，或用 --web 進入選股模式（網頁上選標的）")
     if a.big_amount:
         os.environ["BIG_LOT_AMOUNT"] = str(int(a.big_amount))
     if a.web:
@@ -1687,7 +1742,20 @@ def main():
                 webbrowser.open(f"http://127.0.0.1:{a.web}/")  # macOS / Windows / Linux 都用系統預設瀏覽器
             except Exception:
                 pass
-    m = Monitor(a.codes, a.peers, a.interval, not a.no_shioaji, a.big_lot, a.refresh, web=bool(a.web))
+    codes = a.codes
+    if not codes:
+        # 選股模式：網頁先列 theme_screener 的多空候選，選定後才建 Monitor（抓盤前資料、開永豐串流）
+        threading.Thread(target=run_screener, daemon=True).start()
+        print("[選股] 執行 theme_screener 中；請在網頁勾選今天要監控的標的（Ctrl+C 結束）")
+        try:
+            while not WEB.select_event.wait(1):
+                pass
+        except KeyboardInterrupt:
+            print("\n使用者中止。")
+            return
+        codes = WEB.selected
+        print(f"[選股] 選定 {','.join(codes)}，開始準備盤前資料與監控")
+    m = Monitor(codes, a.peers, a.interval, not a.no_shioaji, a.big_lot, a.refresh, web=bool(a.web))
     try:
         m.run(a.once, a.json, a.verbose, a.brief)
     except KeyboardInterrupt:

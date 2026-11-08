@@ -60,6 +60,18 @@
         "--no-open"
       ],
       "port": 8770
+    },
+    {
+      "name": "daytrade-picker",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "scripts/day_trading/monitor.py",
+        "--web",
+        "8791",
+        "--no-open",
+        "--no-shioaji"
+      ],
+      "port": 8791
     }
   ]
 }

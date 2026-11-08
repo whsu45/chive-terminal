@@ -379,6 +379,70 @@
      "range_pos": null
     },
     "factors": null
+   },
+   {
+    "date": "2026-11-08",
+    "time": "09:10:23",
+    "src": "shioaji",
+    "side": "long",
+    "label": "做多",
+    "price": 290.5,
+    "stop": 288.0,
+    "t1": 294.5,
+    "t2": 298.0,
+    "zone": [
+     290.0,
+     290.5
+    ],
+    "alert_px": 290.5,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.385,
+    "rr_now": 1.6,
+    "rr_zone": 1.6,
+    "verdict": "loss",
+    "fast_adverse": true,
+    "first_stop_min": 1,
+    "first_t1_min": null,
+    "ret_10m": -3.2702237521514577,
+    "ret_30m": -2.753872633390708,
+    "suspects": [],
+    "why": "回測 290.0 守住，1 分 K 收 290.5 確認（多方 69%）",
+    "features": {
+     "idx_trend_10m": 0.0020150707138677504,
+     "group_trend_10m": 0.6066210717521799,
+     "momentum": null,
+     "vol_pace": 10.260370984488073,
+     "rs_vs_index": 3.512827177920108,
+     "group_avg": -4.34934057859327,
+     "chg_pct": 0.0,
+     "warrant_surge": false,
+     "small_net_pct": 2.5528304797161807,
+     "p_long": 69.03,
+     "p_short": 30.97,
+     "wall_bid": {
+      "px": 288.0,
+      "verdict": "未測試",
+      "last": 605
+     },
+     "wall_ask": null,
+     "book_imb": -0.14931324767390342,
+     "big_net_10m": 0,
+     "phase": "early",
+     "range_pos": 0.8222222222222222
+    },
+    "factors": [
+     "開低拉回翻紅",
+     "強於大盤",
+     "族群最強",
+     "族群全倒",
+     "日內高檔",
+     "站上開盤價",
+     "VWAP之上",
+     "族群轉強",
+     "量能爆增",
+     "可轉債或其他避險買盤"
+    ]
    }
   ],
   "notes": []

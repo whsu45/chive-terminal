@@ -17,6 +17,7 @@ import src_mis, src_twse, src_tpex, src_moneydj, src_yahoo, src_taifex
 import indicators as I
 import winners
 import src_warrants as W
+import weak_screen
 
 
 def _safe(fn, default=None, label=""):
@@ -79,7 +80,7 @@ def markets_for(codes):
 _MIS_ERR = None
 
 
-PREP_VERSION = 6  # 快取結構版本：欄位有增減就 +1，舊快取會自動重建
+PREP_VERSION = 7  # 快取結構版本：欄位有增減就 +1，舊快取會自動重建
 
 
 def build(code, peers_arg=None, refresh=False):
@@ -127,6 +128,17 @@ def build(code, peers_arg=None, refresh=False):
         tbl = _safe(lambda d=d: (src_twse.t86 if is_tse else src_tpex.insti)(d), {}, f"法人 {d}")
         insti[d.isoformat()] = tbl.get(code, {"foreign": 0, "trust": 0, "dealer": 0, "total": 0})
     insti_sum = {k: sum(v.get(k, 0) for v in insti.values()) for k in ("foreign", "trust", "dealer", "total")}
+
+    # --- 弱勢股篩選（weak_screen.conditions，跟每晚清單同一套）：前一交易日收盤是否五條件全中 + 大盤是否偏弱 ---
+    weak = None
+    try:
+        tx = src_twse.taiex_history(today, months=3)
+        closes = [r["c"] for r in hist if r.get("c")]
+        if hist and tx and tx[-1][0] == hist[-1]["date"]:
+            last = insti.get(hist[-1]["date"]) or {}
+            weak = weak_screen.conditions(closes, [c for _, c in tx], last.get("foreign"), last.get("trust"))
+    except Exception as e:
+        print(f"  [warn] 弱勢股篩選: {str(e)[:120]}")
 
     # --- 信用 / 借券 ---
     margin = _safe(lambda: (src_twse.margin if is_tse else src_tpex.margin)(prev).get(code), None, "融資融券")
@@ -216,7 +228,7 @@ def build(code, peers_arg=None, refresh=False):
         "code": code, "name": name, "market": market, "date": today.isoformat(), "prev_date": prev.isoformat(),
         "group": gname, "peers": peers, "peers_arg": peers_arg, "peer_info": peer_info,
         "tech": tech, "hist_tail": hist[-30:], "limit_up": up, "limit_down": dn,
-        "insti": insti, "insti_sum": insti_sum, "margin": margin, "sbl": sbl, "brokers": brokers, "winners": win, "warrants": warr, "flags": flags,
+        "insti": insti, "insti_sum": insti_sum, "weak_screen": weak, "margin": margin, "sbl": sbl, "brokers": brokers, "winners": win, "warrants": warr, "flags": flags,
         "market_ctx": mkt,
     }
     with open(cache, "w", encoding="utf-8") as f:

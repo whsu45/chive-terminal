@@ -564,6 +564,31 @@ class Monitor:
                 return f"目標 {t1} 低於跌停 {dn}，到不了"
         return None
 
+    SURGE_PCT, NEAR_LIMIT_PCT = 7.0, 3.0
+
+    def _surge_block(self, c, side, p, q):
+        """
+        急漲不放空 / 急殺不做多：個股比昨收漲 ≥7%、或離漲停 ≤3% 時不發做空（跌停對稱，不發做多）。
+        不是因為期望值差（回測 2026/03–11 全市場 1484 筆開盤跳空 7–9.5%，開盤空、收盤補平均反而 +1.5%），
+        而是尾端風險回測算不到：這類股票 67% 盤中碰漲停、45% 收漲停，鎖住時停損買不回來、當沖可能要標借。
+        回字串 = 擋的理由（照樣追蹤假設結果，⏸ 急漲過濾），None = 不擋。
+        """
+        d = self.daily.get(c) or {}
+        y = q.get("y") or (d.get("tech") or {}).get("close")
+        up, dn = d.get("limit_up"), d.get("limit_down")
+        if not (y and p):
+            return None
+        chg = (p / y - 1) * 100
+        if side == "short":
+            room = (up / p - 1) * 100 if up else None
+            if chg >= self.SURGE_PCT or (room is not None and room <= self.NEAR_LIMIT_PCT):
+                return f"已漲 {chg:+.1f}%" + (f"、離漲停 {up} 只剩 {room:.1f}%" if room is not None else "") + "，漲停鎖住時空單停損買不回來（軋空）"
+        else:
+            room = (1 - dn / p) * 100 if dn else None
+            if chg <= -self.SURGE_PCT or (room is not None and room <= self.NEAR_LIMIT_PCT):
+                return f"已跌 {chg:+.1f}%" + (f"、離跌停 {dn} 只剩 {room:.1f}%" if room is not None else "") + "，跌停鎖住時多單停損賣不掉"
+        return None
+
     @staticmethod
     def _entry_zone(side, base, stop, t1, rr_min=1.5):
         """
@@ -936,7 +961,8 @@ class Monitor:
                     self._sig_seen[lkey] = now.timestamp()
                     self._add_alert(c, now, f"⏸ 漲跌停過濾：原本要建議{label} @{p}，但{lim_why}，不發")
                 return None
-            blk = self._against_trend(side, info)
+            surge = self._surge_block(c, side, p, q)
+            blk = surge or self._against_trend(side, info)
             if blk:
                 bkey = ("block",) + key            # 被擋的另外去重：趨勢轉回來後同一個進場區還能正常發
                 if now.timestamp() - self._sig_seen.get(bkey, 0) < 900:
@@ -944,7 +970,8 @@ class Monitor:
                 self._sig_seen[bkey] = now.timestamp()
                 sig.update(blocked=True, block_reason=blk)
                 self.sig_block[c] = sig
-                self._add_alert(c, now, f"⏸ 逆勢過濾：原本要建議{label} @{p}（{why.split('（')[0]}），但{blk}，不發；照樣追蹤假設進場的結果")
+                kind = "急漲過濾" if surge else "逆勢過濾"
+                self._add_alert(c, now, f"⏸ {kind}：原本要建議{label} @{p}（{why.split('（')[0]}），但{blk}，不發；照樣追蹤假設進場的結果")
                 return None
             self._sig_seen[key] = now.timestamp()
             self.signals[c] = sig
@@ -985,7 +1012,7 @@ class Monitor:
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
-                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合")]
+                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合")]
 
     @classmethod
     def _alert_type(cls, text):
@@ -1027,8 +1054,8 @@ class Monitor:
                 continue   # 啟動時補發的歷史警示沒有當時狀態，不追蹤
             typ = self._alert_type(txt)
             extra = {}
-            if typ in ("建議做空", "建議做多", "逆勢過濾"):
-                sg = (self.sig_block.get(c) if typ == "逆勢過濾" else self.signals.get(c)) or {}
+            if typ in ("建議做空", "建議做多", "逆勢過濾", "急漲過濾"):
+                sg = (self.sig_block.get(c) if typ in ("逆勢過濾", "急漲過濾") else self.signals.get(c)) or {}
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})

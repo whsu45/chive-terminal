@@ -187,6 +187,17 @@ def daily_factors(d):
     br = mc.get("breadth") or {}
     if br.get("down") and br.get("up") is not None and br["down"] > br["up"] * 6:
         F.append(("前日全面殺盤", 0.15, f"漲 {br['up']} / 跌 {br['down']}，超跌反彈日常見"))
+    # 弱勢股篩選（weak_screen.py，Threads 貼文條件經回測驗證）：前一交易日五條件全中
+    #   大盤弱（加權 < 20 日線）：隔天開盤空到收盤比所有 >100 元股票多 0.33%（41 天、461 筆，前後半都成立）→ 偏空
+    #   大盤不弱：反而比隨便空差 0.37% → 不加分，只提醒別因為「弱」就空
+    ws = d.get("weak_screen") or {}
+    if ws.get("hit"):
+        desc = (f"10 日 {ws['r10']:+.1f}%（大盤 {ws['idx_r10']:+.1f}%）、收盤 {ws['close']} < 季線 {ws['ma60']}、"
+                f"外資 {ws['foreign']:+} / 投信 {ws['trust']:+} 張")
+        if ws.get("mkt_weak"):
+            F.append(("弱勢股篩選", -0.4, f"五條件全中且大盤弱（加權 {ws['idx']:.0f} < 20 日線 {ws['idx_ma20']:.0f}）：{desc}"))
+        else:
+            warns.append(f"弱勢股五條件全中（{desc}），但大盤不弱：回測這種日子弱勢股常反彈，不要因為弱就空")
     return F, warns
 
 

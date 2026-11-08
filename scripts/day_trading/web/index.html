@@ -326,7 +326,7 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
     const t=LIVE.time||'';if(t>='13:05'&&t<'13:30'){el.className='signal ended';el.style.animation='none';el.innerHTML='<span class="d">尾盤 13:05 後不發新進場訊號：當沖平倉主導，只處理出場或順回補方向小部位</span>';}
     else{const b=LIVE&&LIVE.sig_block&&LIVE.sig_block[CUR];
       if(b){el.className=`signal ${b.side} ended`;el.style.animation='none';
-        el.innerHTML=`<span class="h">⏸ 逆勢過濾</span><span class="d">${esc(b.since)} 原本要建議${esc(b.label)} <b>${fp(b.alert_px)}</b>，但${esc(b.block_reason)}，不發（照樣追蹤假設進場的結果）</span><span class="why">${esc(b.why||'')}</span>`;}
+        el.innerHTML=`<span class="h">⏸ ${/軋空|停損賣不掉/.test(b.block_reason||"")?"急漲過濾":"逆勢過濾"}</span><span class="d">${esc(b.since)} 原本要建議${esc(b.label)} <b>${fp(b.alert_px)}</b>，但${esc(b.block_reason)}，不發（照樣追蹤假設進場的結果）</span><span class="why">${esc(b.why||'')}</span>`;}
       else{el.className='signal hidden';el.innerHTML='';}}return;}
   el.style.animation='';
   const ended=!!sg.status;el.className=`signal ${sg.side} ${ended?'ended':''}`;

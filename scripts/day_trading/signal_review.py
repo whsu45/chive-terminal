@@ -121,10 +121,13 @@ def main():
             pb = cb[s] / len(bad) * 100; pg = cg[s] / len(good) * 100 if good else 0
             lift = (pb / pg) if pg else float("inf") if pb else 0
             print(f"{s:<18}{pb:>9.0f}%{pg:>9.0f}%{lift:>8.1f}")
-    if blocked:
-        w = sum(1 for r in blocked if r["verdict"] == "win"); l = sum(1 for r in blocked if r["verdict"] == "loss")
-        print(f"\n逆勢過濾驗證：擋掉 {len(blocked)} 筆，若照做會 贏 {w}（擋錯）、輸 {l}（擋對）、其餘平或未成交")
-        for r in sorted(blocked, key=lambda r: (r["date"], r["time"])):
+    is_surge = lambda r: any(k in (r.get("block_reason") or "") for k in ("軋空", "停損賣不掉"))
+    for kind, grp in (("逆勢過濾", [r for r in blocked if not is_surge(r)]), ("急漲過濾（漲跌 7% / 離漲跌停 3%）", [r for r in blocked if is_surge(r)])):
+        if not grp:
+            continue
+        w = sum(1 for r in grp if r["verdict"] == "win"); l = sum(1 for r in grp if r["verdict"] == "loss")
+        print(f"\n{kind}驗證：擋掉 {len(grp)} 筆，若照做會 贏 {w}（擋錯）、輸 {l}（擋對）、其餘平或未成交")
+        for r in sorted(grp, key=lambda r: (r["date"], r["time"])):
             print(f"  {r['date']} {r['time']} {r['code']} {r.get('label')} @{r.get('alert_px', r['price'])} → {r['verdict']}  理由：{r.get('block_reason')}")
     if cancelled:
         w = sum(1 for r in cancelled if r["verdict"] == "win"); l = sum(1 for r in cancelled if r["verdict"] == "loss")

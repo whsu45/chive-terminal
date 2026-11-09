@@ -8,7 +8,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 
-from config import CACHE_DIR, HTTP_TIMEOUT, USER_AGENT
+from config import CACHE_DIR, HTTP_TIMEOUT, USER_AGENT, load_env
 
 
 class HttpError(Exception):
@@ -20,7 +20,14 @@ def _ssl_context():
     完整驗證憑證，只是多加信任來源：系統憑證庫 + certifi（有裝的話）+ DAYTRADE_CA_BUNDLE / SSL_CERT_FILE 指定的 PEM。
     公司網路 / 防毒做 HTTPS 檢查時會換上自己的根憑證，把那張根憑證加進來才連得到證交所。
     """
+    load_env()   # .env 裡的 DAYTRADE_CA_BUNDLE / DAYTRADE_SSL_NOSTRICT 要在建 context 前讀到（monitor 的 load_env 比 import 晚）
     ctx = ssl.create_default_context()
+    # Python 3.13 起預設開 VERIFY_X509_STRICT：憑證鏈裡任一張缺 Subject/Authority Key Identifier 就拒絕
+    # （錯誤訊息「Missing Subject Key Identifier」）。公司 HTTPS 檢查的根憑證常缺這欄。
+    # 只有明確設 DAYTRADE_SSL_NOSTRICT=1 才關這個旗標（回到 3.12 以前的預設）；憑證鏈、到期日、網域照樣完整驗證。
+    if os.environ.get("DAYTRADE_SSL_NOSTRICT") == "1" and hasattr(ssl, "VERIFY_X509_STRICT"):
+        ctx.verify_flags &= ~ssl.VERIFY_X509_STRICT
+        print("[http] DAYTRADE_SSL_NOSTRICT=1：已關閉嚴格 X.509 檢查（憑證鏈與網域仍驗證）")
     try:
         import certifi
         ctx.load_verify_locations(certifi.where())
@@ -50,7 +57,9 @@ def _err_text(url, e):
     if isinstance(reason, ssl.SSLError) or isinstance(e, ssl.SSLError):
         host = urllib.parse.urlparse(url).netloc
         return (f"{host} SSL 憑證驗證失敗：{getattr(reason, 'verify_message', None) or reason}。"
-                f"多半是公司網路或防毒軟體的 HTTPS 檢查：跟 IT 要公司根憑證，設 DAYTRADE_CA_BUNDLE 指向它（見 README「Windows」段）")
+                f"多半是公司網路或防毒軟體的 HTTPS 檢查：跟 IT 要公司根憑證，設 DAYTRADE_CA_BUNDLE 指向它"
+                f"{'；錯誤是缺 Key Identifier 的話，也可在 .env 加 DAYTRADE_SSL_NOSTRICT=1' if 'Key Identifier' in str(getattr(reason, 'verify_message', '') or reason) else ''}"
+                f"（見 README「Windows」段）")
     return f"{url}: {e}"
 
 

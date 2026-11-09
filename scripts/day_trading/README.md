@@ -194,6 +194,12 @@ py -3 -m pip install -r requirements.txt   # 要用永豐串流才需要
   1. `py -3 -m pip install -U certifi`（程式會自動加讀）
   2. 跟 IT 要公司根憑證（Base64 的 .pem/.crt），設 `set DAYTRADE_CA_BUNDLE=C:\path\corp-root.pem`（Git Bash：`export DAYTRADE_CA_BUNDLE=/c/path/corp-root.pem`）
   3. 換一個沒有 HTTPS 檢查的網路（例如手機熱點）確認是不是公司網路造成
+- **`Missing Subject Key Identifier`（或 Authority Key Identifier）**：Python 3.13 起預設做嚴格 X.509 檢查，
+  憑證鏈裡有一張 CA 憑證缺這個欄位就拒絕（公司 HTTPS 檢查的根憑證常這樣；Mac 直連證交所沒有這問題）。
+  先在 Git Bash 看簽發者：`openssl s_client -connect www.twse.com.tw:443 -servername www.twse.com.tw </dev/null 2>/dev/null | grep -E "^ +[0-9] [si]:"`
+  （正常是 TAIWAN-CA；看到公司或防毒軟體名稱就是 HTTPS 檢查）。只在這台電腦的 `.env` 加一行 `DAYTRADE_SSL_NOSTRICT=1`，
+  就只關這項嚴格檢查（回到 Python 3.12 以前的預設），憑證鏈、到期日、網域照樣驗證；啟動時會印 `[http] DAYTRADE_SSL_NOSTRICT=1`。
+  其他電腦不要設。根本解法是請 IT 換一張有 Subject Key Identifier 的根憑證。
 
 ## 永豐 Shioaji（選用）
 

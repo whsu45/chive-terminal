@@ -18,6 +18,7 @@ import argparse
 import datetime as dt
 from collections import defaultdict
 from config import LOG_DIR, read_jsonl_devices, one_device
+import tw_calendar as cal
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -27,6 +28,8 @@ def load_rows(include_mis=False):
     rows = []
     dates = sorted({os.path.basename(p)[8:16] for p in glob.glob(os.path.join(LOG_DIR, "monitor_*.jsonl"))})
     for date in dates:
+        if not cal.is_trading_date_str(date):
+            continue          # 週末/休市日的假紀錄
         # 同一天各台電腦的紀錄合併；同一檔兩台都有時只用一台（永豐串流優先），不重複計
         day = [r for r in read_jsonl_devices(LOG_DIR, f"monitor_{date}") if r.get("price") and r.get("time") and r.get("code")]
         for r in one_device(day, key=lambda r: r["code"]):

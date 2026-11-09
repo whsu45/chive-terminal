@@ -4,7 +4,11 @@
     python3 signal_review.py                 # 全部：各檔、各方向的 勝/敗/平、5 分鐘內反向（估錯）比率、失敗原因排行
     python3 signal_review.py --code 3006 --detail
     python3 signal_review.py --src mis       # 只看 MIS 10 秒快照模式（沒永豐金鑰的機器）的訊號；預設全部，但分來源列一次
-未成交 = 等回掛單 20 分鐘內沒回到進場區（不算輸贏）；贏 = 成交後 30 分鐘內先到目標 1；輸 = 先到停損；平 = 都沒到；fast_adverse = 5 分鐘內反向走掉停損距離一半（即使後來賺也算估錯）。
+判法（11/09 起，紀錄帶 scoring=2）：未成交 = 等回掛單 20 分鐘內沒回到進場區（不算輸贏）；
+  成交後 60 分鐘內（最晚 13:25）先逆向超過 3 tick = 輸、先順向到 2 倍風險 = 贏，都沒到看那時扣成本 0.235% 後賺賠；不再有「平」。
+  3 tick 超過價格 1% 時減少 tick 數。「均損益」= 扣成本後平均每筆 %，比勝率重要。
+舊判法（11/09 前）：成交後 30 分鐘內先到模型目標 1 = 贏、先到模型停損 = 輸、都沒到 = 平（目標太遠，大多記平）。兩種分開列，不混算。
+fast_adverse = 5 分鐘內反向走掉模型停損距離一半（即使後來賺也算估錯）。週末 / 休市日的紀錄一律不算。
 「原因提升度」= 某條件在輸單出現的比率 ÷ 在贏單出現的比率，>1.5 代表該條件出現時訊號特別容易錯，應該加進模型的過濾條件。
 """
 import os
@@ -12,13 +16,15 @@ import json
 import argparse
 from collections import defaultdict
 from config import LOG_DIR, dev_files, read_jsonl_devices, one_device
+import tw_calendar as cal
 
 
 def load():
     if not dev_files(LOG_DIR, "signal_outcomes", ".jsonl"):
         raise SystemExit(f"還沒有訊號結果：{os.path.join(LOG_DIR, 'signal_outcomes')}*.jsonl")
     # 各台電腦合併；同一天同一檔兩台都有時只算一台（永豐串流優先），不重複計
-    return one_device(read_jsonl_devices(LOG_DIR, "signal_outcomes"), key=lambda r: (r.get("date"), r.get("code")))
+    rows = [r for r in read_jsonl_devices(LOG_DIR, "signal_outcomes") if cal.is_trading_date_str(r.get("date"))]   # 丟掉週末/休市日的假訊號
+    return one_device(rows, key=lambda r: (r.get("date"), r.get("code")))
 
 
 def suspects_all(r):
@@ -62,6 +68,7 @@ def main():
     ap.add_argument("--code", default=None)
     ap.add_argument("--days", type=int, default=None)
     ap.add_argument("--detail", action="store_true")
+    ap.add_argument("--old", action="store_true", help="看 11/09 前舊判法的紀錄")
     ap.add_argument("--src", choices=["shioaji", "mis", "unknown"], default=None, help="只看某資料來源（unknown = 加來源欄位前的舊紀錄）")
     a = ap.parse_args()
     rows = load()
@@ -79,12 +86,29 @@ def main():
         rows = [r for r in rows if r["date"] in days]
     if not rows:
         raise SystemExit("沒有符合條件的訊號")
+    new = [r for r in rows if r.get("scoring") == 2]
+    old = [r for r in rows if r.get("scoring") != 2]
+    if new:
+        if old:
+            print(f"（另有 {len(old)} 筆是舊判法的紀錄，判準不同不混算；要看加 --old）")
+        rows = old if a.old else new
+    else:
+        print("（還沒有新判法的紀錄：以下是舊判法「30 分鐘先到模型目標 1 / 停損，都沒到記平」）")
 
     def line(label, rs):
         w = sum(1 for r in rs if r["verdict"] == "win"); l = sum(1 for r in rs if r["verdict"] == "loss")
         nf = sum(1 for r in rs if r["verdict"] == "nofill"); fl = len(rs) - w - l - nf
         fa = sum(1 for r in rs if r.get("fast_adverse"))
         wr = w / (w + l) * 100 if (w + l) else float("nan")
+        nets = [r["net_pct"] for r in rs if r.get("net_pct") is not None]
+        if nets:
+            ex = defaultdict(int)
+            for r in rs:
+                if r.get("exit"):
+                    ex[r["exit"]] += 1
+            print(f"{label:<22}{len(rs):>4}  勝 {w:>3} 敗 {l:>3} 未成交 {nf:>2}  勝率 {wr:5.0f}%  均損益 {sum(nets) / len(nets):+.2f}%/筆"
+                  f"  （停利 {ex['target']} / 停損 {ex['stop']} / 到時 {ex['time']}）  估錯 {fa / len(rs) * 100:3.0f}%")
+            return
         r30 = [r["ret_30m"] for r in rs if r.get("ret_30m") is not None]
         avg = sum(r30) / len(r30) if r30 else float("nan")
         print(f"{label:<22}{len(rs):>4}  勝 {w:>3} 敗 {l:>3} 平 {fl:>3} 未成交 {nf:>2}  勝率 {wr:5.0f}%  估錯(5分反向) {fa / len(rs) * 100:4.0f}%  30分均 {avg:+.2f}%")
@@ -152,8 +176,10 @@ def main():
         print()
         for r in sorted(rows, key=lambda r: (r["date"], r["time"])):
             mark = {"win": "✔", "loss": "✘", "flat": "—", "nofill": "○"}[r["verdict"]] + ("!" if r.get("fast_adverse") else " ")
+            sc = (f" | {({'target': '停利', 'stop': '停損', 'time': '到時'}).get(r.get('exit'), '')} {r.get('exit_px')} 扣成本 {r['net_pct']:+.2f}%"
+                  f" 逆 {r.get('mae_ticks')} / 順 {r.get('mfe_ticks')} tick") if r.get("net_pct") is not None else ""
             print(f"{mark} {r['date']} {r['time']} {(r.get('src') or '?')[:3]} {r['code']} {r.get('label')} @{r['price']}{f"（掛 {r['zone'][0]}–{r['zone'][1]}，訊號時 {r.get('alert_px')}）" if r.get('zone') and r.get('filled_at_alert') is False else ''} 停 {r['stop']} 目 {r['t1']}{f" 已走 {r['chase']:.0%}" if r.get('chase') is not None else ''} | 10分 {r.get('ret_10m') if r.get('ret_10m') is None else round(r['ret_10m'], 2)}% 30分 {r.get('ret_30m') if r.get('ret_30m') is None else round(r['ret_30m'], 2)}%"
-                  + (f" | 可疑：{'、'.join(r['suspects'])}" if r.get("suspects") else ""))
+                  + sc + (f" | 可疑：{'、'.join(r['suspects'])}" if r.get("suspects") else ""))
 
 
 if __name__ == "__main__":

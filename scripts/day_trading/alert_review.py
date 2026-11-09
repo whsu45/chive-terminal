@@ -15,6 +15,7 @@ import argparse
 import datetime as dt
 from collections import defaultdict
 from config import LOG_DIR, dev_files, read_jsonl_devices, one_device
+import tw_calendar as cal
 
 
 # --type 可用英文別名（也接受中文全名；逗號分隔多個）
@@ -45,7 +46,8 @@ def load():
     if not dev_files(LOG_DIR, "alert_outcomes", ".jsonl"):
         raise SystemExit(f"還沒有資料：{os.path.join(LOG_DIR, 'alert_outcomes')}*.jsonl（monitor --web 跑過一天後才會有）")
     # 各台電腦合併；同一天同一檔兩台都有時只算一台（永豐串流優先），不重複計
-    return one_device(read_jsonl_devices(LOG_DIR, "alert_outcomes"), key=lambda r: (r.get("date"), r.get("code")))
+    rows = [r for r in read_jsonl_devices(LOG_DIR, "alert_outcomes") if cal.is_trading_date_str(r.get("date"))]   # 丟掉週末/休市日的假警示
+    return one_device(rows, key=lambda r: (r.get("date"), r.get("code")))
 
 
 def stat(rs, k):

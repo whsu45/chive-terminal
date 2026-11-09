@@ -27,6 +27,7 @@ import history
 import src_mis
 import src_warrants as W
 import http_client as hc   # 別名不能叫 http：下面 import http.server 會把它蓋掉
+import tw_calendar as cal
 import glob
 import subprocess
 import threading
@@ -907,7 +908,7 @@ class Monitor:
           主計畫：最近 12 根 1 分 K 碰過壓力（支撐），且最後一根完成的 1 分 K 收在進場價之下（之上），現價還在進場價附近、沒到目標也沒過停損；
           備援：最後一根完成的 5 分 K 帶量（≥1.5 倍前 6 根均量）收破支撐 / 收過壓力，現價離觸發價 1% 內。
         反彈動能中不給空訊號、殺盤動能中不給多訊號；09:10 前、13:20 後不給。
-        訊號會留著直到：到目標 1（✔）、過停損（✘）、或成交後 30 分鐘（記平，跟結案判定一致），結束後再顯示 2 分鐘。
+        訊號會留著直到：順向到 2 倍風險（✔）、逆向超過 3 tick（✘）、或成交後 60 分鐘 / 13:25（看扣成本損益），跟結案評分一致，結束後再顯示 2 分鐘。
         進場後只看停損/目標，不因中途回吐提早出場（回測 8 組「浮盈回吐一半＋反向主動量就出」都比原本差）；
         防護都放在進場前：追價上限、逆勢過濾、掛單被大單砸穿就撤（_burst_through）。
         追價上限（11/06：6 個訊號掛出時已從停損往目標走了 25–75%，兩筆輸的報酬風險比都 <1）：
@@ -938,13 +939,18 @@ class Monitor:
                         cur["status"] = f"○ 未成交：20 分鐘沒回到 {lo}–{hi}，取消"
                     elif now.strftime("%H:%M") >= "13:05":
                         cur["status"] = "○ 未成交：13:05 後不進場，取消"
-                elif (p <= cur["t1"]) if short else (p >= cur["t1"]):
-                    cur["status"] = f"✔ 到目標 1 {cur['t1']}"
-                elif (p >= cur["stop"]) if short else (p <= cur["stop"]):
-                    cur["status"] = f"✘ 過停損 {cur['stop']}，失效"
-                elif now.timestamp() - (cur.get("fill_ts") or cur["since_ts"]) > 1800:
-                    # 跟結案判定一致：成交後 30 分鐘內沒到目標也沒到停損 = 平。進場後只看停損/目標，不因中途回吐提早跑
-                    cur["status"] = "⏱ 成交後 30 分鐘沒到目標也沒到停損，記平（停損/目標照設，13:25 前一定平倉）"
+                else:
+                    # 跟結案評分一致（_judge_signal）：逆向超過 3 tick 算輸、順向 2 倍風險算贏、60 分鐘（最晚 13:25）看扣成本損益。
+                    # 模型的停損 / 目標仍是技術面參考價，持倉面板（你自己的單）照那組走。
+                    sc = cur.get("score") or self.score_levels(cur["side"], cur["price"])
+                    entry = (cur["zone"][0] if short else cur["zone"][1]) if cur.get("filled_at_alert") is False else cur["price"]
+                    if (p >= sc["stop"]) if short else (p <= sc["stop"]):
+                        cur["status"] = f"✘ 逆向超過 {sc['heat_ticks']} tick（{sc['stop']}），記輸（模型停損 {cur['stop']} 是技術面參考）"
+                    elif (p <= sc["tgt"]) if short else (p >= sc["tgt"]):
+                        cur["status"] = f"✔ 順向到 {sc['tgt']}（2 倍風險），記贏（模型目標 {cur['t1']} 可續抱參考）"
+                    elif now.timestamp() - (cur.get("fill_ts") or cur["since_ts"]) > self.SCORE_WINDOW_MIN * 60 or now.strftime("%H:%M") >= "13:25":
+                        net = ((entry - p) if short else (p - entry)) / entry * 100 - self.COST_PCT
+                        cur["status"] = f"⏱ 成交後 60 分鐘（或 13:25）到，現價 {p} 扣成本 {net:+.2f}%，記{'贏' if net > 0 else '輸'}"
                 if cur.get("status"):
                     cur["end_ts"] = now.timestamp()
                     self._add_alert(c, now, f"{cur['status']}：{cur['label']} @{cur['price']}" if not cur.get("cancelled") else cur["cancelled"]["alert"])
@@ -1028,11 +1034,14 @@ class Monitor:
                 return None
             self._sig_seen[key] = now.timestamp()
             self.signals[c] = sig
+            sc = self.score_levels(sig["side"], p if inzone else (lo if short else hi))
+            sig["score"] = sc
+            score_txt = f"｜評分：逆向超過 {sc['heat_ticks']} tick（{sc['stop']}）算輸、到 {sc['tgt']} 算贏，60 分鐘內都沒到看扣成本損益"
             if inzone:
-                self._add_alert(c, now, f"▶ 建議{label} @{p}：{why}；停損 {stop}，目標 {t1} / {t2}（報酬風險比 {rr_now:.1f}）")
+                self._add_alert(c, now, f"▶ 建議{label} @{p}：{why}；停損 {stop}，目標 {t1} / {t2}（報酬風險比 {rr_now:.1f}）{score_txt}")
             else:
                 self._add_alert(c, now, f"▶ 建議{label} 掛 {lo}–{hi}（現價 {p} 已{'殺低' if short else '追高'}，報酬風險比只剩 {rr_now:.1f}，等回再進）："
-                                        f"{why}；停損 {stop}，目標 {t1} / {t2}")
+                                        f"{why}；停損 {stop}，目標 {t1} / {t2}{score_txt}")
             return sig
 
         s = plan.get("short")
@@ -1157,9 +1166,13 @@ class Monitor:
                                  "max_pct": (max(b[2] for b in win) / rec["price"] - 1) * 100,
                                  "min_pct": (min(b[3] for b in win) / rec["price"] - 1) * 100,
                                  "partial": age < horizon * 60}
-            # 等回掛單的訊號：最多 20 分鐘等成交 + 成交後 30 分鐘，所以等滿 50 分鐘才結案
-            need = 3000 if (rec.get("sig") and not rec["sig"].get("filled_at_alert", True)) else 0
-            if ("30m" in rec["out"] and age >= need) or (closed and age > 60):
+            # 建議訊號：成交後評分窗 60 分鐘（等回掛單另加最多 20 分鐘等成交），13:25 強制平倉後就能結案
+            if rec.get("sig"):
+                need = (self.SCORE_WINDOW_MIN + (20 if not rec["sig"].get("filled_at_alert", True) else 0) + 1) * 60
+                done = "30m" in rec["out"] and (age >= need or now.strftime("%H:%M") >= "13:26")
+            else:
+                done = "30m" in rec["out"]
+            if done or (closed and age > 60):
                 if rec.get("sig"):
                     self._judge_signal(rec, bmap, m0)
                 with open(dev_path(LOG_DIR, "alert_outcomes", ".jsonl"), "a", encoding="utf-8") as f:
@@ -1205,16 +1218,48 @@ class Monitor:
             S.append("真牆擋在前面")
         return S
 
+    # 勝負評分（11/09 改）：原本「30 分鐘內先到目標 1 / 停損」目標太遠，15 筆真實訊號 12 筆記平，等於沒在判。
+    # 改成照使用者的判斷：成交後逆向最多容忍 3 tick（被軋 / 突破太遠就算輸），順向走到 2 倍風險就算贏；
+    # 先到的算數（同一根 K 都到算輸，保守）；60 分鐘內都沒到（最晚 13:25 平倉）就看那時扣成本後賺賠，不再有「平」。
+    # 3 tick 在不同價位差很多（24 元 0.6%、101 元 1.5%），所以停損距離超過 1% 時減少 tick 數，至少 1 tick。
+    SCORE_HEAT_TICKS = 3
+    SCORE_MAX_STOP_PCT = 1.0
+    SCORE_RR = 2
+    SCORE_WINDOW_MIN = 60
+    SCORE_LAST_MIN = 13 * 60 + 25
+
+    @staticmethod
+    def _tick_step(p, n):
+        """從 p 往上（n>0）或往下（n<0）走 n 個 tick，跨價位級距時照新的 tick 走。"""
+        for _ in range(abs(n)):
+            p = p + I.tick_size(p) if n > 0 else p - I.tick_size(p - 1e-9)
+        return round(p, 2)
+
+    @classmethod
+    def score_levels(cls, side, px):
+        """評分用的停損 / 停利價：停損 = 逆向第 (容忍 tick+1) 個 tick，停利 = 順向 2 倍那麼多 tick。"""
+        sgn = -1 if side == "short" else 1
+        heat = cls.SCORE_HEAT_TICKS
+        while heat > 1 and abs(cls._tick_step(px, -sgn * (heat + 1)) - px) / px * 100 > cls.SCORE_MAX_STOP_PCT:
+            heat -= 1
+        n_stop = heat + 1
+        return {"heat_ticks": heat, "stop": cls._tick_step(px, -sgn * n_stop), "tgt": cls._tick_step(px, sgn * n_stop * cls.SCORE_RR),
+                "stop_ticks": n_stop, "tgt_ticks": n_stop * cls.SCORE_RR}
+
     def _judge_signal(self, rec, bmap, m0):
-        """建議訊號的輸贏：成交後 30 分鐘內先到目標 1 = win、先到停損 = loss、都沒到 = flat；
-        等回掛單的訊號 20 分鐘內 1 分 K 低點碰到進場區上緣（做空：高點碰到下緣）才算成交、成交價用掛單價；
-        沒成交（含先到目標 1）= nofill，不算輸贏。
-        成交後 5 分鐘內反向走掉停損距離一半以上 = fast_adverse（估錯，即使之後賺回來也要記）。"""
+        """建議訊號的輸贏（評分規則見 SCORE_*）：
+        成交：等回掛單的訊號 20 分鐘內 1 分 K 碰到進場區上緣（做空：高點碰到下緣）才算成交、成交價用掛單價；
+              沒回到進場區就先到模型目標 1 = nofill，不算輸贏。
+        成交後 60 分鐘內（最晚 13:25）：先逆向超過 3 tick = loss（exit=stop）；先順向到 2 倍風險 = win（exit=target）；
+              都沒到 = 看最後一根 K 收盤扣成本 0.235% 後 >0 記 win、否則 loss（exit=time）。
+        另記 mae / mfe（期間最大逆向 / 順向 tick）與 net_pct（扣成本後損益 %），平均每筆賺幾 % 比勝率重要。
+        fast_adverse 照舊：成交後 5 分鐘內反向走掉模型停損距離一半以上（估錯，即使之後賺回來也要記）。"""
         sg = rec["sig"]; side = sg.get("side")
         stop, t1 = sg.get("stop"), sg.get("t1")
         if not (side and stop and t1 and rec.get("price")):
             return
         short = side == "short"
+        sgn = -1 if short else 1
         zone = sg.get("zone")
         if zone and sg.get("filled_at_alert") is False:
             lim = zone[0] if short else zone[1]
@@ -1226,38 +1271,55 @@ class Monitor:
                 if (b[2] >= lim) if short else (b[3] <= lim):
                     start = i; break
                 if (b[3] <= t1) if short else (b[2] >= t1):
-                    break          # 沒回到進場區就到目標：沒追到
+                    break          # 沒回到進場區就到模型目標 1：沒追到（跟即時訊號框一致）
             px = lim
         else:
             start, px = 1, (sg.get("price") or rec["price"])
+        sl = self.score_levels(side, px)
+        tk = I.tick_size(px)
         first_stop = first_t1 = None
+        exit_kind = exit_px = None
+        mae = mfe = 0.0
         adverse5 = 0.0
+        last_close = None
         if start is not None:
             filled_later = start > 1 or (zone and sg.get("filled_at_alert") is False)
-            for i in range(start, start + 30):
+            end = min(start + self.SCORE_WINDOW_MIN, self.SCORE_LAST_MIN - m0 + 1)
+            for i in range(start, max(end, start + 1)):
                 b = bmap.get(m0 + i)
                 if not b:
                     continue
                 hi, lo = b[2], b[3]
-                same_bar = filled_later and i == start      # 成交那根 K 先不算到目標（不知道先後），停損照算
-                if short:
-                    if first_stop is None and hi >= stop: first_stop = i
-                    if first_t1 is None and lo <= t1 and not same_bar: first_t1 = i
-                    if i < start + 5: adverse5 = max(adverse5, hi - px)
-                else:
-                    if first_stop is None and lo <= stop: first_stop = i
-                    if first_t1 is None and hi >= t1 and not same_bar: first_t1 = i
-                    if i < start + 5: adverse5 = max(adverse5, px - lo)
+                adv = (hi - px) if short else (px - lo)
+                fav = (px - lo) if short else (hi - px)
+                same_bar = filled_later and i == start      # 成交那根 K 先不算順向（不知道先後），逆向照算
+                mae = max(mae, adv)
+                if not same_bar:
+                    mfe = max(mfe, fav)
+                if i < start + 5:
+                    adverse5 = max(adverse5, adv)
+                hit_stop = (hi >= sl["stop"]) if short else (lo <= sl["stop"])
+                hit_tgt = (not same_bar) and ((lo <= sl["tgt"]) if short else (hi >= sl["tgt"]))
+                if hit_stop:
+                    first_stop = i; exit_kind, exit_px = "stop", sl["stop"]; break
+                if hit_tgt:
+                    first_t1 = i; exit_kind, exit_px = "target", sl["tgt"]; break
+                last_close = b[4]
+            if exit_kind is None and last_close is not None:
+                exit_kind, exit_px = "time", last_close
+        net = None
         if start is None:
             verdict = "nofill"
-        elif first_t1 is not None and (first_stop is None or first_t1 < first_stop):
-            verdict = "win"
-        elif first_stop is not None:
-            verdict = "loss"
+        elif exit_kind is None:
+            verdict = "nofill"                               # 成交後沒有任何分 K（資料斷掉），不算
         else:
-            verdict = "flat"
+            net = round(sgn * (exit_px - px) / px * 100 - self.COST_PCT, 3)
+            verdict = "win" if (exit_kind == "target" or (exit_kind == "time" and net > 0)) else "loss"
         risk = abs(stop - px)
         fast_adverse = bool(start is not None and risk and adverse5 >= 0.5 * risk)
+        score = {"scoring": 2, "score_stop": sl["stop"], "score_tgt": sl["tgt"], "heat_ticks": sl["heat_ticks"], "tick": tk,
+                 "exit": exit_kind, "exit_px": exit_px, "net_pct": net,
+                 "mae_ticks": round(mae / tk, 1) if start is not None else None, "mfe_ticks": round(mfe / tk, 1) if start is not None else None}
         feat = dict(rec.get("features") or {})
         feat.update({"book_imb": rec.get("book_imb"), "big_net_10m": rec.get("big_net_10m"), "small_net_pct": feat.get("small_net_pct", rec.get("small_net")),
                      "phase": rec.get("phase"), "range_pos": rec.get("range_pos")})
@@ -1268,6 +1330,7 @@ class Monitor:
                "zone": zone, "alert_px": sg.get("alert_px", rec["price"]), "filled_at_alert": sg.get("filled_at_alert"), "fill_min": start,
                "chase": sg.get("chase"), "rr_now": sg.get("rr_now"), "rr_zone": sg.get("rr_zone"),
                "verdict": verdict, "fast_adverse": fast_adverse, "first_stop_min": first_stop, "first_t1_min": first_t1,
+               **score,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors")}
         if sg.get("blocked"):
@@ -1296,7 +1359,10 @@ class Monitor:
                 mine = f"｜你的單 {ut.get('fill_px')}→{ut.get('exit_px')} 扣成本 {ut.get('net_pct'):+.2f}%"
             elif ut:
                 mine = {"cancelled": "｜你撤單了", "skipped": "｜你沒做"}.get(ut.get("state"), "")
-            txt = f"{wl}：{sg.get('label')} @{px}" + (f"，可疑原因：{'、'.join(suspects)}" if suspects else "")
+            how = {"stop": f"逆向超過 {sl['heat_ticks']} tick（{sl['stop']}）", "target": f"順向到 {sl['tgt']}（2 倍風險）",
+                   "time": f"60 分鐘（或 13:25）到時 {exit_px} 平"}.get(exit_kind, "")
+            txt = (f"{wl}：{sg.get('label')} @{px}" + (f" → {how}，扣成本 {net:+.2f}%" if net is not None else "")
+                   + (f"，可疑原因：{'、'.join(suspects)}" if suspects else ""))
             if ut:
                 self._pos_alert(rec["code"], dt.datetime.now(), txt + mine)
             else:
@@ -1599,6 +1665,10 @@ class Monitor:
                     live["walls"][c] = ws
             except Exception as e:
                 print(f"[fast] 掛單牆追蹤失敗：{str(e)[:100]}")
+            if not self._trading_today():
+                # 週末/休市日報價是凍結的舊價：不發訊號、不追蹤結果（11/07、11/08 舊版這樣寫進 22 筆假訊號）
+                live["alerts"][c] = list(self.live_alerts.get(c, []))[-12:]
+                continue
             try:
                 sig = self._signal(c, WEB.latest.get(c), live["series"].get(c) or [], q, now)
                 if sig:
@@ -1665,7 +1735,18 @@ class Monitor:
         except Exception as e:
             print(f"[sync] 失敗：{str(e)[:120]}")
 
+    def _trading_today(self):
+        d = dt.date.today()
+        if getattr(self, "_tday", (None,))[0] != d:
+            try:
+                self._tday = (d, cal.is_trading_day(d))
+            except Exception:
+                self._tday = (d, d.weekday() < 5)
+        return self._tday[1]
+
     def log(self, ev):
+        if not self._trading_today():
+            return          # 非交易日不寫 monitor_*.jsonl
         path = dev_path(LOG_DIR, f"monitor_{dt.date.today():%Y%m%d}", ".jsonl")   # 各台寫各自的檔，git 不會撞
         rec = {k: v for k, v in ev.items() if k not in ("quote",)}
         rec["quote"] = {k: ev["quote"].get(k) for k in ("ref", "o", "h", "l", "v", "bids", "asks")}

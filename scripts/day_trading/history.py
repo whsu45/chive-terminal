@@ -11,6 +11,7 @@ import threading
 import datetime as dt
 
 from config import LOG_DIR, dev_path, dev_files, one_device
+import tw_calendar as cal
 
 # 每台電腦寫自己的 stock_history_<裝置ID>.json（git 才不會兩台互撞）；讀取（get / summary / 儀表板）合併所有裝置的檔
 PATH = dev_path(LOG_DIR, "stock_history", ".json")
@@ -54,7 +55,8 @@ def _merged():
                     m[k] = e[k]
             m["days"] = sorted(set(m["days"]) | set(e.get("days") or []))
             m["launches"] += e.get("launches", 0) or 0
-            m["signals"] += [dict(s, _dev=dev) for s in (e.get("signals") or []) if isinstance(s, dict)]
+            m["signals"] += [dict(s, _dev=dev) for s in (e.get("signals") or [])
+                             if isinstance(s, dict) and cal.is_trading_date_str(s.get("date"))]   # 週末/休市日的假訊號不算
             m["notes"] += [n for n in (e.get("notes") or []) if isinstance(n, dict)]
     for m in out.values():
         m["signals"] = sorted(one_device(m["signals"], key=lambda s: s.get("date")),
@@ -114,14 +116,19 @@ def summary(code, e=None):
     # 勝率只算永豐串流（或舊紀錄沒標來源）的訊號；MIS 10 秒快照模式的訊號時機不準，另外計數不進勝率
     sig = [s for s in all_sig if s.get("src") != "mis"]
     n_mis = len(all_sig) - len(sig)
+    # 11/09 改判法（scoring=2：逆向 >3 tick 輸、順向 2 倍風險贏、60 分鐘看扣成本損益）；有新判法的紀錄就只算新的，不跟舊的「平」混
+    rule = "new" if any(s.get("scoring") == 2 for s in sig) else "old"
+    if rule == "new":
+        sig = [s for s in sig if s.get("scoring") == 2]
     def side_stats(side):
         xs = [s for s in sig if s.get("side") == side]
         w = sum(1 for s in xs if s.get("verdict") == "win")
         l = sum(1 for s in xs if s.get("verdict") == "loss")
         fa = sum(1 for s in xs if s.get("fast_adverse"))
         nf = sum(1 for s in xs if s.get("verdict") == "nofill")
+        nets = [s["net_pct"] for s in xs if s.get("net_pct") is not None]
         return {"n": len(xs), "win": w, "loss": l, "flat": len(xs) - w - l - nf, "nofill": nf, "fast_adverse": fa,
-                "win_rate": (w / (w + l) * 100) if (w + l) else None}
+                "win_rate": (w / (w + l) * 100) if (w + l) else None, "avg_net": (sum(nets) / len(nets)) if nets else None}
     # 失敗原因排行（只數輸的）
     reasons = {}
     for s in sig:
@@ -132,7 +139,7 @@ def summary(code, e=None):
     return {"code": code, "name": e.get("name"), "group": e.get("group"), "days": len(e.get("days") or []),
             "first": (e.get("days") or [None])[0], "last": (e.get("days") or [None])[-1], "launches": e.get("launches", 0),
             "short": side_stats("short"), "long": side_stats("long"), "n_signals": len(sig),
-            "n_mis": n_mis, "recent": all_sig[-8:], "loss_reasons": top, "notes": (e.get("notes") or [])[-5:]}
+            "n_mis": n_mis, "rule": rule, "recent": all_sig[-8:], "loss_reasons": top, "notes": (e.get("notes") or [])[-5:]}
 
 
 def all_summary():

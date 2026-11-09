@@ -1,6 +1,6 @@
 {
  "quote_date": "2026-11-09",
- "members_fetched": "2026-11-09",
+ "members_fetched": "2026-11-10",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -1009,18 +1009,6 @@
      "volume": 363
     },
     {
-     "code": "6435",
-     "name": "大中",
-     "market": "上櫃",
-     "open": 184.0,
-     "high": 193.0,
-     "low": 181.5,
-     "close": 193.0,
-     "change": 17.5,
-     "pct": 9.97,
-     "volume": 156
-    },
-    {
      "code": "5425",
      "name": "台半",
      "market": "上櫃",
@@ -1031,6 +1019,18 @@
      "change": 6.9,
      "pct": 9.97,
      "volume": 1920
+    },
+    {
+     "code": "6435",
+     "name": "大中",
+     "market": "上櫃",
+     "open": 184.0,
+     "high": 193.0,
+     "low": 181.5,
+     "close": 193.0,
+     "change": 17.5,
+     "pct": 9.97,
+     "volume": 156
     },
     {
      "code": "3675",
@@ -2998,18 +2998,6 @@
    "desc": "特化概念股指以特用化學品為主要營收的台股，這頁聚焦供應半導體、顯示器與電路板製程的電子化學品，包括微影製程材料、電子級特殊氣體、電子級溶劑、濕式化學品、光阻與電子材料樹脂。",
    "members": [
     {
-     "code": "4768",
-     "name": "晶呈科技",
-     "market": "上櫃",
-     "open": 261.0,
-     "high": 279.0,
-     "low": 254.5,
-     "close": 279.0,
-     "change": 25.0,
-     "pct": 9.84,
-     "volume": 353
-    },
-    {
      "code": "4772",
      "name": "台特化",
      "market": "上櫃",
@@ -3020,6 +3008,18 @@
      "change": 19.0,
      "pct": 9.84,
      "volume": 424
+    },
+    {
+     "code": "4768",
+     "name": "晶呈科技",
+     "market": "上櫃",
+     "open": 261.0,
+     "high": 279.0,
+     "low": 254.5,
+     "close": 279.0,
+     "change": 25.0,
+     "pct": 9.84,
+     "volume": 353
     },
     {
      "code": "4749",
@@ -3707,161 +3707,6 @@
    "flat": 0
   },
   {
-   "slug": "power-supply",
-   "title": "電源供應器概念股",
-   "desc": "電源供應器概念股指以電源供應器與電力轉換產品為主要營收的台股，產品從 PC 與伺服器電源、Power Shelf 機櫃電源、UPS 不斷電系統，到資料中心的高壓直流（HVDC）供電架構。",
-   "members": [
-    {
-     "code": "8109",
-     "name": "博大",
-     "market": "上櫃",
-     "open": 122.0,
-     "high": 124.0,
-     "low": 119.0,
-     "close": 123.0,
-     "change": 5.0,
-     "pct": 4.24,
-     "volume": 137
-    },
-    {
-     "code": "3078",
-     "name": "僑威",
-     "market": "上櫃",
-     "open": 40.45,
-     "high": 41.0,
-     "low": 40.1,
-     "close": 40.2,
-     "change": 0.35,
-     "pct": 0.88,
-     "volume": 381
-    },
-    {
-     "code": "6203",
-     "name": "海韻電",
-     "market": "上櫃",
-     "open": 50.2,
-     "high": 51.9,
-     "low": 50.0,
-     "close": 50.0,
-     "change": 0.0,
-     "pct": 0.0,
-     "volume": 46
-    },
-    {
-     "code": "3032",
-     "name": "偉訓",
-     "market": "上市",
-     "open": 56.7,
-     "high": 62.5,
-     "low": 56.7,
-     "close": 61.2,
-     "change": -1.8,
-     "pct": -2.86,
-     "volume": 1228
-    },
-    {
-     "code": "6412",
-     "name": "群電",
-     "market": "上市",
-     "open": 55.5,
-     "high": 57.3,
-     "low": 53.7,
-     "close": 56.1,
-     "change": -2.3,
-     "pct": -3.94,
-     "volume": 2592
-    },
-    {
-     "code": "6409",
-     "name": "旭隼",
-     "market": "上市",
-     "open": 756.0,
-     "high": 801.0,
-     "low": 751.0,
-     "close": 791.0,
-     "change": -38.0,
-     "pct": -4.58,
-     "volume": 306
-    },
-    {
-     "code": "2457",
-     "name": "飛宏",
-     "market": "上市",
-     "open": 16.45,
-     "high": 17.6,
-     "low": 16.45,
-     "close": 17.2,
-     "change": -1.05,
-     "pct": -5.75,
-     "volume": 3187
-    },
-    {
-     "code": "2301",
-     "name": "光寶科",
-     "market": "上市",
-     "open": 190.5,
-     "high": 203.5,
-     "low": 190.5,
-     "close": 198.0,
-     "change": -13.5,
-     "pct": -6.38,
-     "volume": 22710
-    },
-    {
-     "code": "3015",
-     "name": "全漢",
-     "market": "上市",
-     "open": 40.5,
-     "high": 42.75,
-     "low": 40.5,
-     "close": 42.1,
-     "change": -2.9,
-     "pct": -6.44,
-     "volume": 1230
-    },
-    {
-     "code": "2413",
-     "name": "環科",
-     "market": "上市",
-     "open": 40.4,
-     "high": 43.0,
-     "low": 40.4,
-     "close": 41.95,
-     "change": -2.9,
-     "pct": -6.47,
-     "volume": 1656
-    },
-    {
-     "code": "2308",
-     "name": "台達電",
-     "market": "上市",
-     "open": 1020.0,
-     "high": 1070.0,
-     "low": 1020.0,
-     "close": 1055.0,
-     "change": -75.0,
-     "pct": -6.64,
-     "volume": 34536
-    },
-    {
-     "code": "6282",
-     "name": "康舒",
-     "market": "上市",
-     "open": 31.35,
-     "high": 33.35,
-     "low": 31.35,
-     "close": 32.35,
-     "change": -2.45,
-     "pct": -7.04,
-     "volume": 11125
-    }
-   ],
-   "avg_pct": -3.75,
-   "up": 2,
-   "down": 9,
-   "flat": 1
-  },
-  {
    "slug": "osat",
    "title": "封測概念股",
    "desc": "封測概念股指以半導體後段封裝與測試代工（OSAT）為主要營收的台股，服務 IC 設計公司、IDM 與晶圓廠，環節包含晶圓針測、IC 封裝、成品測試與系統級測試。",
@@ -4039,6 +3884,161 @@
    "up": 3,
    "down": 11,
    "flat": 0
+  },
+  {
+   "slug": "power-supply",
+   "title": "電源供應器概念股",
+   "desc": "電源供應器概念股指以電源供應器與電力轉換產品為主要營收的台股，產品從 PC 與伺服器電源、Power Shelf 機櫃電源、UPS 不斷電系統，到資料中心的高壓直流（HVDC）供電架構。",
+   "members": [
+    {
+     "code": "8109",
+     "name": "博大",
+     "market": "上櫃",
+     "open": 122.0,
+     "high": 124.0,
+     "low": 119.0,
+     "close": 123.0,
+     "change": 5.0,
+     "pct": 4.24,
+     "volume": 137
+    },
+    {
+     "code": "3078",
+     "name": "僑威",
+     "market": "上櫃",
+     "open": 40.45,
+     "high": 41.0,
+     "low": 40.1,
+     "close": 40.2,
+     "change": 0.35,
+     "pct": 0.88,
+     "volume": 381
+    },
+    {
+     "code": "6203",
+     "name": "海韻電",
+     "market": "上櫃",
+     "open": 50.2,
+     "high": 51.9,
+     "low": 50.0,
+     "close": 50.0,
+     "change": 0.0,
+     "pct": 0.0,
+     "volume": 46
+    },
+    {
+     "code": "3032",
+     "name": "偉訓",
+     "market": "上市",
+     "open": 56.7,
+     "high": 62.5,
+     "low": 56.7,
+     "close": 61.2,
+     "change": -1.8,
+     "pct": -2.86,
+     "volume": 1228
+    },
+    {
+     "code": "6412",
+     "name": "群電",
+     "market": "上市",
+     "open": 55.5,
+     "high": 57.3,
+     "low": 53.7,
+     "close": 56.1,
+     "change": -2.3,
+     "pct": -3.94,
+     "volume": 2592
+    },
+    {
+     "code": "6409",
+     "name": "旭隼",
+     "market": "上市",
+     "open": 756.0,
+     "high": 801.0,
+     "low": 751.0,
+     "close": 791.0,
+     "change": -38.0,
+     "pct": -4.58,
+     "volume": 306
+    },
+    {
+     "code": "2457",
+     "name": "飛宏",
+     "market": "上市",
+     "open": 16.45,
+     "high": 17.6,
+     "low": 16.45,
+     "close": 17.2,
+     "change": -1.05,
+     "pct": -5.75,
+     "volume": 3187
+    },
+    {
+     "code": "2301",
+     "name": "光寶科",
+     "market": "上市",
+     "open": 190.5,
+     "high": 203.5,
+     "low": 190.5,
+     "close": 198.0,
+     "change": -13.5,
+     "pct": -6.38,
+     "volume": 22710
+    },
+    {
+     "code": "3015",
+     "name": "全漢",
+     "market": "上市",
+     "open": 40.5,
+     "high": 42.75,
+     "low": 40.5,
+     "close": 42.1,
+     "change": -2.9,
+     "pct": -6.44,
+     "volume": 1230
+    },
+    {
+     "code": "2413",
+     "name": "環科",
+     "market": "上市",
+     "open": 40.4,
+     "high": 43.0,
+     "low": 40.4,
+     "close": 41.95,
+     "change": -2.9,
+     "pct": -6.47,
+     "volume": 1656
+    },
+    {
+     "code": "2308",
+     "name": "台達電",
+     "market": "上市",
+     "open": 1020.0,
+     "high": 1070.0,
+     "low": 1020.0,
+     "close": 1055.0,
+     "change": -75.0,
+     "pct": -6.64,
+     "volume": 34536
+    },
+    {
+     "code": "6282",
+     "name": "康舒",
+     "market": "上市",
+     "open": 31.35,
+     "high": 33.35,
+     "low": 31.35,
+     "close": 32.35,
+     "change": -2.45,
+     "pct": -7.04,
+     "volume": 11125
+    }
+   ],
+   "avg_pct": -3.75,
+   "up": 2,
+   "down": 9,
+   "flat": 1
   },
   {
    "slug": "apple-supply-chain",

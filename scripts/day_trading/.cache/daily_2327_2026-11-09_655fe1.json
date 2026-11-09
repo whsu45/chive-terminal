@@ -1,0 +1,3375 @@
+{
+ "version": 7,
+ "code": "2327",
+ "name": "國巨*",
+ "market": "tse",
+ "date": "2026-11-09",
+ "prev_date": "2026-11-06",
+ "group": "被動元件",
+ "peers": [
+  "2492",
+  "2375",
+  "3026",
+  "6155"
+ ],
+ "peers_arg": null,
+ "peer_info": {
+  "2492": {
+   "name": "華新科",
+   "ex": "tse",
+   "y": 258.5,
+   "prev_chg_pct": -8.170515097690945,
+   "prev_vol": 18923
+  },
+  "2375": {
+   "name": "凱美",
+   "ex": "tse",
+   "y": 86.7,
+   "prev_chg_pct": -7.667731629392971,
+   "prev_vol": 2640
+  },
+  "3026": {
+   "name": "禾伸堂",
+   "ex": "tse",
+   "y": 475.5,
+   "prev_chg_pct": -9.943181818181824,
+   "prev_vol": 7927
+  },
+  "6155": {
+   "name": "鈞寶",
+   "ex": "tse",
+   "y": 54.4,
+   "prev_chg_pct": -6.044905008635581,
+   "prev_vol": 1828
+  }
+ },
+ "tech": {
+  "date": "2026-11-06",
+  "close": 374.0,
+  "open": 364.5,
+  "high": 382.0,
+  "low": 364.5,
+  "vol": 56815,
+  "ma5": 435.8,
+  "ma10": 479.9,
+  "ma20": 534.1,
+  "ma60": 558.9,
+  "bb_up": 681.4983039251131,
+  "bb_dn": 386.70169607488697,
+  "atr14": 37.535714285714285,
+  "rsi14": 24.793329496645654,
+  "vol_ma5": 51161.4,
+  "vol_ma20": 46786.15,
+  "chg_pct": -7.540173053152044,
+  "high20": 686.0,
+  "low20": 364.5,
+  "high60": 686.0,
+  "low60": 364.5,
+  "prev_high": 436.5,
+  "prev_low": 404.5,
+  "ret5": -25.49800796812749,
+  "ret20": -40.16,
+  "streak": -7,
+  "atr_pct": 10.036287242169594
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-21",
+   "o": 556.0,
+   "h": 579.0,
+   "l": 556.0,
+   "c": 557.0,
+   "v": 27387,
+   "amt": 15452584725.0
+  },
+  {
+   "date": "2026-09-22",
+   "o": 578.0,
+   "h": 588.0,
+   "l": 566.0,
+   "c": 571.0,
+   "v": 42736,
+   "amt": 24640560509.0
+  },
+  {
+   "date": "2026-09-23",
+   "o": 581.0,
+   "h": 601.0,
+   "l": 570.0,
+   "c": 573.0,
+   "v": 42588,
+   "amt": 24822853199.0
+  },
+  {
+   "date": "2026-09-24",
+   "o": 568.0,
+   "h": 589.0,
+   "l": 560.0,
+   "c": 580.0,
+   "v": 35926,
+   "amt": 20833185197.0
+  },
+  {
+   "date": "2026-09-29",
+   "o": 570.0,
+   "h": 570.0,
+   "l": 548.0,
+   "c": 548.0,
+   "v": 41164,
+   "amt": 22918928393.0
+  },
+  {
+   "date": "2026-09-30",
+   "o": 557.0,
+   "h": 564.0,
+   "l": 548.0,
+   "c": 548.0,
+   "v": 25009,
+   "amt": 13857054263.0
+  },
+  {
+   "date": "2026-10-01",
+   "o": 560.0,
+   "h": 602.0,
+   "l": 560.0,
+   "c": 602.0,
+   "v": 74137,
+   "amt": 43606168571.0
+  },
+  {
+   "date": "2026-10-02",
+   "o": 604.0,
+   "h": 647.0,
+   "l": 598.0,
+   "c": 626.0,
+   "v": 106667,
+   "amt": 66854916325.0
+  },
+  {
+   "date": "2026-10-05",
+   "o": 649.0,
+   "h": 658.0,
+   "l": 626.0,
+   "c": 626.0,
+   "v": 67379,
+   "amt": 43058996053.0
+  },
+  {
+   "date": "2026-10-06",
+   "o": 630.0,
+   "h": 635.0,
+   "l": 615.0,
+   "c": 625.0,
+   "v": 29671,
+   "amt": 18494463786.0
+  },
+  {
+   "date": "2026-10-07",
+   "o": 630.0,
+   "h": 686.0,
+   "l": 627.0,
+   "c": 647.0,
+   "v": 92783,
+   "amt": 61232598759.0
+  },
+  {
+   "date": "2026-10-08",
+   "o": 640.0,
+   "h": 647.0,
+   "l": 619.0,
+   "c": 635.0,
+   "v": 47359,
+   "amt": 29961504388.0
+  },
+  {
+   "date": "2026-10-12",
+   "o": 628.0,
+   "h": 642.0,
+   "l": 619.0,
+   "c": 636.0,
+   "v": 26138,
+   "amt": 16527292385.0
+  },
+  {
+   "date": "2026-10-13",
+   "o": 619.0,
+   "h": 623.0,
+   "l": 580.0,
+   "c": 599.0,
+   "v": 60384,
+   "amt": 36295961253.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 605.0,
+   "h": 635.0,
+   "l": 593.0,
+   "c": 627.0,
+   "v": 47647,
+   "amt": 29451592481.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 590.0,
+   "h": 593.0,
+   "l": 570.0,
+   "c": 573.0,
+   "v": 55932,
+   "amt": 32617736314.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 581.0,
+   "h": 595.0,
+   "l": 567.0,
+   "c": 567.0,
+   "v": 36288,
+   "amt": 21044036721.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 536.0,
+   "h": 542.0,
+   "l": 517.0,
+   "c": 534.0,
+   "v": 47940,
+   "amt": 25416355927.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 532.0,
+   "h": 550.0,
+   "l": 521.0,
+   "c": 523.0,
+   "v": 42961,
+   "amt": 23040911494.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 543.0,
+   "h": 559.0,
+   "l": 537.0,
+   "c": 542.0,
+   "v": 34082,
+   "amt": 18651449499.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 558.0,
+   "h": 558.0,
+   "l": 506.0,
+   "c": 507.0,
+   "v": 46116,
+   "amt": 24221215636.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 515.0,
+   "h": 530.0,
+   "l": 507.0,
+   "c": 521.0,
+   "v": 38715,
+   "amt": 20072872750.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 540.0,
+   "h": 550.0,
+   "l": 532.0,
+   "c": 547.0,
+   "v": 26045,
+   "amt": 14149192126.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 544.0,
+   "h": 548.0,
+   "l": 525.0,
+   "c": 543.0,
+   "v": 29920,
+   "amt": 16095782709.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 520.0,
+   "h": 520.0,
+   "l": 493.0,
+   "c": 502.0,
+   "v": 47606,
+   "amt": 23973367766.0
+  },
+  {
+   "date": "2026-11-02",
+   "o": 492.0,
+   "h": 512.0,
+   "l": 489.0,
+   "c": 498.5,
+   "v": 33131,
+   "amt": 16547827463.0
+  },
+  {
+   "date": "2026-11-03",
+   "o": 490.0,
+   "h": 491.0,
+   "l": 452.0,
+   "c": 453.0,
+   "v": 53770,
+   "amt": 25160148728.0
+  },
+  {
+   "date": "2026-11-04",
+   "o": 467.0,
+   "h": 468.5,
+   "l": 417.0,
+   "c": 449.0,
+   "v": 56944,
+   "amt": 25005684099.0
+  },
+  {
+   "date": "2026-11-05",
+   "o": 435.0,
+   "h": 436.5,
+   "l": 404.5,
+   "c": 404.5,
+   "v": 55147,
+   "amt": 22950715941.0
+  },
+  {
+   "date": "2026-11-06",
+   "o": 364.5,
+   "h": 382.0,
+   "l": 364.5,
+   "c": 374.0,
+   "v": 56815,
+   "amt": 21050516422.0
+  }
+ ],
+ "limit_up": 411.0,
+ "limit_down": 337.0,
+ "insti": {
+  "2026-11-06": {
+   "foreign": -882,
+   "trust": -661,
+   "dealer": 313,
+   "total": -1229
+  },
+  "2026-11-05": {
+   "foreign": -8102,
+   "trust": -1636,
+   "dealer": 336,
+   "total": -9401
+  },
+  "2026-11-04": {
+   "foreign": -1268,
+   "trust": -391,
+   "dealer": 52,
+   "total": -1606
+  }
+ },
+ "insti_sum": {
+  "foreign": -10252,
+  "trust": -2688,
+  "dealer": 701,
+  "total": -12236
+ },
+ "weak_screen": {
+  "close": 374.0,
+  "r10": -31.0,
+  "idx_r10": -15.33,
+  "ma60": 558.9,
+  "idx": 39701.64,
+  "idx_ma20": 46133.96,
+  "mkt_weak": true,
+  "foreign": -882,
+  "trust": -661,
+  "under": true,
+  "drop10": true,
+  "below_ma": true,
+  "px100": true,
+  "sell": true,
+  "n_ok": 5,
+  "hit": true
+ },
+ "margin": {
+  "fin_prev": 43030,
+  "fin_now": 39031,
+  "fin_chg": -3999,
+  "short_prev": 1227,
+  "short_now": 247,
+  "short_chg": -980,
+  "fin_limit": 515782
+ },
+ "sbl": {
+  "sbl_sell": 0,
+  "sbl_return": 26,
+  "sbl_bal": 73242
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": 2360,
+   "daytrade_buy": 2360,
+   "foreign_net": -1890,
+   "top5_buy": 8225,
+   "top5_sell": -12362,
+   "daytrade_names": [
+    "凱基-台北",
+    "凱基-城中"
+   ],
+   "top_buyers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 4106,
+     "sell": 767,
+     "net": 3339,
+     "pct": 5.88
+    },
+    {
+     "broker": "凱基-台北",
+     "buy": 3470,
+     "sell": 1319,
+     "net": 2151,
+     "pct": 3.79
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 3820,
+     "sell": 2592,
+     "net": 1228,
+     "pct": 2.16
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 1772,
+     "sell": 647,
+     "net": 1125,
+     "pct": 1.98
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 1108,
+     "sell": 726,
+     "net": 382,
+     "pct": 0.67
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "花旗環球",
+     "buy": 33,
+     "sell": 8408,
+     "net": -8375,
+     "pct": 14.74
+    },
+    {
+     "broker": "元大證券",
+     "buy": 5123,
+     "sell": 6962,
+     "net": -1839,
+     "pct": 3.24
+    },
+    {
+     "broker": "國票-長城",
+     "buy": 26,
+     "sell": 1363,
+     "net": -1337,
+     "pct": 2.35
+    },
+    {
+     "broker": "宏遠證券",
+     "buy": 10,
+     "sell": 430,
+     "net": -420,
+     "pct": 0.74
+    },
+    {
+     "broker": "玉山-高雄",
+     "buy": 74,
+     "sell": 465,
+     "net": -391,
+     "pct": 0.69
+    }
+   ],
+   "daytrade_buy_pct": 4.153832614626419,
+   "foreign_net_pct": -3.3265862888321744,
+   "top5_buy_pct": 14.476810701399279,
+   "top5_sell_pct": 21.75833846695415
+  },
+  "day_date": "2026/11/06",
+  "range4": {
+   "daytrade_net": 2086,
+   "daytrade_buy": 2496,
+   "foreign_net": -16307,
+   "top5_buy": 6340,
+   "top5_sell": -23312,
+   "daytrade_names": [
+    "凱基-台北",
+    "富邦-虎尾",
+    "富邦-建國",
+    "元大-土城永寧"
+   ],
+   "top_buyers": [
+    {
+     "broker": "凱基-台北",
+     "buy": 12035,
+     "sell": 10264,
+     "net": 1771,
+     "pct": 0.86
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 10061,
+     "sell": 8537,
+     "net": 1524,
+     "pct": 0.74
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 4557,
+     "sell": 3153,
+     "net": 1404,
+     "pct": 0.68
+    },
+    {
+     "broker": "國泰-敦南",
+     "buy": 5406,
+     "sell": 4445,
+     "net": 961,
+     "pct": 0.47
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 4065,
+     "sell": 3385,
+     "net": 680,
+     "pct": 0.33
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "花旗環球",
+     "buy": 235,
+     "sell": 17332,
+     "net": -17097,
+     "pct": 8.33
+    },
+    {
+     "broker": "統一",
+     "buy": 784,
+     "sell": 2934,
+     "net": -2150,
+     "pct": 1.05
+    },
+    {
+     "broker": "富邦證券",
+     "buy": 541,
+     "sell": 2036,
+     "net": -1495,
+     "pct": 0.73
+    },
+    {
+     "broker": "凱基",
+     "buy": 5397,
+     "sell": 6739,
+     "net": -1342,
+     "pct": 0.65
+    },
+    {
+     "broker": "國票-長城",
+     "buy": 234,
+     "sell": 1462,
+     "net": -1228,
+     "pct": 0.6
+    }
+   ],
+   "daytrade_buy_pct": 1.12091109953475,
+   "foreign_net_pct": -7.323196033699187,
+   "top5_buy_pct": 2.8471860460938765,
+   "top5_sell_pct": 10.46902225655212
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "元大-土城永寧",
+    "count": 6,
+    "cum_net": 429,
+    "buy_days": 3,
+    "sell_days": 3,
+    "last_date": "2026-11-05",
+    "last_net": -467,
+    "scored": 6,
+    "win_rate": 0.8333333333333334,
+    "avg_capture_pct": 3.5077013338892438,
+    "cum_net_pct": 0.04584690127313318,
+    "daytrade": true,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "宏遠證券",
+    "count": 11,
+    "cum_net": -1728,
+    "buy_days": 2,
+    "sell_days": 9,
+    "last_date": "2026-11-06",
+    "last_net": -420,
+    "scored": 10,
+    "win_rate": 0.8,
+    "avg_capture_pct": 3.961432893392698,
+    "cum_net_pct": -0.1846700358973756,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "元大-員林中山",
+    "count": 5,
+    "cum_net": -159,
+    "buy_days": 2,
+    "sell_days": 3,
+    "last_date": "2026-10-28",
+    "last_net": -103,
+    "scored": 5,
+    "win_rate": 0.8,
+    "avg_capture_pct": 2.0105534582409867,
+    "cum_net_pct": -0.016992208164168243,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "國泰-高雄",
+    "count": 5,
+    "cum_net": 299,
+    "buy_days": 4,
+    "sell_days": 1,
+    "last_date": "2026-10-30",
+    "last_net": 119,
+    "scored": 5,
+    "win_rate": 0.8,
+    "avg_capture_pct": 1.541842327333871,
+    "cum_net_pct": 0.03195390088733525,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "港商麥格理",
+    "count": 9,
+    "cum_net": -3675,
+    "buy_days": 2,
+    "sell_days": 7,
+    "last_date": "2026-11-03",
+    "last_net": -91,
+    "scored": 9,
+    "win_rate": 0.7777777777777778,
+    "avg_capture_pct": 2.018420590182932,
+    "cum_net_pct": -0.39274443398313386,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常勝"
+   },
+   {
+    "broker": "群益金鼎-大安",
+    "count": 4,
+    "cum_net": -399,
+    "buy_days": 1,
+    "sell_days": 3,
+    "last_date": "2026-10-27",
+    "last_net": -199,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 2.399905813859185,
+    "cum_net_pct": -0.042640824261025966,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "台新",
+    "count": 6,
+    "cum_net": 1045,
+    "buy_days": 5,
+    "sell_days": 1,
+    "last_date": "2026-11-03",
+    "last_net": -355,
+    "scored": 6,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -2.0164056620456132,
+    "cum_net_pct": 0.111678349255068,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "港商野村",
+    "count": 13,
+    "cum_net": -2165,
+    "buy_days": 5,
+    "sell_days": 8,
+    "last_date": "2026-11-06",
+    "last_net": 293,
+    "scored": 12,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -2.228179899464912,
+    "cum_net_pct": -0.23137189104040407,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常敗"
+   },
+   {
+    "broker": "永豐金證券",
+    "count": 17,
+    "cum_net": 497,
+    "buy_days": 10,
+    "sell_days": 7,
+    "last_date": "2026-11-06",
+    "last_net": 382,
+    "scored": 16,
+    "win_rate": 0.3125,
+    "avg_capture_pct": -2.328751204559463,
+    "cum_net_pct": 0.05311400916724287,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "華南永昌",
+    "count": 9,
+    "cum_net": -374,
+    "buy_days": 4,
+    "sell_days": 5,
+    "last_date": "2026-11-06",
+    "last_net": -265,
+    "scored": 8,
+    "win_rate": 0.25,
+    "avg_capture_pct": -0.6977145775426211,
+    "cum_net_pct": -0.03996909341760329,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": -519,
+  "winners_last_net_pct": -0.9134911555047082,
+  "winners_inventory": -5847,
+  "winners_inventory_pct": -0.6248644096596963,
+  "losers_last_net": -1429,
+  "losers_last_net_pct": -2.515180850127607,
+  "n_scored": 137
+ },
+ "warrants": {
+  "call_vol": 53046,
+  "put_vol": 3861,
+  "call_amt": 16294600.0,
+  "put_amt": 3858190.0,
+  "n_call": 369,
+  "n_put": 55,
+  "n_call_active": 190,
+  "n_put_active": 28,
+  "call_share": 0.9321524592756603,
+  "amt_share": 0.6171061178129679,
+  "hedge_net": 454,
+  "hedge_pct": 0.7990847487459297,
+  "call_amt_5d": 37858454.0,
+  "call_surge": 0.43040848947503246,
+  "list": [
+   {
+    "code": "030056",
+    "name": "國巨凱基64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030113",
+    "name": "國巨統一6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030114",
+    "name": "國巨統一7A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030139",
+    "name": "國巨中信6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030154",
+    "name": "國巨永豐64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030155",
+    "name": "國巨永豐6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030314",
+    "name": "國巨富邦68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030390",
+    "name": "國巨群益64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030391",
+    "name": "國巨群益64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030474",
+    "name": "國巨凱基64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030475",
+    "name": "國巨凱基64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030476",
+    "name": "國巨凱基64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030477",
+    "name": "國巨凱基65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030614",
+    "name": "國巨中信6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030667",
+    "name": "國巨國票66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030740",
+    "name": "國巨凱基64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030741",
+    "name": "國巨凱基65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030825",
+    "name": "國巨群益64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030826",
+    "name": "國巨群益65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030880",
+    "name": "國巨富邦66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031020",
+    "name": "國巨永豐65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031021",
+    "name": "國巨永豐66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031079",
+    "name": "國巨統一6A購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031112",
+    "name": "國巨國泰65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031113",
+    "name": "國巨國泰65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031136",
+    "name": "國巨群益6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031415",
+    "name": "國巨台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031416",
+    "name": "國巨台新64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031484",
+    "name": "國巨永豐64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031535",
+    "name": "國巨群益6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031598",
+    "name": "國巨凱基64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031802",
+    "name": "國巨中信64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031819",
+    "name": "國巨統一7A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031956",
+    "name": "國巨國票64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031957",
+    "name": "國巨國票64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031958",
+    "name": "國巨國票66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032013",
+    "name": "國巨群益66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032014",
+    "name": "國巨群益69購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032107",
+    "name": "國巨凱基64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032108",
+    "name": "國巨凱基66購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032157",
+    "name": "國巨中信64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032178",
+    "name": "國巨永豐6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032335",
+    "name": "國巨台新64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032336",
+    "name": "國巨台新64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032337",
+    "name": "國巨台新64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032532",
+    "name": "國巨群益69購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032859",
+    "name": "國巨國泰65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032928",
+    "name": "國巨凱基68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033043",
+    "name": "國巨群益6A購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033313",
+    "name": "國巨台新64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033314",
+    "name": "國巨台新64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033315",
+    "name": "國巨台新64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033316",
+    "name": "國巨台新67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033471",
+    "name": "國巨群益6A購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033929",
+    "name": "國巨群益64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033930",
+    "name": "國巨群益65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033946",
+    "name": "國巨統一5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034248",
+    "name": "國巨台新64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034249",
+    "name": "國巨台新64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034250",
+    "name": "國巨台新67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034377",
+    "name": "國巨凱基64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034438",
+    "name": "國巨國泰65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034660",
+    "name": "國巨台新64購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034820",
+    "name": "國巨群益64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034957",
+    "name": "國巨中信65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034970",
+    "name": "國巨國泰65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034971",
+    "name": "國巨國泰67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035273",
+    "name": "國巨富邦65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035308",
+    "name": "國巨凱基65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035429",
+    "name": "國巨群益66購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035497",
+    "name": "國巨中信6A購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035577",
+    "name": "國巨國泰65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035578",
+    "name": "國巨國泰67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035654",
+    "name": "國巨群益66購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035725",
+    "name": "國巨凱基66購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035962",
+    "name": "國巨中信64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036111",
+    "name": "國巨國泰65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036112",
+    "name": "國巨國泰67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036292",
+    "name": "國巨群益64購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036293",
+    "name": "國巨群益64購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036294",
+    "name": "國巨群益65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036296",
+    "name": "國巨群益66購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036298",
+    "name": "國巨群益66購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036540",
+    "name": "國巨凱基64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036541",
+    "name": "國巨凱基66購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036652",
+    "name": "國巨台新64購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036797",
+    "name": "國巨群益69購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036848",
+    "name": "國巨統一5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036912",
+    "name": "國巨永豐66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036913",
+    "name": "國巨永豐67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037018",
+    "name": "國巨富邦67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037247",
+    "name": "國巨統一5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037255",
+    "name": "國巨統一72購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037272",
+    "name": "國巨中信68購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037294",
+    "name": "國巨永豐6C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037355",
+    "name": "國巨凱基66購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037559",
+    "name": "國巨富邦66購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037648",
+    "name": "國巨統一5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037665",
+    "name": "國巨中信66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037974",
+    "name": "國巨群益67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037975",
+    "name": "國巨群益6A購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037976",
+    "name": "國巨群益6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038050",
+    "name": "國巨中信65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038075",
+    "name": "國巨永豐68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038148",
+    "name": "國巨國票65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038149",
+    "name": "國巨國票66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038228",
+    "name": "國巨富邦65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038317",
+    "name": "國巨統一69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038383",
+    "name": "國巨凱基65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038433",
+    "name": "國巨群益6A購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038611",
+    "name": "國巨台新65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039115",
+    "name": "國巨富邦67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039410",
+    "name": "國巨凱基6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041605",
+    "name": "國巨統一5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043660",
+    "name": "國巨統一5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043888",
+    "name": "國巨統一62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043889",
+    "name": "國巨統一6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "044792",
+    "name": "國巨統一5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "044793",
+    "name": "國巨統一6B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "044795",
+    "name": "國巨統一6B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "044822",
+    "name": "國巨中信5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "047206",
+    "name": "國巨中信5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "047372",
+    "name": "國巨中信5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "047385",
+    "name": "國巨元富5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "048264",
+    "name": "國巨中信5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049044",
+    "name": "國巨中信5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049252",
+    "name": "國巨凱基5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049484",
+    "name": "國巨凱基5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049837",
+    "name": "國巨中信5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "050014",
+    "name": "國巨元富5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052958",
+    "name": "國巨統一61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052959",
+    "name": "國巨統一61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052960",
+    "name": "國巨統一67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053032",
+    "name": "國巨富邦61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053269",
+    "name": "國巨統一61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053270",
+    "name": "國巨統一71購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053683",
+    "name": "國巨富邦61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053858",
+    "name": "國巨統一61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054327",
+    "name": "國巨永豐5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054459",
+    "name": "國巨統一71購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055394",
+    "name": "國巨富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057215",
+    "name": "國巨永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057447",
+    "name": "國巨富邦63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059579",
+    "name": "國巨富邦5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059853",
+    "name": "國巨中信63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060219",
+    "name": "國巨國泰61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060437",
+    "name": "國巨永豐5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060438",
+    "name": "國巨永豐61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060495",
+    "name": "國巨群益5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060496",
+    "name": "國巨群益63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060796",
+    "name": "國巨元富63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061400",
+    "name": "國巨富邦5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061948",
+    "name": "國巨中信63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063447",
+    "name": "國巨統一74購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063491",
+    "name": "國巨中信64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063677",
+    "name": "國巨兆豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063895",
+    "name": "國巨永豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063896",
+    "name": "國巨永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063933",
+    "name": "國巨中信64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063942",
+    "name": "國巨凱基5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064004",
+    "name": "國巨統一64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064074",
+    "name": "國巨富邦64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064147",
+    "name": "國巨統一64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064148",
+    "name": "國巨統一74購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064669",
+    "name": "國巨兆豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064760",
+    "name": "國巨富邦64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065696",
+    "name": "國巨永豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066052",
+    "name": "國巨富邦65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066115",
+    "name": "國巨國泰5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066126",
+    "name": "國巨永豐5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066620",
+    "name": "國巨兆豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066712",
+    "name": "國巨富邦63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066713",
+    "name": "國巨富邦65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066738",
+    "name": "國巨群益5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066762",
+    "name": "國巨永豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066823",
+    "name": "國巨凱基5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066841",
+    "name": "國巨富邦65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066938",
+    "name": "國巨永豐61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067053",
+    "name": "國巨永豐5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067131",
+    "name": "國巨凱基5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067199",
+    "name": "國巨兆豐5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067335",
+    "name": "國巨台新5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067336",
+    "name": "國巨台新5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067337",
+    "name": "國巨台新5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067411",
+    "name": "國巨中信65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067416",
+    "name": "國巨永豐5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067417",
+    "name": "國巨永豐61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067418",
+    "name": "國巨永豐64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067440",
+    "name": "國巨富邦5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067441",
+    "name": "國巨富邦61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067459",
+    "name": "國巨台新5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067460",
+    "name": "國巨台新5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067482",
+    "name": "國巨凱基5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067548",
+    "name": "國巨群益5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067587",
+    "name": "國巨國票5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067588",
+    "name": "國巨國票5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067610",
+    "name": "國巨中信65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067620",
+    "name": "國巨永豐65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067647",
+    "name": "國巨凱基5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067782",
+    "name": "國巨中信65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067790",
+    "name": "國巨國票5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067791",
+    "name": "國巨國票5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067792",
+    "name": "國巨國票5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067814",
+    "name": "國巨永豐5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067885",
+    "name": "國巨凱基5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067886",
+    "name": "國巨凱基61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067887",
+    "name": "國巨凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067888",
+    "name": "國巨凱基63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067942",
+    "name": "國巨群益5B購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067943",
+    "name": "國巨群益5B購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067992",
+    "name": "國巨統一63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067993",
+    "name": "國巨統一64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067994",
+    "name": "國巨統一65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067995",
+    "name": "國巨統一65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067996",
+    "name": "國巨統一65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067997",
+    "name": "國巨統一65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067998",
+    "name": "國巨統一65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067999",
+    "name": "國巨統一65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068000",
+    "name": "國巨統一65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068001",
+    "name": "國巨統一65購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068002",
+    "name": "國巨統一69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068003",
+    "name": "國巨統一75購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081056",
+    "name": "國巨永豐63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081057",
+    "name": "國巨永豐64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081058",
+    "name": "國巨永豐65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081059",
+    "name": "國巨永豐66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081060",
+    "name": "國巨永豐67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081079",
+    "name": "國巨國票64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081107",
+    "name": "國巨富邦63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081108",
+    "name": "國巨富邦64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081124",
+    "name": "國巨國泰63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081127",
+    "name": "國巨國泰63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081130",
+    "name": "國巨國泰63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081131",
+    "name": "國巨國泰63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081138",
+    "name": "國巨統一67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081139",
+    "name": "國巨統一68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081140",
+    "name": "國巨統一68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081141",
+    "name": "國巨統一6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081142",
+    "name": "國巨統一6C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081143",
+    "name": "國巨統一6C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081273",
+    "name": "國巨中信64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081274",
+    "name": "國巨中信68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081275",
+    "name": "國巨中信68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081327",
+    "name": "國巨統一64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081476",
+    "name": "國巨群益64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081477",
+    "name": "國巨群益66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081529",
+    "name": "國巨凱基63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081530",
+    "name": "國巨凱基63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081531",
+    "name": "國巨凱基63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081532",
+    "name": "國巨凱基63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081533",
+    "name": "國巨凱基63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081534",
+    "name": "國巨凱基63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081535",
+    "name": "國巨凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081583",
+    "name": "國巨永豐63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081584",
+    "name": "國巨永豐68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081605",
+    "name": "國巨富邦63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081742",
+    "name": "國巨群益66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081759",
+    "name": "國巨中信62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081830",
+    "name": "國巨台新62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081831",
+    "name": "國巨台新62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081832",
+    "name": "國巨台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081833",
+    "name": "國巨台新68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081850",
+    "name": "國巨凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081927",
+    "name": "國巨群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081928",
+    "name": "國巨群益66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082135",
+    "name": "國巨台新62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082155",
+    "name": "國巨國票63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082156",
+    "name": "國巨國票63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082192",
+    "name": "國巨群益62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082287",
+    "name": "國巨中信64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082436",
+    "name": "國巨凱基66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082489",
+    "name": "國巨台新62購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082490",
+    "name": "國巨台新65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082521",
+    "name": "國巨群益62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082571",
+    "name": "國巨富邦66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082584",
+    "name": "國巨中信66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082589",
+    "name": "國巨永豐64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082590",
+    "name": "國巨永豐66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082595",
+    "name": "國巨國泰63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082596",
+    "name": "國巨國泰63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082812",
+    "name": "國巨富邦63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082871",
+    "name": "國巨凱基63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083102",
+    "name": "國巨台新63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083130",
+    "name": "國巨統一67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083243",
+    "name": "國巨群益63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083244",
+    "name": "國巨群益65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083341",
+    "name": "國巨中信68購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083388",
+    "name": "國巨國票65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083466",
+    "name": "國巨永豐63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083527",
+    "name": "國巨凱基63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083571",
+    "name": "國巨群益68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083657",
+    "name": "國巨中信69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083676",
+    "name": "國巨永豐65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083677",
+    "name": "國巨永豐69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083758",
+    "name": "國巨群益65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083759",
+    "name": "國巨群益69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083812",
+    "name": "國巨凱基63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083813",
+    "name": "國巨凱基66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083814",
+    "name": "國巨凱基69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083893",
+    "name": "國巨國票65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083926",
+    "name": "國巨台新63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084077",
+    "name": "國巨台新69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084111",
+    "name": "國巨群益67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084112",
+    "name": "國巨群益69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084199",
+    "name": "國巨國票64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084340",
+    "name": "國巨凱基67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084550",
+    "name": "國巨國泰64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084572",
+    "name": "國巨國票65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084630",
+    "name": "國巨富邦64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084720",
+    "name": "國巨凱基69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084825",
+    "name": "國巨永豐66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084898",
+    "name": "國巨群益63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085042",
+    "name": "國巨中信69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085052",
+    "name": "國巨永豐64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085142",
+    "name": "國巨群益63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085172",
+    "name": "國巨凱基69購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085209",
+    "name": "國巨國泰64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085210",
+    "name": "國巨國泰64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085359",
+    "name": "國巨中信67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085370",
+    "name": "國巨永豐63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085371",
+    "name": "國巨永豐65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085499",
+    "name": "國巨群益63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085532",
+    "name": "國巨凱基66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085564",
+    "name": "國巨國票65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085641",
+    "name": "國巨永豐67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085642",
+    "name": "國巨永豐6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085766",
+    "name": "國巨群益63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085804",
+    "name": "國巨凱基65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085883",
+    "name": "國巨中信69購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086045",
+    "name": "國巨群益63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086281",
+    "name": "國巨凱基63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086315",
+    "name": "國巨國票64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086338",
+    "name": "國巨富邦66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086474",
+    "name": "國巨群益63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086659",
+    "name": "國巨永豐64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086794",
+    "name": "國巨國票65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086795",
+    "name": "國巨國票66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086949",
+    "name": "國巨凱基63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086992",
+    "name": "國巨統一69購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087207",
+    "name": "國巨群益63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087258",
+    "name": "國巨中信68購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087271",
+    "name": "國巨永豐64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087292",
+    "name": "國巨台新63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087387",
+    "name": "國巨富邦66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087416",
+    "name": "國巨凱基63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087730",
+    "name": "國巨群益63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087861",
+    "name": "國巨統一79購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088024",
+    "name": "國巨台新63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088066",
+    "name": "國巨群益63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088129",
+    "name": "國巨凱基63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088267",
+    "name": "國巨台新69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088513",
+    "name": "國巨永豐63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088514",
+    "name": "國巨永豐69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088683",
+    "name": "國巨富邦69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088739",
+    "name": "國巨群益63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088859",
+    "name": "國巨中信63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088890",
+    "name": "國巨統一6C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089043",
+    "name": "國巨凱基63購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089044",
+    "name": "國巨凱基63購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089208",
+    "name": "國巨中信63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089239",
+    "name": "國巨國泰66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089270",
+    "name": "國巨群益63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089320",
+    "name": "國巨凱基63購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089321",
+    "name": "國巨凱基63購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089322",
+    "name": "國巨凱基63購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089323",
+    "name": "國巨凱基65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089617",
+    "name": "國巨群益64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089713",
+    "name": "國巨台新6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089986",
+    "name": "國巨富邦7A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "03313T",
+    "name": "國巨台新5B售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03322T",
+    "name": "國巨台新5B售10",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03326T",
+    "name": "國巨群益5C售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03336T",
+    "name": "國巨國票5B售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03339T",
+    "name": "國巨永豐61售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03351T",
+    "name": "國巨中信65售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03361T",
+    "name": "國巨凱基5B售08",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03362T",
+    "name": "國巨凱基61售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03372T",
+    "name": "國巨統一65售09",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04185T",
+    "name": "國巨永豐63售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04187T",
+    "name": "國巨國票64售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04195T",
+    "name": "國巨富邦63售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04196T",
+    "name": "國巨國泰63售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04213T",
+    "name": "國巨中信65售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04226T",
+    "name": "國巨群益68售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04231T",
+    "name": "國巨凱基63售09",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04239T",
+    "name": "國巨台新62售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04258T",
+    "name": "國巨台新62售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04267T",
+    "name": "國巨國票63售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04278T",
+    "name": "國巨群益66售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04300T",
+    "name": "國巨凱基66售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04307T",
+    "name": "國巨群益62售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04361T",
+    "name": "國巨永豐64售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04368T",
+    "name": "國巨群益65售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04432T",
+    "name": "國巨台新63售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04514T",
+    "name": "國巨國票64售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04544T",
+    "name": "國巨群益63售10",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04553T",
+    "name": "國巨凱基64售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04582T",
+    "name": "國巨台新63售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04602T",
+    "name": "國巨凱基63售16",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04608T",
+    "name": "國巨群益64售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04725T",
+    "name": "國巨台新63售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04772T",
+    "name": "國巨中信64售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04800T",
+    "name": "國巨群益64售08",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04801T",
+    "name": "國巨群益64售09",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04846T",
+    "name": "國巨富邦66售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04850T",
+    "name": "國巨群益64售10",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04865T",
+    "name": "國巨台新64售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04872T",
+    "name": "國巨凱基64售10",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04921T",
+    "name": "國巨台新64售10",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04928T",
+    "name": "國巨群益64售11",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04961T",
+    "name": "國巨台新64售13",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04980T",
+    "name": "國巨台新64售15",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04998T",
+    "name": "國巨富邦65售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05005T",
+    "name": "國巨群益66售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05024T",
+    "name": "國巨凱基68售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05085T",
+    "name": "國巨國泰65售08",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05086T",
+    "name": "國巨國泰65售09",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05153T",
+    "name": "國巨群益67售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "07766U",
+    "name": "國巨群益5C售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08075U",
+    "name": "國巨群益61售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08092U",
+    "name": "國巨凱基61售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08747U",
+    "name": "國巨群益5B售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08748U",
+    "name": "國巨群益63售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08876U",
+    "name": "國巨群益65售01",
+    "right": "put",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-06",
+  "breadth": {
+   "up": 105,
+   "down": 952
+  },
+  "foreign_amt_b": -911.9,
+  "trust_amt_b": 266.9,
+  "tx_night": {
+   "contract": "202611",
+   "o": 39742.0,
+   "h": 40845.0,
+   "l": 39129.0,
+   "c": 40298.0,
+   "chg": 646.0,
+   "chg_pct": 1.63,
+   "vol": 69882,
+   "title": "2026/11/06"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 38888.0,
+   "h": 40690.0,
+   "l": 37694.0,
+   "c": 39786.0,
+   "chg": -2096.0,
+   "chg_pct": -5.0,
+   "vol": 89296,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -99930,
+   "raw": [
+    140566,
+    1119359194,
+    144876,
+    1151864854,
+    -4310,
+    -32505660,
+    15873,
+    125892365,
+    115803,
+    918450985,
+    -99930,
+    -792558620
+   ]
+  },
+  "us": {}
+ }
+}

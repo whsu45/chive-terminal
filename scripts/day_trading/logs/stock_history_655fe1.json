@@ -1,0 +1,222 @@
+{
+ "2313": {
+  "name": "華通",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-09"
+  ],
+  "launches": 4,
+  "signals": [],
+  "notes": []
+ },
+ "2327": {
+  "name": "國巨*",
+  "market": "tse",
+  "group": "被動元件",
+  "days": [
+   "2026-11-09"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "6456": {
+  "name": "GIS-KY",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-09"
+  ],
+  "launches": 4,
+  "signals": [
+   {
+    "date": "2026-11-09",
+    "time": "09:50:02",
+    "src": "mis",
+    "side": "short",
+    "label": "做空",
+    "price": 79.4,
+    "stop": 81.1,
+    "t1": 75.4,
+    "t2": 75.0,
+    "zone": [
+     78.9,
+     79.5
+    ],
+    "alert_px": 79.4,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.298,
+    "rr_now": 2.35,
+    "rr_zone": 1.59,
+    "verdict": "flat",
+    "fast_adverse": true,
+    "first_stop_min": null,
+    "first_t1_min": null,
+    "ret_10m": 1.1335012594458238,
+    "ret_30m": 1.1335012594458238,
+    "suspects": [],
+    "why": "反彈 79.57 不過，1 分 K 收 79.4 確認（空方 61%）",
+    "features": {
+     "idx_trend_10m": null,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 2.044975870072048,
+     "rs_vs_index": -6.443112713711708,
+     "group_avg": null,
+     "chg_pct": -1.4888337468982438,
+     "warrant_surge": false,
+     "small_net_pct": null,
+     "p_long": 38.56,
+     "p_short": 61.44,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": -0.021671826625386997,
+     "big_net_10m": null,
+     "phase": "early",
+     "range_pos": 0.6153846153846154
+    },
+    "factors": [
+     "弱於大盤",
+     "跌破開盤價",
+     "量能爆增"
+    ]
+   },
+   {
+    "date": "2026-11-09",
+    "time": "10:39:34",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 79.3,
+    "stop": 81.1,
+    "t1": 75.4,
+    "t2": 75.0,
+    "zone": [
+     78.9,
+     79.5
+    ],
+    "alert_px": 79.3,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.316,
+    "rr_now": 2.17,
+    "rr_zone": 1.59,
+    "verdict": "flat",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": null,
+    "ret_10m": -1.134930643127352,
+    "ret_30m": -2.1437578814628044,
+    "suspects": [],
+    "why": "反彈 79.57 不過，1 分 K 收 79.3 確認（空方 63%）",
+    "features": {
+     "idx_trend_10m": -0.17137153324737753,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 2.03021330453664,
+     "rs_vs_index": -7.6034426144412475,
+     "group_avg": null,
+     "chg_pct": -1.4888337468982438,
+     "warrant_surge": false,
+     "small_net_pct": 6.227977852011166,
+     "p_long": 36.91,
+     "p_short": 63.09,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.3568075117370892,
+     "big_net_10m": -287,
+     "phase": "mid",
+     "range_pos": 0.5999999999999986
+    },
+    "factors": [
+     "弱於大盤",
+     "跌破開盤價",
+     "委買厚",
+     "散戶追價",
+     "量能爆增"
+    ]
+   },
+   {
+    "date": "2026-11-09",
+    "time": "11:11:37",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 78.2,
+    "stop": 80.0,
+    "t1": 75.4,
+    "t2": 75.0,
+    "zone": [
+     78.2,
+     78.5
+    ],
+    "alert_px": 77.9,
+    "filled_at_alert": false,
+    "fill_min": 9,
+    "chase": 0.457,
+    "rr_now": 1.19,
+    "rr_zone": 1.56,
+    "verdict": "flat",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": null,
+    "ret_10m": 0.25673940949935137,
+    "ret_30m": 0.0,
+    "suspects": [],
+    "why": "反彈 78.5 不過，1 分 K 收 77.8 確認（空方 65%）",
+    "features": {
+     "idx_trend_10m": -0.39514537044048614,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 2.0241271530225444,
+     "rs_vs_index": -9.172979504746259,
+     "group_avg": null,
+     "chg_pct": -3.47394540942928,
+     "warrant_surge": false,
+     "small_net_pct": 4.219117443629824,
+     "p_long": 35.26,
+     "p_short": 64.74,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.6056910569105691,
+     "big_net_10m": -501,
+     "phase": "mid",
+     "range_pos": 0.38461538461538464
+    },
+    "factors": [
+     "弱於大盤",
+     "跌破開盤價",
+     "VWAP之下",
+     "委買厚",
+     "大盤轉弱",
+     "量能爆增"
+    ]
+   }
+  ],
+  "notes": []
+ },
+ "4958": {
+  "name": "臻鼎-KY",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-09"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "7711": {
+  "name": "永擎",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-09"
+  ],
+  "launches": 2,
+  "signals": [],
+  "notes": []
+ }
+}

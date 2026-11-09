@@ -1,0 +1,3836 @@
+{
+ "version": 7,
+ "code": "4958",
+ "name": "臻鼎-KY",
+ "market": "tse",
+ "date": "2026-11-09",
+ "prev_date": "2026-11-06",
+ "group": null,
+ "peers": [],
+ "peers_arg": null,
+ "peer_info": {},
+ "tech": {
+  "date": "2026-11-06",
+  "close": 373.0,
+  "open": 355.0,
+  "high": 383.0,
+  "low": 355.0,
+  "vol": 28115,
+  "ma5": 426.0,
+  "ma10": 477.3,
+  "ma20": 520.4,
+  "ma60": 499.0833333333333,
+  "bb_up": 647.1192171692991,
+  "bb_dn": 393.6807828307008,
+  "atr14": 42.67857142857143,
+  "rsi14": 28.60725033499486,
+  "vol_ma5": 29203.6,
+  "vol_ma20": 29043.9,
+  "chg_pct": -5.3299492385786795,
+  "high20": 614.0,
+  "low20": 355.0,
+  "high60": 614.0,
+  "low60": 355.0,
+  "prev_high": 429.5,
+  "prev_low": 391.5,
+  "ret5": -23.25102880658436,
+  "ret20": -35.01742160278746,
+  "streak": -4,
+  "atr_pct": 11.441976254308695
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-21",
+   "o": 476.5,
+   "h": 482.0,
+   "l": 463.5,
+   "c": 470.0,
+   "v": 26718,
+   "amt": 12582351403.0
+  },
+  {
+   "date": "2026-09-22",
+   "o": 480.0,
+   "h": 505.0,
+   "l": 480.0,
+   "c": 489.0,
+   "v": 45198,
+   "amt": 22410782680.0
+  },
+  {
+   "date": "2026-09-23",
+   "o": 471.5,
+   "h": 482.5,
+   "l": 470.0,
+   "c": 473.0,
+   "v": 39517,
+   "amt": 18809391166.0
+  },
+  {
+   "date": "2026-09-24",
+   "o": 473.5,
+   "h": 480.5,
+   "l": 472.0,
+   "c": 475.5,
+   "v": 20619,
+   "amt": 9800637106.0
+  },
+  {
+   "date": "2026-09-29",
+   "o": 479.0,
+   "h": 499.5,
+   "l": 472.5,
+   "c": 498.5,
+   "v": 41991,
+   "amt": 20631585314.0
+  },
+  {
+   "date": "2026-09-30",
+   "o": 510.0,
+   "h": 510.0,
+   "l": 494.0,
+   "c": 507.0,
+   "v": 30846,
+   "amt": 15514245297.0
+  },
+  {
+   "date": "2026-10-01",
+   "o": 512.0,
+   "h": 522.0,
+   "l": 498.5,
+   "c": 510.0,
+   "v": 31694,
+   "amt": 16110450419.0
+  },
+  {
+   "date": "2026-10-02",
+   "o": 515.0,
+   "h": 561.0,
+   "l": 514.0,
+   "c": 561.0,
+   "v": 69348,
+   "amt": 37849971825.0
+  },
+  {
+   "date": "2026-10-05",
+   "o": 582.0,
+   "h": 590.0,
+   "l": 568.0,
+   "c": 576.0,
+   "v": 56786,
+   "amt": 32967295514.0
+  },
+  {
+   "date": "2026-10-06",
+   "o": 588.0,
+   "h": 604.0,
+   "l": 572.0,
+   "c": 574.0,
+   "v": 40603,
+   "amt": 23699670731.0
+  },
+  {
+   "date": "2026-10-07",
+   "o": 576.0,
+   "h": 600.0,
+   "l": 573.0,
+   "c": 595.0,
+   "v": 35265,
+   "amt": 20860960795.0
+  },
+  {
+   "date": "2026-10-08",
+   "o": 593.0,
+   "h": 613.0,
+   "l": 587.0,
+   "c": 592.0,
+   "v": 33690,
+   "amt": 20182392291.0
+  },
+  {
+   "date": "2026-10-12",
+   "o": 592.0,
+   "h": 596.0,
+   "l": 578.0,
+   "c": 581.0,
+   "v": 21052,
+   "amt": 12290076506.0
+  },
+  {
+   "date": "2026-10-13",
+   "o": 565.0,
+   "h": 567.0,
+   "l": 525.0,
+   "c": 552.0,
+   "v": 36597,
+   "amt": 19980542938.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 556.0,
+   "h": 568.0,
+   "l": 546.0,
+   "c": 567.0,
+   "v": 16626,
+   "amt": 9287523652.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 532.0,
+   "h": 537.0,
+   "l": 518.0,
+   "c": 519.0,
+   "v": 24934,
+   "amt": 13140660068.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 537.0,
+   "h": 565.0,
+   "l": 537.0,
+   "c": 557.0,
+   "v": 28135,
+   "amt": 15593790437.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 540.0,
+   "h": 553.0,
+   "l": 533.0,
+   "c": 547.0,
+   "v": 19915,
+   "amt": 10831819311.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 547.0,
+   "h": 576.0,
+   "l": 538.0,
+   "c": 547.0,
+   "v": 29801,
+   "amt": 16664479049.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 584.0,
+   "h": 595.0,
+   "l": 572.0,
+   "c": 578.0,
+   "v": 34141,
+   "amt": 19918898428.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 598.0,
+   "h": 614.0,
+   "l": 564.0,
+   "c": 567.0,
+   "v": 46056,
+   "amt": 27129980635.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 592.0,
+   "h": 594.0,
+   "l": 519.0,
+   "c": 520.0,
+   "v": 45494,
+   "amt": 24855377120.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 540.0,
+   "h": 552.0,
+   "l": 526.0,
+   "c": 550.0,
+   "v": 19865,
+   "amt": 10718983760.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 550.0,
+   "h": 555.0,
+   "l": 520.0,
+   "c": 520.0,
+   "v": 19556,
+   "amt": 10379480917.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 488.0,
+   "h": 497.0,
+   "l": 478.0,
+   "c": 486.0,
+   "v": 23733,
+   "amt": 11554685216.0
+  },
+  {
+   "date": "2026-11-02",
+   "o": 470.0,
+   "h": 499.0,
+   "l": 466.5,
+   "c": 487.0,
+   "v": 18252,
+   "amt": 8883969107.0
+  },
+  {
+   "date": "2026-11-03",
+   "o": 473.5,
+   "h": 483.0,
+   "l": 440.0,
+   "c": 443.0,
+   "v": 35844,
+   "amt": 16519350913.0
+  },
+  {
+   "date": "2026-11-04",
+   "o": 453.0,
+   "h": 453.5,
+   "l": 406.0,
+   "c": 433.0,
+   "v": 34001,
+   "amt": 14645369459.0
+  },
+  {
+   "date": "2026-11-05",
+   "o": 428.0,
+   "h": 429.5,
+   "l": 391.5,
+   "c": 394.0,
+   "v": 29806,
+   "amt": 12080161406.0
+  },
+  {
+   "date": "2026-11-06",
+   "o": 355.0,
+   "h": 383.0,
+   "l": 355.0,
+   "c": 373.0,
+   "v": 28115,
+   "amt": 10335322457.0
+  }
+ ],
+ "limit_up": 410.0,
+ "limit_down": 336.0,
+ "insti": {
+  "2026-11-06": {
+   "foreign": -995,
+   "trust": 452,
+   "dealer": 96,
+   "total": -446
+  },
+  "2026-11-05": {
+   "foreign": -3192,
+   "trust": 2176,
+   "dealer": -222,
+   "total": -1237
+  },
+  "2026-11-04": {
+   "foreign": -1783,
+   "trust": 329,
+   "dealer": -163,
+   "total": -1617
+  }
+ },
+ "insti_sum": {
+  "foreign": -5970,
+  "trust": 2957,
+  "dealer": -289,
+  "total": -3300
+ },
+ "weak_screen": {
+  "close": 373.0,
+  "r10": -35.47,
+  "idx_r10": -15.33,
+  "ma60": 499.08,
+  "idx": 39701.64,
+  "idx_ma20": 46133.96,
+  "mkt_weak": true,
+  "foreign": -995,
+  "trust": 452,
+  "under": true,
+  "drop10": true,
+  "below_ma": true,
+  "px100": true,
+  "sell": false,
+  "n_ok": 4,
+  "hit": false
+ },
+ "margin": {
+  "fin_prev": 30194,
+  "fin_now": 28207,
+  "fin_chg": -1987,
+  "short_prev": 123,
+  "short_now": 119,
+  "short_chg": -4,
+  "fin_limit": 283349
+ },
+ "sbl": {
+  "sbl_sell": 2927,
+  "sbl_return": 759,
+  "sbl_bal": 50366
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": 703,
+   "daytrade_buy": 703,
+   "foreign_net": -2334,
+   "top5_buy": 3306,
+   "top5_sell": -2592,
+   "daytrade_names": [
+    "凱基-台北",
+    "富邦-建國"
+   ],
+   "top_buyers": [
+    {
+     "broker": "富邦證券",
+     "buy": 2341,
+     "sell": 1135,
+     "net": 1206,
+     "pct": 4.29
+    },
+    {
+     "broker": "元大證券",
+     "buy": 2508,
+     "sell": 1838,
+     "net": 670,
+     "pct": 2.38
+    },
+    {
+     "broker": "凱基-台北",
+     "buy": 2233,
+     "sell": 1593,
+     "net": 640,
+     "pct": 2.28
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 1044,
+     "sell": 461,
+     "net": 583,
+     "pct": 2.07
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 1609,
+     "sell": 1402,
+     "net": 207,
+     "pct": 0.74
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 1585,
+     "sell": 2310,
+     "net": -725,
+     "pct": 2.58
+    },
+    {
+     "broker": "美林",
+     "buy": 595,
+     "sell": 1239,
+     "net": -644,
+     "pct": 2.29
+    },
+    {
+     "broker": "港商野村",
+     "buy": 144,
+     "sell": 580,
+     "net": -436,
+     "pct": 1.55
+    },
+    {
+     "broker": "港商麥格理",
+     "buy": 73,
+     "sell": 499,
+     "net": -426,
+     "pct": 1.52
+    },
+    {
+     "broker": "花旗環球",
+     "buy": 140,
+     "sell": 501,
+     "net": -361,
+     "pct": 1.28
+    }
+   ],
+   "daytrade_buy_pct": 2.5004446025253424,
+   "foreign_net_pct": -8.301618353192247,
+   "top5_buy_pct": 11.758847590254312,
+   "top5_sell_pct": 9.219277965498843
+  },
+  "day_date": "2026/11/06",
+  "range4": {
+   "daytrade_net": 235,
+   "daytrade_buy": 235,
+   "foreign_net": -11530,
+   "top5_buy": 5663,
+   "top5_sell": -10321,
+   "daytrade_names": [
+    "富邦-建國"
+   ],
+   "top_buyers": [
+    {
+     "broker": "富邦證券",
+     "buy": 3692,
+     "sell": 1864,
+     "net": 1828,
+     "pct": 1.43
+    },
+    {
+     "broker": "中國信託",
+     "buy": 1579,
+     "sell": 310,
+     "net": 1269,
+     "pct": 0.99
+    },
+    {
+     "broker": "(牛牛牛)亞證券",
+     "buy": 921,
+     "sell": 1,
+     "net": 920,
+     "pct": 0.72
+    },
+    {
+     "broker": "永豐金-板新",
+     "buy": 1179,
+     "sell": 264,
+     "net": 915,
+     "pct": 0.72
+    },
+    {
+     "broker": "元大證券",
+     "buy": 12424,
+     "sell": 11693,
+     "net": 731,
+     "pct": 0.57
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "花旗環球",
+     "buy": 489,
+     "sell": 6027,
+     "net": -5538,
+     "pct": 4.33
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 7365,
+     "sell": 8723,
+     "net": -1358,
+     "pct": 1.06
+    },
+    {
+     "broker": "港商麥格理",
+     "buy": 314,
+     "sell": 1585,
+     "net": -1271,
+     "pct": 0.99
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 2750,
+     "sell": 3988,
+     "net": -1238,
+     "pct": 0.97
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 8585,
+     "sell": 9501,
+     "net": -916,
+     "pct": 0.72
+    }
+   ],
+   "daytrade_buy_pct": 0.1839299970258128,
+   "foreign_net_pct": -9.024310066840943,
+   "top5_buy_pct": 4.4323215879028846,
+   "top5_sell_pct": 8.078048933206016
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "玉山證券",
+    "count": 5,
+    "cum_net": -62,
+    "buy_days": 2,
+    "sell_days": 3,
+    "last_date": "2026-11-06",
+    "last_net": 120,
+    "scored": 4,
+    "win_rate": 1.0,
+    "avg_capture_pct": 4.508528054413896,
+    "cum_net_pct": -0.010673497705197993,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "香港上海匯豐",
+    "count": 8,
+    "cum_net": -780,
+    "buy_days": 3,
+    "sell_days": 5,
+    "last_date": "2026-11-05",
+    "last_net": 110,
+    "scored": 8,
+    "win_rate": 0.875,
+    "avg_capture_pct": 1.520043051768348,
+    "cum_net_pct": -0.1342794872589425,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常勝"
+   },
+   {
+    "broker": "凱基-士林",
+    "count": 7,
+    "cum_net": -1205,
+    "buy_days": 3,
+    "sell_days": 4,
+    "last_date": "2026-10-22",
+    "last_net": -139,
+    "scored": 7,
+    "win_rate": 0.8571428571428571,
+    "avg_capture_pct": 4.290129536633564,
+    "cum_net_pct": -0.20744459249618682,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "元大-龍潭",
+    "count": 4,
+    "cum_net": -296,
+    "buy_days": 1,
+    "sell_days": 3,
+    "last_date": "2026-11-05",
+    "last_net": -67,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 1.2149571630708622,
+    "cum_net_pct": -0.05095734388288074,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "花旗環球",
+    "count": 16,
+    "cum_net": -6771,
+    "buy_days": 4,
+    "sell_days": 12,
+    "last_date": "2026-11-06",
+    "last_net": -361,
+    "scored": 15,
+    "win_rate": 0.7333333333333333,
+    "avg_capture_pct": 3.6870906193237696,
+    "cum_net_pct": -1.165649241320897,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常勝"
+   },
+   {
+    "broker": "永豐金-信義",
+    "count": 12,
+    "cum_net": -31,
+    "buy_days": 6,
+    "sell_days": 6,
+    "last_date": "2026-11-05",
+    "last_net": -214,
+    "scored": 12,
+    "win_rate": 0.6666666666666666,
+    "avg_capture_pct": 1.604339686955779,
+    "cum_net_pct": -0.005336748852598996,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "統一-南京",
+    "count": 6,
+    "cum_net": -493,
+    "buy_days": 3,
+    "sell_days": 3,
+    "last_date": "2026-11-04",
+    "last_net": -480,
+    "scored": 6,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -0.4610092627875153,
+    "cum_net_pct": -0.08487152207520339,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "新加坡商瑞銀",
+    "count": 19,
+    "cum_net": -8835,
+    "buy_days": 8,
+    "sell_days": 11,
+    "last_date": "2026-11-06",
+    "last_net": -317,
+    "scored": 18,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -0.5812666634230684,
+    "cum_net_pct": -1.5209734229907141,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常敗"
+   },
+   {
+    "broker": "統一",
+    "count": 13,
+    "cum_net": 403,
+    "buy_days": 8,
+    "sell_days": 5,
+    "last_date": "2026-11-06",
+    "last_net": 90,
+    "scored": 12,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -0.7428913764446176,
+    "cum_net_pct": 0.06937773508378695,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "永豐金-北高雄",
+    "count": 6,
+    "cum_net": 159,
+    "buy_days": 4,
+    "sell_days": 2,
+    "last_date": "2026-11-05",
+    "last_net": 67,
+    "scored": 6,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -1.535420267744654,
+    "cum_net_pct": 0.027372357018169046,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": -241,
+  "winners_last_net_pct": -0.8571936688600391,
+  "winners_inventory": -9149,
+  "winners_inventory_pct": -1.5750295242718781,
+  "losers_last_net": 366,
+  "losers_last_net_pct": 1.301796194202383,
+  "n_scored": 135
+ },
+ "warrants": {
+  "call_vol": 27438,
+  "put_vol": 277,
+  "call_amt": 11096490.0,
+  "put_amt": 842410.0,
+  "n_call": 480,
+  "n_put": 27,
+  "n_call_active": 175,
+  "n_put_active": 10,
+  "call_share": 0.9900054122316435,
+  "amt_share": 0.8588797962961412,
+  "hedge_net": 159,
+  "hedge_pct": 0.5655344122354615,
+  "call_amt_5d": 33653080.0,
+  "call_surge": 0.32973178086522836,
+  "list": [
+   {
+    "code": "030289",
+    "name": "臻鼎元大64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030441",
+    "name": "臻鼎群益64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030512",
+    "name": "臻鼎凱基6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030618",
+    "name": "臻鼎中信64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030619",
+    "name": "臻鼎中信6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030649",
+    "name": "臻鼎永豐64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030650",
+    "name": "臻鼎永豐65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030724",
+    "name": "臻鼎統一6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030781",
+    "name": "臻鼎凱基64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030782",
+    "name": "臻鼎凱基64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030783",
+    "name": "臻鼎凱基64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030784",
+    "name": "臻鼎凱基64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030858",
+    "name": "臻鼎群益64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030859",
+    "name": "臻鼎群益65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030860",
+    "name": "臻鼎群益6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030969",
+    "name": "臻鼎元大64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031107",
+    "name": "臻鼎統一6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031170",
+    "name": "臻鼎群益64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031171",
+    "name": "臻鼎群益6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031406",
+    "name": "臻鼎富邦66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031407",
+    "name": "臻鼎富邦67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031408",
+    "name": "臻鼎富邦67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031457",
+    "name": "臻鼎台新64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031458",
+    "name": "臻鼎台新64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031459",
+    "name": "臻鼎台新64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031624",
+    "name": "臻鼎凱基64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031625",
+    "name": "臻鼎凱基6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031733",
+    "name": "臻鼎元大64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031734",
+    "name": "臻鼎元大64購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031932",
+    "name": "臻鼎元大64購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031969",
+    "name": "臻鼎國票64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031970",
+    "name": "臻鼎國票64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031971",
+    "name": "臻鼎國票65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032038",
+    "name": "臻鼎群益64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032286",
+    "name": "臻鼎元大64購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032287",
+    "name": "臻鼎元大64購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032288",
+    "name": "臻鼎元大64購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032443",
+    "name": "臻鼎凱基64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032783",
+    "name": "臻鼎元大64購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032956",
+    "name": "臻鼎統一64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033080",
+    "name": "臻鼎群益65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033131",
+    "name": "臻鼎永豐65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033241",
+    "name": "臻鼎元大67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033340",
+    "name": "臻鼎台新64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033341",
+    "name": "臻鼎台新64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033342",
+    "name": "臻鼎台新6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033409",
+    "name": "臻鼎凱基65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033455",
+    "name": "臻鼎富邦66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033456",
+    "name": "臻鼎富邦66購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033457",
+    "name": "臻鼎富邦66購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033458",
+    "name": "臻鼎富邦66購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033459",
+    "name": "臻鼎富邦67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033514",
+    "name": "臻鼎中信64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033784",
+    "name": "臻鼎元大67購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033969",
+    "name": "臻鼎統一5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034011",
+    "name": "臻鼎群益64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034195",
+    "name": "臻鼎元大64購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034196",
+    "name": "臻鼎元大69購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034197",
+    "name": "臻鼎元大6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034267",
+    "name": "臻鼎台新64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034268",
+    "name": "臻鼎台新64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034269",
+    "name": "臻鼎台新67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034270",
+    "name": "臻鼎台新6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034336",
+    "name": "臻鼎群益66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034413",
+    "name": "臻鼎凱基67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034548",
+    "name": "臻鼎永豐64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034549",
+    "name": "臻鼎永豐66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034681",
+    "name": "臻鼎台新64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034774",
+    "name": "臻鼎元大69購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034775",
+    "name": "臻鼎元大6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034925",
+    "name": "臻鼎凱基65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034983",
+    "name": "臻鼎國泰67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035097",
+    "name": "臻鼎元大64購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035099",
+    "name": "臻鼎元大64購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035397",
+    "name": "臻鼎凱基66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035698",
+    "name": "臻鼎群益6A購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035793",
+    "name": "臻鼎凱基65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035794",
+    "name": "臻鼎凱基6A購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035889",
+    "name": "臻鼎元大64購23",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035890",
+    "name": "臻鼎元大64購24",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035969",
+    "name": "臻鼎中信66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035970",
+    "name": "臻鼎中信6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035988",
+    "name": "臻鼎永豐67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036178",
+    "name": "臻鼎凱基67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036379",
+    "name": "臻鼎群益64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036380",
+    "name": "臻鼎群益6A購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036433",
+    "name": "臻鼎富邦66購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036434",
+    "name": "臻鼎富邦67購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036501",
+    "name": "臻鼎永豐66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036526",
+    "name": "臻鼎國泰65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036527",
+    "name": "臻鼎國泰68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036586",
+    "name": "臻鼎凱基64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036762",
+    "name": "臻鼎元大64購25",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036828",
+    "name": "臻鼎群益69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037108",
+    "name": "臻鼎凱基65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037188",
+    "name": "臻鼎元大64購26",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037189",
+    "name": "臻鼎元大64購27",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037190",
+    "name": "臻鼎元大64購28",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037323",
+    "name": "臻鼎永豐65購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037324",
+    "name": "臻鼎永豐67購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037385",
+    "name": "臻鼎凱基66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037451",
+    "name": "臻鼎元大65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037635",
+    "name": "臻鼎群益6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037667",
+    "name": "臻鼎中信68購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037747",
+    "name": "臻鼎永豐66購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037818",
+    "name": "臻鼎元大65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037819",
+    "name": "臻鼎元大65購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037874",
+    "name": "臻鼎凱基66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037941",
+    "name": "臻鼎國泰68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037942",
+    "name": "臻鼎國泰68購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038024",
+    "name": "臻鼎群益68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038061",
+    "name": "臻鼎中信65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038103",
+    "name": "臻鼎永豐67購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038132",
+    "name": "臻鼎國泰66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038341",
+    "name": "臻鼎元大65購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038342",
+    "name": "臻鼎元大65購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038483",
+    "name": "臻鼎群益65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038484",
+    "name": "臻鼎群益71購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038668",
+    "name": "臻鼎凱基65購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038739",
+    "name": "臻鼎國泰66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038740",
+    "name": "臻鼎國泰68購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038885",
+    "name": "臻鼎元大65購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038887",
+    "name": "臻鼎元大65購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038888",
+    "name": "臻鼎元大65購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039092",
+    "name": "臻鼎國票65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039188",
+    "name": "臻鼎群益65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039189",
+    "name": "臻鼎群益6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039302",
+    "name": "臻鼎元大65購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039303",
+    "name": "臻鼎元大65購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039304",
+    "name": "臻鼎元大65購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039369",
+    "name": "臻鼎台新65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039429",
+    "name": "臻鼎凱基65購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052801",
+    "name": "臻鼎統一61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053430",
+    "name": "臻鼎兆豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053532",
+    "name": "臻鼎統一64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053659",
+    "name": "臻鼎統一61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055492",
+    "name": "臻鼎兆豐62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055493",
+    "name": "臻鼎兆豐62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055691",
+    "name": "臻鼎統一62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055692",
+    "name": "臻鼎統一64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056086",
+    "name": "臻鼎統一62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056087",
+    "name": "臻鼎統一65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056488",
+    "name": "臻鼎統一72購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056801",
+    "name": "臻鼎元大5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056957",
+    "name": "臻鼎元大61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057041",
+    "name": "臻鼎富邦5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057273",
+    "name": "臻鼎凱基61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057534",
+    "name": "臻鼎統一63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057738",
+    "name": "臻鼎兆豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058190",
+    "name": "臻鼎元大61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058320",
+    "name": "臻鼎富邦5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058635",
+    "name": "臻鼎統一73購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059379",
+    "name": "臻鼎永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059731",
+    "name": "臻鼎元大63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059905",
+    "name": "臻鼎元大63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059984",
+    "name": "臻鼎中信5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060451",
+    "name": "臻鼎永豐5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060807",
+    "name": "臻鼎元富63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062025",
+    "name": "臻鼎凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062875",
+    "name": "臻鼎中信64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063051",
+    "name": "臻鼎元大61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063112",
+    "name": "臻鼎中信64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063140",
+    "name": "臻鼎凱基61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063223",
+    "name": "臻鼎統一74購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063272",
+    "name": "臻鼎元大61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063427",
+    "name": "臻鼎元大64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063493",
+    "name": "臻鼎中信64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063556",
+    "name": "臻鼎凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063592",
+    "name": "臻鼎統一64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063593",
+    "name": "臻鼎統一74購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063818",
+    "name": "臻鼎統一63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063906",
+    "name": "臻鼎永豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064095",
+    "name": "臻鼎富邦5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064096",
+    "name": "臻鼎富邦61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064205",
+    "name": "臻鼎台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064434",
+    "name": "臻鼎統一66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064481",
+    "name": "臻鼎元大61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064605",
+    "name": "臻鼎兆豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064678",
+    "name": "臻鼎永豐61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064752",
+    "name": "臻鼎凱基61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064798",
+    "name": "臻鼎富邦61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064799",
+    "name": "臻鼎富邦61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065072",
+    "name": "臻鼎永豐5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065169",
+    "name": "臻鼎永豐5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065191",
+    "name": "臻鼎富邦61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065204",
+    "name": "臻鼎凱基5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065231",
+    "name": "臻鼎國票5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067058",
+    "name": "臻鼎永豐61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067061",
+    "name": "臻鼎永豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067081",
+    "name": "臻鼎富邦62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067120",
+    "name": "臻鼎元大5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067121",
+    "name": "臻鼎元大61購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067148",
+    "name": "臻鼎凱基5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067149",
+    "name": "臻鼎凱基5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067150",
+    "name": "臻鼎凱基5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067170",
+    "name": "臻鼎群益5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067171",
+    "name": "臻鼎群益5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067202",
+    "name": "臻鼎兆豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067222",
+    "name": "臻鼎富邦61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067224",
+    "name": "臻鼎富邦62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067260",
+    "name": "臻鼎永豐5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067275",
+    "name": "臻鼎群益5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067331",
+    "name": "臻鼎凱基5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067352",
+    "name": "臻鼎台新5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067353",
+    "name": "臻鼎台新5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067354",
+    "name": "臻鼎台新5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067471",
+    "name": "臻鼎台新5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067472",
+    "name": "臻鼎台新5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067531",
+    "name": "臻鼎元大5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067532",
+    "name": "臻鼎元大5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067533",
+    "name": "臻鼎元大63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067573",
+    "name": "臻鼎群益61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067598",
+    "name": "臻鼎國票5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067599",
+    "name": "臻鼎國票5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067665",
+    "name": "臻鼎凱基61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067734",
+    "name": "臻鼎元大5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067735",
+    "name": "臻鼎元大61購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067784",
+    "name": "臻鼎中信65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067870",
+    "name": "臻鼎元大5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067871",
+    "name": "臻鼎元大5B購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067950",
+    "name": "臻鼎群益5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068069",
+    "name": "臻鼎統一64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068070",
+    "name": "臻鼎統一65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068071",
+    "name": "臻鼎統一65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068072",
+    "name": "臻鼎統一68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068073",
+    "name": "臻鼎統一69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068164",
+    "name": "臻鼎元大5B購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068200",
+    "name": "臻鼎凱基63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068294",
+    "name": "臻鼎統一5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068369",
+    "name": "臻鼎中信65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068424",
+    "name": "臻鼎群益5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068546",
+    "name": "臻鼎凱基63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068583",
+    "name": "臻鼎元大5B購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068622",
+    "name": "臻鼎富邦61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068654",
+    "name": "臻鼎永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068655",
+    "name": "臻鼎永豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068764",
+    "name": "臻鼎凱基5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068809",
+    "name": "臻鼎統一65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068844",
+    "name": "臻鼎台新5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068883",
+    "name": "臻鼎群益5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068897",
+    "name": "臻鼎中信65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068971",
+    "name": "臻鼎凱基5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069045",
+    "name": "臻鼎元大5B購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069074",
+    "name": "臻鼎群益5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069075",
+    "name": "臻鼎群益5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069139",
+    "name": "臻鼎元大61購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069257",
+    "name": "臻鼎台新5B購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069289",
+    "name": "臻鼎富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069290",
+    "name": "臻鼎富邦63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069332",
+    "name": "臻鼎凱基61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069333",
+    "name": "臻鼎凱基63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069394",
+    "name": "臻鼎元大5B購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069395",
+    "name": "臻鼎元大5B購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069396",
+    "name": "臻鼎元大5B購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069397",
+    "name": "臻鼎元大5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069398",
+    "name": "臻鼎元大61購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069401",
+    "name": "臻鼎元大63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075546",
+    "name": "臻鼎中信61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075547",
+    "name": "臻鼎中信67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075564",
+    "name": "臻鼎永豐61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075565",
+    "name": "臻鼎永豐61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075566",
+    "name": "臻鼎永豐64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075567",
+    "name": "臻鼎永豐65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075586",
+    "name": "臻鼎國票61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075587",
+    "name": "臻鼎國票61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075600",
+    "name": "臻鼎台新61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075601",
+    "name": "臻鼎台新61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075602",
+    "name": "臻鼎台新61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075603",
+    "name": "臻鼎台新67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075614",
+    "name": "臻鼎群益61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075615",
+    "name": "臻鼎群益61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075616",
+    "name": "臻鼎群益61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075633",
+    "name": "臻鼎富邦64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075634",
+    "name": "臻鼎富邦64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075657",
+    "name": "臻鼎統一67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075658",
+    "name": "臻鼎統一6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075694",
+    "name": "臻鼎凱基61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075695",
+    "name": "臻鼎凱基61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075696",
+    "name": "臻鼎凱基61購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075697",
+    "name": "臻鼎凱基61購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075743",
+    "name": "臻鼎元大61購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075744",
+    "name": "臻鼎元大61購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075745",
+    "name": "臻鼎元大61購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075746",
+    "name": "臻鼎元大63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075777",
+    "name": "臻鼎國泰62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075778",
+    "name": "臻鼎國泰62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075779",
+    "name": "臻鼎國泰62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075789",
+    "name": "臻鼎統一65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075790",
+    "name": "臻鼎統一65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076045",
+    "name": "臻鼎元大61購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076046",
+    "name": "臻鼎元大63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076139",
+    "name": "臻鼎統一63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076140",
+    "name": "臻鼎統一67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076181",
+    "name": "臻鼎元大61購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076182",
+    "name": "臻鼎元大63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076331",
+    "name": "臻鼎凱基63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076434",
+    "name": "臻鼎元大61購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076435",
+    "name": "臻鼎元大61購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076488",
+    "name": "臻鼎永豐63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076537",
+    "name": "臻鼎凱基61購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076579",
+    "name": "臻鼎台新61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076607",
+    "name": "臻鼎富邦63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076608",
+    "name": "臻鼎富邦63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076666",
+    "name": "臻鼎元大61購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076667",
+    "name": "臻鼎元大61購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076668",
+    "name": "臻鼎元大63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076716",
+    "name": "臻鼎凱基61購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076940",
+    "name": "臻鼎國泰62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076941",
+    "name": "臻鼎國泰62購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077031",
+    "name": "臻鼎元大61購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077057",
+    "name": "臻鼎中信62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077133",
+    "name": "臻鼎國票61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077224",
+    "name": "臻鼎凱基61購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077225",
+    "name": "臻鼎凱基61購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077271",
+    "name": "臻鼎元大61購24",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077272",
+    "name": "臻鼎元大61購25",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077322",
+    "name": "臻鼎台新61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077323",
+    "name": "臻鼎台新61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077403",
+    "name": "臻鼎永豐63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077475",
+    "name": "臻鼎元大61購26",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077512",
+    "name": "臻鼎群益61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077658",
+    "name": "臻鼎永豐61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077659",
+    "name": "臻鼎永豐64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077718",
+    "name": "臻鼎元大65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077772",
+    "name": "臻鼎凱基63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077773",
+    "name": "臻鼎凱基63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077870",
+    "name": "臻鼎群益61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077897",
+    "name": "臻鼎凱基61購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077898",
+    "name": "臻鼎凱基61購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077947",
+    "name": "臻鼎元大61購27",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077948",
+    "name": "臻鼎元大65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078039",
+    "name": "臻鼎群益62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078071",
+    "name": "臻鼎凱基62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078151",
+    "name": "臻鼎富邦63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078209",
+    "name": "臻鼎元大62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078302",
+    "name": "臻鼎元大64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078342",
+    "name": "臻鼎群益62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078480",
+    "name": "臻鼎元大63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078481",
+    "name": "臻鼎元大64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078518",
+    "name": "臻鼎國泰63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078519",
+    "name": "臻鼎國泰63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078520",
+    "name": "臻鼎國泰63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078591",
+    "name": "臻鼎台新62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078684",
+    "name": "臻鼎永豐63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078735",
+    "name": "臻鼎凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078853",
+    "name": "臻鼎永豐63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078854",
+    "name": "臻鼎永豐64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078925",
+    "name": "臻鼎國票63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078953",
+    "name": "臻鼎凱基63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078995",
+    "name": "臻鼎群益62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079078",
+    "name": "臻鼎中信62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079114",
+    "name": "臻鼎群益62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079115",
+    "name": "臻鼎群益62購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079218",
+    "name": "臻鼎元大64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079262",
+    "name": "臻鼎凱基63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079357",
+    "name": "臻鼎中信68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079450",
+    "name": "臻鼎凱基63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079451",
+    "name": "臻鼎凱基65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079481",
+    "name": "臻鼎永豐64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079497",
+    "name": "臻鼎國泰63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079519",
+    "name": "臻鼎統一6C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079672",
+    "name": "臻鼎群益62購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079710",
+    "name": "臻鼎凱基64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079935",
+    "name": "臻鼎元大63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079936",
+    "name": "臻鼎元大63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079937",
+    "name": "臻鼎元大64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079965",
+    "name": "臻鼎群益63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080276",
+    "name": "臻鼎凱基66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080303",
+    "name": "臻鼎台新62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080366",
+    "name": "臻鼎國票63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080448",
+    "name": "臻鼎群益63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080668",
+    "name": "臻鼎凱基63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080707",
+    "name": "臻鼎台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080779",
+    "name": "臻鼎元大64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080795",
+    "name": "臻鼎國票63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080796",
+    "name": "臻鼎國票64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081094",
+    "name": "臻鼎台新65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081135",
+    "name": "臻鼎國泰63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081211",
+    "name": "臻鼎凱基63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081561",
+    "name": "臻鼎凱基63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081587",
+    "name": "臻鼎永豐65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081588",
+    "name": "臻鼎永豐66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081613",
+    "name": "臻鼎富邦64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081614",
+    "name": "臻鼎富邦65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081665",
+    "name": "臻鼎元大62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081732",
+    "name": "臻鼎凱基65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081777",
+    "name": "臻鼎國泰63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081819",
+    "name": "臻鼎元大67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081975",
+    "name": "臻鼎群益62購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082071",
+    "name": "臻鼎元大62購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082116",
+    "name": "臻鼎富邦64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082275",
+    "name": "臻鼎凱基63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082383",
+    "name": "臻鼎元大62購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082384",
+    "name": "臻鼎元大62購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082552",
+    "name": "臻鼎群益62購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082662",
+    "name": "臻鼎元大62購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082728",
+    "name": "臻鼎群益62購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082774",
+    "name": "臻鼎凱基63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082901",
+    "name": "臻鼎凱基63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082969",
+    "name": "臻鼎台新63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083018",
+    "name": "臻鼎元大63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083064",
+    "name": "臻鼎永豐63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083065",
+    "name": "臻鼎永豐67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083089",
+    "name": "臻鼎富邦65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083213",
+    "name": "臻鼎元大63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083288",
+    "name": "臻鼎群益63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083347",
+    "name": "臻鼎中信68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083448",
+    "name": "臻鼎元大63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083502",
+    "name": "臻鼎永豐65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083556",
+    "name": "臻鼎凱基68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083689",
+    "name": "臻鼎永豐65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083976",
+    "name": "臻鼎永豐66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083977",
+    "name": "臻鼎永豐67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084036",
+    "name": "臻鼎元大63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084085",
+    "name": "臻鼎台新63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084137",
+    "name": "臻鼎群益63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084224",
+    "name": "臻鼎國票64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084292",
+    "name": "臻鼎國泰64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084293",
+    "name": "臻鼎國泰64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084320",
+    "name": "臻鼎群益63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084364",
+    "name": "臻鼎凱基63購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084497",
+    "name": "臻鼎元大63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084587",
+    "name": "臻鼎國票66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084697",
+    "name": "臻鼎元大63購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084754",
+    "name": "臻鼎凱基63購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085033",
+    "name": "臻鼎台新63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085159",
+    "name": "臻鼎群益63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085346",
+    "name": "臻鼎富邦65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085347",
+    "name": "臻鼎富邦69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085361",
+    "name": "臻鼎中信69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085389",
+    "name": "臻鼎永豐64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085545",
+    "name": "臻鼎凱基63購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085738",
+    "name": "臻鼎元大69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085780",
+    "name": "臻鼎群益63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085781",
+    "name": "臻鼎群益63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085827",
+    "name": "臻鼎凱基63購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085886",
+    "name": "臻鼎中信67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086017",
+    "name": "臻鼎元大69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086225",
+    "name": "臻鼎元大66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086304",
+    "name": "臻鼎凱基63購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086490",
+    "name": "臻鼎群益64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086534",
+    "name": "臻鼎元大63購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086634",
+    "name": "臻鼎富邦65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086635",
+    "name": "臻鼎富邦65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086636",
+    "name": "臻鼎富邦65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086637",
+    "name": "臻鼎富邦66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086638",
+    "name": "臻鼎富邦66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086745",
+    "name": "臻鼎元大64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086921",
+    "name": "臻鼎群益65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086973",
+    "name": "臻鼎凱基63購24",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087010",
+    "name": "臻鼎永豐64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087138",
+    "name": "臻鼎元大64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087244",
+    "name": "臻鼎群益63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087298",
+    "name": "臻鼎台新63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087362",
+    "name": "臻鼎元大66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087443",
+    "name": "臻鼎凱基67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087469",
+    "name": "臻鼎群益63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088273",
+    "name": "臻鼎台新69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088422",
+    "name": "臻鼎統一61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088623",
+    "name": "臻鼎元大63購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088696",
+    "name": "臻鼎富邦65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088775",
+    "name": "臻鼎群益63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088841",
+    "name": "臻鼎凱基65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088901",
+    "name": "臻鼎統一66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089012",
+    "name": "臻鼎國票64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089013",
+    "name": "臻鼎國票65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089157",
+    "name": "臻鼎元大63購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089227",
+    "name": "臻鼎統一73購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089356",
+    "name": "臻鼎凱基63購26",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089357",
+    "name": "臻鼎凱基63購27",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089358",
+    "name": "臻鼎凱基63購28",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089514",
+    "name": "臻鼎永豐66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089550",
+    "name": "臻鼎國泰65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089583",
+    "name": "臻鼎元大64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089641",
+    "name": "臻鼎群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089700",
+    "name": "臻鼎富邦66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089774",
+    "name": "臻鼎凱基64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089775",
+    "name": "臻鼎凱基64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089776",
+    "name": "臻鼎凱基64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089944",
+    "name": "臻鼎國泰67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "03315T",
+    "name": "臻鼎台新5B售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03328T",
+    "name": "臻鼎群益61售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03344T",
+    "name": "臻鼎凱基5B售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03353T",
+    "name": "臻鼎國票5B售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03354T",
+    "name": "臻鼎國票5B售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03387T",
+    "name": "臻鼎群益5B售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03396T",
+    "name": "臻鼎中信63售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03405T",
+    "name": "臻鼎台新5B售08",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03419T",
+    "name": "臻鼎台新5B售09",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03439T",
+    "name": "臻鼎台新5B售11",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03788T",
+    "name": "臻鼎台新61售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03789T",
+    "name": "臻鼎台新61售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03930T",
+    "name": "臻鼎元大61售23",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04162T",
+    "name": "臻鼎台新62售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04417T",
+    "name": "臻鼎台新63售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04482T",
+    "name": "臻鼎群益63售09",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04483T",
+    "name": "臻鼎群益63售10",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04498T",
+    "name": "臻鼎凱基63售23",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04653T",
+    "name": "臻鼎永豐63售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04732T",
+    "name": "臻鼎凱基63售25",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04734T",
+    "name": "臻鼎元大63售22",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04868T",
+    "name": "臻鼎台新64售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04963T",
+    "name": "臻鼎台新64售10",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04984T",
+    "name": "臻鼎台新64售12",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04989T",
+    "name": "臻鼎群益68售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05003T",
+    "name": "臻鼎凱基64售12",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05022T",
+    "name": "臻鼎群益66售02",
+    "right": "put",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-06",
+  "breadth": {
+   "up": 105,
+   "down": 952
+  },
+  "foreign_amt_b": -911.9,
+  "trust_amt_b": 266.9,
+  "tx_night": {
+   "contract": "202611",
+   "o": 39742.0,
+   "h": 40845.0,
+   "l": 39129.0,
+   "c": 40298.0,
+   "chg": 646.0,
+   "chg_pct": 1.63,
+   "vol": 69882,
+   "title": "2026/11/06"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 38888.0,
+   "h": 40690.0,
+   "l": 37694.0,
+   "c": 39786.0,
+   "chg": -2096.0,
+   "chg_pct": -5.0,
+   "vol": 89296,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -99930,
+   "raw": [
+    140566,
+    1119359194,
+    144876,
+    1151864854,
+    -4310,
+    -32505660,
+    15873,
+    125892365,
+    115803,
+    918450985,
+    -99930,
+    -792558620
+   ]
+  },
+  "us": {}
+ }
+}

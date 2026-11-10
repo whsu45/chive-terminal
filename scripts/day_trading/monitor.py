@@ -410,6 +410,9 @@ class Monitor:
         self._fs_cache = {}                          # code -> (epoch, 每分鐘主力/散戶累積淨額序列)，10 秒重算一次給「大戶散戶」圖
         self.pending = []                            # 警示結果追蹤：每則 ⚠/▶ 記下當時狀態，10/30 分鐘後補上漲跌，寫 logs/alert_outcomes.jsonl
         self._tracked = set()
+        self._book_hist = {}                         # code -> [(ts, 價差 tick, 買一張數, 賣一張數, 買五檔合計, 賣五檔合計)]，流動性統計用（_liquidity）
+        self.liq = {}                                # code -> 最近一次流動性統計
+        self._liq_alerted = set()                    # 今天已經發過「掛單薄」警示的 code
         self._sig_done = {}                          # code -> [結束的訊號 {side, lo, hi, since, label, res, ext}]：同價位不重發用（_repeat_block）
         self._sig_seen = {}                          # (code, side, px) -> epoch，同一個點 15 分鐘內不重發
         self.positions = {}                          # code -> 使用者自己的單（持倉面板）：queued / holding / closed / cancelled / skipped
@@ -666,6 +669,37 @@ class Monitor:
         lo = max(I.round_tick(base - max(tick, risk / 3), "up"), I.round_tick((t1 + rr_min * stop) / (1 + rr_min), "up"))
         hi = I.round_tick(base + tick, "up")
         return (lo, hi) if lo <= hi else None
+
+    LIQ_WINDOW_S, LIQ_MIN_N = 1200, 30      # 看最近 20 分鐘、每 10 秒取一次五檔，至少 30 筆才判斷
+    LIQ_WIDE_THIN, LIQ_WIDE_SOFT = 40, 20   # 價差 ≥2 tick 的時間佔比（%）：≥40 算薄、≥20 算偏薄
+    LIQ_L1_VALUE = 500_000                  # 最佳一檔掛單金額中位數低於這個（元）也算薄
+
+    def _liquidity(self, c, q, now):
+        """
+        流動性（掛單薄不薄）：最近 20 分鐘的五檔，看 (1) 最佳買賣價各掛幾張 (2) 買賣價差 ≥2 tick 的時間佔比。
+        11/10 志聖：最佳一檔中位數 4 張（約 125 萬）、44% 的時間價差 ≥2 tick，17 張就把價格推高 3 tick，
+        使用者 310.5 的空單回補在反彈最高點 313.5。門檻照 11/05–11/10 十四檔的分布定：緯創 2%、廣達 5%、華通 0%、
+        GIS 10%、晶豪科 12%（不薄）；十銓 21%、順德 23%、永擎 29%（偏薄）；志聖 44%、精誠 44%、彰源 46%、光鼎 55%、界霖 85%（薄）。
+        回 {level: thin / soft / ok, l1, l1_value, wide_pct, depth5, max_lots, n}；樣本不夠回 None。漲跌停鎖住（單邊沒掛單）的不取樣。
+        """
+        import statistics
+        p = q.get("ref")
+        bids, asks = q.get("bids") or [], q.get("asks") or []
+        h = self._book_hist.setdefault(c, [])
+        ts = now.timestamp()
+        if (p and bids and asks and "09:05" <= now.strftime("%H:%M") < "13:25" and bids[0][0] and asks[0][0] and asks[0][0] > bids[0][0]
+                and bids[0][1] and asks[0][1] and (not h or ts - h[-1][0] >= 10)):
+            h.append((ts, round((asks[0][0] - bids[0][0]) / I.tick_size(p)), bids[0][1], asks[0][1], sum(v for _, v in bids), sum(v for _, v in asks)))
+        while h and ts - h[0][0] > self.LIQ_WINDOW_S:
+            h.pop(0)
+        if len(h) < self.LIQ_MIN_N or not p:
+            return None
+        l1 = statistics.median((r[2] + r[3]) / 2 for r in h)
+        wide = sum(1 for r in h if r[1] >= 2) / len(h) * 100
+        value = l1 * p * 1000
+        level = "thin" if (wide >= self.LIQ_WIDE_THIN or value < self.LIQ_L1_VALUE) else "soft" if wide >= self.LIQ_WIDE_SOFT else "ok"
+        return {"level": level, "l1": round(l1, 1), "l1_value": round(value), "wide_pct": round(wide), "n": len(h),
+                "depth5": round(statistics.median((r[4] + r[5]) / 2 for r in h), 1), "max_lots": max(1, int(l1))}
 
     RR_MIN = 1.5            # 報酬（到前方第一個支撐 / 壓力）÷ 風險（到模型停損）至少要這麼多才發訊號
     REPEAT_TICKS = 3        # 進場區相差這麼多 tick 以內算「同一個價位」
@@ -1082,6 +1116,10 @@ class Monitor:
             sc = self.score_levels(sig["side"], p if inzone else (lo if short else hi))
             sig["score"] = sc
             score_txt = f"｜評分：逆向超過 {sc['heat_ticks']} tick（{sc['stop']}）算輸、到 {sc['tgt']} 算贏，60 分鐘內都沒到看扣成本損益"
+            lq = self.liq.get(c)
+            if lq and lq["level"] == "thin":
+                sig["liq"] = lq
+                score_txt += f"｜⚠ 掛單薄（最佳一檔約 {lq['l1']:.0f} 張）：單筆 ≤{lq['max_lots']} 張、用限價"
             if inzone:
                 self._add_alert(c, now, f"▶ 建議{label} @{p}：{why}；停損 {stop}，目標 {t1}{f'（{t1_name}）' if t1_name else ''} / {t2}（報酬風險比 {rr_now:.1f}）{score_txt}")
             else:
@@ -1120,7 +1158,8 @@ class Monitor:
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
-                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合")]
+                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
+                   ("掛單薄", r"^⚠ 掛單薄")]
 
     @classmethod
     def _alert_type(cls, text):
@@ -1173,6 +1212,8 @@ class Monitor:
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
                                       "warrant_surge": inf.get("warrant_surge_5m"), "small_net_pct": inf.get("small_net_pct"),
                                       "p_long": ev.get("p_long"), "p_short": ev.get("p_short"),
+                                      "liq_level": (self.liq.get(c) or {}).get("level"), "liq_l1": (self.liq.get(c) or {}).get("l1"),
+                                      "liq_wide_pct": (self.liq.get(c) or {}).get("wide_pct"),
                                       "wall_bid": {k: walls["bid"].get(k) for k in ("px", "verdict", "last")} if walls.get("bid") and not walls["bid"].get("status") else None,
                                       "wall_ask": {k: walls["ask"].get(k) for k in ("px", "verdict", "last")} if walls.get("ask") and not walls["ask"].get("status") else None},
                          "factors": [f[0] for f in (ev.get("intraday_factors") or [])]}
@@ -1645,7 +1686,7 @@ class Monitor:
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
-                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
+                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "liquidity": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
                 "mis_fail": getattr(self, "_mis_fail", 0)}
         for k in ("t00", "o00"):
             q = quotes.get(k)
@@ -1715,6 +1756,18 @@ class Monitor:
                 # 週末/休市日報價是凍結的舊價：不發訊號、不追蹤結果（11/07、11/08 舊版這樣寫進 22 筆假訊號）
                 live["alerts"][c] = list(self.live_alerts.get(c, []))[-12:]
                 continue
+            try:
+                lq = self._liquidity(c, q, now)
+                if lq:
+                    self.liq[c] = lq
+                    live["liquidity"][c] = lq
+                    if lq["level"] == "thin" and c not in self._liq_alerted:
+                        self._liq_alerted.add(c)
+                        self._add_alert(c, now, f"⚠ 掛單薄：最近 20 分鐘最佳買賣價各只掛約 {lq['l1']:.0f} 張（約 {lq['l1_value'] / 1e4:.0f} 萬），"
+                                                f"{lq['wide_pct']}% 的時間價差 ≥2 tick。單筆不要超過 {lq['max_lots']} 張，進出用限價、不要追市價；"
+                                                f"幾十張就能推動好幾 tick，小反彈不代表趨勢反轉")
+            except Exception as e:
+                print(f"[fast] 流動性統計失敗：{str(e)[:100]}")
             try:
                 sig = self._signal(c, WEB.latest.get(c), live["series"].get(c) or [], q, now)
                 if sig:

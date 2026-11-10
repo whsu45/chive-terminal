@@ -83,6 +83,8 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .book{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-family:var(--mono);font-size:13px}
 .book .lv{display:grid;grid-template-columns:60px 1fr 50px;gap:6px;align-items:center;padding:2px 0}
 .book .lv i{display:block;height:12px;border-radius:3px;opacity:.75}
+.liq{margin-top:8px;font-size:12px;color:var(--muted);padding:6px 8px;border-radius:8px;background:var(--panel2);border-left:3px solid var(--line)}
+.liq b{color:var(--fg)}.liq.thin{border-left-color:var(--warn);color:var(--warn)}.liq.thin b{color:var(--warn)}.liq.soft{border-left-color:#8a6d1f}
 .book .bid i{background:var(--up)}.book .ask i{background:var(--dn)}
 .flow .row{display:grid;grid-template-columns:70px 1fr 90px;gap:8px;align-items:center;margin:5px 0;font-size:13px}
 .flow .track{height:14px;background:var(--panel2);border-radius:4px;position:relative}
@@ -201,7 +203,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
   <section class="card" id="c-plan"><h3>進出場計畫（已畫在個股江波圖）</h3><div class="plan" id="plan"></div></section>
   <section class="card" id="c-ladder"><h3>壓力 / 支撐</h3><div class="ladder" id="ladder"></div></section>
   <section class="card" id="c-factors"><h3>因子（滑鼠停留看理由）</h3><div id="factors"></div></section>
-  <section class="card" id="c-book"><h3>五檔</h3><div class="book" id="book"></div><div id="walls"></div></section>
+  <section class="card" id="c-book"><h3>五檔</h3><div class="book" id="book"></div><div id="liq"></div><div id="walls"></div></section>
   <section class="card" id="c-group"><h3>族群</h3><div id="group"></div></section>
   <section class="card" id="c-hist"><h3>交戰紀錄 <span class="small muted">（做熟悉的股票）</span></h3><div id="hist"></div></section>
   <section class="card" id="c-warr"><h3>權證</h3><div id="warr"></div></section>
@@ -372,6 +374,11 @@ function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];c
     $('book').innerHTML=`<div><div class="small muted">委買</div>${bids.map(([p,v])=>`<div class="lv bid"><span>${fp(p)}</span><i style="width:${v/mx*100}%"></i><span>${v}</span></div>`).join('')}</div>
       <div><div class="small muted">委賣</div>${asks.map(([p,v])=>`<div class="lv ask"><span>${fp(p)}</span><i style="width:${v/mx*100}%"></i><span>${v}</span></div>`).join('')}</div>`
       +(bv+av?`<div class="small muted">五檔買 ${bv} / 賣 ${av}（不平衡 ${f((bv-av)/(bv+av),2)}）</div>`:'');
+    // 流動性：最近 20 分鐘最佳一檔掛幾張、價差 ≥2 tick 的時間佔比（monitor._liquidity）。薄 = 小單就推得動，單筆要小、用限價
+    const lq=LIVE.liquidity&&LIVE.liquidity[CUR];
+    $('liq').innerHTML=!lq?'<div class="liq">流動性：統計中（盤中累積 5 分鐘的五檔資料後顯示）</div>'
+      :`<div class="liq ${lq.level}"><b>流動性：${({thin:'薄',soft:'偏薄',ok:'正常'})[lq.level]}</b> · 最佳一檔約 <b>${f(lq.l1,0)}</b> 張（約 ${f(lq.l1_value/1e4,0)} 萬）· 價差 ≥2 tick 佔 <b>${lq.wide_pct}%</b>`
+        +(lq.level==='thin'?`<br>單筆不要超過 <b>${lq.max_lots}</b> 張，進出用限價、不追市價`:lq.level==='soft'?`<br>單筆超過 ${lq.max_lots} 張就會吃到第二檔`:'')+`</div>`;
     const ws=(LIVE.walls&&LIVE.walls[CUR])||{};
     $('walls').innerHTML=['bid','ask'].map(k=>{const w=ws[k];if(!w)return '';const vc=/^真/.test(w.verdict||'')?'real':/^假/.test(w.verdict||'')?'fake':'';
       return `<div class="wall ${k} ${w.status?'ended':''}">${k==='bid'?'買單牆':'賣單牆'} <b>${fp(w.px)}</b>：<b>${w.size0}</b>→<b>${w.last}</b> 張（${esc(w.since)} 起）· 被吃 <b>${w.traded}</b> · 撤 <b>${w.pulled}</b> · 補 <b>${w.refilled}</b> → <span class="v ${vc}">${esc(w.status||w.verdict||'')}</span></div>`;}).join('')

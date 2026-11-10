@@ -7,7 +7,11 @@
     python3 evolve.py                    # 跑一次，印結果，寫 model_params.candidate.json
     python3 evolve.py --apply            # 覆寫 model_params.json（monitor 下一輪估算自動載入）
     python3 evolve.py --horizon 10 --gens 200 --min-n 20
-注意：幾天的資料就幾天的盤勢，樣本 <500 時只能當方向參考；每次 --apply 前先看 walk-forward（最後一天當測試）有沒有變差。
+    python3 evolve.py --cv               # 每次留一天當測試的交叉驗證（約 4 分鐘），跟「丟銅板」比
+注意：估算是一分鐘一筆，同一檔同一天的幾百筆其實是同一段走勢——真正獨立的樣本是「股票日」，不是筆數。
+--apply 一定先跑 --cv，三個條件都過才寫入：≥10 個交易日、留出日的 Brier 比丟銅板（0.25）好、也比現行參數好。
+11/10 復盤（6 天、16 個股票日、1829 筆）：留出日 Brier 現行 0.2757、演化後 0.2611，都比丟銅板 0.25 差；
+盤前分數、盤中分數、合計對 10 / 30 / 60 分鐘後漲跌的方向命中都在 44–53%。演化只是把過去幾天的盤勢背起來，所以沒有套用。
 """
 import os
 import json
@@ -143,8 +147,30 @@ def evolve(names, data, base, gens=120, pop_n=80, lam=0.02, seed=42, log=print):
     return scored[0][1]
 
 
+COIN = 0.25     # 永遠猜 50% 的 Brier 分數；比這個差 = 不如不猜
+
+
+def cv_by_day(names, data, base, gens, pop, lam, seed, log=print):
+    """每次留一天當測試、其餘天演化，回 (逐日列表, 合計)。合計 = 依筆數加權的留出日 Brier：coin / cur（現行）/ evo（演化後）。"""
+    days = sorted({r["date"] for r in data})
+    out, tot, n_all = [], {"cur": 0.0, "evo": 0.0}, 0
+    for d in days:
+        tr = [r for r in data if r["date"] != d]; te = [r for r in data if r["date"] == d]
+        if len(tr) < 60 or not te:
+            continue
+        g = evolve(names, tr, base, gens, pop, lam, seed, log=lambda *a, **k: None)
+        cur, evo = fitness(base, names, te, 0)[1], fitness(g, names, te, 0)[1]
+        out.append({"date": d, "n": len(te), "codes": len({r["code"] for r in te}), "cur": cur, "evo": evo})
+        tot["cur"] += cur * len(te); tot["evo"] += evo * len(te); n_all += len(te)
+        log(f"  留出 {d}：{len(te):>4} 筆 {len({r['code'] for r in te})} 檔  丟銅板 {COIN:.4f}  現行 {cur:.4f}  演化後 {evo:.4f}")
+    if n_all:
+        tot = {k: v / n_all for k, v in tot.items()}
+    return out, {"n": n_all, "days": len(out), **tot}
+
+
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--cv", action="store_true", help="每次留一天當測試的交叉驗證（--apply 會自動跑）")
     ap.add_argument("--horizon", type=int, default=30, help="答案：幾分鐘後的漲跌（預設 30）")
     ap.add_argument("--min-n", type=int, default=15, help="因子至少出現幾次才給它基因（否則固定 1.0）")
     ap.add_argument("--gens", type=int, default=120)
@@ -165,7 +191,7 @@ def main():
             cnt[n] += 1
     names = sorted(n for n, c in cnt.items() if c >= a.min_n)
     days = sorted({r["date"] for r in data})
-    print(f"樣本 {len(data)} 筆（{len(days)} 天：{days[0]}–{days[-1]}，{len({r['code'] for r in data})} 檔），答案 = {a.horizon} 分鐘後漲跌；可演化因子 {len(names)} 個（出現 ≥{a.min_n} 次）")
+    print(f"樣本 {len(data)} 筆（{len(days)} 天：{days[0]}–{days[-1]}，{len({r['code'] for r in data})} 檔、{len({(r['date'], r['code']) for r in data})} 個股票日），答案 = {a.horizon} 分鐘後漲跌；可演化因子 {len(names)} 個（出現 ≥{a.min_n} 次）")
 
     cur_path = os.path.join(HERE, "model_params.json")
     base = {"m": {n: 1.0 for n in names}, "scale": 11.0, "daily_w": 0.8}
@@ -188,7 +214,8 @@ def main():
     if test:
         t0, t1 = report(base, names, test), report(best_tr, names, test)
         print(f"  測試：Brier {t0['brier']:.4f} → {t1['brier']:.4f}，命中率 {t0['hit_rate'] and round(t0['hit_rate'])}% → {t1['hit_rate'] and round(t1['hit_rate'])}%，IC {t0['ic']:+.3f} → {t1['ic']:+.3f}"
-              + ("   ⚠ 測試變差：過擬合，不要 --apply" if t1["brier"] > t0["brier"] + 0.002 else "   ✔ 測試沒變差"))
+              + ("   ⚠ 測試變差：過擬合，不要 --apply" if t1["brier"] > t0["brier"] + 0.002 else "   ✔ 測試沒變差")
+              + (f"   ⚠ 但仍比丟銅板（{COIN}）差" if t1["brier"] >= COIN else ""))
 
     print(f"\n[2] 全部資料再演化一次（產出用）")
     best = evolve(names, data, base, a.gens, a.pop, a.lam, a.seed + 1)
@@ -215,9 +242,24 @@ def main():
     cand = os.path.join(HERE, "model_params.candidate.json")
     json.dump(out, open(cand, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"\n候選參數已寫 {cand}")
+    cv = None
+    if a.cv or a.apply:
+        print(f"\n[3] 交叉驗證：每次留一天當測試（{len(days)} 天，約 {len(days) * 40} 秒）")
+        _, cv = cv_by_day(names, data, base, a.gens, a.pop, a.lam, a.seed)
+        print(f"  合計 {cv['n']} 筆：丟銅板 {COIN:.4f}  現行 {cv['cur']:.4f}  演化後 {cv['evo']:.4f}"
+              + ("   ✔ 演化後比丟銅板和現行都好" if cv["evo"] < min(COIN, cv["cur"] - 0.002) else "   ⚠ 演化後沒有贏過丟銅板或現行參數"))
+        out["cv"] = cv
+        json.dump(out, open(cand, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     if a.apply:
-        if len(data) < 300:
-            print("樣本 <300，拒絕 --apply（先多跑幾天）")
+        why = []
+        if len(days) < 10:
+            why.append(f"只有 {len(days)} 個交易日（要 ≥10）")
+        if cv["evo"] >= COIN:
+            why.append(f"留出日 Brier {cv['evo']:.4f} 沒有比丟銅板 {COIN} 好")
+        if cv["evo"] >= cv["cur"] - 0.002:
+            why.append(f"沒有比現行參數（{cv['cur']:.4f}）好")
+        if why:
+            print("拒絕 --apply：" + "；".join(why) + "。現在套用只是把過去幾天的盤勢背起來。")
         else:
             json.dump(out, open(cur_path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
             print(f"已套用 → {cur_path}（monitor 下一輪估算自動載入；要還原就刪掉這個檔）")

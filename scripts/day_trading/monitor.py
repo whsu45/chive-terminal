@@ -1853,34 +1853,51 @@ class Monitor:
         with open(path, "a", encoding="utf-8") as f:
             f.write(json.dumps(rec, ensure_ascii=False, default=str) + "\n")
 
+    EVAL_START, EVAL_END = "08:30", "13:25"     # 模型估算時段。13:25 起是收盤試撮，之後不再估算
+
     def run(self, once=False, as_json=False, verbose=False, brief=False):
         if self.web and not once:
             self.start_fast()
+        evaluated = False
+        idle_note = None
         while True:
             t0 = time.time()
-            try:
-                results = self.poll()
-                for ev in results:
-                    self.log(ev)
-                    if as_json:
-                        print(json.dumps({k: v for k, v in ev.items() if k != "quote"}, ensure_ascii=False, default=str))
-                    elif self.web:
-                        inf = ev["info"]
-                        print(f"[{ev['time']}] {ev['code']} {ev['name']} {ev['quote'].get('ref')} {fmt_pct(inf.get('chg_pct'))}  多 {ev['p_long']:.0f}% 空 {ev['p_short']:.0f}%  {ev['verdict']}"
-                              + "".join(f"\n   {w}" for w in ev["warnings"] if w.startswith("⚠")))
-                    else:
-                        print(render(ev, self.daily[ev["code"]], brief))
-                        if verbose:
-                            print(explain(ev))
-                sys.stdout.flush()
-            except hc.HttpError as e:
-                print(f"[{dt.datetime.now():%H:%M:%S}] 抓取失敗（這一輪跳過，下一輪再試）：{str(e)[:160]}")
-            except Exception:
-                traceback.print_exc()
+            hhmm = dt.datetime.now().strftime("%H:%M")
+            in_hours = self.EVAL_START <= hhmm < self.EVAL_END
+            # 13:25 一到就停止模型估算（原本收盤後每 5 分鐘還在算、印「偏空，勝率 85%」這種沒有意義的 log，也會寫進 monitor_*.jsonl）。
+            # 盤後才啟動的話只算一次，讓儀表板有東西看。快迴圈（報價、訊號結案、持倉提醒）、校準與資料同步照常。
+            if once or in_hours or not evaluated:
+                try:
+                    results = self.poll()
+                    evaluated = evaluated or bool(results)
+                    for ev in results:
+                        if once or in_hours:
+                            self.log(ev)
+                        if as_json:
+                            print(json.dumps({k: v for k, v in ev.items() if k != "quote"}, ensure_ascii=False, default=str))
+                        elif self.web:
+                            inf = ev["info"]
+                            print(f"[{ev['time']}] {ev['code']} {ev['name']} {ev['quote'].get('ref')} {fmt_pct(inf.get('chg_pct'))}  多 {ev['p_long']:.0f} 空 {ev['p_short']:.0f}  {ev['verdict']}"
+                                  + "".join(f"\n   {w}" for w in ev["warnings"] if w.startswith("⚠")))
+                        else:
+                            print(render(ev, self.daily[ev["code"]], brief))
+                            if verbose:
+                                print(explain(ev))
+                    sys.stdout.flush()
+                except hc.HttpError as e:
+                    print(f"[{dt.datetime.now():%H:%M:%S}] 抓取失敗（這一輪跳過，下一輪再試）：{str(e)[:160]}")
+                except Exception:
+                    traceback.print_exc()
             if once:
                 break
-            hhmm = dt.datetime.now().strftime("%H:%M")
-            if hhmm >= "13:35" or hhmm < "08:30":
+            if not in_hours:
+                note = (dt.date.today(), hhmm >= self.EVAL_END)
+                if idle_note != note:
+                    idle_note = note
+                    print(f"[{dt.datetime.now():%H:%M:%S}] " + (f"{self.EVAL_END} 起（收盤試撮）模型停止估算，儀表板保留最後一次估算；訊號結案、資料同步照常"
+                                                               if note[1] else f"還沒開盤，{self.EVAL_START} 開始估算"))
+                    sys.stdout.flush()
+            if hhmm >= "13:35" or hhmm < self.EVAL_START:
                 if self.calibrate_after_close:
                     run_calibration("收盤後補跑校準")
                     self.calibrate_after_close = False
@@ -1888,8 +1905,7 @@ class Monitor:
                 if not self.web:
                     print("已收盤，監控結束。")
                     break
-                # 網頁模式：收盤後維持服務，每 5 分鐘輕量更新一次
-                time.sleep(300)
+                time.sleep(300)     # 網頁模式：收盤後維持服務（不再估算）
                 continue
             time.sleep(max(5, self.interval - (time.time() - t0)))
 

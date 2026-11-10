@@ -1,0 +1,2345 @@
+{
+ "version": 8,
+ "code": "3105",
+ "name": "穩懋",
+ "market": "otc",
+ "date": "2026-11-10",
+ "prev_date": "2026-11-09",
+ "group": "化合物半導體",
+ "peers": [
+  "3707",
+  "8086",
+  "2455",
+  "3016"
+ ],
+ "peers_arg": null,
+ "peer_info": {
+  "3707": {
+   "name": "漢磊",
+   "ex": "otc",
+   "y": 55.9,
+   "prev_chg_pct": 9.82318271119842,
+   "prev_vol": 3131
+  },
+  "8086": {
+   "name": "宏捷科",
+   "ex": "otc",
+   "y": 94.6,
+   "prev_chg_pct": 4.761904761904767,
+   "prev_vol": 3796
+  },
+  "2455": {
+   "name": "全新",
+   "ex": "tse",
+   "y": 341.5,
+   "prev_chg_pct": 7.053291536050166,
+   "prev_vol": 6735
+  },
+  "3016": {
+   "name": "嘉晶",
+   "ex": "tse",
+   "y": 107.0,
+   "prev_chg_pct": 9.743589743589753,
+   "prev_vol": 3852
+  }
+ },
+ "tech": {
+  "date": "2026-11-09",
+  "close": 446.5,
+  "open": 412.0,
+  "high": 446.5,
+  "low": 403.5,
+  "vol": 14024,
+  "ma5": 466.9,
+  "ma10": 512.55,
+  "ma20": 517.875,
+  "ma60": 477.6,
+  "bb_up": 621.4075431929497,
+  "bb_dn": 414.34245680705027,
+  "atr14": 47.642857142857146,
+  "rsi14": 41.87104093876937,
+  "vol_ma5": 21971.6,
+  "vol_ma20": 23292.55,
+  "chg_pct": 9.97536945812807,
+  "high20": 604.0,
+  "low20": 403.5,
+  "high60": 630.0,
+  "low60": 349.5,
+  "prev_high": 417.0,
+  "prev_low": 406.0,
+  "ret5": -24.06462585034014,
+  "ret20": -24.06462585034014,
+  "streak": 1,
+  "atr_pct": 10.670292753159496
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-22",
+   "v": 33955,
+   "amt": 17071619.0,
+   "o": 501.0,
+   "h": 515.0,
+   "l": 489.0,
+   "c": 501.0
+  },
+  {
+   "date": "2026-09-23",
+   "v": 27447,
+   "amt": 13649794.0,
+   "o": 507.0,
+   "h": 518.0,
+   "l": 486.5,
+   "c": 497.0
+  },
+  {
+   "date": "2026-09-24",
+   "v": 21692,
+   "amt": 10740137.0,
+   "o": 495.5,
+   "h": 506.0,
+   "l": 482.0,
+   "c": 502.0
+  },
+  {
+   "date": "2026-09-29",
+   "v": 15338,
+   "amt": 7536386.0,
+   "o": 496.5,
+   "h": 498.5,
+   "l": 484.5,
+   "c": 493.0
+  },
+  {
+   "date": "2026-09-30",
+   "v": 43189,
+   "amt": 22996676.0,
+   "o": 509.0,
+   "h": 542.0,
+   "l": 509.0,
+   "c": 542.0
+  },
+  {
+   "date": "2026-10-01",
+   "v": 26938,
+   "amt": 14507993.0,
+   "o": 546.0,
+   "h": 546.0,
+   "l": 529.0,
+   "c": 538.0
+  },
+  {
+   "date": "2026-10-02",
+   "v": 28498,
+   "amt": 16684254.0,
+   "o": 574.0,
+   "h": 591.0,
+   "l": 572.0,
+   "c": 591.0
+  },
+  {
+   "date": "2026-10-05",
+   "v": 48128,
+   "amt": 29694940.0,
+   "o": 614.0,
+   "h": 630.0,
+   "l": 604.0,
+   "c": 615.0
+  },
+  {
+   "date": "2026-10-06",
+   "v": 19732,
+   "amt": 11863581.0,
+   "o": 615.0,
+   "h": 623.0,
+   "l": 588.0,
+   "c": 592.0
+  },
+  {
+   "date": "2026-10-07",
+   "v": 22680,
+   "amt": 13468050.0,
+   "o": 589.0,
+   "h": 613.0,
+   "l": 582.0,
+   "c": 588.0
+  },
+  {
+   "date": "2026-10-08",
+   "v": 16489,
+   "amt": 9558834.0,
+   "o": 578.0,
+   "h": 592.0,
+   "l": 566.0,
+   "c": 581.0
+  },
+  {
+   "date": "2026-10-12",
+   "v": 18894,
+   "amt": 11023559.0,
+   "o": 582.0,
+   "h": 604.0,
+   "l": 573.0,
+   "c": 580.0
+  },
+  {
+   "date": "2026-10-13",
+   "v": 25715,
+   "amt": 13956957.0,
+   "o": 564.0,
+   "h": 565.0,
+   "l": 522.0,
+   "c": 556.0
+  },
+  {
+   "date": "2026-10-14",
+   "v": 11923,
+   "amt": 6679316.0,
+   "o": 559.0,
+   "h": 570.0,
+   "l": 552.0,
+   "c": 557.0
+  },
+  {
+   "date": "2026-10-15",
+   "v": 16742,
+   "amt": 8585135.0,
+   "o": 520.0,
+   "h": 526.0,
+   "l": 502.0,
+   "c": 502.0
+  },
+  {
+   "date": "2026-10-16",
+   "v": 12845,
+   "amt": 6439114.0,
+   "o": 510.0,
+   "h": 510.0,
+   "l": 491.0,
+   "c": 501.0
+  },
+  {
+   "date": "2026-10-19",
+   "v": 24203,
+   "amt": 11461103.0,
+   "o": 491.0,
+   "h": 491.0,
+   "l": 454.0,
+   "c": 482.0
+  },
+  {
+   "date": "2026-10-20",
+   "v": 25520,
+   "amt": 12554022.0,
+   "o": 482.0,
+   "h": 517.0,
+   "l": 470.0,
+   "c": 475.0
+  },
+  {
+   "date": "2026-10-21",
+   "v": 20408,
+   "amt": 10432912.0,
+   "o": 499.5,
+   "h": 522.0,
+   "l": 495.5,
+   "c": 512.0
+  },
+  {
+   "date": "2026-10-22",
+   "v": 24584,
+   "amt": 12359346.0,
+   "o": 517.0,
+   "h": 526.0,
+   "l": 482.0,
+   "c": 486.0
+  },
+  {
+   "date": "2026-10-27",
+   "v": 13689,
+   "amt": 6775425.0,
+   "o": 510.0,
+   "h": 510.0,
+   "l": 479.0,
+   "c": 491.0
+  },
+  {
+   "date": "2026-10-28",
+   "v": 17231,
+   "amt": 9261367.0,
+   "o": 523.0,
+   "h": 540.0,
+   "l": 522.0,
+   "c": 540.0
+  },
+  {
+   "date": "2026-10-29",
+   "v": 58591,
+   "amt": 34747362.0,
+   "o": 594.0,
+   "h": 594.0,
+   "l": 584.0,
+   "c": 594.0
+  },
+  {
+   "date": "2026-10-30",
+   "v": 39198,
+   "amt": 22281165.0,
+   "o": 567.0,
+   "h": 589.0,
+   "l": 541.0,
+   "c": 578.0
+  },
+  {
+   "date": "2026-11-02",
+   "v": 29961,
+   "amt": 17206748.0,
+   "o": 558.0,
+   "h": 596.0,
+   "l": 550.0,
+   "c": 588.0
+  },
+  {
+   "date": "2026-11-03",
+   "v": 24060,
+   "amt": 13090433.0,
+   "o": 555.0,
+   "h": 564.0,
+   "l": 530.0,
+   "c": 530.0
+  },
+  {
+   "date": "2026-11-04",
+   "v": 32445,
+   "amt": 16045590.0,
+   "o": 525.0,
+   "h": 525.0,
+   "l": 477.0,
+   "c": 501.0
+  },
+  {
+   "date": "2026-11-05",
+   "v": 24515,
+   "amt": 11488201.0,
+   "o": 468.5,
+   "h": 487.0,
+   "l": 451.0,
+   "c": 451.0
+  },
+  {
+   "date": "2026-11-06",
+   "v": 14814,
+   "amt": 6059882.0,
+   "o": 406.0,
+   "h": 417.0,
+   "l": 406.0,
+   "c": 406.0
+  },
+  {
+   "date": "2026-11-09",
+   "v": 14024,
+   "amt": 6056190.0,
+   "o": 412.0,
+   "h": 446.5,
+   "l": 403.5,
+   "c": 446.5
+  }
+ ],
+ "limit_up": 491.0,
+ "limit_down": 402.0,
+ "insti": {
+  "2026-11-09": {
+   "foreign": -1821,
+   "trust": 454,
+   "dealer": 182,
+   "total": -1184
+  },
+  "2026-11-06": {
+   "foreign": 105,
+   "trust": -38,
+   "dealer": -217,
+   "total": -149
+  },
+  "2026-11-05": {
+   "foreign": -544,
+   "trust": 658,
+   "dealer": -308,
+   "total": -193
+  }
+ },
+ "insti_sum": {
+  "foreign": -2260,
+  "trust": 1074,
+  "dealer": -343,
+  "total": -1526
+ },
+ "weak_screen": {
+  "close": 446.5,
+  "r10": -8.13,
+  "idx_r10": -9.51,
+  "ma60": 477.6,
+  "idx": 41661.7,
+  "idx_ma20": 45726.72,
+  "mkt_weak": true,
+  "foreign": -1821,
+  "trust": 454,
+  "under": false,
+  "drop10": false,
+  "below_ma": true,
+  "px100": true,
+  "sell": false,
+  "n_ok": 2,
+  "hit": false
+ },
+ "margin": {
+  "fin_prev": 40771,
+  "fin_now": 41529,
+  "fin_chg": 758,
+  "short_prev": 413,
+  "short_now": 488,
+  "short_chg": 75,
+  "fin_limit": 105985,
+  "fin_use_pct": 39.18
+ },
+ "sbl": null,
+ "brokers": {
+  "day": {
+   "daytrade_net": -52,
+   "daytrade_buy": 0,
+   "foreign_net": -1545,
+   "top5_buy": 2658,
+   "top5_sell": -2059,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "凱基",
+     "buy": 1597,
+     "sell": 90,
+     "net": 1507,
+     "pct": 10.75
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 506,
+     "sell": 121,
+     "net": 385,
+     "pct": 2.75
+    },
+    {
+     "broker": "元大證券",
+     "buy": 1860,
+     "sell": 1507,
+     "net": 353,
+     "pct": 2.52
+    },
+    {
+     "broker": "富邦證券",
+     "buy": 510,
+     "sell": 296,
+     "net": 214,
+     "pct": 1.53
+    },
+    {
+     "broker": "新光-高雄",
+     "buy": 212,
+     "sell": 13,
+     "net": 199,
+     "pct": 1.42
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "美商高盛",
+     "buy": 37,
+     "sell": 722,
+     "net": -685,
+     "pct": 4.88
+    },
+    {
+     "broker": "美林",
+     "buy": 42,
+     "sell": 587,
+     "net": -545,
+     "pct": 3.89
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 58,
+     "sell": 529,
+     "net": -471,
+     "pct": 3.36
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 325,
+     "sell": 554,
+     "net": -229,
+     "pct": 1.63
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 88,
+     "sell": 217,
+     "net": -129,
+     "pct": 0.92
+    }
+   ],
+   "daytrade_buy_pct": 0.0,
+   "foreign_net_pct": -11.016828294352539,
+   "top5_buy_pct": 18.953223046206503,
+   "top5_sell_pct": 14.681973759269823
+  },
+  "day_date": "2026/11/09",
+  "range4": {
+   "daytrade_net": -132,
+   "daytrade_buy": 0,
+   "foreign_net": -5920,
+   "top5_buy": 5257,
+   "top5_sell": -8090,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 4240,
+     "sell": 2330,
+     "net": 1910,
+     "pct": 2.23
+    },
+    {
+     "broker": "凱基",
+     "buy": 1809,
+     "sell": 523,
+     "net": 1286,
+     "pct": 1.5
+    },
+    {
+     "broker": "元大證券",
+     "buy": 9119,
+     "sell": 8132,
+     "net": 987,
+     "pct": 1.15
+    },
+    {
+     "broker": "國票-敦北法人",
+     "buy": 706,
+     "sell": 48,
+     "net": 658,
+     "pct": 0.77
+    },
+    {
+     "broker": "港商麥格理",
+     "buy": 426,
+     "sell": 10,
+     "net": 416,
+     "pct": 0.48
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "美商高盛",
+     "buy": 946,
+     "sell": 4160,
+     "net": -3214,
+     "pct": 3.75
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 4355,
+     "sell": 6678,
+     "net": -2323,
+     "pct": 2.71
+    },
+    {
+     "broker": "港商野村",
+     "buy": 1844,
+     "sell": 3408,
+     "net": -1564,
+     "pct": 1.82
+    },
+    {
+     "broker": "花旗環球",
+     "buy": 23,
+     "sell": 549,
+     "net": -526,
+     "pct": 0.61
+    },
+    {
+     "broker": "國泰證券",
+     "buy": 160,
+     "sell": 623,
+     "net": -463,
+     "pct": 0.54
+    }
+   ],
+   "daytrade_buy_pct": 0.0,
+   "foreign_net_pct": -6.899927737243293,
+   "top5_buy_pct": 6.127182451805403,
+   "top5_sell_pct": 9.429124222009836
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "新光-台南",
+    "count": 4,
+    "cum_net": -108,
+    "buy_days": 2,
+    "sell_days": 2,
+    "last_date": "2026-11-06",
+    "last_net": 76,
+    "scored": 4,
+    "win_rate": 1.0,
+    "avg_capture_pct": 9.978217457626878,
+    "cum_net_pct": -0.023183378376347805,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "國票證券",
+    "count": 7,
+    "cum_net": 86,
+    "buy_days": 5,
+    "sell_days": 2,
+    "last_date": "2026-11-09",
+    "last_net": 69,
+    "scored": 6,
+    "win_rate": 0.8333333333333334,
+    "avg_capture_pct": 3.412464507584882,
+    "cum_net_pct": 0.018460838336721398,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "中國信託",
+    "count": 5,
+    "cum_net": 110,
+    "buy_days": 4,
+    "sell_days": 1,
+    "last_date": "2026-11-02",
+    "last_net": 143,
+    "scored": 5,
+    "win_rate": 0.8,
+    "avg_capture_pct": 1.3334026766483766,
+    "cum_net_pct": 0.02361270019813202,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "日進",
+    "count": 4,
+    "cum_net": -2,
+    "buy_days": 2,
+    "sell_days": 2,
+    "last_date": "2026-11-04",
+    "last_net": -166,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 3.6220597864982276,
+    "cum_net_pct": -0.00042932182178421856,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "統一",
+    "count": 12,
+    "cum_net": -207,
+    "buy_days": 4,
+    "sell_days": 8,
+    "last_date": "2026-11-09",
+    "last_net": 164,
+    "scored": 11,
+    "win_rate": 0.7272727272727273,
+    "avg_capture_pct": 1.5416690413539156,
+    "cum_net_pct": -0.044434808554666624,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "花旗環球",
+    "count": 9,
+    "cum_net": 3706,
+    "buy_days": 3,
+    "sell_days": 6,
+    "last_date": "2026-11-06",
+    "last_net": -267,
+    "scored": 9,
+    "win_rate": 0.6666666666666666,
+    "avg_capture_pct": 0.9444642363407694,
+    "cum_net_pct": 0.795533335766157,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "台新",
+    "count": 6,
+    "cum_net": -456,
+    "buy_days": 1,
+    "sell_days": 5,
+    "last_date": "2026-10-30",
+    "last_net": -152,
+    "scored": 6,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -1.7303019579106682,
+    "cum_net_pct": -0.09788537536680184,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "國泰-板橋",
+    "count": 7,
+    "cum_net": -17,
+    "buy_days": 4,
+    "sell_days": 3,
+    "last_date": "2026-11-05",
+    "last_net": 37,
+    "scored": 7,
+    "win_rate": 0.2857142857142857,
+    "avg_capture_pct": -4.557993210673357,
+    "cum_net_pct": -0.003649235485165858,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "富邦-台南",
+    "count": 4,
+    "cum_net": 87,
+    "buy_days": 3,
+    "sell_days": 1,
+    "last_date": "2026-11-03",
+    "last_net": 83,
+    "scored": 4,
+    "win_rate": 0.25,
+    "avg_capture_pct": -2.005698186735469,
+    "cum_net_pct": 0.018675499247613508,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "華南永昌-竹北",
+    "count": 8,
+    "cum_net": 372,
+    "buy_days": 5,
+    "sell_days": 3,
+    "last_date": "2026-11-05",
+    "last_net": 45,
+    "scored": 8,
+    "win_rate": 0.25,
+    "avg_capture_pct": -2.3312751451171305,
+    "cum_net_pct": 0.07985385885186465,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": 233,
+  "winners_last_net_pct": 1.6614375356531659,
+  "winners_inventory": 3585,
+  "winners_inventory_pct": 0.7695593655482118,
+  "losers_last_net": -379,
+  "losers_last_net_pct": -2.7025099828864803,
+  "n_scored": 156
+ },
+ "warrants": {
+  "call_vol": 5730,
+  "put_vol": 1190,
+  "call_amt": 5145800.0,
+  "put_amt": 476530.0,
+  "n_call": 226,
+  "n_put": 22,
+  "n_call_active": 96,
+  "n_put_active": 9,
+  "call_share": 0.8280346820809249,
+  "amt_share": 0.830486648773729,
+  "hedge_net": 123,
+  "hedge_pct": 0.8770678836280662,
+  "call_amt_5d": 29774492.0,
+  "call_surge": 0.17282578658268963,
+  "list": [
+   {
+    "code": "701474",
+    "name": "穩懋統一6B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "702228",
+    "name": "穩懋元大5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "702284",
+    "name": "穩懋元大5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "702642",
+    "name": "穩懋中信5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "702987",
+    "name": "穩懋元大5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703102",
+    "name": "穩懋永豐5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703144",
+    "name": "穩懋中信5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703480",
+    "name": "穩懋統一5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703481",
+    "name": "穩懋統一5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703482",
+    "name": "穩懋統一5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703483",
+    "name": "穩懋統一6C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703632",
+    "name": "穩懋凱基5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703880",
+    "name": "穩懋統一61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703881",
+    "name": "穩懋統一61購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703882",
+    "name": "穩懋統一71購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "703985",
+    "name": "穩懋統一63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704027",
+    "name": "穩懋統一61購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704028",
+    "name": "穩懋統一65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704029",
+    "name": "穩懋統一71購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704109",
+    "name": "穩懋統一61購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704146",
+    "name": "穩懋元大5B購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704905",
+    "name": "穩懋統一72購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "704906",
+    "name": "穩懋統一72購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705009",
+    "name": "穩懋統一72購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705010",
+    "name": "穩懋統一72購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705063",
+    "name": "穩懋元大61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705135",
+    "name": "穩懋統一72購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705238",
+    "name": "穩懋凱基61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705269",
+    "name": "穩懋統一65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705337",
+    "name": "穩懋元大61購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705357",
+    "name": "穩懋凱基61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705370",
+    "name": "穩懋元大61購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705398",
+    "name": "穩懋統一61購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705399",
+    "name": "穩懋統一62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705400",
+    "name": "穩懋統一62購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705401",
+    "name": "穩懋統一62購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705487",
+    "name": "穩懋統一66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705488",
+    "name": "穩懋統一73購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705489",
+    "name": "穩懋統一73購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705553",
+    "name": "穩懋元大5C購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "705565",
+    "name": "穩懋永豐5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712539",
+    "name": "穩懋群益63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712540",
+    "name": "穩懋群益64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712562",
+    "name": "穩懋統一66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712563",
+    "name": "穩懋統一67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712564",
+    "name": "穩懋統一68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712565",
+    "name": "穩懋統一6C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712566",
+    "name": "穩懋統一6C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712572",
+    "name": "穩懋國泰63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712573",
+    "name": "穩懋國泰63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712574",
+    "name": "穩懋國泰63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712575",
+    "name": "穩懋國泰63購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712586",
+    "name": "穩懋凱基63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712587",
+    "name": "穩懋凱基63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712588",
+    "name": "穩懋凱基63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712589",
+    "name": "穩懋凱基63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712596",
+    "name": "穩懋台新62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712597",
+    "name": "穩懋台新63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712598",
+    "name": "穩懋台新65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712599",
+    "name": "穩懋台新65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712600",
+    "name": "穩懋台新68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712602",
+    "name": "穩懋中信68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712622",
+    "name": "穩懋永豐64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712623",
+    "name": "穩懋永豐64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712624",
+    "name": "穩懋永豐66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712625",
+    "name": "穩懋永豐68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712641",
+    "name": "穩懋群益64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712659",
+    "name": "穩懋富邦63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712660",
+    "name": "穩懋富邦64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712664",
+    "name": "穩懋統一68購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712712",
+    "name": "穩懋凱基63購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712730",
+    "name": "穩懋永豐65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712753",
+    "name": "穩懋群益68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712794",
+    "name": "穩懋統一68購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712891",
+    "name": "穩懋永豐63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712916",
+    "name": "穩懋富邦65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712939",
+    "name": "穩懋永豐63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712978",
+    "name": "穩懋凱基65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713020",
+    "name": "穩懋群益63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713021",
+    "name": "穩懋群益64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713069",
+    "name": "穩懋永豐63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713086",
+    "name": "穩懋台新62購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713087",
+    "name": "穩懋台新62購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713266",
+    "name": "穩懋中信63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713267",
+    "name": "穩懋中信68購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713300",
+    "name": "穩懋富邦63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713305",
+    "name": "穩懋國泰64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713306",
+    "name": "穩懋國泰65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713376",
+    "name": "穩懋永豐63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713392",
+    "name": "穩懋群益65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713418",
+    "name": "穩懋統一65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713434",
+    "name": "穩懋凱基63購09",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713453",
+    "name": "穩懋台新63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713454",
+    "name": "穩懋台新65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713459",
+    "name": "穩懋中信68購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713482",
+    "name": "穩懋群益63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713490",
+    "name": "穩懋富邦63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713494",
+    "name": "穩懋統一68購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714108",
+    "name": "穩懋凱基66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714124",
+    "name": "穩懋統一67購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714125",
+    "name": "穩懋統一6C購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714136",
+    "name": "穩懋國泰65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714141",
+    "name": "穩懋富邦65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714149",
+    "name": "穩懋中信65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714176",
+    "name": "穩懋永豐63購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714224",
+    "name": "穩懋群益63購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714238",
+    "name": "穩懋國票66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714239",
+    "name": "穩懋國票67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714500",
+    "name": "穩懋國票65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714514",
+    "name": "穩懋凱基63購10",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714538",
+    "name": "穩懋永豐63購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714539",
+    "name": "穩懋永豐63購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714557",
+    "name": "穩懋國泰64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714565",
+    "name": "穩懋統一69購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714577",
+    "name": "穩懋台新63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714578",
+    "name": "穩懋台新63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714579",
+    "name": "穩懋台新63購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714615",
+    "name": "穩懋群益63購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714653",
+    "name": "穩懋凱基65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714654",
+    "name": "穩懋凱基68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714711",
+    "name": "穩懋群益63購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714753",
+    "name": "穩懋永豐63購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714789",
+    "name": "穩懋富邦67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714795",
+    "name": "穩懋台新63購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714796",
+    "name": "穩懋台新63購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714812",
+    "name": "穩懋凱基65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714836",
+    "name": "穩懋永豐66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714882",
+    "name": "穩懋統一69購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714891",
+    "name": "穩懋群益63購09",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714929",
+    "name": "穩懋國票6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714943",
+    "name": "穩懋台新69購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714978",
+    "name": "穩懋凱基63購12",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715040",
+    "name": "穩懋富邦66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715047",
+    "name": "穩懋群益63購11",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715092",
+    "name": "穩懋凱基63購14",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715130",
+    "name": "穩懋國票6C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715196",
+    "name": "穩懋永豐63購09",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715700",
+    "name": "穩懋國票64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715743",
+    "name": "穩懋中信65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715769",
+    "name": "穩懋永豐64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715770",
+    "name": "穩懋永豐67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715788",
+    "name": "穩懋群益64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715832",
+    "name": "穩懋凱基64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715833",
+    "name": "穩懋凱基6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715848",
+    "name": "穩懋國票69購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715896",
+    "name": "穩懋台新64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715897",
+    "name": "穩懋台新64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715898",
+    "name": "穩懋台新64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715899",
+    "name": "穩懋台新64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715926",
+    "name": "穩懋凱基64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715931",
+    "name": "穩懋中信6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715951",
+    "name": "穩懋永豐65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715973",
+    "name": "穩懋富邦67購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715988",
+    "name": "穩懋統一7A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716030",
+    "name": "穩懋凱基64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716088",
+    "name": "穩懋統一6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716089",
+    "name": "穩懋統一7A購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716120",
+    "name": "穩懋群益64購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716188",
+    "name": "穩懋台新64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716189",
+    "name": "穩懋台新64購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716231",
+    "name": "穩懋群益64購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716256",
+    "name": "穩懋凱基64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716257",
+    "name": "穩懋凱基65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716258",
+    "name": "穩懋凱基66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716259",
+    "name": "穩懋凱基66購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716260",
+    "name": "穩懋凱基71購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716271",
+    "name": "穩懋國票6C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716273",
+    "name": "穩懋中信68購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716288",
+    "name": "穩懋永豐64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716303",
+    "name": "穩懋統一74購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716323",
+    "name": "穩懋富邦65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717659",
+    "name": "穩懋台新64購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717660",
+    "name": "穩懋台新67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717711",
+    "name": "穩懋凱基64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717712",
+    "name": "穩懋凱基64購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717713",
+    "name": "穩懋凱基66購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717714",
+    "name": "穩懋凱基66購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717715",
+    "name": "穩懋凱基68購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717716",
+    "name": "穩懋凱基69購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717725",
+    "name": "穩懋國泰65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717726",
+    "name": "穩懋國泰67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717729",
+    "name": "穩懋統一6A購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717737",
+    "name": "穩懋國票64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717738",
+    "name": "穩懋國票65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717742",
+    "name": "穩懋中信64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717743",
+    "name": "穩懋中信66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717760",
+    "name": "穩懋永豐64購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717761",
+    "name": "穩懋永豐64購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717762",
+    "name": "穩懋永豐64購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717763",
+    "name": "穩懋永豐65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717764",
+    "name": "穩懋永豐6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717782",
+    "name": "穩懋群益68購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717903",
+    "name": "穩懋富邦67購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717918",
+    "name": "穩懋群益64購09",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717919",
+    "name": "穩懋群益66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717988",
+    "name": "穩懋永豐68購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717989",
+    "name": "穩懋永豐69購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717990",
+    "name": "穩懋永豐6A購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718076",
+    "name": "穩懋富邦67購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718154",
+    "name": "穩懋台新65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718155",
+    "name": "穩懋台新66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718173",
+    "name": "穩懋凱基69購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718210",
+    "name": "穩懋群益67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718211",
+    "name": "穩懋群益69購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718224",
+    "name": "穩懋台新65購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718225",
+    "name": "穩懋台新65購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718226",
+    "name": "穩懋台新68購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718246",
+    "name": "穩懋凱基66購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718247",
+    "name": "穩懋凱基69購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718248",
+    "name": "穩懋凱基6B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718289",
+    "name": "穩懋國票66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718290",
+    "name": "穩懋國票66購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718291",
+    "name": "穩懋國票66購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718295",
+    "name": "穩懋中信68購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718296",
+    "name": "穩懋中信68購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718313",
+    "name": "穩懋永豐65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718314",
+    "name": "穩懋永豐65購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718315",
+    "name": "穩懋永豐65購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718316",
+    "name": "穩懋永豐66購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718317",
+    "name": "穩懋永豐66購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718318",
+    "name": "穩懋永豐66購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718327",
+    "name": "穩懋統一7B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718340",
+    "name": "穩懋富邦6B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718359",
+    "name": "穩懋群益67購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718360",
+    "name": "穩懋群益67購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "736444",
+    "name": "穩懋統一61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "72772U",
+    "name": "穩懋群益63售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73040U",
+    "name": "穩懋群益64售02",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73041U",
+    "name": "穩懋國泰64售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73042U",
+    "name": "穩懋凱基63售06",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73043U",
+    "name": "穩懋凱基63售07",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73095U",
+    "name": "穩懋國票65售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73096U",
+    "name": "穩懋國票69售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73121U",
+    "name": "穩懋群益63售08",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73126U",
+    "name": "穩懋凱基63售11",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73127U",
+    "name": "穩懋國票64售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73130U",
+    "name": "穩懋群益63售10",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73146U",
+    "name": "穩懋凱基63售13",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73172U",
+    "name": "穩懋群益64售06",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73175U",
+    "name": "穩懋永豐64售04",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73176U",
+    "name": "穩懋國票64售03",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73177U",
+    "name": "穩懋國票69售03",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73226U",
+    "name": "穩懋凱基64售07",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73230U",
+    "name": "穩懋群益6A售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73250U",
+    "name": "穩懋台新65售07",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73251U",
+    "name": "穩懋台新65售08",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73253U",
+    "name": "穩懋凱基65售05",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73259U",
+    "name": "穩懋群益67售04",
+    "right": "put",
+    "ex": "otc"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-09",
+  "breadth": {
+   "up": 804,
+   "down": 229
+  },
+  "foreign_amt_b": -900.6,
+  "trust_amt_b": 313.1,
+  "tx_night": {
+   "contract": "202611",
+   "o": 41240.0,
+   "h": 42657.0,
+   "l": 40715.0,
+   "c": 42542.0,
+   "chg": 1064.0,
+   "chg_pct": 2.57,
+   "vol": 55081,
+   "title": "2026/11/09"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 40099.0,
+   "h": 42317.0,
+   "l": 39996.0,
+   "c": 41423.0,
+   "chg": 1771.0,
+   "chg_pct": 4.47,
+   "vol": 69882,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -101771,
+   "raw": [
+    99731,
+    817396208,
+    102516,
+    840660318,
+    -2785,
+    -23264109,
+    11571,
+    96008625,
+    113342,
+    940345367,
+    -101771,
+    -844336742
+   ]
+  },
+  "us": {
+   "SOX": {
+    "date": "2026/11/09",
+    "c": 10085.0,
+    "pct": 7.94,
+    "src": "taifex",
+    "label": "費半期",
+    "vol": 226
+   },
+   "NDX": {
+    "date": "2026/11/09",
+    "c": 28098.0,
+    "pct": 3.41,
+    "src": "taifex",
+    "label": "那斯達克100期",
+    "vol": 450
+   },
+   "SPX": {
+    "date": "2026/11/09",
+    "c": 7600.75,
+    "pct": 2.64,
+    "src": "taifex",
+    "label": "標普期",
+    "vol": 88
+   },
+   "DOW": {
+    "date": "2026/11/09",
+    "c": 52655.0,
+    "pct": 1.76,
+    "src": "taifex",
+    "label": "道瓊期",
+    "vol": 91
+   }
+  }
+ }
+}

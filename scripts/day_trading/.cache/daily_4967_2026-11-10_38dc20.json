@@ -1,0 +1,1518 @@
+{
+ "version": 7,
+ "code": "4967",
+ "name": "十銓",
+ "market": "tse",
+ "date": "2026-11-10",
+ "prev_date": "2026-11-09",
+ "group": "記憶體模組控制IC",
+ "peers": [
+  "8299",
+  "3260",
+  "2451",
+  "8271"
+ ],
+ "peers_arg": null,
+ "peer_info": {
+  "8299": {
+   "name": "群聯",
+   "ex": "otc",
+   "y": 1650.0,
+   "prev_chg_pct": 10.000000000000009,
+   "prev_vol": 1167
+  },
+  "3260": {
+   "name": "威剛",
+   "ex": "otc",
+   "y": 305.0,
+   "prev_chg_pct": 1.8363939899832982,
+   "prev_vol": 7938
+  },
+  "2451": {
+   "name": "創見",
+   "ex": "tse",
+   "y": 239.0,
+   "prev_chg_pct": -3.238866396761131,
+   "prev_vol": 6762
+  },
+  "8271": {
+   "name": "宇瞻",
+   "ex": "tse",
+   "y": 170.5,
+   "prev_chg_pct": 2.095808383233533,
+   "prev_vol": 2360
+  }
+ },
+ "tech": {
+  "date": "2026-11-09",
+  "close": 263.0,
+  "open": 275.5,
+  "high": 284.5,
+  "low": 263.0,
+  "vol": 12488,
+  "ma5": 263.8,
+  "ma10": 270.15,
+  "ma20": 264.175,
+  "ma60": 270.10833333333335,
+  "bb_up": 284.39942829847115,
+  "bb_dn": 243.95057170152887,
+  "atr14": 15.107142857142858,
+  "rsi14": 47.70913028417724,
+  "vol_ma5": 7766.2,
+  "vol_ma20": 4168.7,
+  "chg_pct": -1.8656716417910446,
+  "high20": 289.0,
+  "low20": 238.5,
+  "high60": 291.5,
+  "low60": 238.5,
+  "prev_high": 270.0,
+  "prev_low": 238.5,
+  "ret5": -3.8391224862888484,
+  "ret20": -0.7547169811320753,
+  "streak": -1,
+  "atr_pct": 5.744160782183596
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-22",
+   "o": 278.0,
+   "h": 278.5,
+   "l": 272.0,
+   "c": 272.0,
+   "v": 1821,
+   "amt": 500865542.0
+  },
+  {
+   "date": "2026-09-23",
+   "o": 274.0,
+   "h": 277.5,
+   "l": 271.0,
+   "c": 272.0,
+   "v": 1215,
+   "amt": 332369678.0
+  },
+  {
+   "date": "2026-09-24",
+   "o": 271.0,
+   "h": 273.0,
+   "l": 268.0,
+   "c": 272.5,
+   "v": 1081,
+   "amt": 291854576.0
+  },
+  {
+   "date": "2026-09-29",
+   "o": 270.5,
+   "h": 273.0,
+   "l": 270.0,
+   "c": 272.0,
+   "v": 572,
+   "amt": 155692090.0
+  },
+  {
+   "date": "2026-09-30",
+   "o": 275.0,
+   "h": 276.0,
+   "l": 272.5,
+   "c": 275.0,
+   "v": 1312,
+   "amt": 360496011.0
+  },
+  {
+   "date": "2026-10-01",
+   "o": 276.5,
+   "h": 276.5,
+   "l": 271.5,
+   "c": 272.0,
+   "v": 1098,
+   "amt": 299672756.0
+  },
+  {
+   "date": "2026-10-02",
+   "o": 274.5,
+   "h": 276.5,
+   "l": 272.0,
+   "c": 273.0,
+   "v": 1321,
+   "amt": 362392999.0
+  },
+  {
+   "date": "2026-10-05",
+   "o": 273.0,
+   "h": 273.5,
+   "l": 269.0,
+   "c": 269.5,
+   "v": 2556,
+   "amt": 692743757.0
+  },
+  {
+   "date": "2026-10-06",
+   "o": 272.5,
+   "h": 272.5,
+   "l": 266.5,
+   "c": 267.0,
+   "v": 1933,
+   "amt": 517417259.0
+  },
+  {
+   "date": "2026-10-07",
+   "o": 267.5,
+   "h": 268.0,
+   "l": 265.0,
+   "c": 265.0,
+   "v": 1388,
+   "amt": 369141078.0
+  },
+  {
+   "date": "2026-10-08",
+   "o": 270.0,
+   "h": 272.0,
+   "l": 268.0,
+   "c": 269.5,
+   "v": 2190,
+   "amt": 590799426.0
+  },
+  {
+   "date": "2026-10-12",
+   "o": 267.5,
+   "h": 271.5,
+   "l": 267.0,
+   "c": 269.5,
+   "v": 972,
+   "amt": 262415747.0
+  },
+  {
+   "date": "2026-10-13",
+   "o": 267.5,
+   "h": 267.5,
+   "l": 260.5,
+   "c": 263.0,
+   "v": 1793,
+   "amt": 472185292.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 264.5,
+   "h": 269.5,
+   "l": 263.5,
+   "c": 265.0,
+   "v": 1015,
+   "amt": 270336800.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 260.0,
+   "h": 260.0,
+   "l": 252.5,
+   "c": 254.5,
+   "v": 2076,
+   "amt": 532896227.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 256.0,
+   "h": 265.0,
+   "l": 256.0,
+   "c": 259.5,
+   "v": 1312,
+   "amt": 343069075.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 252.0,
+   "h": 254.0,
+   "l": 248.0,
+   "c": 253.5,
+   "v": 1721,
+   "amt": 432072938.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 252.0,
+   "h": 257.0,
+   "l": 248.5,
+   "c": 248.5,
+   "v": 884,
+   "amt": 222649761.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 253.5,
+   "h": 254.5,
+   "l": 248.5,
+   "c": 249.0,
+   "v": 620,
+   "amt": 156016775.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 252.0,
+   "h": 252.0,
+   "l": 248.5,
+   "c": 250.0,
+   "v": 866,
+   "amt": 216845097.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 255.5,
+   "h": 265.5,
+   "l": 254.0,
+   "c": 264.0,
+   "v": 3208,
+   "amt": 837527631.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 268.0,
+   "h": 281.0,
+   "l": 266.5,
+   "c": 279.5,
+   "v": 6348,
+   "amt": 1743697009.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 287.5,
+   "h": 289.0,
+   "l": 273.5,
+   "c": 286.5,
+   "v": 12014,
+   "amt": 3397335650.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 281.0,
+   "h": 281.0,
+   "l": 272.5,
+   "c": 279.0,
+   "v": 6044,
+   "amt": 1673536054.0
+  },
+  {
+   "date": "2026-11-02",
+   "o": 273.5,
+   "h": 277.0,
+   "l": 268.0,
+   "c": 273.5,
+   "v": 3480,
+   "amt": 947367162.0
+  },
+  {
+   "date": "2026-11-03",
+   "o": 270.0,
+   "h": 275.5,
+   "l": 260.0,
+   "c": 260.5,
+   "v": 4830,
+   "amt": 1296818605.0
+  },
+  {
+   "date": "2026-11-04",
+   "o": 267.0,
+   "h": 269.0,
+   "l": 251.5,
+   "c": 266.0,
+   "v": 4037,
+   "amt": 1055093181.0
+  },
+  {
+   "date": "2026-11-05",
+   "o": 260.0,
+   "h": 276.0,
+   "l": 253.0,
+   "c": 261.5,
+   "v": 5656,
+   "amt": 1502445566.0
+  },
+  {
+   "date": "2026-11-06",
+   "o": 239.0,
+   "h": 270.0,
+   "l": 238.5,
+   "c": 268.0,
+   "v": 11820,
+   "amt": 3024431948.0
+  },
+  {
+   "date": "2026-11-09",
+   "o": 275.5,
+   "h": 284.5,
+   "l": 263.0,
+   "c": 263.0,
+   "v": 12488,
+   "amt": 3436183757.0
+  }
+ ],
+ "limit_up": 289.0,
+ "limit_down": 237.0,
+ "insti": {
+  "2026-11-09": {
+   "foreign": -1088,
+   "trust": -7,
+   "dealer": -27,
+   "total": -1122
+  },
+  "2026-11-06": {
+   "foreign": -75,
+   "trust": 0,
+   "dealer": -1,
+   "total": -75
+  },
+  "2026-11-05": {
+   "foreign": 158,
+   "trust": -2,
+   "dealer": 74,
+   "total": 231
+  }
+ },
+ "insti_sum": {
+  "foreign": -1005,
+  "trust": -9,
+  "dealer": 46,
+  "total": -966
+ },
+ "weak_screen": {
+  "close": 263.0,
+  "r10": 5.2,
+  "idx_r10": -9.51,
+  "ma60": 270.11,
+  "idx": 41661.7,
+  "idx_ma20": 45726.72,
+  "mkt_weak": true,
+  "foreign": -1088,
+  "trust": -7,
+  "under": false,
+  "drop10": false,
+  "below_ma": true,
+  "px100": true,
+  "sell": true,
+  "n_ok": 3,
+  "hit": false
+ },
+ "margin": {
+  "fin_prev": 7986,
+  "fin_now": 8139,
+  "fin_chg": 153,
+  "short_prev": 2738,
+  "short_now": 2833,
+  "short_chg": 95,
+  "fin_limit": 24641
+ },
+ "sbl": {
+  "sbl_sell": 5,
+  "sbl_return": 4,
+  "sbl_bal": 7020
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": -61,
+   "daytrade_buy": 221,
+   "foreign_net": -683,
+   "top5_buy": 717,
+   "top5_sell": -1346,
+   "daytrade_names": [
+    "凱基-台北",
+    "富邦-建國"
+   ],
+   "top_buyers": [
+    {
+     "broker": "凱基-台北",
+     "buy": 756,
+     "sell": 535,
+     "net": 221,
+     "pct": 1.77
+    },
+    {
+     "broker": "新光",
+     "buy": 254,
+     "sell": 92,
+     "net": 162,
+     "pct": 1.3
+    },
+    {
+     "broker": "美好-富順",
+     "buy": 151,
+     "sell": 19,
+     "net": 132,
+     "pct": 1.06
+    },
+    {
+     "broker": "中國信託-三重",
+     "buy": 107,
+     "sell": 5,
+     "net": 102,
+     "pct": 0.82
+    },
+    {
+     "broker": "元大-南京",
+     "buy": 359,
+     "sell": 259,
+     "net": 100,
+     "pct": 0.8
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "永豐金證券",
+     "buy": 90,
+     "sell": 695,
+     "net": -605,
+     "pct": 4.84
+    },
+    {
+     "broker": "富邦-建國",
+     "buy": 23,
+     "sell": 305,
+     "net": -282,
+     "pct": 2.26
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 203,
+     "sell": 417,
+     "net": -214,
+     "pct": 1.71
+    },
+    {
+     "broker": "美林",
+     "buy": 58,
+     "sell": 195,
+     "net": -137,
+     "pct": 1.1
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 223,
+     "sell": 331,
+     "net": -108,
+     "pct": 0.86
+    }
+   ],
+   "daytrade_buy_pct": 1.7696989109545165,
+   "foreign_net_pct": -5.469250480461243,
+   "top5_buy_pct": 5.741511851377322,
+   "top5_sell_pct": 10.778347213324793
+  },
+  "day_date": "2026/11/09",
+  "range4": {
+   "daytrade_net": -279,
+   "daytrade_buy": 0,
+   "foreign_net": -993,
+   "top5_buy": 845,
+   "top5_sell": -2389,
+   "daytrade_names": [
+    "富邦-建國"
+   ],
+   "top_buyers": [
+    {
+     "broker": "國票-北高雄",
+     "buy": 350,
+     "sell": 56,
+     "net": 294,
+     "pct": 0.86
+    },
+    {
+     "broker": "新光",
+     "buy": 523,
+     "sell": 347,
+     "net": 176,
+     "pct": 0.52
+    },
+    {
+     "broker": "美好-富順",
+     "buy": 382,
+     "sell": 246,
+     "net": 136,
+     "pct": 0.4
+    },
+    {
+     "broker": "元大-鹿港",
+     "buy": 147,
+     "sell": 13,
+     "net": 134,
+     "pct": 0.39
+    },
+    {
+     "broker": "中國信託-三重",
+     "buy": 129,
+     "sell": 24,
+     "net": 105,
+     "pct": 0.31
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "美商高盛",
+     "buy": 1092,
+     "sell": 1929,
+     "net": -837,
+     "pct": 2.46
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 251,
+     "sell": 865,
+     "net": -614,
+     "pct": 1.81
+    },
+    {
+     "broker": "兆豐-大同",
+     "buy": 4,
+     "sell": 361,
+     "net": -357,
+     "pct": 1.05
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 911,
+     "sell": 1213,
+     "net": -302,
+     "pct": 0.89
+    },
+    {
+     "broker": "富邦-建國",
+     "buy": 42,
+     "sell": 321,
+     "net": -279,
+     "pct": 0.82
+    }
+   ],
+   "daytrade_buy_pct": 0.0,
+   "foreign_net_pct": -2.9205023381665245,
+   "top5_buy_pct": 2.4852210229110905,
+   "top5_sell_pct": 7.026263933413723
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "第一金-台南",
+    "count": 5,
+    "cum_net": -288,
+    "buy_days": 2,
+    "sell_days": 3,
+    "last_date": "2026-10-19",
+    "last_net": -288,
+    "scored": 5,
+    "win_rate": 1.0,
+    "avg_capture_pct": 2.194376456608449,
+    "cum_net_pct": -0.34543142946242233,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "凱基-高雄",
+    "count": 5,
+    "cum_net": 14,
+    "buy_days": 3,
+    "sell_days": 2,
+    "last_date": "2026-10-20",
+    "last_net": 10,
+    "scored": 5,
+    "win_rate": 1.0,
+    "avg_capture_pct": 1.8401405877463595,
+    "cum_net_pct": 0.016791805598867754,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "統一",
+    "count": 6,
+    "cum_net": 76,
+    "buy_days": 4,
+    "sell_days": 2,
+    "last_date": "2026-11-06",
+    "last_net": 40,
+    "scored": 6,
+    "win_rate": 0.8333333333333334,
+    "avg_capture_pct": 2.1841285478022794,
+    "cum_net_pct": 0.09115551610813923,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "國泰-台中",
+    "count": 6,
+    "cum_net": -10,
+    "buy_days": 3,
+    "sell_days": 3,
+    "last_date": "2026-10-21",
+    "last_net": 7,
+    "scored": 6,
+    "win_rate": 0.8333333333333334,
+    "avg_capture_pct": 1.3084519684126217,
+    "cum_net_pct": -0.011994146856334108,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "康和",
+    "count": 4,
+    "cum_net": 101,
+    "buy_days": 3,
+    "sell_days": 1,
+    "last_date": "2026-11-05",
+    "last_net": 49,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 1.9019832437165707,
+    "cum_net_pct": 0.12114088324897451,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "國票-北高雄",
+    "count": 7,
+    "cum_net": 1562,
+    "buy_days": 7,
+    "sell_days": 0,
+    "last_date": "2026-11-05",
+    "last_net": 301,
+    "scored": 7,
+    "win_rate": 0.7142857142857143,
+    "avg_capture_pct": 1.7273967083080264,
+    "cum_net_pct": 1.873485738959388,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "玉山-新莊",
+    "count": 4,
+    "cum_net": -7,
+    "buy_days": 2,
+    "sell_days": 2,
+    "last_date": "2026-11-05",
+    "last_net": -15,
+    "scored": 4,
+    "win_rate": 0.25,
+    "avg_capture_pct": -0.9942474492244864,
+    "cum_net_pct": -0.008395902799433877,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "富邦-仁愛",
+    "count": 4,
+    "cum_net": 88,
+    "buy_days": 4,
+    "sell_days": 0,
+    "last_date": "2026-11-04",
+    "last_net": 46,
+    "scored": 4,
+    "win_rate": 0.25,
+    "avg_capture_pct": -1.443496743261441,
+    "cum_net_pct": 0.10554849233574015,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "元大-大同",
+    "count": 4,
+    "cum_net": 48,
+    "buy_days": 3,
+    "sell_days": 1,
+    "last_date": "2026-11-06",
+    "last_net": 55,
+    "scored": 4,
+    "win_rate": 0.25,
+    "avg_capture_pct": -1.6452026276724205,
+    "cum_net_pct": 0.057571904910403725,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "國票-安和",
+    "count": 5,
+    "cum_net": -157,
+    "buy_days": 2,
+    "sell_days": 3,
+    "last_date": "2026-10-29",
+    "last_net": -159,
+    "scored": 5,
+    "win_rate": 0.2,
+    "avg_capture_pct": -0.8139111839653858,
+    "cum_net_pct": -0.1883081056444455,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": 0,
+  "winners_last_net_pct": 0.0,
+  "winners_inventory": 1344,
+  "winners_inventory_pct": 1.6120133374913044,
+  "losers_last_net": -605,
+  "losers_last_net_pct": -4.844650864830237,
+  "n_scored": 238
+ },
+ "warrants": {
+  "call_vol": 22307,
+  "put_vol": 0,
+  "call_amt": 17417910.0,
+  "put_amt": 0,
+  "n_call": 114,
+  "n_put": 0,
+  "n_call_active": 84,
+  "n_put_active": 0,
+  "call_share": 1.0,
+  "amt_share": 1.0,
+  "hedge_net": 6,
+  "hedge_pct": 0.04804612427930814,
+  "call_amt_5d": 11577012.0,
+  "call_surge": 1.5045255200564704,
+  "list": [
+   {
+    "code": "034592",
+    "name": "十銓國票65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034682",
+    "name": "十銓台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035398",
+    "name": "十銓凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035399",
+    "name": "十銓凱基65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035400",
+    "name": "十銓凱基67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035466",
+    "name": "十銓群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035467",
+    "name": "十銓群益68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035700",
+    "name": "十銓群益68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035945",
+    "name": "十銓富邦66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037492",
+    "name": "十銓國泰66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037499",
+    "name": "十銓國泰66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037820",
+    "name": "十銓元大65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037821",
+    "name": "十銓元大65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037875",
+    "name": "十銓凱基65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038176",
+    "name": "十銓國票65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038343",
+    "name": "十銓元大65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038344",
+    "name": "十銓元大66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038485",
+    "name": "十銓群益6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039370",
+    "name": "十銓台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064542",
+    "name": "十銓永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064543",
+    "name": "十銓永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064679",
+    "name": "十銓永豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065104",
+    "name": "十銓國票5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066930",
+    "name": "十銓富邦62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066931",
+    "name": "十銓富邦62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066953",
+    "name": "十銓永豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066954",
+    "name": "十銓永豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066978",
+    "name": "十銓凱基5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066979",
+    "name": "十銓凱基5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067003",
+    "name": "十銓群益5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067037",
+    "name": "十銓元大5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067038",
+    "name": "十銓元大63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067122",
+    "name": "十銓元大5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067173",
+    "name": "十銓群益5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067197",
+    "name": "十銓國泰5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067225",
+    "name": "十銓富邦61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067291",
+    "name": "十銓國票5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067434",
+    "name": "十銓兆豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067534",
+    "name": "十銓元大5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068074",
+    "name": "十銓統一65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068076",
+    "name": "十銓統一65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068165",
+    "name": "十銓元大5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068295",
+    "name": "十銓統一5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068296",
+    "name": "十銓統一64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068297",
+    "name": "十銓統一65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068298",
+    "name": "十銓統一65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068299",
+    "name": "十銓統一75購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068585",
+    "name": "十銓元大5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068623",
+    "name": "十銓富邦61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068624",
+    "name": "十銓富邦61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068765",
+    "name": "十銓凱基5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068884",
+    "name": "十銓群益5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069046",
+    "name": "十銓元大5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069107",
+    "name": "十銓永豐65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069688",
+    "name": "十銓富邦66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070184",
+    "name": "十銓台新5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070199",
+    "name": "十銓富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070265",
+    "name": "十銓凱基5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070405",
+    "name": "十銓凱基5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070430",
+    "name": "十銓群益66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070506",
+    "name": "十銓元大5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070539",
+    "name": "十銓台新5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070540",
+    "name": "十銓台新61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070541",
+    "name": "十銓台新63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070583",
+    "name": "十銓群益5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070602",
+    "name": "十銓永豐5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070808",
+    "name": "十銓永豐5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070830",
+    "name": "十銓凱基5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070990",
+    "name": "十銓元大5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071086",
+    "name": "十銓凱基5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071126",
+    "name": "十銓永豐64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071684",
+    "name": "十銓中信5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072011",
+    "name": "十銓國泰61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074901",
+    "name": "十銓永豐67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075046",
+    "name": "十銓國票61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075151",
+    "name": "十銓凱基61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075461",
+    "name": "十銓群益61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076609",
+    "name": "十銓富邦62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076610",
+    "name": "十銓富邦63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077979",
+    "name": "十銓國票61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078072",
+    "name": "十銓凱基62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078304",
+    "name": "十銓元大64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079116",
+    "name": "十銓群益62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079312",
+    "name": "十銓國票63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079313",
+    "name": "十銓國票64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079452",
+    "name": "十銓凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079673",
+    "name": "十銓群益62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080002",
+    "name": "十銓凱基63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080246",
+    "name": "十銓群益62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080487",
+    "name": "十銓凱基63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081820",
+    "name": "十銓元大62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081870",
+    "name": "十銓凱基63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082072",
+    "name": "十銓元大62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082073",
+    "name": "十銓元大68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082211",
+    "name": "十銓群益62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082318",
+    "name": "十銓永豐66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082385",
+    "name": "十銓元大65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082386",
+    "name": "十銓元大68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082468",
+    "name": "十銓凱基65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082809",
+    "name": "十銓國泰63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083019",
+    "name": "十銓元大65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083020",
+    "name": "十銓元大67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083161",
+    "name": "十銓凱基68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083593",
+    "name": "十銓群益63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083734",
+    "name": "十銓元大63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083842",
+    "name": "十銓凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083878",
+    "name": "十銓富邦65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084138",
+    "name": "十銓群益64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084498",
+    "name": "十銓元大63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084698",
+    "name": "十銓元大63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084755",
+    "name": "十銓凱基63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085348",
+    "name": "十銓富邦65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086838",
+    "name": "十銓富邦65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087690",
+    "name": "十銓元大65購03",
+    "right": "call",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-09",
+  "breadth": {
+   "up": 804,
+   "down": 229
+  },
+  "foreign_amt_b": -900.6,
+  "trust_amt_b": 313.1,
+  "tx_night": {
+   "contract": "202611",
+   "o": 41240.0,
+   "h": 42657.0,
+   "l": 40715.0,
+   "c": 42542.0,
+   "chg": 1064.0,
+   "chg_pct": 2.57,
+   "vol": 55081,
+   "title": "2026/11/09"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 40099.0,
+   "h": 42317.0,
+   "l": 39996.0,
+   "c": 41423.0,
+   "chg": 1771.0,
+   "chg_pct": 4.47,
+   "vol": 69882,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -101771,
+   "raw": [
+    99731,
+    817396208,
+    102516,
+    840660318,
+    -2785,
+    -23264109,
+    11571,
+    96008625,
+    113342,
+    940345367,
+    -101771,
+    -844336742
+   ]
+  },
+  "us": {
+   "SOX": {
+    "date": "2026-11-09",
+    "c": 10033.9326171875,
+    "pct": 6.854797446154248
+   }
+  }
+ }
+}

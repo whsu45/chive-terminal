@@ -1,0 +1,1617 @@
+{
+ "version": 7,
+ "code": "2351",
+ "name": "順德",
+ "market": "tse",
+ "date": "2026-11-10",
+ "prev_date": "2026-11-09",
+ "group": "導線架",
+ "peers": [
+  "5285",
+  "8070",
+  "2486"
+ ],
+ "peers_arg": null,
+ "peer_info": {
+  "5285": {
+   "name": "界霖",
+   "ex": "tse",
+   "y": 72.3,
+   "prev_chg_pct": 8.885542168674698,
+   "prev_vol": 874
+  },
+  "8070": {
+   "name": "長華*",
+   "ex": "tse",
+   "y": 46.7,
+   "prev_chg_pct": 6.2571103526734895,
+   "prev_vol": 3117
+  },
+  "2486": {
+   "name": "一詮",
+   "ex": "tse",
+   "y": 159.5,
+   "prev_chg_pct": 10.000000000000009,
+   "prev_vol": 3190
+  }
+ },
+ "tech": {
+  "date": "2026-11-09",
+  "close": 137.0,
+  "open": 132.5,
+  "high": 141.0,
+  "low": 132.0,
+  "vol": 4570,
+  "ma5": 148.9,
+  "ma10": 170.85,
+  "ma20": 188.175,
+  "ma60": 206.90833333333333,
+  "bb_up": 238.08819965700457,
+  "bb_dn": 138.26180034299546,
+  "atr14": 12.321428571428571,
+  "rsi14": 23.686124694240107,
+  "vol_ma5": 3365.6,
+  "vol_ma20": 2425.35,
+  "chg_pct": 2.621722846441954,
+  "high20": 221.5,
+  "low20": 132.0,
+  "high60": 257.0,
+  "low60": 132.0,
+  "prev_high": 140.0,
+  "prev_low": 133.5,
+  "ret5": -23.676880222841223,
+  "ret20": -37.15596330275229,
+  "streak": 1,
+  "atr_pct": 8.993743482794578
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-22",
+   "o": 238.5,
+   "h": 243.5,
+   "l": 233.0,
+   "c": 238.5,
+   "v": 3789,
+   "amt": 904176766.0
+  },
+  {
+   "date": "2026-09-23",
+   "o": 240.0,
+   "h": 240.0,
+   "l": 225.0,
+   "c": 226.0,
+   "v": 6000,
+   "amt": 1374170185.0
+  },
+  {
+   "date": "2026-09-24",
+   "o": 224.0,
+   "h": 227.0,
+   "l": 217.0,
+   "c": 219.5,
+   "v": 5399,
+   "amt": 1185185881.0
+  },
+  {
+   "date": "2026-09-29",
+   "o": 221.0,
+   "h": 221.0,
+   "l": 214.0,
+   "c": 215.5,
+   "v": 3820,
+   "amt": 827486048.0
+  },
+  {
+   "date": "2026-09-30",
+   "o": 217.0,
+   "h": 217.0,
+   "l": 204.0,
+   "c": 209.0,
+   "v": 6834,
+   "amt": 1432735415.0
+  },
+  {
+   "date": "2026-10-01",
+   "o": 210.0,
+   "h": 214.5,
+   "l": 207.0,
+   "c": 212.5,
+   "v": 3449,
+   "amt": 727988219.0
+  },
+  {
+   "date": "2026-10-02",
+   "o": 213.0,
+   "h": 216.0,
+   "l": 210.5,
+   "c": 211.5,
+   "v": 3165,
+   "amt": 673760846.0
+  },
+  {
+   "date": "2026-10-05",
+   "o": 213.5,
+   "h": 226.5,
+   "l": 212.5,
+   "c": 222.0,
+   "v": 6037,
+   "amt": 1341609003.0
+  },
+  {
+   "date": "2026-10-06",
+   "o": 226.0,
+   "h": 226.0,
+   "l": 216.0,
+   "c": 218.5,
+   "v": 3592,
+   "amt": 787190034.0
+  },
+  {
+   "date": "2026-10-07",
+   "o": 218.5,
+   "h": 226.0,
+   "l": 218.0,
+   "c": 218.0,
+   "v": 3476,
+   "amt": 767362896.0
+  },
+  {
+   "date": "2026-10-08",
+   "o": 217.0,
+   "h": 221.5,
+   "l": 216.0,
+   "c": 216.0,
+   "v": 2299,
+   "amt": 501560926.0
+  },
+  {
+   "date": "2026-10-12",
+   "o": 212.5,
+   "h": 216.5,
+   "l": 208.5,
+   "c": 212.5,
+   "v": 2423,
+   "amt": 513611435.0
+  },
+  {
+   "date": "2026-10-13",
+   "o": 209.0,
+   "h": 214.0,
+   "l": 205.0,
+   "c": 209.0,
+   "v": 2943,
+   "amt": 615288816.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 211.5,
+   "h": 211.5,
+   "l": 205.5,
+   "c": 207.0,
+   "v": 1695,
+   "amt": 352898426.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 200.0,
+   "h": 209.5,
+   "l": 198.0,
+   "c": 205.0,
+   "v": 4015,
+   "amt": 824426963.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 206.5,
+   "h": 212.0,
+   "l": 205.0,
+   "c": 206.5,
+   "v": 2525,
+   "amt": 525962555.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 201.5,
+   "h": 203.5,
+   "l": 197.0,
+   "c": 201.5,
+   "v": 2330,
+   "amt": 467656926.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 202.0,
+   "h": 209.0,
+   "l": 193.5,
+   "c": 195.5,
+   "v": 1830,
+   "amt": 367380222.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 203.5,
+   "h": 209.5,
+   "l": 202.0,
+   "c": 206.0,
+   "v": 1753,
+   "amt": 361019120.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 206.5,
+   "h": 207.0,
+   "l": 196.0,
+   "c": 196.0,
+   "v": 1612,
+   "amt": 322726120.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 199.5,
+   "h": 200.5,
+   "l": 193.5,
+   "c": 198.5,
+   "v": 1800,
+   "amt": 355934385.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 203.0,
+   "h": 207.0,
+   "l": 201.0,
+   "c": 205.5,
+   "v": 903,
+   "amt": 184103508.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 203.0,
+   "h": 204.0,
+   "l": 194.5,
+   "c": 197.0,
+   "v": 1428,
+   "amt": 282098615.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 188.0,
+   "h": 188.5,
+   "l": 178.0,
+   "c": 183.5,
+   "v": 1856,
+   "amt": 338237744.0
+  },
+  {
+   "date": "2026-11-02",
+   "o": 180.0,
+   "h": 183.0,
+   "l": 177.0,
+   "c": 179.5,
+   "v": 2267,
+   "amt": 407631201.0
+  },
+  {
+   "date": "2026-11-03",
+   "o": 177.0,
+   "h": 177.0,
+   "l": 162.0,
+   "c": 162.0,
+   "v": 2852,
+   "amt": 475876512.0
+  },
+  {
+   "date": "2026-11-04",
+   "o": 165.0,
+   "h": 166.5,
+   "l": 153.0,
+   "c": 164.0,
+   "v": 3047,
+   "amt": 491027168.0
+  },
+  {
+   "date": "2026-11-05",
+   "o": 159.5,
+   "h": 161.0,
+   "l": 148.0,
+   "c": 148.0,
+   "v": 3267,
+   "amt": 492939021.0
+  },
+  {
+   "date": "2026-11-06",
+   "o": 133.5,
+   "h": 140.0,
+   "l": 133.5,
+   "c": 133.5,
+   "v": 3092,
+   "amt": 415632935.0
+  },
+  {
+   "date": "2026-11-09",
+   "o": 132.5,
+   "h": 141.0,
+   "l": 132.0,
+   "c": 137.0,
+   "v": 4570,
+   "amt": 624239718.0
+  }
+ ],
+ "limit_up": 150.5,
+ "limit_down": 123.5,
+ "insti": {
+  "2026-11-09": {
+   "foreign": -557,
+   "trust": -595,
+   "dealer": 39,
+   "total": -1113
+  },
+  "2026-11-06": {
+   "foreign": -205,
+   "trust": -100,
+   "dealer": -19,
+   "total": -323
+  },
+  "2026-11-05": {
+   "foreign": 687,
+   "trust": -161,
+   "dealer": -10,
+   "total": 517
+  }
+ },
+ "insti_sum": {
+  "foreign": -75,
+  "trust": -856,
+  "dealer": 10,
+  "total": -919
+ },
+ "weak_screen": {
+  "close": 137.0,
+  "r10": -30.1,
+  "idx_r10": -9.51,
+  "ma60": 206.91,
+  "idx": 41661.7,
+  "idx_ma20": 45726.72,
+  "mkt_weak": true,
+  "foreign": -557,
+  "trust": -595,
+  "under": true,
+  "drop10": true,
+  "below_ma": true,
+  "px100": true,
+  "sell": true,
+  "n_ok": 5,
+  "hit": true
+ },
+ "margin": {
+  "fin_prev": 8387,
+  "fin_now": 8684,
+  "fin_chg": 297,
+  "short_prev": 160,
+  "short_now": 129,
+  "short_chg": -31,
+  "fin_limit": 48433
+ },
+ "sbl": {
+  "sbl_sell": 92,
+  "sbl_return": 8,
+  "sbl_bal": 1869
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": 116,
+   "daytrade_buy": 116,
+   "foreign_net": -1225,
+   "top5_buy": 587,
+   "top5_sell": -1390,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "統一",
+     "buy": 238,
+     "sell": 23,
+     "net": 215,
+     "pct": 4.7
+    },
+    {
+     "broker": "凱基-台北",
+     "buy": 465,
+     "sell": 349,
+     "net": 116,
+     "pct": 2.54
+    },
+    {
+     "broker": "富邦-永和",
+     "buy": 149,
+     "sell": 35,
+     "net": 114,
+     "pct": 2.49
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 190,
+     "sell": 106,
+     "net": 84,
+     "pct": 1.84
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 340,
+     "sell": 282,
+     "net": 58,
+     "pct": 1.27
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "美商高盛",
+     "buy": 0,
+     "sell": 683,
+     "net": -683,
+     "pct": 14.95
+    },
+    {
+     "broker": "美林",
+     "buy": 45,
+     "sell": 436,
+     "net": -391,
+     "pct": 8.56
+    },
+    {
+     "broker": "花旗環球",
+     "buy": 10,
+     "sell": 198,
+     "net": -188,
+     "pct": 4.11
+    },
+    {
+     "broker": "元大-天母",
+     "buy": 2,
+     "sell": 70,
+     "net": -68,
+     "pct": 1.49
+    },
+    {
+     "broker": "元大證券",
+     "buy": 303,
+     "sell": 363,
+     "net": -60,
+     "pct": 1.31
+    }
+   ],
+   "daytrade_buy_pct": 2.538293216630197,
+   "foreign_net_pct": -26.805251641137858,
+   "top5_buy_pct": 12.844638949671772,
+   "top5_sell_pct": 30.41575492341357
+  },
+  "day_date": "2026/11/09",
+  "range4": {
+   "daytrade_net": 993,
+   "daytrade_buy": 993,
+   "foreign_net": -1165,
+   "top5_buy": 1689,
+   "top5_sell": -3001,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "凱基-台北",
+     "buy": 1934,
+     "sell": 941,
+     "net": 993,
+     "pct": 7.1
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 520,
+     "sell": 316,
+     "net": 204,
+     "pct": 1.46
+    },
+    {
+     "broker": "香港上海匯豐",
+     "buy": 171,
+     "sell": 0,
+     "net": 171,
+     "pct": 1.22
+    },
+    {
+     "broker": "富邦-南屯",
+     "buy": 169,
+     "sell": 6,
+     "net": 163,
+     "pct": 1.17
+    },
+    {
+     "broker": "群益金鼎-彰化",
+     "buy": 181,
+     "sell": 23,
+     "net": 158,
+     "pct": 1.13
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "國票-安和",
+     "buy": 272,
+     "sell": 1105,
+     "net": -833,
+     "pct": 5.96
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 28,
+     "sell": 783,
+     "net": -755,
+     "pct": 5.4
+    },
+    {
+     "broker": "統一",
+     "buy": 299,
+     "sell": 967,
+     "net": -668,
+     "pct": 4.78
+    },
+    {
+     "broker": "美林",
+     "buy": 215,
+     "sell": 772,
+     "net": -557,
+     "pct": 3.99
+    },
+    {
+     "broker": "花旗環球",
+     "buy": 131,
+     "sell": 319,
+     "net": -188,
+     "pct": 1.35
+    }
+   ],
+   "daytrade_buy_pct": 7.105037206639954,
+   "foreign_net_pct": -8.33571837435604,
+   "top5_buy_pct": 12.085002862049226,
+   "top5_sell_pct": 21.472524327418434
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "元大-敦化",
+    "count": 9,
+    "cum_net": -381,
+    "buy_days": 5,
+    "sell_days": 4,
+    "last_date": "2026-11-06",
+    "last_net": 33,
+    "scored": 9,
+    "win_rate": 0.8888888888888888,
+    "avg_capture_pct": 3.451075895846678,
+    "cum_net_pct": -0.7854536458655451,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "富邦-敦南",
+    "count": 7,
+    "cum_net": 14,
+    "buy_days": 4,
+    "sell_days": 3,
+    "last_date": "2026-11-09",
+    "last_net": 37,
+    "scored": 6,
+    "win_rate": 0.8333333333333334,
+    "avg_capture_pct": 3.392650387167491,
+    "cum_net_pct": 0.02886181375883893,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "台新-台北",
+    "count": 5,
+    "cum_net": -61,
+    "buy_days": 1,
+    "sell_days": 4,
+    "last_date": "2026-11-05",
+    "last_net": -11,
+    "scored": 5,
+    "win_rate": 0.8,
+    "avg_capture_pct": 3.4592457218001718,
+    "cum_net_pct": -0.12575504566351248,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "香港上海匯豐",
+    "count": 5,
+    "cum_net": 264,
+    "buy_days": 5,
+    "sell_days": 0,
+    "last_date": "2026-11-06",
+    "last_net": 171,
+    "scored": 5,
+    "win_rate": 0.8,
+    "avg_capture_pct": 1.7234660117608436,
+    "cum_net_pct": 0.544251345166677,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常勝"
+   },
+   {
+    "broker": "富邦-員林",
+    "count": 5,
+    "cum_net": -31,
+    "buy_days": 2,
+    "sell_days": 3,
+    "last_date": "2026-10-30",
+    "last_net": -15,
+    "scored": 5,
+    "win_rate": 0.8,
+    "avg_capture_pct": 1.192748152778469,
+    "cum_net_pct": -0.06390830189457192,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "凱基-信義",
+    "count": 4,
+    "cum_net": -81,
+    "buy_days": 0,
+    "sell_days": 4,
+    "last_date": "2026-10-30",
+    "last_net": -13,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 1.678908259815462,
+    "cum_net_pct": -0.16698620817613952,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "花旗環球",
+    "count": 16,
+    "cum_net": 435,
+    "buy_days": 13,
+    "sell_days": 3,
+    "last_date": "2026-11-09",
+    "last_net": -188,
+    "scored": 15,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -1.5047465277425138,
+    "cum_net_pct": 0.8967777846496381,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常敗"
+   },
+   {
+    "broker": "台灣摩根士丹利",
+    "count": 19,
+    "cum_net": -755,
+    "buy_days": 10,
+    "sell_days": 9,
+    "last_date": "2026-11-09",
+    "last_net": 58,
+    "scored": 18,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -1.6307245682157117,
+    "cum_net_pct": -1.556476384851671,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常敗"
+   },
+   {
+    "broker": "凱基-台北",
+    "count": 20,
+    "cum_net": 1968,
+    "buy_days": 16,
+    "sell_days": 4,
+    "last_date": "2026-11-09",
+    "last_net": 116,
+    "scored": 19,
+    "win_rate": 0.3157894736842105,
+    "avg_capture_pct": -2.21031583902311,
+    "cum_net_pct": 4.057146391242501,
+    "daytrade": true,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "群益金鼎-彰化",
+    "count": 14,
+    "cum_net": 525,
+    "buy_days": 14,
+    "sell_days": 0,
+    "last_date": "2026-11-06",
+    "last_net": 82,
+    "scored": 14,
+    "win_rate": 0.2857142857142857,
+    "avg_capture_pct": -2.7420784645732503,
+    "cum_net_pct": 1.08231801595646,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": 243,
+  "winners_last_net_pct": 5.317286652078774,
+  "winners_inventory": -2461,
+  "winners_inventory_pct": -5.073494547178758,
+  "losers_last_net": -48,
+  "losers_last_net_pct": -1.0503282275711159,
+  "n_scored": 192
+ },
+ "warrants": {
+  "call_vol": 4835,
+  "put_vol": 0,
+  "call_amt": 1929050.0,
+  "put_amt": 0.0,
+  "n_call": 131,
+  "n_put": 1,
+  "n_call_active": 37,
+  "n_put_active": 0,
+  "call_share": 1.0,
+  "amt_share": 1.0,
+  "hedge_net": 47,
+  "hedge_pct": 1.0284463894967177,
+  "call_amt_5d": 2686028.0,
+  "call_surge": 0.7181794084052735,
+  "list": [
+   {
+    "code": "030832",
+    "name": "順德群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031201",
+    "name": "順德凱基66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031654",
+    "name": "順德富邦67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032881",
+    "name": "順德國票65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033368",
+    "name": "順德凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034574",
+    "name": "順德國票65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035275",
+    "name": "順德富邦64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035663",
+    "name": "順德群益64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036145",
+    "name": "順德凱基64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036310",
+    "name": "順德群益64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036853",
+    "name": "順德統一5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037222",
+    "name": "順德國泰65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038439",
+    "name": "順德群益65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038583",
+    "name": "順德國票66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039159",
+    "name": "順德群益65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055663",
+    "name": "順德統一62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061477",
+    "name": "順德國票61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062293",
+    "name": "順德元大61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062915",
+    "name": "順德統一64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063353",
+    "name": "順德永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063449",
+    "name": "順德統一64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063450",
+    "name": "順德統一64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063573",
+    "name": "順德統一63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063574",
+    "name": "順德統一74購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065005",
+    "name": "順德富邦5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065219",
+    "name": "順德國票5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066826",
+    "name": "順德凱基5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067022",
+    "name": "順德元大5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067243",
+    "name": "順德永豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067591",
+    "name": "順德國票5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068019",
+    "name": "順德統一65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068413",
+    "name": "順德群益5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068447",
+    "name": "順德統一65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068448",
+    "name": "順德統一75購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068681",
+    "name": "順德國票61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068751",
+    "name": "順德凱基5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068787",
+    "name": "順德統一63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068788",
+    "name": "順德統一65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069027",
+    "name": "順德元大5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069274",
+    "name": "順德永豐5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069284",
+    "name": "順德富邦5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069317",
+    "name": "順德凱基5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069355",
+    "name": "順德群益5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069381",
+    "name": "順德元大5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071749",
+    "name": "順德台新5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071750",
+    "name": "順德台新5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071822",
+    "name": "順德凱基5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071887",
+    "name": "順德元大5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072577",
+    "name": "順德永豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072984",
+    "name": "順德國泰61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073004",
+    "name": "順德國票61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073035",
+    "name": "順德凱基5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073036",
+    "name": "順德凱基5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073072",
+    "name": "順德群益5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073171",
+    "name": "順德台新5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073205",
+    "name": "順德凱基5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073240",
+    "name": "順德元大5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073241",
+    "name": "順德元大66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073516",
+    "name": "順德群益62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073523",
+    "name": "順德元大5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073768",
+    "name": "順德永豐61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073866",
+    "name": "順德群益62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073916",
+    "name": "順德元大61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074046",
+    "name": "順德富邦61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074203",
+    "name": "順德元大64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074325",
+    "name": "順德凱基61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074718",
+    "name": "順德永豐61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074775",
+    "name": "順德群益61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074965",
+    "name": "順德統一65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075004",
+    "name": "順德元大66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075135",
+    "name": "順德凱基61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075501",
+    "name": "順德元大61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075801",
+    "name": "順德元大61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075942",
+    "name": "順德凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076690",
+    "name": "順德群益61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076755",
+    "name": "順德富邦61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076907",
+    "name": "順德凱基61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076954",
+    "name": "順德國票66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077077",
+    "name": "順德永豐61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078186",
+    "name": "順德元大62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078499",
+    "name": "順德國票65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078720",
+    "name": "順德凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079528",
+    "name": "順德台新62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079529",
+    "name": "順德台新62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079636",
+    "name": "順德永豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082678",
+    "name": "順德國票67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082749",
+    "name": "順德凱基66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083052",
+    "name": "順德永豐63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083075",
+    "name": "順德富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083103",
+    "name": "順德台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083104",
+    "name": "順德台新65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083146",
+    "name": "順德凱基63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083248",
+    "name": "順德群益63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083355",
+    "name": "順德統一65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083356",
+    "name": "順德統一71購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083389",
+    "name": "順德國票68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083426",
+    "name": "順德元大63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083471",
+    "name": "順德永豐63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083612",
+    "name": "順德台新65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083641",
+    "name": "順德統一69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083714",
+    "name": "順德元大63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083715",
+    "name": "順德元大63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083716",
+    "name": "順德元大63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083717",
+    "name": "順德元大67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083718",
+    "name": "順德元大69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083817",
+    "name": "順德凱基69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083866",
+    "name": "順德富邦63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083895",
+    "name": "順德國票64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085374",
+    "name": "順德永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085417",
+    "name": "順德元大63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085418",
+    "name": "順德元大63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085503",
+    "name": "順德群益64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085604",
+    "name": "順德台新63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085711",
+    "name": "順德元大63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085994",
+    "name": "順德元大63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085995",
+    "name": "順德元大63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086049",
+    "name": "順德群益63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086285",
+    "name": "順德凱基63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086339",
+    "name": "順德富邦63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086662",
+    "name": "順德永豐63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086718",
+    "name": "順德元大63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086719",
+    "name": "順德元大65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086850",
+    "name": "順德台新63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086851",
+    "name": "順德台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086852",
+    "name": "順德台新64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086902",
+    "name": "順德群益63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087048",
+    "name": "順德凱基63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087934",
+    "name": "順德元大64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087935",
+    "name": "順德元大65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087936",
+    "name": "順德元大66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088574",
+    "name": "順德元大63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "04334T",
+    "name": "順德國票63售01",
+    "right": "put",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-09",
+  "breadth": {
+   "up": 804,
+   "down": 229
+  },
+  "foreign_amt_b": -900.6,
+  "trust_amt_b": 313.1,
+  "tx_night": {
+   "contract": "202611",
+   "o": 41240.0,
+   "h": 42657.0,
+   "l": 40715.0,
+   "c": 42542.0,
+   "chg": 1064.0,
+   "chg_pct": 2.57,
+   "vol": 55081,
+   "title": "2026/11/09"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 40099.0,
+   "h": 42317.0,
+   "l": 39996.0,
+   "c": 41423.0,
+   "chg": 1771.0,
+   "chg_pct": 4.47,
+   "vol": 69882,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -101771,
+   "raw": [
+    99731,
+    817396208,
+    102516,
+    840660318,
+    -2785,
+    -23264109,
+    11571,
+    96008625,
+    113342,
+    940345367,
+    -101771,
+    -844336742
+   ]
+  },
+  "us": {
+   "SOX": {
+    "date": "2026-11-09",
+    "c": 10033.9326171875,
+    "pct": 6.854797446154248
+   }
+  }
+ }
+}

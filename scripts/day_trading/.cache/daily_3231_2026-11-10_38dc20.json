@@ -1,0 +1,3033 @@
+{
+ "version": 7,
+ "code": "3231",
+ "name": "緯創",
+ "market": "tse",
+ "date": "2026-11-10",
+ "prev_date": "2026-11-09",
+ "group": "AI伺服器ODM",
+ "peers": [
+  "2382",
+  "2317",
+  "2356",
+  "6669",
+  "2376",
+  "3706"
+ ],
+ "peers_arg": null,
+ "peer_info": {
+  "2382": {
+   "name": "廣達",
+   "ex": "tse",
+   "y": 296.5,
+   "prev_chg_pct": 2.06540447504302,
+   "prev_vol": 20473
+  },
+  "2317": {
+   "name": "鴻海",
+   "ex": "tse",
+   "y": 239.0,
+   "prev_chg_pct": 6.458797327394206,
+   "prev_vol": 50352
+  },
+  "2356": {
+   "name": "英業達",
+   "ex": "tse",
+   "y": 55.6,
+   "prev_chg_pct": 5.703422053231932,
+   "prev_vol": 12452
+  },
+  "6669": {
+   "name": "緯穎",
+   "ex": "tse",
+   "y": 1645.0,
+   "prev_chg_pct": 5.787781350482324,
+   "prev_vol": 4496
+  },
+  "2376": {
+   "name": "技嘉",
+   "ex": "tse",
+   "y": 309.5,
+   "prev_chg_pct": 3.8590604026845554,
+   "prev_vol": 4748
+  },
+  "3706": {
+   "name": "神達",
+   "ex": "tse",
+   "y": 71.7,
+   "prev_chg_pct": 5.441176470588238,
+   "prev_vol": 6709
+  }
+ },
+ "tech": {
+  "date": "2026-11-09",
+  "close": 168.5,
+  "open": 164.0,
+  "high": 174.5,
+  "low": 164.0,
+  "vol": 39866,
+  "ma5": 169.9,
+  "ma10": 178.8,
+  "ma20": 182.625,
+  "ma60": 184.39166666666668,
+  "bb_up": 200.79606215937858,
+  "bb_dn": 164.45393784062142,
+  "atr14": 9.571428571428571,
+  "rsi14": 39.49824217932719,
+  "vol_ma5": 35385.0,
+  "vol_ma20": 39155.3,
+  "chg_pct": 5.312500000000009,
+  "high20": 199.5,
+  "low20": 152.0,
+  "high60": 206.0,
+  "low60": 152.0,
+  "prev_high": 163.0,
+  "prev_low": 152.0,
+  "ret5": -7.162534435261703,
+  "ret20": -8.918918918918916,
+  "streak": 1,
+  "atr_pct": 5.680373039423484
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-22",
+   "o": 188.0,
+   "h": 188.0,
+   "l": 180.5,
+   "c": 180.5,
+   "v": 69481,
+   "amt": 12665556617.0
+  },
+  {
+   "date": "2026-09-23",
+   "o": 181.0,
+   "h": 182.0,
+   "l": 180.0,
+   "c": 180.0,
+   "v": 23772,
+   "amt": 4294828947.0
+  },
+  {
+   "date": "2026-09-24",
+   "o": 180.0,
+   "h": 184.5,
+   "l": 178.0,
+   "c": 184.5,
+   "v": 31269,
+   "amt": 5690914991.0
+  },
+  {
+   "date": "2026-09-29",
+   "o": 182.5,
+   "h": 186.5,
+   "l": 182.0,
+   "c": 185.5,
+   "v": 32141,
+   "amt": 5947031637.0
+  },
+  {
+   "date": "2026-09-30",
+   "o": 187.0,
+   "h": 187.5,
+   "l": 184.0,
+   "c": 184.5,
+   "v": 20375,
+   "amt": 3777479677.0
+  },
+  {
+   "date": "2026-10-01",
+   "o": 186.5,
+   "h": 191.5,
+   "l": 185.5,
+   "c": 190.5,
+   "v": 59140,
+   "amt": 11216236348.0
+  },
+  {
+   "date": "2026-10-02",
+   "o": 190.5,
+   "h": 191.0,
+   "l": 186.0,
+   "c": 186.5,
+   "v": 36439,
+   "amt": 6811804448.0
+  },
+  {
+   "date": "2026-10-05",
+   "o": 188.5,
+   "h": 191.5,
+   "l": 187.5,
+   "c": 189.5,
+   "v": 48432,
+   "amt": 9182332196.0
+  },
+  {
+   "date": "2026-10-06",
+   "o": 191.5,
+   "h": 194.5,
+   "l": 188.0,
+   "c": 189.5,
+   "v": 30082,
+   "amt": 5721614192.0
+  },
+  {
+   "date": "2026-10-07",
+   "o": 188.5,
+   "h": 189.5,
+   "l": 185.0,
+   "c": 185.0,
+   "v": 26744,
+   "amt": 4976684596.0
+  },
+  {
+   "date": "2026-10-08",
+   "o": 184.0,
+   "h": 190.0,
+   "l": 182.5,
+   "c": 188.5,
+   "v": 45639,
+   "amt": 8539073725.0
+  },
+  {
+   "date": "2026-10-12",
+   "o": 188.0,
+   "h": 192.0,
+   "l": 187.0,
+   "c": 189.5,
+   "v": 30872,
+   "amt": 5853464301.0
+  },
+  {
+   "date": "2026-10-13",
+   "o": 187.0,
+   "h": 190.5,
+   "l": 185.5,
+   "c": 187.0,
+   "v": 41067,
+   "amt": 7676402013.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 188.0,
+   "h": 190.0,
+   "l": 186.5,
+   "c": 187.0,
+   "v": 24460,
+   "amt": 4593443336.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 184.5,
+   "h": 184.5,
+   "l": 173.5,
+   "c": 176.0,
+   "v": 75464,
+   "amt": 13413215407.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 178.0,
+   "h": 183.0,
+   "l": 177.5,
+   "c": 182.5,
+   "v": 30261,
+   "amt": 5479734709.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 178.0,
+   "h": 180.5,
+   "l": 175.5,
+   "c": 180.0,
+   "v": 24238,
+   "amt": 4309269495.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 178.0,
+   "h": 193.0,
+   "l": 177.0,
+   "c": 189.0,
+   "v": 83442,
+   "amt": 15771931085.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 193.0,
+   "h": 199.5,
+   "l": 192.0,
+   "c": 195.0,
+   "v": 80137,
+   "amt": 15706146624.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 198.5,
+   "h": 199.0,
+   "l": 189.5,
+   "c": 190.0,
+   "v": 36614,
+   "amt": 7076878748.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 193.0,
+   "h": 194.5,
+   "l": 186.5,
+   "c": 190.5,
+   "v": 22690,
+   "amt": 4307960775.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 190.5,
+   "h": 196.0,
+   "l": 189.0,
+   "c": 194.5,
+   "v": 33898,
+   "amt": 6585523594.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 193.5,
+   "h": 194.0,
+   "l": 187.5,
+   "c": 188.5,
+   "v": 25024,
+   "amt": 4748307550.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 183.0,
+   "h": 185.0,
+   "l": 179.5,
+   "c": 183.5,
+   "v": 33803,
+   "amt": 6156155872.0
+  },
+  {
+   "date": "2026-11-02",
+   "o": 181.5,
+   "h": 185.0,
+   "l": 179.5,
+   "c": 181.5,
+   "v": 18572,
+   "amt": 3383840813.0
+  },
+  {
+   "date": "2026-11-03",
+   "o": 180.0,
+   "h": 182.0,
+   "l": 176.5,
+   "c": 176.5,
+   "v": 22772,
+   "amt": 4066178382.0
+  },
+  {
+   "date": "2026-11-04",
+   "o": 179.0,
+   "h": 179.5,
+   "l": 169.5,
+   "c": 176.0,
+   "v": 31507,
+   "amt": 5491251844.0
+  },
+  {
+   "date": "2026-11-05",
+   "o": 173.0,
+   "h": 175.5,
+   "l": 168.0,
+   "c": 168.5,
+   "v": 34590,
+   "amt": 5896300163.0
+  },
+  {
+   "date": "2026-11-06",
+   "o": 152.0,
+   "h": 163.0,
+   "l": 152.0,
+   "c": 160.0,
+   "v": 48190,
+   "amt": 7585120716.0
+  },
+  {
+   "date": "2026-11-09",
+   "o": 164.0,
+   "h": 174.5,
+   "l": 164.0,
+   "c": 168.5,
+   "v": 39866,
+   "amt": 6794506584.0
+  }
+ ],
+ "limit_up": 185.0,
+ "limit_down": 152.0,
+ "insti": {
+  "2026-11-09": {
+   "foreign": -6387,
+   "trust": 7919,
+   "dealer": 318,
+   "total": 1850
+  },
+  "2026-11-06": {
+   "foreign": -3521,
+   "trust": 550,
+   "dealer": 1266,
+   "total": -1704
+  },
+  "2026-11-05": {
+   "foreign": -9614,
+   "trust": 2376,
+   "dealer": -45,
+   "total": -7282
+  }
+ },
+ "insti_sum": {
+  "foreign": -19522,
+  "trust": 10845,
+  "dealer": 1539,
+  "total": -7136
+ },
+ "weak_screen": {
+  "close": 168.5,
+  "r10": -11.32,
+  "idx_r10": -9.51,
+  "ma60": 184.39,
+  "idx": 41661.7,
+  "idx_ma20": 45726.72,
+  "mkt_weak": true,
+  "foreign": -6387,
+  "trust": 7919,
+  "under": true,
+  "drop10": true,
+  "below_ma": true,
+  "px100": true,
+  "sell": false,
+  "n_ok": 4,
+  "hit": false
+ },
+ "margin": {
+  "fin_prev": 41299,
+  "fin_now": 38592,
+  "fin_chg": -2707,
+  "short_prev": 377,
+  "short_now": 392,
+  "short_chg": 15,
+  "fin_limit": 857460
+ },
+ "sbl": {
+  "sbl_sell": 310,
+  "sbl_return": 11,
+  "sbl_bal": 34738
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": -1415,
+   "daytrade_buy": 0,
+   "foreign_net": -3273,
+   "top5_buy": 10755,
+   "top5_sell": -10741,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "統一",
+     "buy": 3827,
+     "sell": 97,
+     "net": 3730,
+     "pct": 9.36
+    },
+    {
+     "broker": "(牛牛牛)亞證券",
+     "buy": 2691,
+     "sell": 1,
+     "net": 2690,
+     "pct": 6.75
+    },
+    {
+     "broker": "美林",
+     "buy": 3286,
+     "sell": 725,
+     "net": 2561,
+     "pct": 6.42
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 3238,
+     "sell": 2163,
+     "net": 1075,
+     "pct": 2.7
+    },
+    {
+     "broker": "富邦證券",
+     "buy": 992,
+     "sell": 293,
+     "net": 699,
+     "pct": 1.75
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 1262,
+     "sell": 4329,
+     "net": -3067,
+     "pct": 7.69
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 1632,
+     "sell": 4568,
+     "net": -2936,
+     "pct": 7.36
+    },
+    {
+     "broker": "凱基-士林",
+     "buy": 15,
+     "sell": 2624,
+     "net": -2609,
+     "pct": 6.54
+    },
+    {
+     "broker": "凱基-台北",
+     "buy": 1411,
+     "sell": 2826,
+     "net": -1415,
+     "pct": 3.55
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 1232,
+     "sell": 1946,
+     "net": -714,
+     "pct": 1.79
+    }
+   ],
+   "daytrade_buy_pct": 0.0,
+   "foreign_net_pct": -8.21000351176441,
+   "top5_buy_pct": 26.97787588421211,
+   "top5_sell_pct": 26.942758240104347
+  },
+  "day_date": "2026/11/09",
+  "range4": {
+   "daytrade_net": -1699,
+   "daytrade_buy": 0,
+   "foreign_net": -23592,
+   "top5_buy": 15244,
+   "top5_sell": -31564,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "美林",
+     "buy": 7745,
+     "sell": 3600,
+     "net": 4145,
+     "pct": 2.69
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 5449,
+     "sell": 1795,
+     "net": 3654,
+     "pct": 2.37
+    },
+    {
+     "broker": "統一",
+     "buy": 4131,
+     "sell": 806,
+     "net": 3325,
+     "pct": 2.16
+    },
+    {
+     "broker": "(牛牛牛)亞證券",
+     "buy": 3035,
+     "sell": 1,
+     "net": 3034,
+     "pct": 1.97
+    },
+    {
+     "broker": "大和國泰",
+     "buy": 1086,
+     "sell": 0,
+     "net": 1086,
+     "pct": 0.7
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 5348,
+     "sell": 20540,
+     "net": -15192,
+     "pct": 9.86
+    },
+    {
+     "broker": "美商高盛",
+     "buy": 7577,
+     "sell": 19565,
+     "net": -11988,
+     "pct": 7.78
+    },
+    {
+     "broker": "凱基-台北",
+     "buy": 8483,
+     "sell": 10182,
+     "net": -1699,
+     "pct": 1.1
+    },
+    {
+     "broker": "康和",
+     "buy": 55,
+     "sell": 1695,
+     "net": -1640,
+     "pct": 1.06
+    },
+    {
+     "broker": "兆豐證券",
+     "buy": 636,
+     "sell": 1681,
+     "net": -1045,
+     "pct": 0.68
+    }
+   ],
+   "daytrade_buy_pct": 0.0,
+   "foreign_net_pct": -15.30427562227138,
+   "top5_buy_pct": 9.888876635550394,
+   "top5_sell_pct": 20.475761094497024
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "國票-博愛",
+    "count": 4,
+    "cum_net": -101,
+    "buy_days": 1,
+    "sell_days": 3,
+    "last_date": "2026-10-19",
+    "last_net": -135,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 0.3455765114001891,
+    "cum_net_pct": -0.012897359999795686,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "新光",
+    "count": 7,
+    "cum_net": -798,
+    "buy_days": 2,
+    "sell_days": 5,
+    "last_date": "2026-11-03",
+    "last_net": 88,
+    "scored": 7,
+    "win_rate": 0.7142857142857143,
+    "avg_capture_pct": 1.2247646030006119,
+    "cum_net_pct": -0.10190191366175205,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "中國信託",
+    "count": 9,
+    "cum_net": -2003,
+    "buy_days": 4,
+    "sell_days": 5,
+    "last_date": "2026-11-02",
+    "last_net": 117,
+    "scored": 9,
+    "win_rate": 0.6666666666666666,
+    "avg_capture_pct": 1.9707772639721195,
+    "cum_net_pct": -0.25577635722367087,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "兆豐證券",
+    "count": 11,
+    "cum_net": 958,
+    "buy_days": 7,
+    "sell_days": 4,
+    "last_date": "2026-11-09",
+    "last_net": -218,
+    "scored": 10,
+    "win_rate": 0.3,
+    "avg_capture_pct": -0.8605617287189948,
+    "cum_net_pct": 0.122333375047567,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "港商麥格理",
+    "count": 15,
+    "cum_net": -5091,
+    "buy_days": 7,
+    "sell_days": 8,
+    "last_date": "2026-11-09",
+    "last_net": -157,
+    "scored": 14,
+    "win_rate": 0.2857142857142857,
+    "avg_capture_pct": -0.9565384651079868,
+    "cum_net_pct": -0.6501035619698993,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常敗"
+   },
+   {
+    "broker": "永豐金-匯立",
+    "count": 8,
+    "cum_net": 2267,
+    "buy_days": 5,
+    "sell_days": 3,
+    "last_date": "2026-11-09",
+    "last_net": -268,
+    "scored": 7,
+    "win_rate": 0.2857142857142857,
+    "avg_capture_pct": -1.0347044631222206,
+    "cum_net_pct": 0.28948826851026555,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "香港上海匯豐",
+    "count": 9,
+    "cum_net": 1312,
+    "buy_days": 5,
+    "sell_days": 4,
+    "last_date": "2026-11-09",
+    "last_net": -137,
+    "scored": 8,
+    "win_rate": 0.25,
+    "avg_capture_pct": -1.1994023996656429,
+    "cum_net_pct": 0.16753798336368256,
+    "daytrade": false,
+    "foreign": true,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": 0,
+  "winners_last_net_pct": 0.0,
+  "winners_inventory": -2902,
+  "winners_inventory_pct": -0.3705756308852186,
+  "losers_last_net": 337,
+  "losers_last_net_pct": 0.8453318617368184,
+  "n_scored": 149
+ },
+ "warrants": {
+  "call_vol": 56446,
+  "put_vol": 494,
+  "call_amt": 45804400.0,
+  "put_amt": 727510.0,
+  "n_call": 351,
+  "n_put": 21,
+  "n_call_active": 222,
+  "n_put_active": 11,
+  "call_share": 0.991324200913242,
+  "amt_share": 0.9687307054449301,
+  "hedge_net": 904,
+  "hedge_pct": 2.2675964481011386,
+  "call_amt_5d": 35529106.0,
+  "call_surge": 1.2892077836126807,
+  "list": [
+   {
+    "code": "030074",
+    "name": "緯創凱基64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030277",
+    "name": "緯創元大64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030770",
+    "name": "緯創凱基6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031101",
+    "name": "緯創統一6A購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031161",
+    "name": "緯創群益64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031356",
+    "name": "緯創元大64購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031403",
+    "name": "緯創富邦6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031616",
+    "name": "緯創凱基64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031917",
+    "name": "緯創元大64購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032032",
+    "name": "緯創群益64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032271",
+    "name": "緯創元大64購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032483",
+    "name": "緯創國票66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032776",
+    "name": "緯創元大64購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032840",
+    "name": "緯創台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032841",
+    "name": "緯創台新64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032973",
+    "name": "緯創凱基64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033223",
+    "name": "緯創元大64購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033493",
+    "name": "緯創群益64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033582",
+    "name": "緯創國票65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033757",
+    "name": "緯創元大64購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033853",
+    "name": "緯創富邦5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034189",
+    "name": "緯創元大64購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034404",
+    "name": "緯創凱基64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034765",
+    "name": "緯創元大64購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034766",
+    "name": "緯創元大64購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034767",
+    "name": "緯創元大64購23",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034846",
+    "name": "緯創群益64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035067",
+    "name": "緯創元大64購24",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035212",
+    "name": "緯創國票65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035377",
+    "name": "緯創凱基66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035557",
+    "name": "緯創永豐64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035558",
+    "name": "緯創永豐64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035559",
+    "name": "緯創永豐65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035691",
+    "name": "緯創群益66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035692",
+    "name": "緯創群益66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035783",
+    "name": "緯創凱基64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035784",
+    "name": "緯創凱基65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035878",
+    "name": "緯創元大64購25",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036250",
+    "name": "緯創台新64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036251",
+    "name": "緯創台新64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036361",
+    "name": "緯創群益66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036444",
+    "name": "緯創中信64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036574",
+    "name": "緯創凱基64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036664",
+    "name": "緯創台新6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036820",
+    "name": "緯創群益66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036867",
+    "name": "緯創富邦64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036997",
+    "name": "緯創國票66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037180",
+    "name": "緯創元大64購26",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037181",
+    "name": "緯創元大64購27",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037182",
+    "name": "緯創元大64購28",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037245",
+    "name": "緯創群益66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037380",
+    "name": "緯創凱基67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037445",
+    "name": "緯創元大65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037446",
+    "name": "緯創元大65購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037599",
+    "name": "緯創台新6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037630",
+    "name": "緯創群益67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037693",
+    "name": "緯創富邦65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037742",
+    "name": "緯創永豐65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037810",
+    "name": "緯創元大68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038012",
+    "name": "緯創群益67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038164",
+    "name": "緯創國票65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038306",
+    "name": "緯創元大68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038469",
+    "name": "緯創群益65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038581",
+    "name": "緯創國票5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038659",
+    "name": "緯創凱基65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038795",
+    "name": "緯創國票62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038847",
+    "name": "緯創統一5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038848",
+    "name": "緯創統一6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038869",
+    "name": "緯創元大65購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038936",
+    "name": "緯創群益67購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038975",
+    "name": "緯創中信65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039014",
+    "name": "緯創統一5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039015",
+    "name": "緯創統一6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039284",
+    "name": "緯創元大65購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039363",
+    "name": "緯創台新65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039418",
+    "name": "緯創凱基5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039550",
+    "name": "緯創國票65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039634",
+    "name": "緯創富邦65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039744",
+    "name": "緯創凱基65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039817",
+    "name": "緯創元大65購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "044906",
+    "name": "緯創元富5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "046422",
+    "name": "緯創元富5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "047322",
+    "name": "緯創元大5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "048051",
+    "name": "緯創富邦5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "048177",
+    "name": "緯創凱基5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "048846",
+    "name": "緯創凱基5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049693",
+    "name": "緯創凱基61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "050367",
+    "name": "緯創富邦5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "051377",
+    "name": "緯創兆豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052116",
+    "name": "緯創富邦61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052325",
+    "name": "緯創富邦61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053241",
+    "name": "緯創富邦61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054550",
+    "name": "緯創富邦5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054634",
+    "name": "緯創元富61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056569",
+    "name": "緯創元大61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "056600",
+    "name": "緯創富邦5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057451",
+    "name": "緯創富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057526",
+    "name": "緯創統一63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057654",
+    "name": "緯創元大62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057865",
+    "name": "緯創元大5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057866",
+    "name": "緯創元大61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057999",
+    "name": "緯創元大61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058399",
+    "name": "緯創兆豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059194",
+    "name": "緯創元大61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059318",
+    "name": "緯創元大61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059356",
+    "name": "緯創群益5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060927",
+    "name": "緯創富邦5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061161",
+    "name": "緯創富邦73購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061431",
+    "name": "緯創元富5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061452",
+    "name": "緯創凱基61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063727",
+    "name": "緯創凱基61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063836",
+    "name": "緯創富邦64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "063837",
+    "name": "緯創富邦64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065564",
+    "name": "緯創國票5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065941",
+    "name": "緯創元大61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066368",
+    "name": "緯創台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067218",
+    "name": "緯創富邦5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067330",
+    "name": "緯創凱基5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067428",
+    "name": "緯創永豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067528",
+    "name": "緯創元大5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067529",
+    "name": "緯創元大5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067572",
+    "name": "緯創群益62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067770",
+    "name": "緯創台新5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067771",
+    "name": "緯創台新5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067865",
+    "name": "緯創元大5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067866",
+    "name": "緯創元大5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068162",
+    "name": "緯創元大5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068195",
+    "name": "緯創凱基5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068418",
+    "name": "緯創群益5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068576",
+    "name": "緯創元大5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068651",
+    "name": "緯創永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068761",
+    "name": "緯創凱基61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068998",
+    "name": "緯創台新5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068999",
+    "name": "緯創台新5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069041",
+    "name": "緯創元大5B購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069071",
+    "name": "緯創群益5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069172",
+    "name": "緯創凱基5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069253",
+    "name": "緯創台新65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069361",
+    "name": "緯創群益61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069402",
+    "name": "緯創統一62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069684",
+    "name": "緯創富邦66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069706",
+    "name": "緯創群益5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069781",
+    "name": "緯創永豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069842",
+    "name": "緯創凱基61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069879",
+    "name": "緯創群益5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069969",
+    "name": "緯創富邦5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069970",
+    "name": "緯創富邦64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069988",
+    "name": "緯創永豐5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070038",
+    "name": "緯創凱基5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070137",
+    "name": "緯創群益5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070138",
+    "name": "緯創群益5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070153",
+    "name": "緯創永豐61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070224",
+    "name": "緯創群益62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070263",
+    "name": "緯創凱基5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070264",
+    "name": "緯創凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070322",
+    "name": "緯創元大5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070323",
+    "name": "緯創元大5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070324",
+    "name": "緯創元大61購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070346",
+    "name": "緯創富邦5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070429",
+    "name": "緯創群益62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070489",
+    "name": "緯創元大5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070493",
+    "name": "緯創元大5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070495",
+    "name": "緯創元大5C購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070496",
+    "name": "緯創元大5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070497",
+    "name": "緯創元大61購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070535",
+    "name": "緯創台新5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070536",
+    "name": "緯創台新5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070633",
+    "name": "緯創凱基5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070772",
+    "name": "緯創元大5C購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070773",
+    "name": "緯創元大5C購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070774",
+    "name": "緯創元大61購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070796",
+    "name": "緯創中信5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070806",
+    "name": "緯創永豐61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070826",
+    "name": "緯創凱基5C購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070905",
+    "name": "緯創國票61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070981",
+    "name": "緯創元大5C購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070982",
+    "name": "緯創元大5C購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070983",
+    "name": "緯創元大61購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071177",
+    "name": "緯創凱基5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071270",
+    "name": "緯創元大5C購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071438",
+    "name": "緯創統一63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071439",
+    "name": "緯創統一64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071440",
+    "name": "緯創統一64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072340",
+    "name": "緯創凱基5C購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072543",
+    "name": "緯創元大5C購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072562",
+    "name": "緯創群益5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072828",
+    "name": "緯創永豐5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072974",
+    "name": "緯創永豐5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073427",
+    "name": "緯創永豐5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073639",
+    "name": "緯創永豐61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073850",
+    "name": "緯創富邦61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074475",
+    "name": "緯創群益67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075096",
+    "name": "緯創富邦62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075318",
+    "name": "緯創永豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075597",
+    "name": "緯創台新61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075598",
+    "name": "緯創台新61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075690",
+    "name": "緯創凱基61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076232",
+    "name": "緯創永豐61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076295",
+    "name": "緯創統一6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076712",
+    "name": "緯創凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076833",
+    "name": "緯創永豐61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076886",
+    "name": "緯創群益61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076919",
+    "name": "緯創凱基61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076980",
+    "name": "緯創富邦61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076981",
+    "name": "緯創富邦67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077104",
+    "name": "緯創永豐61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077105",
+    "name": "緯創永豐61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077181",
+    "name": "緯創群益61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077219",
+    "name": "緯創凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077352",
+    "name": "緯創統一6C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077395",
+    "name": "緯創永豐61購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077396",
+    "name": "緯創永豐61購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077397",
+    "name": "緯創永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077468",
+    "name": "緯創元大63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077503",
+    "name": "緯創群益61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077504",
+    "name": "緯創群益61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077552",
+    "name": "緯創凱基61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077582",
+    "name": "緯創富邦61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077583",
+    "name": "緯創富邦61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077584",
+    "name": "緯創富邦64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077585",
+    "name": "緯創富邦67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077653",
+    "name": "緯創永豐61購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077654",
+    "name": "緯創永豐61購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077655",
+    "name": "緯創永豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077671",
+    "name": "緯創群益61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077765",
+    "name": "緯創凱基61購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077766",
+    "name": "緯創凱基61購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077802",
+    "name": "緯創台新61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077803",
+    "name": "緯創台新61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077812",
+    "name": "緯創統一63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077829",
+    "name": "緯創中信61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077865",
+    "name": "緯創群益61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077893",
+    "name": "緯創凱基61購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078200",
+    "name": "緯創元大62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078263",
+    "name": "緯創國票64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078297",
+    "name": "緯創元大63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078298",
+    "name": "緯創元大64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078367",
+    "name": "緯創凱基63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078476",
+    "name": "緯創元大63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078477",
+    "name": "緯創元大64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078629",
+    "name": "緯創元大63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078630",
+    "name": "緯創元大64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078678",
+    "name": "緯創永豐64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078730",
+    "name": "緯創凱基63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078948",
+    "name": "緯創凱基63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078990",
+    "name": "緯創群益62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079046",
+    "name": "緯創元大64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079074",
+    "name": "緯創中信62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079110",
+    "name": "緯創群益68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079133",
+    "name": "緯創統一64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079209",
+    "name": "緯創元大64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079303",
+    "name": "緯創國票65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079326",
+    "name": "緯創富邦62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079327",
+    "name": "緯創富邦62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079328",
+    "name": "緯創富邦68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079345",
+    "name": "緯創台新62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079346",
+    "name": "緯創台新65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079445",
+    "name": "緯創凱基64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079514",
+    "name": "緯創統一65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079585",
+    "name": "緯創元大63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079586",
+    "name": "緯創元大64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079668",
+    "name": "緯創群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079706",
+    "name": "緯創凱基63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079932",
+    "name": "緯創元大64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079962",
+    "name": "緯創群益63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080178",
+    "name": "緯創元大63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080179",
+    "name": "緯創元大64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080271",
+    "name": "緯創凱基63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080380",
+    "name": "緯創台新68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080440",
+    "name": "緯創群益62購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080441",
+    "name": "緯創群益63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080442",
+    "name": "緯創群益63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080443",
+    "name": "緯創群益63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080624",
+    "name": "緯創群益62購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080730",
+    "name": "緯創永豐63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080771",
+    "name": "緯創元大64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080921",
+    "name": "緯創元大64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081001",
+    "name": "緯創凱基65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081248",
+    "name": "緯創元大65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081454",
+    "name": "緯創元大65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081501",
+    "name": "緯創群益62購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081502",
+    "name": "緯創群益62購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081503",
+    "name": "緯創群益62購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081556",
+    "name": "緯創凱基68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081655",
+    "name": "緯創元大65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081725",
+    "name": "緯創凱基64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081813",
+    "name": "緯創元大65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082111",
+    "name": "緯創富邦62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082264",
+    "name": "緯創凱基63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082378",
+    "name": "緯創元大62購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082379",
+    "name": "緯創元大65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082650",
+    "name": "緯創元大62購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082651",
+    "name": "緯創元大65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082790",
+    "name": "緯創中信63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082896",
+    "name": "緯創凱基65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082933",
+    "name": "緯創國票63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083276",
+    "name": "緯創群益63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083277",
+    "name": "緯創群益63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083552",
+    "name": "緯創凱基65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083778",
+    "name": "緯創群益63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084024",
+    "name": "緯創元大63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084127",
+    "name": "緯創群益63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084179",
+    "name": "緯創凱基64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084216",
+    "name": "緯創國票64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084275",
+    "name": "緯創永豐64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084357",
+    "name": "緯創凱基63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084487",
+    "name": "緯創元大63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084532",
+    "name": "緯創永豐63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084533",
+    "name": "緯創永豐63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084678",
+    "name": "緯創元大63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084835",
+    "name": "緯創永豐65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084960",
+    "name": "緯創凱基69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085154",
+    "name": "緯創群益63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085155",
+    "name": "緯創群益64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085156",
+    "name": "緯創群益65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085341",
+    "name": "緯創富邦6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085480",
+    "name": "緯創富邦63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085542",
+    "name": "緯創凱基68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085632",
+    "name": "緯創統一5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085675",
+    "name": "緯創富邦79購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085775",
+    "name": "緯創群益63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085776",
+    "name": "緯創群益63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085818",
+    "name": "緯創凱基64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085939",
+    "name": "緯創永豐63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086012",
+    "name": "緯創元大69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086065",
+    "name": "緯創群益64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086218",
+    "name": "緯創元大69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086297",
+    "name": "緯創凱基63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086486",
+    "name": "緯創群益63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086532",
+    "name": "緯創元大63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086739",
+    "name": "緯創元大63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086960",
+    "name": "緯創凱基63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087128",
+    "name": "緯創元大63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087297",
+    "name": "緯創台新63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087351",
+    "name": "緯創元大69購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087436",
+    "name": "緯創凱基63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087512",
+    "name": "緯創中信63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087670",
+    "name": "緯創元大69購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087750",
+    "name": "緯創群益63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088004",
+    "name": "緯創國票68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088143",
+    "name": "緯創凱基63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088196",
+    "name": "緯創中信63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088316",
+    "name": "緯創元大63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088384",
+    "name": "緯創群益63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088479",
+    "name": "緯創富邦63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088830",
+    "name": "緯創凱基69購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088931",
+    "name": "緯創群益63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089143",
+    "name": "緯創元大63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089288",
+    "name": "緯創群益63購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089426",
+    "name": "緯創元大63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089897",
+    "name": "緯創元大64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "03235T",
+    "name": "緯創群益63售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03262T",
+    "name": "緯創台新5B售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03285T",
+    "name": "緯創群益64售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03488T",
+    "name": "緯創群益5C售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03498T",
+    "name": "緯創群益5C售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03509T",
+    "name": "緯創凱基5C售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03900T",
+    "name": "緯創國票61售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03982T",
+    "name": "緯創國票61售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03988T",
+    "name": "緯創中信61售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03995T",
+    "name": "緯創凱基61售11",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04089T",
+    "name": "緯創元大63售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04094T",
+    "name": "緯創國票66售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04106T",
+    "name": "緯創凱基63售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04127T",
+    "name": "緯創台新62售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04437T",
+    "name": "緯創台新63售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04442T",
+    "name": "緯創群益69售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04468T",
+    "name": "緯創凱基69售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05045T",
+    "name": "緯創台新64售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05068T",
+    "name": "緯創群益71售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05119T",
+    "name": "緯創群益67售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08882U",
+    "name": "緯創群益63售01",
+    "right": "put",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-09",
+  "breadth": {
+   "up": 804,
+   "down": 229
+  },
+  "foreign_amt_b": -900.6,
+  "trust_amt_b": 313.1,
+  "tx_night": {
+   "contract": "202611",
+   "o": 41240.0,
+   "h": 42657.0,
+   "l": 40715.0,
+   "c": 42542.0,
+   "chg": 1064.0,
+   "chg_pct": 2.57,
+   "vol": 55081,
+   "title": "2026/11/09"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 40099.0,
+   "h": 42317.0,
+   "l": 39996.0,
+   "c": 41423.0,
+   "chg": 1771.0,
+   "chg_pct": 4.47,
+   "vol": 69882,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -101771,
+   "raw": [
+    99731,
+    817396208,
+    102516,
+    840660318,
+    -2785,
+    -23264109,
+    11571,
+    96008625,
+    113342,
+    940345367,
+    -101771,
+    -844336742
+   ]
+  },
+  "us": {
+   "SOX": {
+    "date": "2026-11-09",
+    "c": 10033.9326171875,
+    "pct": 6.854797446154248
+   }
+  }
+ }
+}

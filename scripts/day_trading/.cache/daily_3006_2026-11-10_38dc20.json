@@ -1,0 +1,2549 @@
+{
+ "version": 8,
+ "code": "3006",
+ "name": "晶豪科",
+ "market": "tse",
+ "date": "2026-11-10",
+ "prev_date": "2026-11-09",
+ "group": "DRAM原廠",
+ "peers": [
+  "2408",
+  "2344"
+ ],
+ "peers_arg": null,
+ "peer_info": {
+  "2408": {
+   "name": "南亞科",
+   "ex": "tse",
+   "y": 370.0,
+   "prev_chg_pct": 7.714701601164475,
+   "prev_vol": 41561
+  },
+  "2344": {
+   "name": "華邦電",
+   "ex": "tse",
+   "y": 132.5,
+   "prev_chg_pct": 9.958506224066399,
+   "prev_vol": 37941
+  }
+ },
+ "tech": {
+  "date": "2026-11-09",
+  "close": 228.0,
+  "open": 215.0,
+  "high": 228.0,
+  "low": 213.5,
+  "vol": 6775,
+  "ma5": 224.7,
+  "ma10": 247.0,
+  "ma20": 245.525,
+  "ma60": 266.98333333333335,
+  "bb_up": 285.0717761012197,
+  "bb_dn": 205.97822389878033,
+  "atr14": 19.107142857142858,
+  "rsi14": 42.76594880862674,
+  "vol_ma5": 14062.6,
+  "vol_ma20": 11870.95,
+  "chg_pct": 9.879518072289152,
+  "high20": 291.5,
+  "low20": 193.0,
+  "high60": 319.0,
+  "low60": 193.0,
+  "prev_high": 210.0,
+  "prev_low": 193.0,
+  "ret5": -12.643678160919535,
+  "ret20": -15.711645101663585,
+  "streak": 1,
+  "atr_pct": 8.380325814536342
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-22",
+   "o": 288.5,
+   "h": 290.5,
+   "l": 278.0,
+   "c": 278.5,
+   "v": 9766,
+   "amt": 2753401771.0
+  },
+  {
+   "date": "2026-09-23",
+   "o": 282.5,
+   "h": 288.0,
+   "l": 273.0,
+   "c": 274.0,
+   "v": 9305,
+   "amt": 2596148356.0
+  },
+  {
+   "date": "2026-09-24",
+   "o": 272.0,
+   "h": 275.5,
+   "l": 265.5,
+   "c": 275.0,
+   "v": 6499,
+   "amt": 1751771514.0
+  },
+  {
+   "date": "2026-09-29",
+   "o": 272.0,
+   "h": 286.5,
+   "l": 270.0,
+   "c": 285.0,
+   "v": 9171,
+   "amt": 2574064644.0
+  },
+  {
+   "date": "2026-09-30",
+   "o": 286.0,
+   "h": 290.0,
+   "l": 282.0,
+   "c": 286.0,
+   "v": 8256,
+   "amt": 2358397757.0
+  },
+  {
+   "date": "2026-10-01",
+   "o": 285.0,
+   "h": 285.0,
+   "l": 279.0,
+   "c": 281.0,
+   "v": 6910,
+   "amt": 1943687510.0
+  },
+  {
+   "date": "2026-10-02",
+   "o": 284.5,
+   "h": 290.0,
+   "l": 282.5,
+   "c": 285.5,
+   "v": 9101,
+   "amt": 2608184123.0
+  },
+  {
+   "date": "2026-10-05",
+   "o": 277.0,
+   "h": 283.0,
+   "l": 267.5,
+   "c": 282.0,
+   "v": 14449,
+   "amt": 4019461414.0
+  },
+  {
+   "date": "2026-10-06",
+   "o": 282.0,
+   "h": 282.0,
+   "l": 273.0,
+   "c": 273.5,
+   "v": 7060,
+   "amt": 1951159265.0
+  },
+  {
+   "date": "2026-10-07",
+   "o": 273.5,
+   "h": 275.0,
+   "l": 270.0,
+   "c": 270.5,
+   "v": 5153,
+   "amt": 1401981275.0
+  },
+  {
+   "date": "2026-10-08",
+   "o": 273.0,
+   "h": 275.5,
+   "l": 266.0,
+   "c": 267.0,
+   "v": 6905,
+   "amt": 1858904569.0
+  },
+  {
+   "date": "2026-10-12",
+   "o": 264.0,
+   "h": 265.5,
+   "l": 260.0,
+   "c": 260.5,
+   "v": 6124,
+   "amt": 1607327430.0
+  },
+  {
+   "date": "2026-10-13",
+   "o": 253.0,
+   "h": 253.0,
+   "l": 235.5,
+   "c": 242.0,
+   "v": 12854,
+   "amt": 3123721950.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 245.0,
+   "h": 249.0,
+   "l": 238.0,
+   "c": 247.0,
+   "v": 5963,
+   "amt": 1458889572.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 235.0,
+   "h": 238.0,
+   "l": 226.5,
+   "c": 229.0,
+   "v": 7724,
+   "amt": 1789279073.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 234.5,
+   "h": 251.0,
+   "l": 233.0,
+   "c": 244.5,
+   "v": 8046,
+   "amt": 1968684383.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 235.0,
+   "h": 239.5,
+   "l": 228.0,
+   "c": 239.0,
+   "v": 5925,
+   "amt": 1384765268.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 239.0,
+   "h": 240.0,
+   "l": 230.0,
+   "c": 231.5,
+   "v": 6008,
+   "amt": 1414945255.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 239.0,
+   "h": 246.5,
+   "l": 236.0,
+   "c": 246.0,
+   "v": 7305,
+   "amt": 1773250654.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 246.0,
+   "h": 246.0,
+   "l": 233.0,
+   "c": 234.0,
+   "v": 4981,
+   "amt": 1189933695.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 240.0,
+   "h": 252.0,
+   "l": 239.0,
+   "c": 250.5,
+   "v": 8635,
+   "amt": 2137840666.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 269.5,
+   "h": 275.5,
+   "l": 257.0,
+   "c": 275.5,
+   "v": 19329,
+   "amt": 5172678513.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 278.0,
+   "h": 291.5,
+   "l": 269.5,
+   "c": 282.5,
+   "v": 30717,
+   "amt": 8577663266.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 269.5,
+   "h": 282.0,
+   "l": 264.0,
+   "c": 277.0,
+   "v": 17660,
+   "amt": 4813938748.0
+  },
+  {
+   "date": "2026-11-02",
+   "o": 267.0,
+   "h": 268.5,
+   "l": 257.0,
+   "c": 261.0,
+   "v": 18930,
+   "amt": 4971562069.0
+  },
+  {
+   "date": "2026-11-03",
+   "o": 255.0,
+   "h": 264.5,
+   "l": 240.0,
+   "c": 242.5,
+   "v": 15631,
+   "amt": 3933181384.0
+  },
+  {
+   "date": "2026-11-04",
+   "o": 242.5,
+   "h": 243.5,
+   "l": 218.5,
+   "c": 231.5,
+   "v": 21842,
+   "amt": 5004678681.0
+  },
+  {
+   "date": "2026-11-05",
+   "o": 220.5,
+   "h": 226.0,
+   "l": 213.0,
+   "c": 214.0,
+   "v": 10717,
+   "amt": 2342029172.0
+  },
+  {
+   "date": "2026-11-06",
+   "o": 193.0,
+   "h": 210.0,
+   "l": 193.0,
+   "c": 207.5,
+   "v": 15348,
+   "amt": 3063623054.0
+  },
+  {
+   "date": "2026-11-09",
+   "o": 215.0,
+   "h": 228.0,
+   "l": 213.5,
+   "c": 228.0,
+   "v": 6775,
+   "amt": 1515302809.0
+  }
+ ],
+ "limit_up": 250.5,
+ "limit_down": 205.5,
+ "insti": {
+  "2026-11-09": {
+   "foreign": 360,
+   "trust": 0,
+   "dealer": 14,
+   "total": 375
+  },
+  "2026-11-06": {
+   "foreign": 1072,
+   "trust": 21,
+   "dealer": -105,
+   "total": 988
+  },
+  "2026-11-05": {
+   "foreign": 1295,
+   "trust": 3,
+   "dealer": -75,
+   "total": 1223
+  }
+ },
+ "insti_sum": {
+  "foreign": 2727,
+  "trust": 24,
+  "dealer": -166,
+  "total": 2586
+ },
+ "weak_screen": {
+  "close": 228.0,
+  "r10": -2.56,
+  "idx_r10": -9.51,
+  "ma60": 266.98,
+  "idx": 41661.7,
+  "idx_ma20": 45726.72,
+  "mkt_weak": true,
+  "foreign": 360,
+  "trust": 0,
+  "under": false,
+  "drop10": false,
+  "below_ma": true,
+  "px100": true,
+  "sell": false,
+  "n_ok": 2,
+  "hit": false
+ },
+ "margin": {
+  "fin_prev": 14733,
+  "fin_now": 14828,
+  "fin_chg": 95,
+  "short_prev": 182,
+  "short_now": 173,
+  "short_chg": -9,
+  "fin_limit": 74531
+ },
+ "sbl": {
+  "sbl_sell": 29,
+  "sbl_return": 2,
+  "sbl_bal": 9284
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": 439,
+   "daytrade_buy": 439,
+   "foreign_net": -232,
+   "top5_buy": 1482,
+   "top5_sell": -723,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "凱基-市府",
+     "buy": 536,
+     "sell": 9,
+     "net": 527,
+     "pct": 7.78
+    },
+    {
+     "broker": "凱基-台北",
+     "buy": 890,
+     "sell": 451,
+     "net": 439,
+     "pct": 6.48
+    },
+    {
+     "broker": "元大-台北",
+     "buy": 213,
+     "sell": 22,
+     "net": 191,
+     "pct": 2.82
+    },
+    {
+     "broker": "港商野村",
+     "buy": 254,
+     "sell": 73,
+     "net": 181,
+     "pct": 2.67
+    },
+    {
+     "broker": "永豐金證券",
+     "buy": 209,
+     "sell": 65,
+     "net": 144,
+     "pct": 2.13
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "元大證券",
+     "buy": 587,
+     "sell": 808,
+     "net": -221,
+     "pct": 3.26
+    },
+    {
+     "broker": "摩根大通",
+     "buy": 120,
+     "sell": 287,
+     "net": -167,
+     "pct": 2.46
+    },
+    {
+     "broker": "元大-金華",
+     "buy": 0,
+     "sell": 145,
+     "net": -145,
+     "pct": 2.14
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 108,
+     "sell": 212,
+     "net": -104,
+     "pct": 1.54
+    },
+    {
+     "broker": "群益金鼎",
+     "buy": 62,
+     "sell": 148,
+     "net": -86,
+     "pct": 1.27
+    }
+   ],
+   "daytrade_buy_pct": 6.479704797047971,
+   "foreign_net_pct": -3.4243542435424352,
+   "top5_buy_pct": 21.874538745387454,
+   "top5_sell_pct": 10.671586715867159
+  },
+  "day_date": "2026/11/09",
+  "range4": {
+   "daytrade_net": 510,
+   "daytrade_buy": 510,
+   "foreign_net": -553,
+   "top5_buy": 2817,
+   "top5_sell": -5369,
+   "daytrade_names": [
+    "凱基-台北",
+    "富邦-建國"
+   ],
+   "top_buyers": [
+    {
+     "broker": "台中銀-高雄",
+     "buy": 1010,
+     "sell": 4,
+     "net": 1006,
+     "pct": 1.84
+    },
+    {
+     "broker": "凱基-市府",
+     "buy": 561,
+     "sell": 28,
+     "net": 533,
+     "pct": 0.97
+    },
+    {
+     "broker": "港商野村",
+     "buy": 1205,
+     "sell": 726,
+     "net": 479,
+     "pct": 0.88
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "buy": 2441,
+     "sell": 1993,
+     "net": 448,
+     "pct": 0.82
+    },
+    {
+     "broker": "凱基-台北",
+     "buy": 4363,
+     "sell": 4012,
+     "net": 351,
+     "pct": 0.64
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "兆豐-民生",
+     "buy": 5,
+     "sell": 1841,
+     "net": -1836,
+     "pct": 3.36
+    },
+    {
+     "broker": "群益金鼎",
+     "buy": 405,
+     "sell": 1394,
+     "net": -989,
+     "pct": 1.81
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "buy": 431,
+     "sell": 1348,
+     "net": -917,
+     "pct": 1.68
+    },
+    {
+     "broker": "永豐金-竹北",
+     "buy": 33,
+     "sell": 904,
+     "net": -871,
+     "pct": 1.59
+    },
+    {
+     "broker": "統一",
+     "buy": 160,
+     "sell": 916,
+     "net": -756,
+     "pct": 1.38
+    }
+   ],
+   "daytrade_buy_pct": 0.932665228045792,
+   "foreign_net_pct": -1.011301708057496,
+   "top5_buy_pct": 5.151603818441169,
+   "top5_sell_pct": 9.818587469368348
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "永豐金-竹北",
+    "count": 5,
+    "cum_net": -1705,
+    "buy_days": 0,
+    "sell_days": 5,
+    "last_date": "2026-11-05",
+    "last_net": -304,
+    "scored": 5,
+    "win_rate": 1.0,
+    "avg_capture_pct": 5.419806457205764,
+    "cum_net_pct": -0.7181396602630792,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "元大-長榮",
+    "count": 4,
+    "cum_net": 30,
+    "buy_days": 3,
+    "sell_days": 1,
+    "last_date": "2026-10-22",
+    "last_net": 29,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 3.76368860951218,
+    "cum_net_pct": 0.01263588845037676,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "統一-內湖",
+    "count": 4,
+    "cum_net": 49,
+    "buy_days": 3,
+    "sell_days": 1,
+    "last_date": "2026-10-20",
+    "last_net": 18,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 3.0358678277000424,
+    "cum_net_pct": 0.02063861780228204,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "兆豐-新竹",
+    "count": 4,
+    "cum_net": -207,
+    "buy_days": 0,
+    "sell_days": 4,
+    "last_date": "2026-10-29",
+    "last_net": -54,
+    "scored": 4,
+    "win_rate": 0.75,
+    "avg_capture_pct": 0.7489773610269035,
+    "cum_net_pct": -0.08718763030759964,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "群益金鼎-館前",
+    "count": 7,
+    "cum_net": -53,
+    "buy_days": 4,
+    "sell_days": 3,
+    "last_date": "2026-11-06",
+    "last_net": 63,
+    "scored": 7,
+    "win_rate": 0.7142857142857143,
+    "avg_capture_pct": 2.420203432392633,
+    "cum_net_pct": -0.022323402928998943,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "富邦-建國",
+    "count": 10,
+    "cum_net": -670,
+    "buy_days": 5,
+    "sell_days": 5,
+    "last_date": "2026-11-06",
+    "last_net": 325,
+    "scored": 10,
+    "win_rate": 0.7,
+    "avg_capture_pct": 2.3289417690987557,
+    "cum_net_pct": -0.282201508725081,
+    "daytrade": true,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "富邦-台北",
+    "count": 7,
+    "cum_net": -27,
+    "buy_days": 3,
+    "sell_days": 4,
+    "last_date": "2026-11-09",
+    "last_net": -49,
+    "scored": 6,
+    "win_rate": 0.3333333333333333,
+    "avg_capture_pct": -2.683632382231325,
+    "cum_net_pct": -0.011372299605339085,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "元大-土城",
+    "count": 8,
+    "cum_net": 48,
+    "buy_days": 5,
+    "sell_days": 3,
+    "last_date": "2026-11-09",
+    "last_net": 43,
+    "scored": 7,
+    "win_rate": 0.2857142857142857,
+    "avg_capture_pct": -3.114780070468689,
+    "cum_net_pct": 0.020217421520602817,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "元大-頭份",
+    "count": 12,
+    "cum_net": 433,
+    "buy_days": 8,
+    "sell_days": 4,
+    "last_date": "2026-11-09",
+    "last_net": 138,
+    "scored": 11,
+    "win_rate": 0.2727272727272727,
+    "avg_capture_pct": -3.060745699938441,
+    "cum_net_pct": 0.18237798996710458,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "台中銀-高雄",
+    "count": 4,
+    "cum_net": 2001,
+    "buy_days": 4,
+    "sell_days": 0,
+    "last_date": "2026-11-06",
+    "last_net": 700,
+    "scored": 4,
+    "win_rate": 0.25,
+    "avg_capture_pct": -1.0407155762962579,
+    "cum_net_pct": 0.8428137596401298,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": 0,
+  "winners_last_net_pct": 0.0,
+  "winners_inventory": -2697,
+  "winners_inventory_pct": -1.1359663716888708,
+  "losers_last_net": 94,
+  "losers_last_net_pct": 1.3874538745387455,
+  "n_scored": 177
+ },
+ "warrants": {
+  "call_vol": 11473,
+  "put_vol": 38,
+  "call_amt": 9947540.0,
+  "put_amt": 66290.0,
+  "n_call": 266,
+  "n_put": 18,
+  "n_call_active": 105,
+  "n_put_active": 5,
+  "call_share": 0.9966988098340718,
+  "amt_share": 0.9867603104905915,
+  "hedge_net": 43,
+  "hedge_pct": 0.6346863468634686,
+  "call_amt_5d": 19582586.0,
+  "call_surge": 0.5079788747002055,
+  "list": [
+   {
+    "code": "030069",
+    "name": "晶豪科凱基67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030263",
+    "name": "晶豪科元大64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030330",
+    "name": "晶豪科富邦66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030418",
+    "name": "晶豪科群益64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030761",
+    "name": "晶豪科凱基67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030949",
+    "name": "晶豪科元大64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031154",
+    "name": "晶豪科群益64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031339",
+    "name": "晶豪科元大68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031614",
+    "name": "晶豪科凱基64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031716",
+    "name": "晶豪科元大69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031909",
+    "name": "晶豪科元大69購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031964",
+    "name": "晶豪科國票64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032029",
+    "name": "晶豪科群益64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032427",
+    "name": "晶豪科凱基66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032601",
+    "name": "晶豪科富邦66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032761",
+    "name": "晶豪科元大64購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033064",
+    "name": "晶豪科群益64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033209",
+    "name": "晶豪科元大64購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033393",
+    "name": "晶豪科凱基64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033486",
+    "name": "晶豪科群益65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033487",
+    "name": "晶豪科群益65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033747",
+    "name": "晶豪科元大64購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033991",
+    "name": "晶豪科群益65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034400",
+    "name": "晶豪科凱基64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034465",
+    "name": "晶豪科富邦66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034483",
+    "name": "晶豪科中信64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034534",
+    "name": "晶豪科永豐65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034584",
+    "name": "晶豪科國票64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034613",
+    "name": "晶豪科富邦66購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034839",
+    "name": "晶豪科群益64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034906",
+    "name": "晶豪科凱基69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035444",
+    "name": "晶豪科群益68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035639",
+    "name": "晶豪科台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035640",
+    "name": "晶豪科台新64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035641",
+    "name": "晶豪科台新64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035758",
+    "name": "晶豪科凱基64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035982",
+    "name": "晶豪科永豐64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035983",
+    "name": "晶豪科永豐64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036062",
+    "name": "晶豪科元大6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036118",
+    "name": "晶豪科國泰65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036337",
+    "name": "晶豪科群益64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036338",
+    "name": "晶豪科群益64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036340",
+    "name": "晶豪科群益66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036341",
+    "name": "晶豪科群益66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036342",
+    "name": "晶豪科群益68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036564",
+    "name": "晶豪科凱基64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036732",
+    "name": "晶豪科元大64購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036733",
+    "name": "晶豪科元大64購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036734",
+    "name": "晶豪科元大6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036894",
+    "name": "晶豪科統一6A購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036988",
+    "name": "晶豪科國票65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036989",
+    "name": "晶豪科國票66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037310",
+    "name": "晶豪科永豐6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037372",
+    "name": "晶豪科凱基65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037495",
+    "name": "晶豪科統一5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037532",
+    "name": "晶豪科國票68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037798",
+    "name": "晶豪科元大65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037799",
+    "name": "晶豪科元大65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038003",
+    "name": "晶豪科群益65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038057",
+    "name": "晶豪科中信65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038297",
+    "name": "晶豪科元大65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038396",
+    "name": "晶豪科凱基69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038709",
+    "name": "晶豪科富邦67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038933",
+    "name": "晶豪科群益67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038970",
+    "name": "晶豪科中信65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038971",
+    "name": "晶豪科中信65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039422",
+    "name": "晶豪科凱基6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039666",
+    "name": "晶豪科國泰66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039701",
+    "name": "晶豪科群益65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041208",
+    "name": "晶豪科統一6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043665",
+    "name": "晶豪科統一6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043894",
+    "name": "晶豪科統一5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049238",
+    "name": "晶豪科永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "050269",
+    "name": "晶豪科永豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "050485",
+    "name": "晶豪科統一65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "050587",
+    "name": "晶豪科群益63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066057",
+    "name": "晶豪科富邦61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066058",
+    "name": "晶豪科富邦62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066150",
+    "name": "晶豪科永豐5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066151",
+    "name": "晶豪科永豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066153",
+    "name": "晶豪科永豐65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066291",
+    "name": "晶豪科群益61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066462",
+    "name": "晶豪科兆豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066677",
+    "name": "晶豪科凱基5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066766",
+    "name": "晶豪科永豐5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066804",
+    "name": "晶豪科台新5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066806",
+    "name": "晶豪科台新5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066858",
+    "name": "晶豪科群益5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066950",
+    "name": "晶豪科永豐65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066974",
+    "name": "晶豪科凱基5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066996",
+    "name": "晶豪科群益5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066997",
+    "name": "晶豪科群益5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067077",
+    "name": "晶豪科富邦62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067184",
+    "name": "晶豪科中信5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067216",
+    "name": "晶豪科富邦61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067348",
+    "name": "晶豪科台新5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067349",
+    "name": "晶豪科台新5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067465",
+    "name": "晶豪科台新5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067492",
+    "name": "晶豪科凱基5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067567",
+    "name": "晶豪科群益5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067622",
+    "name": "晶豪科永豐65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067654",
+    "name": "晶豪科凱基5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067655",
+    "name": "晶豪科凱基5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067675",
+    "name": "晶豪科國票5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067693",
+    "name": "晶豪科群益5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067694",
+    "name": "晶豪科群益61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067719",
+    "name": "晶豪科元大5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067766",
+    "name": "晶豪科台新5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068114",
+    "name": "晶豪科中信5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068121",
+    "name": "晶豪科永豐65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068152",
+    "name": "晶豪科元大5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068192",
+    "name": "晶豪科凱基61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068211",
+    "name": "晶豪科國泰5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068212",
+    "name": "晶豪科國泰5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068271",
+    "name": "晶豪科統一63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068272",
+    "name": "晶豪科統一64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068273",
+    "name": "晶豪科統一65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068274",
+    "name": "晶豪科統一65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068275",
+    "name": "晶豪科統一65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068276",
+    "name": "晶豪科統一65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068277",
+    "name": "晶豪科統一66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068278",
+    "name": "晶豪科統一69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068279",
+    "name": "晶豪科統一75購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068368",
+    "name": "晶豪科中信5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068617",
+    "name": "晶豪科富邦61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068618",
+    "name": "晶豪科富邦61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068691",
+    "name": "晶豪科國票5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068833",
+    "name": "晶豪科台新5B購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069966",
+    "name": "晶豪科富邦64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069967",
+    "name": "晶豪科富邦66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070089",
+    "name": "晶豪科元大61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070220",
+    "name": "晶豪科群益5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070260",
+    "name": "晶豪科凱基5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070316",
+    "name": "晶豪科元大61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070317",
+    "name": "晶豪科元大64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070344",
+    "name": "晶豪科富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070427",
+    "name": "晶豪科群益5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070482",
+    "name": "晶豪科元大61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070483",
+    "name": "晶豪科元大64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070600",
+    "name": "晶豪科永豐5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070631",
+    "name": "晶豪科凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070768",
+    "name": "晶豪科元大5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070769",
+    "name": "晶豪科元大61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070795",
+    "name": "晶豪科中信5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070802",
+    "name": "晶豪科永豐5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070803",
+    "name": "晶豪科永豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070804",
+    "name": "晶豪科永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070823",
+    "name": "晶豪科凱基5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070866",
+    "name": "晶豪科群益5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070974",
+    "name": "晶豪科元大5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070975",
+    "name": "晶豪科元大5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071079",
+    "name": "晶豪科凱基5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071140",
+    "name": "晶豪科群益5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071267",
+    "name": "晶豪科元大5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071268",
+    "name": "晶豪科元大66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071302",
+    "name": "晶豪科凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071487",
+    "name": "晶豪科元大5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071641",
+    "name": "晶豪科國泰62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071896",
+    "name": "晶豪科元大63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071948",
+    "name": "晶豪科統一66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071972",
+    "name": "晶豪科凱基61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072124",
+    "name": "晶豪科永豐64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072335",
+    "name": "晶豪科凱基5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072361",
+    "name": "晶豪科富邦62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072560",
+    "name": "晶豪科群益5C購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072561",
+    "name": "晶豪科群益62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072586",
+    "name": "晶豪科永豐64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072968",
+    "name": "晶豪科永豐5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073045",
+    "name": "晶豪科凱基61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073124",
+    "name": "晶豪科元大5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073353",
+    "name": "晶豪科群益5C購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073376",
+    "name": "晶豪科凱基63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073492",
+    "name": "晶豪科富邦63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073510",
+    "name": "晶豪科國泰62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073535",
+    "name": "晶豪科元大5C購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073688",
+    "name": "晶豪科元大61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073788",
+    "name": "晶豪科永豐61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074391",
+    "name": "晶豪科台新61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074392",
+    "name": "晶豪科台新61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074657",
+    "name": "晶豪科群益61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075083",
+    "name": "晶豪科群益67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075141",
+    "name": "晶豪科凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075352",
+    "name": "晶豪科凱基61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075458",
+    "name": "晶豪科群益61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075734",
+    "name": "晶豪科元大61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075735",
+    "name": "晶豪科元大63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075897",
+    "name": "晶豪科凱基61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075952",
+    "name": "晶豪科凱基67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075999",
+    "name": "晶豪科永豐64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076000",
+    "name": "晶豪科永豐64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076042",
+    "name": "晶豪科元大63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076072",
+    "name": "晶豪科群益61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076174",
+    "name": "晶豪科元大63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076526",
+    "name": "晶豪科凱基63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077132",
+    "name": "晶豪科國票61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077312",
+    "name": "晶豪科台新61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078141",
+    "name": "晶豪科富邦63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078220",
+    "name": "晶豪科中信65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078628",
+    "name": "晶豪科元大64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078773",
+    "name": "晶豪科群益62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078944",
+    "name": "晶豪科凱基63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079403",
+    "name": "晶豪科群益67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079437",
+    "name": "晶豪科凱基63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079534",
+    "name": "晶豪科台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079535",
+    "name": "晶豪科台新65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079578",
+    "name": "晶豪科元大63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079579",
+    "name": "晶豪科元大64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079624",
+    "name": "晶豪科中信62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079661",
+    "name": "晶豪科群益64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079838",
+    "name": "晶豪科台新62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079839",
+    "name": "晶豪科台新65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079924",
+    "name": "晶豪科元大63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079925",
+    "name": "晶豪科元大63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079926",
+    "name": "晶豪科元大63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079927",
+    "name": "晶豪科元大64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079928",
+    "name": "晶豪科元大64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079929",
+    "name": "晶豪科元大64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079930",
+    "name": "晶豪科元大65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079996",
+    "name": "晶豪科凱基63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080023",
+    "name": "晶豪科國票63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080024",
+    "name": "晶豪科國票65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080025",
+    "name": "晶豪科國票66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080034",
+    "name": "晶豪科國泰63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080035",
+    "name": "晶豪科國泰63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080073",
+    "name": "晶豪科台新62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083192",
+    "name": "晶豪科統一5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084892",
+    "name": "晶豪科統一66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087495",
+    "name": "晶豪科統一66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087498",
+    "name": "晶豪科統一69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087499",
+    "name": "晶豪科統一71購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087500",
+    "name": "晶豪科統一79購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087511",
+    "name": "晶豪科中信63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087582",
+    "name": "晶豪科國票64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087583",
+    "name": "晶豪科國票65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087615",
+    "name": "晶豪科台新63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087616",
+    "name": "晶豪科台新63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087666",
+    "name": "晶豪科元大66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087667",
+    "name": "晶豪科元大69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087710",
+    "name": "晶豪科國泰64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087711",
+    "name": "晶豪科國泰64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087741",
+    "name": "晶豪科群益63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087742",
+    "name": "晶豪科群益63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087743",
+    "name": "晶豪科群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087744",
+    "name": "晶豪科群益64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087789",
+    "name": "晶豪科凱基63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087790",
+    "name": "晶豪科凱基63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087791",
+    "name": "晶豪科凱基63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087792",
+    "name": "晶豪科凱基65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087793",
+    "name": "晶豪科凱基65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087794",
+    "name": "晶豪科凱基65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087795",
+    "name": "晶豪科凱基65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087832",
+    "name": "晶豪科富邦65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087869",
+    "name": "晶豪科統一69購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087971",
+    "name": "晶豪科元大66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088082",
+    "name": "晶豪科群益63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088314",
+    "name": "晶豪科元大66購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088606",
+    "name": "晶豪科元大63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088607",
+    "name": "晶豪科元大63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088691",
+    "name": "晶豪科富邦66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088827",
+    "name": "晶豪科凱基63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088876",
+    "name": "晶豪科永豐66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088927",
+    "name": "晶豪科群益63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089384",
+    "name": "晶豪科富邦65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089421",
+    "name": "晶豪科元大63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089569",
+    "name": "晶豪科元大64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089894",
+    "name": "晶豪科元大64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "03318T",
+    "name": "晶豪科中信5B售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03337T",
+    "name": "晶豪科國票5B售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03342T",
+    "name": "晶豪科凱基5B售10",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03380T",
+    "name": "晶豪科統一65售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03386T",
+    "name": "晶豪科群益5B售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03556T",
+    "name": "晶豪科元大5C售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03635T",
+    "name": "晶豪科群益5C售09",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03775T",
+    "name": "晶豪科群益63售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04146T",
+    "name": "晶豪科國票63售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04147T",
+    "name": "晶豪科國票65售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04642T",
+    "name": "晶豪科群益63售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04649T",
+    "name": "晶豪科凱基63售11",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04656T",
+    "name": "晶豪科元大63售11",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05009T",
+    "name": "晶豪科群益6A售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05027T",
+    "name": "晶豪科凱基64售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05179T",
+    "name": "晶豪科群益67售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05221T",
+    "name": "晶豪科群益65售06",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "07874U",
+    "name": "晶豪科群益61售01",
+    "right": "put",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-09",
+  "breadth": {
+   "up": 804,
+   "down": 229
+  },
+  "foreign_amt_b": -900.6,
+  "trust_amt_b": 313.1,
+  "tx_night": {
+   "contract": "202611",
+   "o": 41240.0,
+   "h": 42657.0,
+   "l": 40715.0,
+   "c": 42542.0,
+   "chg": 1064.0,
+   "chg_pct": 2.57,
+   "vol": 55081,
+   "title": "2026/11/09"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 40099.0,
+   "h": 42317.0,
+   "l": 39996.0,
+   "c": 41423.0,
+   "chg": 1771.0,
+   "chg_pct": 4.47,
+   "vol": 69882,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -101771,
+   "raw": [
+    99731,
+    817396208,
+    102516,
+    840660318,
+    -2785,
+    -23264109,
+    11571,
+    96008625,
+    113342,
+    940345367,
+    -101771,
+    -844336742
+   ]
+  },
+  "us": {
+   "SOX": {
+    "date": "2026/11/09",
+    "c": 10085.0,
+    "pct": 7.94,
+    "src": "taifex",
+    "label": "費半期",
+    "vol": 226
+   },
+   "NDX": {
+    "date": "2026/11/09",
+    "c": 28098.0,
+    "pct": 3.41,
+    "src": "taifex",
+    "label": "那斯達克100期",
+    "vol": 450
+   },
+   "SPX": {
+    "date": "2026/11/09",
+    "c": 7600.75,
+    "pct": 2.64,
+    "src": "taifex",
+    "label": "標普期",
+    "vol": 88
+   },
+   "DOW": {
+    "date": "2026/11/09",
+    "c": 52655.0,
+    "pct": 1.76,
+    "src": "taifex",
+    "label": "道瓊期",
+    "vol": 91
+   }
+  }
+ }
+}

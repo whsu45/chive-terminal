@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-10T09:46:08.412Z",
+ "generatedAt": "2026-11-10T12:44:10.729Z",
  "usDate": "2026-11-09",
  "twDate": "2026-11-10",
  "windows": {
@@ -13,7 +13,7 @@
   "groups": 10,
   "usSymbols": 57,
   "usFailed": [],
-  "twCandidates": 103
+  "twCandidates": 130
  },
  "benchmarks": {
   "SOX": {
@@ -1899,20 +1899,19 @@
      ]
     },
     {
-     "code": "2330",
-     "name": "台積電",
-     "market": "上市",
-     "corr": 0.491,
-     "corrAlt": 0.549,
-     "beta": 0.21,
-     "hit": 0.625,
+     "code": "3707",
+     "name": "漢磊",
+     "market": "上櫃",
+     "corr": 0.525,
+     "corrAlt": 0.525,
+     "beta": 0.55,
+     "hit": 0.661,
      "n": 120,
-     "lastPct": 2.24,
+     "lastPct": 7.69,
      "lastDate": "2026-11-10",
      "themes": [
-      "CPO 概念股",
-      "矽光子概念股",
-      "輝達概念股"
+      "第三代半導體概念股",
+      "功率半導體概念股"
      ]
     }
    ],
@@ -2293,18 +2292,19 @@
      ]
     },
     {
-     "code": "2345",
-     "name": "智邦",
-     "market": "上市",
-     "corr": 0.507,
-     "corrAlt": 0.535,
-     "beta": 0.64,
-     "hit": 0.637,
+     "code": "3707",
+     "name": "漢磊",
+     "market": "上櫃",
+     "corr": 0.536,
+     "corrAlt": 0.561,
+     "beta": 0.79,
+     "hit": 0.722,
      "n": 120,
-     "lastPct": 9.96,
+     "lastPct": 7.69,
      "lastDate": "2026-11-10",
      "themes": [
-      "網通概念股"
+      "第三代半導體概念股",
+      "功率半導體概念股"
      ]
     }
    ],
@@ -2460,9 +2460,9 @@
      "lastPct": 9.91,
      "lastDate": "2026-11-10",
      "themes": [
-      "BBU 概念股",
       "輝達概念股",
-      "電源供應器概念股"
+      "AI 伺服器概念股",
+      "BBU 概念股"
      ]
     }
    ],
@@ -2974,8 +2974,8 @@
      "lastPct": 9.92,
      "lastDate": "2026-11-10",
      "themes": [
-      "CCL 概念股",
-      "玻璃基板概念股"
+      "玻璃基板概念股",
+      "CCL 概念股"
      ]
     },
     {
@@ -3380,5 +3380,5 @@
   }
  ],
  "historyCount": 256,
- "elapsedSec": 11.4
+ "elapsedSec": 10.3
 }

@@ -410,6 +410,7 @@ class Monitor:
         self._fs_cache = {}                          # code -> (epoch, 每分鐘主力/散戶累積淨額序列)，10 秒重算一次給「大戶散戶」圖
         self.pending = []                            # 警示結果追蹤：每則 ⚠/▶ 記下當時狀態，10/30 分鐘後補上漲跌，寫 logs/alert_outcomes.jsonl
         self._tracked = set()
+        self._sig_done = {}                          # code -> [結束的訊號 {side, lo, hi, since, label, res, ext}]：同價位不重發用（_repeat_block）
         self._sig_seen = {}                          # (code, side, px) -> epoch，同一個點 15 分鐘內不重發
         self.positions = {}                          # code -> 使用者自己的單（持倉面板）：queued / holding / closed / cancelled / skipped
         self._pos_stack = {}                         # code -> 之前的狀態（復原用）
@@ -644,13 +645,14 @@ class Monitor:
         return None
 
     @staticmethod
-    def _entry_zone(side, base, stop, t1, rr_min=1.5):
+    def _entry_zone(side, base, stop, t1, rr_min=None):
         """
         進場區（限價掛單範圍）：做多 = [觸發價（base 下 1 tick）, base + 1/3 停損距離]，上緣再壓到報酬風險比 ≥ rr_min 的價位；
         做空對稱。區間不成立（目標太近）回 None。
         例：11/06 廣達 進場 280.5、停損 278、目標 290 → 280.0–281.0（原本 09:34 掛在 283，報酬風險比 1.4）。
         """
         tick = I.tick_size(base)
+        rr_min = Monitor.RR_MIN if rr_min is None else rr_min
         if side == "long":
             risk = base - stop
             if risk <= 0 or t1 <= base:
@@ -664,6 +666,29 @@ class Monitor:
         lo = max(I.round_tick(base - max(tick, risk / 3), "up"), I.round_tick((t1 + rr_min * stop) / (1 + rr_min), "up"))
         hi = I.round_tick(base + tick, "up")
         return (lo, hi) if lo <= hi else None
+
+    RR_MIN = 1.5            # 報酬（到前方第一個支撐 / 壓力）÷ 風險（到模型停損）至少要這麼多才發訊號
+    REPEAT_TICKS = 3        # 進場區相差這麼多 tick 以內算「同一個價位」
+
+    def _repeat_block(self, c, side, lo, hi, q, tick):
+        """
+        同一個價位的訊號結束後不重發，除非之後跌破新低（做空）/ 突破新高（做多）。回字串 = 擋的理由（⏸ 重複過濾，照樣追蹤假設結果）。
+        11/10 志聖：11:35 空 309.5 四分鐘到 305.5（贏），之後今低 305 守了 30 分鐘、彈到 313.5；12:10 同一句話同一個價位又發一次，
+        這次大盤在回升、量只剩 4 成，逆向 3 tick 記輸。模型不記得這個價位已經用過、低點也守住了。
+        只看最近一筆同邊、同價位的：它結束時的今低（今高）之後有沒有再被跌破（突破）。重啟 monitor 會忘記今天發過的。
+        """
+        short = side == "short"
+        ext_now = q.get("l") if short else q.get("h")
+        pad = self.REPEAT_TICKS * tick
+        for d in reversed(self._sig_done.get(c, [])):
+            if d["side"] != side or hi < d["lo"] - pad - 1e-9 or lo > d["hi"] + pad + 1e-9:
+                continue
+            if ext_now and d.get("ext") and ((ext_now < d["ext"] - 1e-9) if short else (ext_now > d["ext"] + 1e-9)):
+                return None
+            zone = f"{d['lo']}" if d["lo"] == d["hi"] else f"{d['lo']}–{d['hi']}"
+            return (f"這個價位（{zone}）{d['since'][:5]} 已經發過{d['label']}（{d['res']}），"
+                    f"之後{'今低' if short else '今高'} {d.get('ext')} 沒再{'跌破' if short else '突破'}")
+        return None
 
     BURST_SEC, BURST_TICKS = 15, 3
 
@@ -904,7 +929,7 @@ class Monitor:
 
     def _signal(self, c, ev, bars, q, now):
         """
-        「建議做空 / 做多」：模型那一邊勝率 ≥60%，而且進場確認條件**已經發生**，才掛出來：
+        「建議做空 / 做多」：模型那一邊強度 ≥60，而且進場確認條件**已經發生**，才掛出來：
           主計畫：最近 12 根 1 分 K 碰過壓力（支撐），且最後一根完成的 1 分 K 收在進場價之下（之上），現價還在進場價附近、沒到目標也沒過停損；
           備援：最後一根完成的 5 分 K 帶量（≥1.5 倍前 6 根均量）收破支撐 / 收過壓力，現價離觸發價 1% 內。
         反彈動能中不給空訊號、殺盤動能中不給多訊號；09:10 前、13:20 後不給。
@@ -953,6 +978,11 @@ class Monitor:
                         cur["status"] = f"⏱ 成交後 60 分鐘（或 13:25）到，現價 {p} 扣成本 {net:+.2f}%，記{'贏' if net > 0 else '輸'}"
                 if cur.get("status"):
                     cur["end_ts"] = now.timestamp()
+                    sh = cur["side"] == "short"
+                    ext = [x for x in ((q.get("l") if sh else q.get("h")), p) if x]
+                    res = {"✔": "贏", "✘": "輸", "⏱": "到時結算", "○": "未成交"}.get(cur["status"][:1], "撤單")
+                    self._sig_done.setdefault(c, []).append({"side": cur["side"], "lo": cur["zone"][0], "hi": cur["zone"][1], "since": cur["since"],
+                                                             "label": cur["label"], "res": res, "ext": (min(ext) if sh else max(ext)) if ext else None})
                     self._add_alert(c, now, f"{cur['status']}：{cur['label']} @{cur['price']}" if not cur.get("cancelled") else cur["cancelled"]["alert"])
             if cur.get("status") and now.timestamp() - cur["end_ts"] > 120:
                 del self.signals[c]
@@ -992,15 +1022,23 @@ class Monitor:
         avg20 = sum(v20) / len(v20) if v20 else 0
         thin = avg20 > 0 and sum((b[5] or 0) for b in completed[-3:]) < 1.5 * avg20
 
-        def make(side, base, label, stop, t1, t2, why):
+        def make(side, base, label, stop, t1, t2, why, t1_name=None):
+            short = side == "short"
             z = self._entry_zone(side, base, stop, t1)
+            room = None
             if not z:
-                return None       # 進場區內湊不到報酬風險比 1.5：目標太近，不發
+                # 到前方第一個支撐 / 壓力的空間不夠（進場區內湊不到報酬風險比 1.5）：不發，但照樣追蹤假設進場的結果（⏸ 空間過濾），
+                # 累積夠多筆才知道這條擋得對不對（11/10 前 12 筆有輸贏的訊號，這條會擋 4 贏 3 輸、留 1 贏 2 輸，樣本太少看不出來）
+                z = self._entry_zone(side, base, stop, t1, rr_min=0)
+                risk0 = abs(stop - base)
+                if not z or not risk0:
+                    return None
+                room = (f"到前方第一個{'支撐' if short else '壓力'} {t1}{f'（{t1_name}）' if t1_name else ''}只有 {abs(base - t1) / tick:.0f} tick，"
+                        f"報酬風險比 {abs(base - t1) / risk0:.1f} 不到 {self.RR_MIN}")
             lo, hi = z
             key = (c, side, lo, hi)
             if now.timestamp() - self._sig_seen.get(key, 0) < 900:
                 return None
-            short = side == "short"
             inzone = (p >= lo) if short else (p <= hi)
             lim = lo if short else hi
             risk = abs(p - stop)
@@ -1020,16 +1058,23 @@ class Monitor:
                     self._sig_seen[lkey] = now.timestamp()
                     self._add_alert(c, now, f"⏸ 漲跌停過濾：原本要建議{label} @{p}，但{lim_why}，不發")
                 return None
-            surge = self._surge_block(c, side, p, q)
-            blk = surge or self._against_trend(side, info)
+            repeat = None if room else self._repeat_block(c, side, lo, hi, q, tick)
+            surge = None if (room or repeat) else self._surge_block(c, side, p, q)
+            blk = room or repeat or surge or self._against_trend(side, info)
             if blk:
+                kind = "空間過濾" if room else "重複過濾" if repeat else "急漲過濾" if surge else "逆勢過濾"
                 bkey = ("block",) + key            # 被擋的另外去重：趨勢轉回來後同一個進場區還能正常發
                 if now.timestamp() - self._sig_seen.get(bkey, 0) < 900:
                     return None
+                if room or repeat:
+                    # 這兩種常常連續成立（VWAP 每分鐘在動，進場區跟著變）：同一檔同一邊 10 分鐘只記一次，免得洗版
+                    tkey = ("blockkind", c, side, kind)
+                    if now.timestamp() - self._sig_seen.get(tkey, 0) < 600:
+                        return None
+                    self._sig_seen[tkey] = now.timestamp()
                 self._sig_seen[bkey] = now.timestamp()
-                sig.update(blocked=True, block_reason=blk)
+                sig.update(blocked=True, block_reason=blk, block_kind=kind)
                 self.sig_block[c] = sig
-                kind = "急漲過濾" if surge else "逆勢過濾"
                 self._add_alert(c, now, f"⏸ {kind}：原本要建議{label} @{p}（{why.split('（')[0]}），但{blk}，不發；照樣追蹤假設進場的結果")
                 return None
             self._sig_seen[key] = now.timestamp()
@@ -1038,7 +1083,7 @@ class Monitor:
             sig["score"] = sc
             score_txt = f"｜評分：逆向超過 {sc['heat_ticks']} tick（{sc['stop']}）算輸、到 {sc['tgt']} 算贏，60 分鐘內都沒到看扣成本損益"
             if inzone:
-                self._add_alert(c, now, f"▶ 建議{label} @{p}：{why}；停損 {stop}，目標 {t1} / {t2}（報酬風險比 {rr_now:.1f}）{score_txt}")
+                self._add_alert(c, now, f"▶ 建議{label} @{p}：{why}；停損 {stop}，目標 {t1}{f'（{t1_name}）' if t1_name else ''} / {t2}（報酬風險比 {rr_now:.1f}）{score_txt}")
             else:
                 self._add_alert(c, now, f"▶ 建議{label} 掛 {lo}–{hi}（現價 {p} 已{'殺低' if short else '追高'}，報酬風險比只剩 {rr_now:.1f}，等回再進）："
                                         f"{why}；停損 {stop}，目標 {t1} / {t2}{score_txt}")
@@ -1052,10 +1097,10 @@ class Monitor:
             if rw and t1 < rw["px"] < p:
                 touched = False   # 真支撐擋在目標前面，空單不發
             if touched and not thin and last[4] <= entry and t1 < p <= entry + tick and p < stop:
-                return make("short", entry, "做空", stop, t1, t2, f"反彈 {trig} 不過，1 分 K 收 {last[4]} 確認（空方 {ps:.0f}%）")
+                return make("short", entry, "做空", stop, t1, t2, f"反彈 {trig} 不過，1 分 K 收 {last[4]} 確認（偏空強度 {ps:.0f}）", s.get("t1_name"))
             bd = s.get("bd_trigger")
             if bd and f5 and f5[-1][4] < bd and vol_ok() and s.get("bd_target") and s["bd_target"] < p < bd and (bd - p) / p < 0.01:
-                return make("short", bd, "做空（破線追）", s["bd_stop"], s["bd_target"], s["bd_target"], f"5 分 K 帶量收破 {bd}（量 {f5[-1][5]} 張，空方 {ps:.0f}%）")
+                return make("short", bd, "做空（破線追）", s["bd_stop"], s["bd_target"], s["bd_target"], f"5 分 K 帶量收破 {bd}（量 {f5[-1][5]} 張，偏空強度 {ps:.0f}）", s.get("bd_target_name"))
         l = plan.get("long")
         if l and pl >= 60 and pl > ps and mom != "down":
             trig, entry, stop, t1, t2 = l["trigger_px"], l["entry_px"], l["stop"], l["t1"], l["t2"]
@@ -1064,17 +1109,18 @@ class Monitor:
             if rw and p < rw["px"] < t1:
                 touched = False
             if touched and not thin and last[4] >= entry and entry - tick <= p < t1 and p > stop:
-                return make("long", entry, "做多", stop, t1, t2, f"回測 {trig} 守住，1 分 K 收 {last[4]} 確認（多方 {pl:.0f}%）")
+                return make("long", entry, "做多", stop, t1, t2, f"回測 {trig} 守住，1 分 K 收 {last[4]} 確認（偏多強度 {pl:.0f}）", l.get("t1_name"))
             bo = l.get("bo_trigger")
             if bo and f5 and f5[-1][4] > bo and vol_ok() and l.get("bo_target") and bo < p < l["bo_target"] and (p - bo) / p < 0.01:
-                return make("long", bo, "做多（突破追）", l["bo_stop"], l["bo_target"], l["bo_target"], f"5 分 K 帶量收過 {bo}（量 {f5[-1][5]} 張，多方 {pl:.0f}%）")
+                return make("long", bo, "做多（突破追）", l["bo_stop"], l["bo_target"], l["bo_target"], f"5 分 K 帶量收過 {bo}（量 {f5[-1][5]} 張，偏多強度 {pl:.0f}）", l.get("bo_target_name"))
         return None
 
+    BLOCK_TYPES = ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾")     # 被擋掉、但照樣追蹤假設進場結果的訊號
     ALERT_TYPES = [("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
-                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合")]
+                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合")]
 
     @classmethod
     def _alert_type(cls, text):
@@ -1116,12 +1162,12 @@ class Monitor:
                 continue   # 啟動時補發的歷史警示沒有當時狀態，不追蹤
             typ = self._alert_type(txt)
             extra = {}
-            if typ in ("建議做空", "建議做多", "逆勢過濾", "急漲過濾"):
-                sg = (self.sig_block.get(c) if typ in ("逆勢過濾", "急漲過濾") else self.signals.get(c)) or {}
+            if typ in ("建議做空", "建議做多") + self.BLOCK_TYPES:
+                sg = (self.sig_block.get(c) if typ in self.BLOCK_TYPES else self.signals.get(c)) or {}
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "rr_now", "rr_zone", "blocked", "block_reason", "cancelled")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -1334,7 +1380,7 @@ class Monitor:
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors")}
         if sg.get("blocked"):
-            out.update(blocked=True, block_reason=sg.get("block_reason"))
+            out.update(blocked=True, block_reason=sg.get("block_reason"), block_kind=sg.get("block_kind"))
         if sg.get("cancelled"):
             out.update(cancelled=sg["cancelled"])
         ut = self.user_trades.get((rec["code"], rec["time"]))   # 使用者自己的結果只放提醒，不寫進 signal_outcomes（公開 repo）
@@ -1344,7 +1390,7 @@ class Monitor:
             if sg.get("blocked"):
                 # 被擋的訊號不進交戰紀錄勝率，只回報「擋對了沒」
                 res = {"win": "會 ✔ 贏 → 擋錯了", "loss": "會 ✘ 輸 → 擋對了", "flat": "會 — 平", "nofill": "不會成交"}[verdict]
-                self._add_alert(rec["code"], dt.datetime.now(), f"⏸ 過濾驗證：{rec['time']} 被擋的{sg.get('label')} @{rec['price']} 若進場{res}")
+                self._add_alert(rec["code"], dt.datetime.now(), f"⏸ 過濾驗證：{rec['time']} 被{sg.get('block_kind') or '過濾'}擋的{sg.get('label')} @{rec['price']} 若進場{res}")
                 return
             if sg.get("cancelled"):
                 # 撤單的不進交戰紀錄勝率，只回報「撤對了沒」（verdict 是假設掛單照樣成交的結果）
@@ -1675,7 +1721,7 @@ class Monitor:
                     live["signal"][c] = sig
                 blk = self.sig_block.get(c)
                 if blk and now.timestamp() - blk["since_ts"] < 300:
-                    live["sig_block"][c] = {k: blk.get(k) for k in ("side", "label", "alert_px", "since", "block_reason", "why")}
+                    live["sig_block"][c] = {k: blk.get(k) for k in ("side", "label", "alert_px", "since", "block_reason", "block_kind", "why")}
             except Exception as e:
                 print(f"[fast] 訊號判斷失敗：{str(e)[:100]}")
             try:

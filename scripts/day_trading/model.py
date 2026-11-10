@@ -730,7 +730,7 @@ def evaluate(d, q, idx, peers_q, flow, samples, now=None, warrants=None, ctx=Non
         lab = "做空" if side_key == "short" else "做多"
         if wr <= 35:
             adj = -8
-            iwarn.append(f"⚠ 個股戰績：此股過去{lab}訊號 {st['win']} 勝 {st['loss']} 敗（勝率 {wr:.0f}%），這邊的劇本在它身上不靈，勝率已扣 8")
+            iwarn.append(f"⚠ 個股戰績：此股過去{lab}訊號 {st['win']} 勝 {st['loss']} 敗（實測勝率 {wr:.0f}%），這邊的劇本在它身上不靈，強度已扣 8")
         elif wr >= 65 and n >= 6:
             adj = 4
         else:
@@ -762,11 +762,14 @@ def evaluate(d, q, idx, peers_q, flow, samples, now=None, warrants=None, ctx=Non
     if hard_no_short:
         side, verdict = "不做", "處置股，不列入當沖"
     elif edge < 8:
-        verdict = f"兩邊勝率接近（多 {p_long:.0f}% / 空 {p_short:.0f}%），觀望或縮小部位"
+        verdict = f"多空強度接近（多 {p_long:.0f} / 空 {p_short:.0f}），觀望或縮小部位"
     elif max(p_long, p_short) < 55:
-        verdict = f"偏{side}但勝率不足 55%，等觸發再進"
+        verdict = f"偏{side}但強度不足 55，等觸發再進"
     else:
-        verdict = f"偏{side}，勝率 {max(p_long,p_short):.0f}%"
+        # 這個數字是「偏多 / 偏空分數」換算的強度（15–85），不是實測勝率：11/10 志聖整個上午都頂在 85，五個成交訊號 2 贏 3 輸。
+        # 實測的訊號勝率由儀表板另外顯示（history.summary）。
+        top = max(p_long, p_short)
+        verdict = f"偏{side}，強度 {top:.0f}" + ("（已到上限）" if top >= 85 else "")
     return {
         "time": now.strftime("%H:%M:%S"), "code": d["code"], "name": d["name"], "price": q.get("ref"), "quote": q,
         "daily_factors": DF, "intraday_factors": IF, "warnings": dwarn + iwarn, "info": info,
@@ -812,40 +815,53 @@ def build_plan(d, q, info, levels, p_long, p_short, now):
     s1 = below[0] if below else None
     plan = {"resistance": above, "support": below}
     pad = max(tick * 2, round(atr * 0.15, 2))
-    # 目標至少要離進場價 max(3 tick, 0.5%, 0.2 ATR)：11/05 晶豪科 12:03 壓力 VWAP 219.93、支撐布林下 218.99，
-    # 空單進場 219.0、目標 1 變 218.99（差 1 tick），「建議做空」一分鐘就 ✔ 到目標、什麼都沒賺。太近的價位跳過當目標
+    # 目標 1 = 進場後「第一個會擋路」的支撐（做空）/ 壓力（做多），報酬風險比照它算（monitor._entry_zone 不到 1.5 就不發）。
+    # 原本太近的價位會被跳過、往更遠找，找不到就用 ATR 推：11/10 志聖 12:10 空 309.5，下方昨收 308.5 / 今低 305 全被跳過，
+    # 目標變成 ATR 推出來的 294、報酬風險比顯示 2.8，實際到今低只有 0.8。現在不跳：前面有東西擋就照實算。
+    # 離進場價不到 3 tick 的價位跟進場價分不出來（結案評分也容忍逆向 3 tick），不算障礙；前方完全沒有價位才用 ATR 推。
     min_gain = max(tick * 3, p * 0.005, atr * 0.2)
-    def targets(cands, entry, down):
-        ok = [v for _, v in cands if (entry - v if down else v - entry) >= min_gain]
-        return ok[0] if ok else None, (ok[1] if len(ok) > 1 else None)
+    near_min = tick * 3
+    def targets(entry, down):
+        cands = I.nearest_levels(entry, levels, not down, 99)
+        ok = dedup([(n, v) for n, v in cands if (entry - v if down else v - entry) >= near_min - 1e-9])
+        return (ok[0] if ok else None), (ok[1] if len(ok) > 1 else None)
+    def pick(entry, down):
+        """回 (目標1, 目標2, 目標1 的價位名稱；None = 前方沒有價位、用 ATR 推的)。"""
+        c1, c2 = targets(entry, down)
+        sgn = -1 if down else 1
+        rd = "down" if down else "up"
+        g1 = c1[1] if c1 else I.round_tick(entry + sgn * max(min_gain, atr * 0.5), rd)
+        far = I.round_tick(entry + sgn * atr * 0.9, rd)
+        g2 = c2[1] if c2 else (min(far, g1) if down else max(far, g1))
+        return g1, g2, (c1[0] if c1 else None)
     if r1:
         entry = I.round_tick(r1[1] - tick, "down")
         stop = I.round_tick(r1[1] + pad, "up")
-        t1c, t2c = targets(below, entry, True)
-        tgt1 = t1c or I.round_tick(entry - max(min_gain, atr * 0.5), "down")
-        tgt2 = t2c or I.round_tick(entry - atr * 0.9, "down")
+        tgt1, tgt2, tname = pick(entry, True)
+        bd1, _, bdname = pick(s1[1], True) if s1 else (None, None, None)     # 破線追空的目標 = 跌破的那個支撐再往下的第一個支撐
         mom = info.get("momentum") or {}
         note_s = f"反彈動能中（連 {mom.get('bars')} 根紅 K）：先不進，等 1 分 K 翻黑" if mom.get("dir") == "up" else None
         plan["short"] = {"entry": f"碰 {r1[1]} ({r1[0]}) 不過：1 分 K 收 {entry} 以下才進，{entry} 空；1 分 K 收過 {stop} 計畫作廢",
                          "confirm": f"等價格碰 {r1[1]}，1 分 K 收在 {entry} 以下", "note": note_s,
                          "entry_px": entry, "trigger_px": r1[1], "stop": stop,
-                         "t1": tgt1, "t2": tgt2, "risk_pct": (stop - entry) / entry * 100,
+                         "t1": tgt1, "t2": tgt2, "t1_name": tname, "risk_pct": (stop - entry) / entry * 100,
                          "reward_pct": (entry - tgt1) / entry * 100,
-                         "breakdown": f"備援：5分K帶量收破 {s1[1]} ({s1[0]}) 追空，停損 {I.round_tick(s1[1] + pad, 'up')}，目標 {tgt2}" if s1 else None,
-                         "bd_trigger": s1[1] if s1 else None, "bd_stop": I.round_tick(s1[1] + pad, "up") if s1 else None, "bd_target": tgt2 if s1 else None}
+                         "breakdown": f"備援：5分K帶量收破 {s1[1]} ({s1[0]}) 追空，停損 {I.round_tick(s1[1] + pad, 'up')}，目標 {bd1}" if s1 else None,
+                         "bd_trigger": s1[1] if s1 else None, "bd_stop": I.round_tick(s1[1] + pad, "up") if s1 else None, "bd_target": bd1 if s1 else None,
+                         "bd_target_name": bdname}
     if s1:
         entry = I.round_tick(s1[1] + tick, "up")
         stop = I.round_tick(s1[1] - pad, "down")
-        t1c, t2c = targets(above, entry, False)
-        tgt1 = t1c or I.round_tick(entry + max(min_gain, atr * 0.5), "up")
-        tgt2 = t2c or I.round_tick(entry + atr * 0.9, "up")
+        tgt1, tgt2, tname = pick(entry, False)
+        bo1, _, boname = pick(r1[1], False) if r1 else (None, None, None)    # 突破追多的目標 = 突破的那個壓力再往上的第一個壓力
         mom = info.get("momentum") or {}
         note_l = f"殺盤動能中（連 {mom.get('bars')} 根黑 K）：先不接，等 1 分 K 翻紅" if mom.get("dir") == "down" else None
         plan["long"] = {"entry": f"回測 {s1[1]} ({s1[0]}) 守住：1 分 K 收 {entry} 以上才進，{entry} 多；1 分 K 收破 {stop} 計畫作廢",
                         "confirm": f"等價格回測 {s1[1]}，1 分 K 收在 {entry} 以上", "note": note_l,
                         "entry_px": entry, "trigger_px": s1[1], "stop": stop,
-                        "t1": tgt1, "t2": tgt2, "risk_pct": (entry - stop) / entry * 100,
+                        "t1": tgt1, "t2": tgt2, "t1_name": tname, "risk_pct": (entry - stop) / entry * 100,
                         "reward_pct": (tgt1 - entry) / entry * 100,
-                        "breakout": f"備援：5分K帶量收過 {r1[1]} ({r1[0]}) 追多，停損 {I.round_tick(r1[1] - pad, 'down')}，目標 {tgt2}" if r1 else None,
-                        "bo_trigger": r1[1] if r1 else None, "bo_stop": I.round_tick(r1[1] - pad, "down") if r1 else None, "bo_target": tgt2 if r1 else None}
+                        "breakout": f"備援：5分K帶量收過 {r1[1]} ({r1[0]}) 追多，停損 {I.round_tick(r1[1] - pad, 'down')}，目標 {bo1}" if r1 else None,
+                        "bo_trigger": r1[1] if r1 else None, "bo_stop": I.round_tick(r1[1] - pad, "down") if r1 else None, "bo_target": bo1 if r1 else None,
+                        "bo_target_name": boname}
     return plan

@@ -112,9 +112,11 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .pos .lbl{color:var(--muted);font-size:12px}
 .pos button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:#262b36;color:var(--fg);padding:6px 12px;line-height:1.15}
 .pos button:hover{border-color:var(--accent)}
-.pos button.px{display:flex;flex-direction:column;align-items:center;min-width:72px;padding:5px 10px}
-.pos button.px b{font-family:var(--mono);font-size:17px}.pos button.px i{font-style:normal;font-size:10px;color:var(--muted)}
-.pos.long button.px.rec{border-color:var(--up)}.pos.short button.px.rec{border-color:var(--dn)}
+.pos input.pxin{font:inherit;font-family:var(--mono);font-size:17px;font-weight:700;width:108px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:#12151b;color:var(--fg);text-align:right}
+.pos .grp{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.pos input.pxin:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(90,150,255,.25)}
+.pos input.pxin::placeholder{color:var(--muted);font-weight:400;font-size:13px}
+.pos .fillx{font-size:12px;color:var(--muted);cursor:pointer;border-bottom:1px dotted var(--muted);white-space:nowrap}.pos .fillx:hover{color:var(--fg)}
 .pos button.go{background:#1b2a46;border-color:var(--accent);font-weight:700}
 .pos button.ghost{background:transparent;color:var(--muted)}
 .pos button.danger{background:#3a1616;border-color:var(--up);font-weight:700}
@@ -192,7 +194,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
     <div class="card stock"><h3 id="t-stk">個股</h3><canvas id="jb-stk"></canvas></div>
   </section>
   <section class="card" id="c-price"><h3>即時 <span class="small muted" id="live-t"></span></h3><div id="price"></div></section>
-  <section class="card" id="c-verdict"><h3>多空勝率 <span class="small muted" id="eval-t"></span></h3><div id="signal" class="signal hidden"></div><div id="pos" class="pos hidden"></div><div id="verdict"></div></section>
+  <section class="card" id="c-verdict"><h3>多空強度 <span class="small muted" id="eval-t"></span></h3><div id="signal" class="signal hidden"></div><div id="pos" class="pos hidden"></div><div id="verdict"></div></section>
   <section class="card" id="c-alerts"><h3>警示 <span class="small muted" id="alerts-n"></span></h3><div class="alerts" id="alerts"></div></section>
   <section class="card" id="c-flow"><h3>主力 / 散戶 分流</h3><div class="flow" id="flow"></div>
     <div class="fs" id="fs"><div class="ctl" id="ctl"></div><div class="small" id="fs-big-t"></div><canvas id="fs-big"></canvas><div class="small" id="fs-small-t"></div><canvas id="fs-small"></canvas></div></section>
@@ -203,7 +205,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
   <section class="card" id="c-group"><h3>族群</h3><div id="group"></div></section>
   <section class="card" id="c-hist"><h3>交戰紀錄 <span class="small muted">（做熟悉的股票）</span></h3><div id="hist"></div></section>
   <section class="card" id="c-warr"><h3>權證</h3><div id="warr"></div></section>
-  <section class="card span2" id="c-chart"><h3>勝率曲線（每次估算）</h3><canvas id="chart" height="220"></canvas></section>
+  <section class="card span2" id="c-chart"><h3>多空強度曲線（每次估算）</h3><canvas id="chart" height="220"></canvas></section>
   <section class="card" id="c-pre"><h3>盤前摘要</h3><pre id="pre" class="small" style="white-space:pre-wrap;margin:0;color:var(--muted)"></pre></section>
 </main>
 <footer id="foot">以上為技術面與籌碼面推算，不構成投資建議。</footer>
@@ -386,7 +388,15 @@ function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];c
 
 // 交戰紀錄：監控天數、過去建議訊號的勝敗、常見失誤、最近幾筆、備註；下方列常做個股（/api/watchlist）
 let WATCH=null,WATCH_T=0;
-async function loadWatch(){if(Date.now()-WATCH_T<60000)return;WATCH_T=Date.now();try{const r=await fetch('/api/watchlist?_='+Date.now());WATCH=await r.json();renderHist();}catch(e){}}
+async function loadWatch(){if(Date.now()-WATCH_T<60000)return;WATCH_T=Date.now();try{const r=await fetch('/api/watchlist?_='+Date.now());WATCH=await r.json();renderHist();renderMeasured();}catch(e){}}
+// 實測訊號勝率（11/09 新判法的紀錄）：這檔 + 全部個股。「強度」是模型分數換算的，不是勝率；真正的勝率只看發出去的訊號實際贏幾筆
+function measured(side){const k=(side==='空'||side==='short')?'short':'long';const all={win:0,loss:0};let me={win:0,loss:0};
+  (WATCH||[]).forEach(h=>{if(h.rule!=='new'||!h[k])return;all.win+=h[k].win;all.loss+=h[k].loss;if(h.code===CUR)me=h[k];});return {me,all};}
+function wlTxt(s){const n=s.win+s.loss;return n?`${s.win} 贏 ${s.loss} 輸（${Math.round(s.win/n*100)}%）`:'還沒有結果';}
+function measuredShort(side){if(!WATCH)return '';const {all}=measured(side);const n=all.win+all.loss;return n?` · 實測 <b>${all.win} 贏 ${all.loss} 輸</b>`:' · 實測還沒有結果';}
+function renderMeasured(){const el=$('measured');if(!el)return;const ev=STATE&&STATE.latest&&STATE.latest[CUR];const side=ev&&ev.side;
+  if(!WATCH||(side!=='空'&&side!=='多')){el.innerHTML='';return;}const lab=side==='空'?'做空':'做多';const {me,all}=measured(side);const n=all.win+all.loss;
+  el.innerHTML=`強度是模型分數，不是勝率。實測${lab}訊號：這檔 <b>${wlTxt(me)}</b> · 全部個股 <b>${wlTxt(all)}</b>${n<30?`<br>有輸贏的只有 ${n} 筆，樣本太少，僅供參考`:''}`;}
 function renderHist(){const h=(STATE.daily[CUR]||{}).history;const el=$('hist');if(!el)return;loadWatch();
   if(!h){el.innerHTML='<span class="muted">尚無紀錄</span>';return;}
   const wl=s=>s&&(s.win+s.loss)?`<span class="wl"><span class="up">${s.win}勝</span> <span class="dn">${s.loss}敗</span>${s.flat?` ${s.flat}平`:''}${s.nofill?` ${s.nofill}未成交`:''}</span> <span class="muted">勝率 ${f(s.win_rate,0)}%${s.avg_net!=null?`，扣成本均 ${s.avg_net>0?'+':''}${f(s.avg_net,2)}%/筆`:''}${s.fast_adverse?`，估錯 ${s.fast_adverse}`:''}</span>`:(s&&s.n?`${s.n} 筆（${s.flat} 平）`:'<span class="muted">無</span>');
@@ -426,7 +436,7 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
     const t=LIVE.time||'';if(t>='13:05'&&t<'13:30'){el.className='signal ended';el.style.animation='none';el.innerHTML='<span class="d">尾盤 13:05 後不發新進場訊號：當沖平倉主導，只處理出場或順回補方向小部位</span>';}
     else{const b=LIVE&&LIVE.sig_block&&LIVE.sig_block[CUR];
       if(b){el.className=`signal ${b.side} ended`;el.style.animation='none';
-        el.innerHTML=`<span class="h">⏸ ${/軋空|停損賣不掉/.test(b.block_reason||"")?"急漲過濾":"逆勢過濾"}</span><span class="d">${esc(b.since)} 原本要建議${esc(b.label)} <b>${fp(b.alert_px)}</b>，但${esc(b.block_reason)}，不發（照樣追蹤假設進場的結果）</span><span class="why">${esc(b.why||'')}</span>`;}
+        el.innerHTML=`<span class="h">⏸ ${esc(b.block_kind||(/軋空|停損賣不掉/.test(b.block_reason||"")?"急漲過濾":"逆勢過濾"))}</span><span class="d">${esc(b.since)} 原本要建議${esc(b.label)} <b>${fp(b.alert_px)}</b>，但${esc(b.block_reason)}，不發（照樣追蹤假設進場的結果）</span><span class="why">${esc(b.why||'')}</span>`;}
       else{el.className='signal hidden';el.innerHTML='';}}return;}
   el.style.animation='';
   const ended=!!sg.status;el.className=`signal ${sg.side} ${ended?'ended':''}`;
@@ -440,39 +450,65 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
     <span class="d">現價 <b>${fp(sg.now)}</b> 已${sg.side==='short'?'殺低':'追高'}，等回進場區再進（20 分鐘沒回就取消）· 停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · ${rr} · ${esc(sg.since)} 起</span>
     <span class="why">${esc(sg.why)}</span>`
     :`<span class="h">▶ 建議${esc(sg.label)}</span><span class="px">${fp(sg.price)}</span>
-    <span class="d">停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · 勝率 <b>${f(sg.p,0)}%</b> · ${esc(sg.since)} 起 · 現價 <b>${fp(sg.now)}</b>${rr?' · '+rr:''}</span>
+    <span class="d">停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · ${sg.side==='short'?'偏空':'偏多'}強度 <b>${f(sg.p,0)}</b>${measuredShort(sg.side)} · ${esc(sg.since)} 起 · 現價 <b>${fp(sg.now)}</b>${rr?' · '+rr:''}</span>
     <span class="why">${ended?'<b>'+esc(sg.status)+'</b> — ':''}${esc(sg.why)}</span>`;}
 
-// 持倉面板：點選「排在哪個價 → 成交 → 出場」，模型就改盯你的排隊價與成交價。沒點 = 不假設你有單，結果都標「模型假設」
+// 持倉面板：輸入「排在哪個價 → 成交價 → 出場價」，模型就改盯你的排隊價與成交價。沒點 = 不假設你有單，結果都標「模型假設」
 let POS_ERR='';
 async function posAct(action,price){POS_ERR='';
   try{const r=await fetch('/api/position',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:CUR,action,price})});
     const j=await r.json();if(!r.ok){POS_ERR=j.error||'失敗';}else if(LIVE){LIVE.position=LIVE.position||{};LIVE.position[CUR]=j.position;}}
   catch(e){POS_ERR='連不到 monitor';}renderPos();}
-function renderPos(){const el=$('pos');const v=LIVE&&LIVE.position&&LIVE.position[CUR];
-  if(!v){el.className='pos hidden';el.innerHTML='';return;}
-  const L=v.side==='long',tk=L?'−':'+';const undo=v.can_undo?`<span class="undo" onclick="posAct('undo')">↶ 復原</span>`:'';
+// 價格一律用打的（原本點價位按鈕容易點歪）：輸入框內容存在 POS_IN，畫面每秒重畫也不會洗掉；↑↓ 一次跳 1 tick，Enter 送出
+let POS_IN={k:'',v:''},POS_HOLD=0;
+function tickOf(p){return p>=1000?5:p>=500?1:p>=100?0.5:p>=50?0.1:p>=10?0.05:0.01;}
+function posCur(){return LIVE&&LIVE.position&&LIVE.position[CUR];}
+function posRef(v){return v?(v.now||v.fill_px||v.q_px||(v.choices||[])[0]||null):null;}
+function posIn(act,v,def,ph){const k=[CUR,act,v.sig_since||''].join('|');if(POS_IN.k!==k)POS_IN={k,v:def==null?'':String(def)};
+  return `<input class="pxin" id="pos-px" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="${esc(ph||'價格')}" value="${esc(POS_IN.v)}" oninput="POS_IN.v=this.value" onkeydown="posKey(event,'${act}')" onfocus="this.select()">`;}
+function posFill(p){if(p==null)return;POS_IN.v=String(p);const n=$('pos-px');if(n){n.value=POS_IN.v;n.focus();}}
+function posKey(e,act){if(e.isComposing)return;if(e.key==='Enter'){e.preventDefault();posSubmit(act);return;}
+  if(e.key!=='ArrowUp'&&e.key!=='ArrowDown')return;e.preventDefault();
+  let p=parseFloat(e.target.value);if(!isFinite(p)||p<=0){p=posRef(posCur());if(!p)return;}
+  else p=e.key==='ArrowUp'?p+tickOf(p):p-tickOf(p-1e-9);
+  e.target.value=POS_IN.v=String(+p.toFixed(2));}
+function posSubmit(act){const n=$('pos-px');const raw=String(n?n.value:POS_IN.v).trim().replace(/,/g,'');const p=Number(raw);const bad=m=>{POS_ERR=m;renderPos();const x=$('pos-px');if(x)x.focus();};
+  if(!raw||!isFinite(p)||p<=0)return bad('請先輸入價格');
+  const tk=tickOf(p);if(Math.abs(p/tk-Math.round(p/tk))>1e-6)return bad(`${raw} 不是合法價位（這個價位一跳是 ${tk}）`);
+  const ref=posRef(posCur());if(ref&&Math.abs(p/ref-1)>0.2)return bad(`${raw} 離 ${fp(ref)} 超過 20%，是不是打錯了？`);
+  posAct(act,p);}
+// 滑鼠按在面板上的那一下不重畫（按下到放開之間換掉按鈕，點擊會被吃掉）
+document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('#pos'))POS_HOLD=Date.now();},true);
+document.addEventListener('pointerup',()=>{if(POS_HOLD){POS_HOLD=0;setTimeout(renderPos,0);}},true);
+function renderPos(){const el=$('pos');const v=posCur();
+  if(POS_HOLD&&Date.now()-POS_HOLD<1500)return;
+  if(!v){el.className='pos hidden';el.innerHTML='';el._html='';return;}
+  const L=v.side==='long';const undo=v.can_undo?`<span class="undo" onclick="posAct('undo')">↶ 復原</span>`:'';
   const err=POS_ERR?`<div class="err">${esc(POS_ERR)}</div>`:'';let h='',alarm=false;
+  const put=(cn,html)=>{el.className=cn;if(el._html===html)return;const a=document.activeElement,foc=a&&a.id==='pos-px',ss=foc?a.selectionStart:0,se=foc?a.selectionEnd:0;
+    el.innerHTML=html;el._html=html;if(foc){const n=$('pos-px');if(n){n.focus();try{n.setSelectionRange(ss,se);}catch(e){}}}};
   if(v.state==='none'){
-    if(!v.choices){el.className='pos';el.innerHTML=`<span class="m">已記錄</span>${undo}${err}`;return;}
-    h=`<span class="lbl">我排在</span>`+v.choices.map((p,i)=>`<button class="px ${i===0?'rec':''}" onclick="posAct('queue',${p})"><b>${fp(p)}</b><i>${i===0?'建議價':tk+i+' tick'}</i></button>`).join('')
-      +`<button class="ghost" onclick="posAct('skip')">不做</button>${undo}<div class="note">沒點任何價位 = 模型不假設你有單，訊號結果都標「模型假設」</div>`;}
-  else if(v.state==='queued'){const gap=v.now!=null?Math.round(Math.abs(v.now-v.q_px)/(v.q_px>=500?1:v.q_px>=100?0.5:v.q_px>=50?0.1:v.q_px>=10?0.05:0.01)):null;
+    if(!v.choices){put('pos',`<span class="m">已記錄</span>${undo}${err}`);return;}
+    const rec=v.choices[0];
+    h=`<span class="grp"><span class="lbl">我排在</span>`+posIn('queue',v,rec,'排隊價')+`<button class="go" onclick="posSubmit('queue')">排隊</button></span>`
+      +`<button class="ghost" onclick="posAct('skip')">不做</button>${undo}<div class="note">預設是建議價 ${fp(rec)}，直接改成你實際掛的價；↑↓ 一次跳 1 tick，Enter 送出。沒按「排隊」= 模型不假設你有單，訊號結果都標「模型假設」</div>`;}
+  else if(v.state==='queued'){const gap=v.now!=null?Math.round(Math.abs(v.now-v.q_px)/tickOf(v.q_px)):null;
     alarm=!!v.burst;
     h=`<span class="st">排隊 ${esc(v.label)} <b>${fp(v.q_px)}</b></span><span class="m">現價 <b>${fp(v.now)}</b>${gap!=null?`（差 ${gap} tick）`:''} · 停損 <b>${fp(v.stop)}</b> · 目標 <b>${fp(v.t1)}</b></span>`
-      +`<button class="${alarm?'':'go'}" onclick="posAct('fill',${v.q_px})">✓ 成交 ${fp(v.q_px)}</button><button class="${alarm?'danger':''}" onclick="posAct('cancel')">✕ 撤單</button>${undo}`
+      +`<span class="grp"><span class="lbl">成交價</span>`+posIn('fill',v,v.q_px,'成交價')+`<button class="${alarm?'':'go'}" onclick="posSubmit('fill')">✓ 成交</button></span><button class="${alarm?'danger':''}" onclick="posAct('cancel')">✕ 撤單</button>${undo}`
       +(alarm?`<div class="hint">⚠ ${esc(v.burst.time)} 大單${esc(v.burst.verb)}過來（15 秒內 ${fp(v.burst.from)} → ${fp(v.burst.px)}，${esc(v.burst.side_txt)} ${v.burst.big_vol} 張）→ 還沒成交就撤單</div>`:v.hint?`<div class="hint">${esc(v.hint)}</div>`:'');}
   else if(v.state==='holding'){const c=v.pnl_ticks>0?'up':v.pnl_ticks<0?'dn':'flat';alarm=/停損/.test(v.hint||'');
     const lo=L?v.stop:v.t1,hi=L?v.t1:v.stop;const pos=x=>Math.max(0,Math.min(100,(x-lo)/(hi-lo)*100));
     h=`<span class="st">持倉 ${esc(v.label)} <b>${fp(v.fill_px)}</b></span><span class="pnl ${c}">${v.pnl_ticks!=null?(v.pnl_ticks>0?'+':'')+v.pnl_ticks+' tick':'-'}</span>`
       +`<span class="m">扣成本 <b class="${cls(v.net_pct)}">${pct(v.net_pct)}</b> · 現價 <b>${fp(v.now)}</b> · 距停損 <b>${f(v.to_stop,0)}</b> tick · 距目標 <b>${f(v.to_t1,0)}</b> tick</span>`
-      +`<button class="go" onclick="posAct('exit',${v.now})">出場 @${fp(v.now)}</button><button onclick="posAct('exit',${v.stop})">停損 ${fp(v.stop)}</button><button onclick="posAct('exit',${v.t1})">目標 ${fp(v.t1)}</button>${undo}`
+      +`<span class="grp"><span class="lbl">出場價</span>`+posIn('exit',v,null,'實際出場價')+`<button class="go" onclick="posSubmit('exit')">出場</button></span>`
+      +`<span class="fillx" onclick="posFill(posCur().now)">填現價</span><span class="fillx" onclick="posFill(${v.stop})">填停損 ${fp(v.stop)}</span><span class="fillx" onclick="posFill(${v.t1})">填目標 ${fp(v.t1)}</span>${undo}`
       +(v.now!=null?`<div class="rng" title="左 ${fp(lo)}、右 ${fp(hi)}"><s style="left:${pos(v.fill_px)}%"></s><i style="left:${pos(v.now)}%"></i></div>`:'')
       +(v.hint?`<div class="hint">${esc(v.hint)}</div>`:'<div class="note">進場後只看停損和目標，中途回吐不用跑</div>');}
   else if(v.state==='closed'){h=`<span class="st">已出場 ${esc(v.label)} <b>${fp(v.fill_px)}</b> → <b>${fp(v.exit_px)}</b></span><span class="pnl ${cls(v.ticks)}">${v.ticks>0?'+':''}${v.ticks} tick</span><span class="m">扣成本 <b class="${cls(v.net_pct)}">${pct(v.net_pct)}</b></span>${undo}`;}
   else if(v.state==='cancelled'){h=`<span class="m">已撤單 ${esc(v.label)} <b>${fp(v.q_px)}</b></span>${undo}`;}
   else if(v.state==='skipped'){h=`<span class="m">這筆沒做</span>${undo}`;}
-  el.className=`pos ${v.side||''} ${alarm?'alarm':''}`;el.innerHTML=h+err;}
+  put(`pos ${v.side||''} ${alarm?'alarm':''}`,h+err);}
 
 // 警示：全部帶時間戳（即時警示用產生時間、估算警示用估算時間），60 秒內的新警示閃爍
 function ageSec(t){if(!t)return 1e9;const [hh,mm,ss]=t.split(':').map(Number);const n=new Date();return (n.getHours()*3600+n.getMinutes()*60+n.getSeconds())-(hh*3600+mm*60+(ss||0));}
@@ -507,10 +543,12 @@ function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   $('eval-t').innerHTML=`估算 ${esc(ev.time)} · 下次 ${String(Math.floor(next/60)).padStart(2,'0')}:${String(next%60).padStart(2,'0')}${age>STATE.interval*2?' <span class="stale">(過舊)</span>':''}`;
   const side=ev.side;const vcol=side==='空'?'dn':side==='多'?'up':'flat';const ph=(LIVE&&LIVE.phase)||i.phase||phaseNow();
   $('verdict').innerHTML=`<div class="verdict ${vcol}">${esc(ev.verdict)}</div>
-   <div class="bars"><span class="up">多</span><div class="bar long"><i style="width:${ev.p_long}%"></i></div><b class="num up">${f(ev.p_long,0)}%</b></div>
-   <div class="bars"><span class="dn">空</span><div class="bar short"><i style="width:${ev.p_short}%"></i></div><b class="num dn">${f(ev.p_short,0)}%</b></div>
+   <div class="bars"><span class="up">多</span><div class="bar long"><i style="width:${ev.p_long}%"></i></div><b class="num up">${f(ev.p_long,0)}</b></div>
+   <div class="bars"><span class="dn">空</span><div class="bar short"><i style="width:${ev.p_short}%"></i></div><b class="num dn">${f(ev.p_short,0)}</b></div>
+   <div class="small muted" id="measured" style="margin-top:6px"></div>
    <div class="small muted" style="margin-top:6px">盤前 <b class="num">${f(ev.daily_bias,2)}</b> · 盤中 <b class="num">${f(ev.intra_bias,2)}</b> · 合計 <b class="num">${f(ev.bias,2)}</b></div>
    <div class="hint"><b>${esc(ph.label)}</b>${ph.range?' '+ph.range:''}：${esc(ph.hint)}</div>`;
+  renderMeasured();loadWatch();
   const chip=([n,s,t])=>`<span class="chip ${s>0?'pos':s<0?'neg':'zero'}" title="${esc(t)}">${esc(n)}<b>${s>0?'+':''}${f(s,1)}</b></span>`;
   $('factors').innerHTML=`<div class="small muted" style="margin-bottom:4px">盤前</div><div class="chips">${(ev.daily_factors||[]).map(chip).join('')||'<span class="muted">無</span>'}</div>
    <div class="small muted" style="margin:8px 0 4px">盤中</div><div class="chips">${(ev.intraday_factors||[]).map(chip).join('')||'<span class="muted">無</span>'}</div>`;
@@ -518,7 +556,7 @@ function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   const box=(k,o,title)=>o?`<div class="box ${k} ${k===act?'':'dim'}"><h4>${title}${k===act?' <span class="small muted">主計畫</span>':''}</h4>${o.note?`<div class="note">⚠ ${esc(o.note)}</div>`:''}<div class="entry">${esc(o.entry)}</div><table>
     <tr><td>停損</td><td class="num">${fp(o.stop)} <span class="muted">(${f(o.risk_pct,1)}%)</span></td></tr><tr><td>目標 1</td><td class="num">${fp(o.t1)} <span class="muted">(${f(o.reward_pct,1)}%)</span></td></tr><tr><td>目標 2</td><td class="num">${fp(o.t2)}</td></tr></table>
     ${o.breakdown||o.breakout?`<div class="small muted" style="margin-top:6px">${esc(o.breakdown||o.breakout)}</div>`:''}</div>`:'';
-  $('plan').innerHTML=box('short',ev.p_short>0?pl.short:null,`空 <span class="num dn">${f(ev.p_short,0)}%</span>`)+box('long',pl.long,`多 <span class="num up">${f(ev.p_long,0)}%</span>`);
+  $('plan').innerHTML=box('short',ev.p_short>0?pl.short:null,`空 <span class="num dn">強度 ${f(ev.p_short,0)}</span>`)+box('long',pl.long,`多 <span class="num up">強度 ${f(ev.p_long,0)}</span>`);
   const res=(pl.resistance||[]).slice().reverse(),sup=pl.support||[];const cur=(LIVE&&LIVE.quotes[CUR]&&LIVE.quotes[CUR].ref)||ev.quote.ref;
   $('ladder').innerHTML=res.map(([n,v])=>`<div class="row r"><span>${esc(n)}</span><span>${fp(v)}</span></div>`).join('')+`<div class="row now"><span>現價</span><span>${fp(cur)}</span></div>`+sup.map(([n,v])=>`<div class="row s"><span>${esc(n)}</span><span>${fp(v)}</span></div>`).join('');
   const gd=i.group_detail||[];
@@ -550,12 +588,12 @@ function drawChart(){const h=HIST[CUR]||[];const c=$('chart');const dpr=window.d
   const last=h[h.length-1];if(last.price!=null){const col=(y&&last.price<y)?'#2ecc71':'#ff4d4f';g.fillStyle=col;g.beginPath();g.arc(X(mins(last.time)),Ya(last.price),F(3),0,7);g.fill();
     const txt=fp(last.price)+(y?' '+chgTxt(last.price,y,dec(last.price)):'');g.fillText(txt,X(mins(last.time))+F(6)>x1-F(120)?x1-F(150):X(mins(last.time))+F(6),Ya(last.price)-F(6));}
   g.fillStyle='#e6e9ef';g.fillText('價',x0+F(4),y0a+F(11));
-  // 下面板：多 / 空 勝率 0–100%
+  // 下面板：多 / 空 強度 0–100
   g.strokeStyle='#232833';[0,50,100].forEach(v=>{g.beginPath();g.moveTo(x0,Yb(v));g.lineTo(x1,Yb(v));g.stroke();g.fillStyle='#8b93a3';g.fillText(v+'%',x1+F(4),Yb(v)+F(4));});
   const line=(key,col)=>{g.strokeStyle=col;g.lineWidth=F(1.6);g.beginPath();let st=false;h.forEach(p=>{if(p[key]==null)return;const xx=X(mins(p.time)),yy=Yb(p[key]);st?g.lineTo(xx,yy):g.moveTo(xx,yy);st=true;});g.stroke();
     if(st){g.fillStyle=col;g.beginPath();g.arc(X(mins(last.time)),Yb(last[key]),F(2.5),0,7);g.fill();}};
   line('p_long','#ff4d4f');line('p_short','#2ecc71');
-  g.fillStyle='#ff4d4f';g.fillText(`— 多 ${f(last.p_long,0)}%`,x0+F(4),y0b+F(11));g.fillStyle='#2ecc71';g.fillText(`— 空 ${f(last.p_short,0)}%`,x0+F(70),y0b+F(11));
+  g.fillStyle='#ff4d4f';g.fillText(`— 多 ${f(last.p_long,0)}`,x0+F(4),y0b+F(11));g.fillStyle='#2ecc71';g.fillText(`— 空 ${f(last.p_short,0)}`,x0+F(70),y0b+F(11));
   g.fillStyle='#8b93a3';g.fillText(`每 ${Math.round((STATE?.interval||180)/60)} 分鐘一次估算，共 ${h.length} 次`,x0+F(140),y0b+F(11));}
 </script>
 </body>

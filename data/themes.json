@@ -1,6 +1,6 @@
 {
  "quote_date": "2026-11-10",
- "members_fetched": "2026-11-10",
+ "members_fetched": "2026-11-11",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -45,18 +45,6 @@
      "volume": 5163
     },
     {
-     "code": "3450",
-     "name": "聯鈞",
-     "market": "上市",
-     "open": 319.0,
-     "high": 339.5,
-     "low": 319.0,
-     "close": 339.5,
-     "change": 30.5,
-     "pct": 9.87,
-     "volume": 3292
-    },
-    {
      "code": "3081",
      "name": "聯亞",
      "market": "上櫃",
@@ -67,6 +55,18 @@
      "change": 190.0,
      "pct": 9.87,
      "volume": 881
+    },
+    {
+     "code": "3450",
+     "name": "聯鈞",
+     "market": "上市",
+     "open": 319.0,
+     "high": 339.5,
+     "low": 319.0,
+     "close": 339.5,
+     "change": 30.5,
+     "pct": 9.87,
+     "volume": 3292
     },
     {
      "code": "3163",
@@ -152,18 +152,6 @@
      "volume": 5163
     },
     {
-     "code": "3450",
-     "name": "聯鈞",
-     "market": "上市",
-     "open": 319.0,
-     "high": 339.5,
-     "low": 319.0,
-     "close": 339.5,
-     "change": 30.5,
-     "pct": 9.87,
-     "volume": 3292
-    },
-    {
      "code": "3081",
      "name": "聯亞",
      "market": "上櫃",
@@ -174,6 +162,18 @@
      "change": 190.0,
      "pct": 9.87,
      "volume": 881
+    },
+    {
+     "code": "3450",
+     "name": "聯鈞",
+     "market": "上市",
+     "open": 319.0,
+     "high": 339.5,
+     "low": 319.0,
+     "close": 339.5,
+     "change": 30.5,
+     "pct": 9.87,
+     "volume": 3292
     },
     {
      "code": "3163",
@@ -1140,7 +1140,7 @@
      "volume": 4356
     }
    ],
-   "avg_pct": 7.26,
+   "avg_pct": 7.25,
    "up": 8,
    "down": 0,
    "flat": 0
@@ -2365,18 +2365,6 @@
    "desc": "CCL 概念股指印刷電路板上游材料鏈的台股：銅箔基板（CCL）由電子級玻纖布含浸樹脂後與銅箔壓合而成，這頁收錄 CCL 廠，以及銅箔、玻纖布與樹脂等關鍵原料供應商。",
    "members": [
     {
-     "code": "4989",
-     "name": "榮科",
-     "market": "上市",
-     "open": 51.0,
-     "high": 54.9,
-     "low": 50.9,
-     "close": 54.9,
-     "change": 4.95,
-     "pct": 9.91,
-     "volume": 2578
-    },
-    {
      "code": "8358",
      "name": "金居",
      "market": "上櫃",
@@ -2387,6 +2375,18 @@
      "change": 33.0,
      "pct": 9.91,
      "volume": 9406
+    },
+    {
+     "code": "4989",
+     "name": "榮科",
+     "market": "上市",
+     "open": 51.0,
+     "high": 54.9,
+     "low": 50.9,
+     "close": 54.9,
+     "change": 4.95,
+     "pct": 9.91,
+     "volume": 2578
     },
     {
      "code": "1802",
@@ -3724,18 +3724,6 @@
      "volume": 11372
     },
     {
-     "code": "2392",
-     "name": "正崴",
-     "market": "上市",
-     "open": 33.5,
-     "high": 34.95,
-     "low": 33.5,
-     "close": 34.35,
-     "change": 0.35,
-     "pct": 1.03,
-     "volume": 1759
-    },
-    {
      "code": "6176",
      "name": "瑞儀",
      "market": "上市",
@@ -3746,6 +3734,18 @@
      "change": 0.8,
      "pct": 1.03,
      "volume": 2164
+    },
+    {
+     "code": "2392",
+     "name": "正崴",
+     "market": "上市",
+     "open": 33.5,
+     "high": 34.95,
+     "low": 33.5,
+     "close": 34.35,
+     "change": 0.35,
+     "pct": 1.03,
+     "volume": 1759
     }
    ],
    "avg_pct": 4.5,

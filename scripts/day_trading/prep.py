@@ -80,7 +80,7 @@ def markets_for(codes):
 _MIS_ERR = None
 
 
-PREP_VERSION = 7  # 快取結構版本：欄位有增減就 +1，舊快取會自動重建
+PREP_VERSION = 8  # 快取結構版本：欄位有增減就 +1，舊快取會自動重建
 
 
 def build(code, peers_arg=None, refresh=False):
@@ -210,7 +210,13 @@ def build(code, peers_arg=None, refresh=False):
     mkt["tx_night"] = _safe(lambda: src_taifex.tx_session(today, night=True), None, "夜盤")
     mkt["tx_day_prev"] = _safe(lambda: src_taifex.tx_session(prev, night=False), None, "日盤")
     mkt["foreign_oi"] = _safe(lambda: src_taifex.foreign_tx_oi(prev), None, "外資OI")
-    mkt["us"] = _safe(src_yahoo.us_overnight, {}, "美股")
+    # 美股：Yahoo 常回 429（11/02–11/10 的 31 份快取只有 3 份抓到），缺的用期交所美國指數期貨夜盤補（官方來源，src=taifex）
+    us = _safe(src_yahoo.us_overnight, {}, "美股") or {}
+    if "SOX" not in us or "SPX" not in us:
+        fut = _safe(lambda: src_taifex.us_futures_night(today), {}, "美股期貨夜盤") or {}
+        for k, v in fut.items():
+            us.setdefault(k, v)
+    mkt["us"] = us
 
     # --- 族群成員前日資料 ---
     peer_info = {}
@@ -246,7 +252,7 @@ def describe(d):
     if t:
         L.append(f"  前日 {t['date']} 收 {t['close']} ({t.get('chg_pct') or 0:+.2f}%)  量 {t['vol']} 張 (5日均 {t['vol_ma5'] and round(t['vol_ma5'])})  連{'漲' if t['streak']>0 else '跌'} {abs(t['streak'])} 天")
         L.append(f"  MA5 {t['ma5'] and round(t['ma5'],2)}  MA10 {t['ma10'] and round(t['ma10'],2)}  MA20 {t['ma20'] and round(t['ma20'],2)}  MA60 {t['ma60'] and round(t['ma60'],2)}  BB {t['bb_dn'] and round(t['bb_dn'],1)}~{t['bb_up'] and round(t['bb_up'],1)}  ATR {t['atr14'] and round(t['atr14'],2)} ({t['atr_pct'] and round(t['atr_pct'],1)}%)  RSI {t['rsi14'] and round(t['rsi14'],1)}")
-        L.append(f"  今日漲停 {d['limit_up']} / 跌停 {d['limit_down']}  20日高低 {t['high20']}/{t['low20']}  前日高低 {t['prev_high']}/{t['prev_low']}")
+        L.append(f"  今日漲停 {d['limit_up']} / 跌停 {d['limit_down']}  20日高低 {t['high20']}/{t['low20']}  昨日高低 {t.get('high')}/{t.get('low')}（前一日 {t['prev_high']}/{t['prev_low']}）")
     s = d["insti_sum"]
     L.append(f"  法人3日：外資 {s['foreign']:+} 投信 {s['trust']:+} 自營 {s['dealer']:+} 張  | 逐日 " +
              " ".join(f"{k[5:]}:外{v['foreign']:+}/投{v['trust']:+}" for k, v in d["insti"].items()))
@@ -280,7 +286,8 @@ def describe(d):
     us = mc.get("us", {})
     L.append(f"  大盤前日：漲 {mc.get('breadth',{}).get('up')} / 跌 {mc.get('breadth',{}).get('down')}  外資 {mc.get('foreign_amt_b')} 億  投信 {mc.get('trust_amt_b')} 億  外資期貨淨OI {(mc.get('foreign_oi') or {}).get('net_oi')}")
     if tx:
-        L.append(f"  台指夜盤({tx.get('title')})：{tx['c']} ({tx['chg']:+} / {tx['chg_pct']:+.2f}%)  美股：" + "  ".join(f"{k} {v['pct']:+.2f}%" for k, v in us.items()))
+        L.append(f"  台指夜盤({tx.get('title')})：{tx['c']} ({tx['chg']:+} / {tx['chg_pct']:+.2f}%)  美股：" + "  ".join(f"{v.get('label') or k} {v['pct']:+.2f}%" for k, v in us.items())
+                 + ("（期交所美國指數期貨夜盤）" if any(v.get("src") == "taifex" for v in us.values()) else ""))
     return "\n".join(L)
 
 

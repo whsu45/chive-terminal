@@ -49,5 +49,6 @@ def us_overnight():
             if len(rows) >= 2:
                 out[key] = {"date": rows[-1]["date"], "c": rows[-1]["c"], "pct": (rows[-1]["c"] / rows[-2]["c"] - 1) * 100}
         except http.HttpError:
-            pass
+            if not out:
+                break          # 第一檔就失敗（多半是 429）：別再連打剩下四檔，交給期交所備援（prep.py）
     return out

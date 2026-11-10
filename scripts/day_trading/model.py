@@ -178,12 +178,14 @@ def daily_factors(d):
             F.append(("夜盤重挫", -0.4, f"台指夜盤 {p:+.2f}%，開低壓力，但留意開低拉回"))
         elif p > 1:
             F.append(("夜盤大漲", 0.3, f"台指夜盤 {p:+.2f}%"))
-    sox = (mc.get("us") or {}).get("SOX", {}).get("pct")
+    sx = (mc.get("us") or {}).get("SOX") or {}
+    sox = sx.get("pct")
     if sox is not None:
+        tag = "費半期貨夜盤（期交所）" if sx.get("src") == "taifex" else "SOX"
         if sox < -3:
-            F.append(("費半重挫", -0.3, f"SOX {sox:+.1f}%"))
+            F.append(("費半重挫", -0.3, f"{tag} {sox:+.1f}%"))
         elif sox > 2:
-            F.append(("費半大漲", 0.2, f"SOX {sox:+.1f}%"))
+            F.append(("費半大漲", 0.2, f"{tag} {sox:+.1f}%"))
     br = mc.get("breadth") or {}
     if br.get("down") and br.get("up") is not None and br["down"] > br["up"] * 6:
         F.append(("前日全面殺盤", 0.15, f"漲 {br['up']} / 跌 {br['down']}，超跌反彈日常見"))
@@ -779,7 +781,7 @@ def build_levels(d, q, info):
     L = [("漲停", d.get("limit_up")), ("跌停", d.get("limit_down")), ("昨收", q.get("y") or t.get("close")),
          ("今開", q.get("o")), ("今高", q.get("h")), ("今低", q.get("l")),
          ("MA5", t.get("ma5")), ("MA10", t.get("ma10")), ("MA20", t.get("ma20")), ("MA60", t.get("ma60")),
-         ("布林下", t.get("bb_dn")), ("布林上", t.get("bb_up")), ("昨高", t.get("prev_high")), ("昨低", t.get("prev_low")),
+         ("布林下", t.get("bb_dn")), ("布林上", t.get("bb_up")), ("昨高", t.get("high")), ("昨低", t.get("low")), ("前日高", t.get("prev_high")), ("前日低", t.get("prev_low")),
          ("20日低", t.get("low20")), ("20日高", t.get("high20")), ("VWAP", info.get("vwap"))]
     p = q.get("ref")
     if p:

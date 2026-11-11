@@ -19,7 +19,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-2xl font-bold text-slate-800">🧩 族群漲跌排行</h1>
-                    <p class="text-slate-500 text-sm mt-1">族群與成分股名單取自 FinLab 族群頁，漲跌來自證交所／櫃買中心官方收盤行情；強弱勢個股以本站策略引擎判讀並回測驗證</p>
+                    <p class="text-slate-500 text-sm mt-1">族群與成分股名單取自 FinLab 族群頁，漲跌在盤中用證交所即時報價、收盤後用當日收盤價（即時報價拿不到時才用前一個交易日的收盤行情）；強弱勢個股以本站策略引擎判讀並回測驗證</p>
                 </div>
                 <div id="meta" class="text-xs text-slate-500 md:text-right space-y-1"></div>
             </div>
@@ -57,7 +57,7 @@
         <div id="method" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 text-sm text-slate-600 space-y-2"></div>
 
         <footer class="text-center text-xs text-slate-400 py-4">
-            族群名單：<a href="https://finlab.finance/stocks/themes" target="_blank" rel="noopener" class="hover:underline">FinLab 族群</a> ｜ 行情：證交所 OpenAPI、櫃買中心 OpenAPI ｜ 策略回測：FinMind | 自動化發布 via GitHub Actions & Pages
+            族群名單：<a href="https://finlab.finance/stocks/themes" target="_blank" rel="noopener" class="hover:underline">FinLab 族群</a> ｜ 行情：證交所 MIS 即時報價（盤中與當日收盤）；拿不到時用證交所、櫃買中心 OpenAPI 的收盤行情 ｜ 策略回測：FinMind | 自動化發布 via GitHub Actions & Pages
         </footer>
     </div>
 

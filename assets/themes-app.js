@@ -55,13 +55,33 @@
       </div>`;
   }
 
+  // 行情是哪一天、幾點的：盤中用即時報價（證交所 MIS），收盤後是當天收盤價；即時報價拿不到才是前一個交易日的收盤
+  let PRICE_WORD = '收盤';   // 盤中報價時表頭改成「成交」
+  function twToday() { return new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10); }
+  function quoteLabel(t) {
+    const d = `<span class="font-semibold text-slate-700">${esc(t.quote_date)}</span>`;
+    if (t.intraday) return `行情：${d} <span class="font-semibold text-slate-700">${esc((t.quote_time || '').slice(0, 5))}</span> <span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[11px] font-bold">盤中報價</span>`;
+    return `行情日：${d}${t.quote_source ? ' <span class="text-slate-400">收盤</span>' : ''}`;
+  }
+  function quoteNote(t) {
+    const notes = [];
+    if (t.intraday) notes.push(`這是 ${esc((t.quote_time || '').slice(0, 5))} 抓到的盤中成交價，不是收盤價；漲跌是對昨天收盤算的。頁面不會自己跳動，要等下一次自動更新（盤中約兩小時一次）。`);
+    else if (t.quote_source === 'close' && t.quote_date < twToday()) {
+      const hm = new Date(Date.now() + 8 * 3600e3).toISOString().slice(11, 16), wd = new Date(Date.now() + 8 * 3600e3).getUTCDay();
+      if (wd >= 1 && wd <= 5 && hm >= '09:10') notes.push(`這次更新沒有拿到今天的即時報價，顯示的是 ${esc(t.quote_date)} 的收盤行情。`);
+    }
+    const others = Object.entries(t.date_counts || {}).filter(([d]) => d !== t.quote_date);
+    if (others.length) notes.push(`有 ${others.map(([d, n]) => `${n} 檔是 ${esc(d)} 的行情`).join('、')}（沒拿到最新報價），個股列有標日期。`);
+    return notes.join('<br>');
+  }
+
   function themeRow(t, idx) {
     const maxAbs = Math.max(1, ...t.members.map(m => Math.abs(m.pct ?? 0)));
     const rows = t.members.map((m, i) => {
       const w = m.pct == null ? 0 : Math.abs(m.pct) / maxAbs * 100;
       return `<tr class="hover:bg-slate-50" data-search="${esc(`${m.code} ${m.name}`)}">
         <td class="py-2 px-2 sm:px-3 text-slate-400">${i + 1}</td>
-        <td class="py-2 px-2 sm:px-3 font-semibold whitespace-nowrap"><a href="./stock.html?id=${encodeURIComponent(m.code)}" class="text-slate-800 hover:text-indigo-600 hover:underline">${esc(m.code)} ${esc(m.name)}</a></td>
+        <td class="py-2 px-2 sm:px-3 font-semibold whitespace-nowrap"><a href="./stock.html?id=${encodeURIComponent(m.code)}" class="text-slate-800 hover:text-indigo-600 hover:underline">${esc(m.code)} ${esc(m.name)}</a>${m.no_trade ? ' <span class="text-[10px] font-normal text-slate-400">今日未成交</span>' : ''}${m.date ? ` <span class="text-[10px] font-normal text-amber-600">${esc(m.date.slice(5))} 行情</span>` : ''}</td>
         <td class="py-2 px-2 sm:px-3 text-xs text-slate-500 whitespace-nowrap hidden sm:table-cell">${esc(m.market || '—')}</td>
         <td class="py-2 px-2 sm:px-3 text-right">${num(m.close)}</td>
         <td class="py-2 px-2 sm:px-3 text-right ${signCls(m.change)} whitespace-nowrap hidden sm:table-cell">${m.change == null ? 'NA' : `${m.change > 0 ? '+' : ''}${num(m.change)}`}</td>
@@ -86,7 +106,7 @@
         <div class="px-2 sm:px-4 pb-4">
           <p class="text-xs text-slate-500 mb-2">${esc(t.desc)}</p>
           <div class="overflow-x-auto"><table class="w-full text-sm border-collapse">
-            <thead class="text-xs text-slate-700 bg-slate-100"><tr><th class="py-2 px-2 sm:px-3 text-left rounded-l-lg">#</th><th class="py-2 px-2 sm:px-3 text-left">個股</th><th class="py-2 px-2 sm:px-3 text-left whitespace-nowrap hidden sm:table-cell">市場</th><th class="py-2 px-2 sm:px-3 text-right">收盤</th><th class="py-2 px-2 sm:px-3 text-right hidden sm:table-cell">漲跌</th><th class="py-2 px-2 sm:px-3 text-right">漲跌幅</th><th class="py-2 px-2 sm:px-3 hidden md:table-cell"></th><th class="py-2 px-2 sm:px-3 text-right whitespace-nowrap hidden sm:table-cell">成交量(張)</th><th class="py-2 px-2 sm:px-3 rounded-r-lg hidden sm:table-cell"></th></tr></thead>
+            <thead class="text-xs text-slate-700 bg-slate-100"><tr><th class="py-2 px-2 sm:px-3 text-left rounded-l-lg">#</th><th class="py-2 px-2 sm:px-3 text-left">個股</th><th class="py-2 px-2 sm:px-3 text-left whitespace-nowrap hidden sm:table-cell">市場</th><th class="py-2 px-2 sm:px-3 text-right">${PRICE_WORD}</th><th class="py-2 px-2 sm:px-3 text-right hidden sm:table-cell">漲跌</th><th class="py-2 px-2 sm:px-3 text-right">漲跌幅</th><th class="py-2 px-2 sm:px-3 hidden md:table-cell"></th><th class="py-2 px-2 sm:px-3 text-right whitespace-nowrap hidden sm:table-cell">成交量(張)</th><th class="py-2 px-2 sm:px-3 rounded-r-lg hidden sm:table-cell"></th></tr></thead>
             <tbody class="divide-y divide-slate-100">${rows}</tbody></table></div>
           <a href="https://finlab.finance/stocks/themes/${encodeURIComponent(t.slug)}" target="_blank" rel="noopener" class="inline-block mt-2 text-[11px] text-slate-400 hover:underline">族群說明來源：FinLab</a>
         </div>
@@ -120,9 +140,12 @@
     }
     try { picks = await (await fetch('./data/theme_picks.json', { cache: 'no-cache' })).json(); } catch (e) { picks = null; }
 
-    $('meta').innerHTML = `<div>行情日：<span class="font-semibold text-slate-700">${esc(themes.quote_date)}</span></div>
+    $('meta').innerHTML = `<div class="whitespace-nowrap">${quoteLabel(themes)}</div>
       <div>族群名單更新：<span class="font-semibold text-slate-700">${esc(themes.members_fetched)}</span></div>
       <div class="text-slate-400">共 ${themes.themes.length} 個族群</div>`;
+    const note = quoteNote(themes);
+    if (note) { $('status').className = 'rounded-xl border p-4 text-sm bg-amber-50 border-amber-200 text-amber-800'; $('status').innerHTML = note; }
+    PRICE_WORD = themes.intraday ? '成交' : '收盤';
 
     if (picks && picks.quote_date === themes.quote_date) renderPicks(picks);
     else if (picks) { renderPicks(picks); $('picks').insertAdjacentHTML('afterbegin', `<div class="xl:col-span-5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">強弱勢個股為 ${esc(picks.quote_date)} 的判讀結果，與目前行情日不同。</div>`); }

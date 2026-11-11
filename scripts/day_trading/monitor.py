@@ -28,6 +28,7 @@ import src_mis
 import src_warrants as W
 import http_client as hc   # 別名不能叫 http：下面 import http.server 會把它蓋掉
 import tw_calendar as cal
+import re
 import glob
 import subprocess
 import threading
@@ -57,6 +58,7 @@ class WebState:
         self.selected = None              # 網頁選定的監控代碼
         self.select_event = threading.Event()
         self.picks = {}                   # code -> 選股理由（選股模式選的才有）
+        self.tomorrow = {"status": "off"} # 復盤畫面「明天的準備」：off / running / done / error（背景抓分點表與選股）
 
     def put_live(self, obj):
         with self.lock:
@@ -120,6 +122,44 @@ class WebState:
         return True, {"selected": codes}
 
 
+def review_json(date):
+    """復盤畫面的資料（eod.build）：當天紀錄整理成成績單、訊號、過濾、方向、警示。date = YYYY-MM-DD 或 None（今天）。"""
+    import eod
+    try:
+        return json.dumps(eod.build(date), ensure_ascii=False, default=str)
+    except Exception as e:
+        return json.dumps({"error": f"{e.__class__.__name__}: {str(e)[:200]}"}, ensure_ascii=False)
+
+
+def tomorrow_json(codes):
+    """
+    「明天的準備」：分點表與選股要連線、要等傍晚資料出來，所以在背景抓、結果快取。
+    沒抓過、換日了、或上次還有資料沒出（且已過 10 分鐘）就重新抓一次；回目前的狀態。
+    """
+    def work():
+        try:
+            import eod
+            res = eod.tomorrow(codes)
+            with WEB.lock:
+                WEB.tomorrow = {"status": "done", "result": res, "ts": time.time()}
+        except BaseException as e:
+            with WEB.lock:
+                WEB.tomorrow = {"status": "error", "error": str(e)[:300] or e.__class__.__name__, "ts": time.time()}
+
+    with WEB.lock:
+        t = WEB.tomorrow
+        res = t.get("result") or {}
+        pending = any(b.get("pending") or b.get("error") for b in (res.get("brokers") or {}).values()) or (res.get("screener") or {}).get("pending") \
+            or (res.get("screener") or {}).get("error")
+        missing = [c for c in codes if c not in (res.get("brokers") or {})]
+        stale = t["status"] == "off" or (t["status"] in ("done", "error") and time.time() - t.get("ts", 0) > 600 and (pending or t["status"] == "error")) \
+            or (t["status"] == "done" and (res.get("date") != cal.today_tw().isoformat() and cal.is_trading_day(cal.today_tw()) or missing))
+        if stale and t["status"] != "running":
+            WEB.tomorrow = {"status": "running", "started": dt.datetime.now().strftime("%H:%M:%S"), "result": t.get("result")}
+            threading.Thread(target=work, daemon=True).start()
+        return json.dumps(WEB.tomorrow, ensure_ascii=False, default=str)
+
+
 MAX_PICK = 6   # 選股模式最多同時監控幾檔（每檔一條永豐串流與一次盤前資料）
 WEB = WebState()
 
@@ -169,6 +209,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._send(json.dumps(history.all_summary(), ensure_ascii=False, default=str))
         if path == "/api/screener":
             return self._send(WEB.picker_json())
+        if path in ("/api/review", "/api/review/tomorrow"):
+            q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+            if path == "/api/review":
+                d = (q.get("date") or [""])[0]
+                return self._send(review_json(d if re.fullmatch(r"\d{4}-\d{2}-\d{2}", d) else None))
+            codes = [c for c in (q.get("codes") or [""])[0].split(",") if 4 <= len(c) <= 6 and c.isalnum()][:12]
+            return self._send(tomorrow_json(codes))
         self._send('{"error":"not found"}', code=404)
 
     def do_POST(self):

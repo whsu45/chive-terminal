@@ -140,6 +140,31 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 /* 選股模式 */
 .picker{max-width:1400px;margin:0 auto;padding:12px 16px}
 .picker.hidden,main.hidden{display:none}
+/* 復盤畫面 */
+.vbtn{padding:5px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);cursor:pointer;font:inherit;font-weight:600}
+.vbtn:hover,.vbtn.on{border-color:var(--accent);background:#1b2a46}
+.rv-bar{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.rv-bar select{background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit}
+.rv-tabs{display:flex;flex-wrap:wrap;gap:6px}
+.rv-tab{padding:5px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--panel2);font-size:13px}
+.rv-tab.active{border-color:var(--accent);background:#1b2a46}.rv-tab .n{font-family:var(--mono);color:var(--muted);margin-left:4px;font-size:12px}
+.rv-full{grid-column:1 / -1}
+.rv-score{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media (max-width:900px){.rv-score{grid-template-columns:1fr}}
+.rv-box{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.rv-box h4{margin:0 0 6px;font-size:13px}.rv-box .big{font-family:var(--mono);font-size:24px;font-weight:700}
+.rv-box .sub{font-size:12px;color:var(--muted);margin-top:2px}
+#rv-chart{width:100%;height:380px;display:block}
+.rv-legend{font-size:12px;color:var(--muted);margin:4px 0 8px;display:flex;flex-wrap:wrap;gap:4px 14px}
+.rv-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+table.rv{width:100%;border-collapse:collapse;font-size:13px}
+table.rv th{color:var(--muted);text-align:left;font-weight:500;padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.rv td{padding:4px 6px;border-bottom:1px solid #20242d;vertical-align:top}
+table.rv td.n,table.rv th.n{text-align:right;font-family:var(--mono);white-space:nowrap}
+table.rv tr.blk td{color:var(--muted)}table.rv tr.sum td{border-top:1px solid var(--line);font-weight:600}
+.rv-res{font-weight:700}.rv-res.win{color:#f5c542}.rv-res.loss{color:#c678dd}.rv-res.nofill{color:var(--muted);font-weight:400}
+.rv-note{font-size:12px;color:var(--muted);margin-top:6px}
+.rv-tag{font-size:11px;padding:1px 6px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+main#review.hidden{display:none}
 .pk-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
 .pk-head h2{margin:0;font-size:20px}
 .pk-mkt{padding:10px 12px;border-radius:10px;background:var(--panel);border:1px solid var(--line);margin-bottom:12px;font-size:13px}
@@ -181,6 +206,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
     <span id="idx"></span>
     <span id="shioaji"></span>
     <span class="phase" id="phase"></span>
+    <button class="vbtn" id="view-btn" onclick="toggleView()" title="收盤後的回顧：成績單、每個訊號的結果、被擋掉的訊號、警示、明天的準備">復盤</button>
     <span class="clock num" id="clock"></span>
   </div>
 </header>
@@ -195,6 +221,19 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
     <span class="pk-err" id="pk-err"></span>
   </div>
 </section>
+<main id="review" class="hidden">
+  <div class="rv-bar"><label class="small muted">日期 <select id="rv-date" onchange="loadReview(this.value)"></select></label>
+    <div class="rv-tabs" id="rv-tabs"></div><span class="small muted" id="rv-meta"></span></div>
+  <section class="card rv-full"><h3>1. 成績單 <span class="small muted">（損益都已扣來回成本）</span></h3><div class="rv-score" id="rv-score"></div><div class="rv-note" id="rv-score-note"></div></section>
+  <section class="card span2"><h3>2. 訊號回顧 <span class="small muted" id="rv-chart-t"></span></h3><canvas id="rv-chart"></canvas>
+    <div class="rv-legend"><span><i style="background:#f5c542"></i>贏</span><span><i style="background:#c678dd"></i>輸</span><span><i style="background:transparent;border:1.5px solid #8b93a3"></i>沒成交</span>
+      <span>▲ 做多　▼ 做空</span><span>淡色＋虛線圈 = 被過濾擋掉（沒發出，事後追蹤照做會怎樣）</span><span>細線 = 進場到出場</span><span><b style="color:#4c8dff">◆ 藍色菱形</b> = 你自己的單（實心成交、空心出場）</span><span>下方色塊 = 模型多空強度差（紅偏多、綠偏空）</span></div>
+    <div id="rv-sigs"></div></section>
+  <section class="card"><h3>3. 被擋掉的訊號：照做會怎樣</h3><div id="rv-blocked"></div></section>
+  <section class="card"><h3>4. 模型方向準不準</h3><div id="rv-dir"></div></section>
+  <section class="card span2"><h3>5. 警示回顧 <span class="small muted">（發出後 30 分鐘）</span></h3><div id="rv-alerts"></div></section>
+  <section class="card rv-full"><h3>6. 明天的準備 <span class="small muted" id="rv-tom-t"></span></h3><div id="rv-tom"></div></section>
+</main>
 <main id="main">
   <section class="charts">
     <div class="card"><h3 id="t-tse">加權</h3><canvas id="jb-tse"></canvas><canvas id="kd-tse" class="kd" onclick="kdToggle()" title="點一下切換 1 分 K / 5 分 K"></canvas></div>
@@ -220,6 +259,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 <footer id="foot">以上為技術面與籌碼面推算，不構成投資建議。</footer>
 <script>
 let STATE=null, LIVE=null, CUR=null, HIST={};
+let VIEW='live';   // 'live' 盤中畫面 / 'review' 復盤畫面
 const $=id=>document.getElementById(id);
 const f=(x,d=2)=>x==null?'-':Number(x).toFixed(d);
 const pct=(x,d=2)=>x==null?'-':(x>0?'+':'')+Number(x).toFixed(d)+'%';
@@ -253,7 +293,8 @@ setInterval(loadState,10000);setInterval(loadLive,3000);loadState();setTimeout(l
 
 // ---------------------------------------------------------------- 選股模式（monitor.py --web 不給代碼）
 let PICK=null, PICK_KEY='', PICK_SENT=false, PICK_T=null;
-function showPicker(on){$('picker').classList.toggle('hidden',!on);$('main').classList.toggle('hidden',on);}
+let PICKER_ON=false;
+function showPicker(on){PICKER_ON=on;if(VIEW==='review')return;$('picker').classList.toggle('hidden',!on);$('main').classList.toggle('hidden',on);}
 async function loadPicker(){
   try{const r=await fetch('/api/screener?_='+Date.now());PICK=await r.json();}catch(e){return;}
   if(PICK.status==='off')return;
@@ -670,6 +711,145 @@ function drawChart(){const h=HIST[CUR]||[];const c=$('chart');const dpr=window.d
   line('p_long','#ff4d4f');line('p_short','#2ecc71');
   g.fillStyle='#ff4d4f';g.fillText(`— 多 ${f(last.p_long,0)}`,x0+F(4),y0b+F(11));g.fillStyle='#2ecc71';g.fillText(`— 空 ${f(last.p_short,0)}`,x0+F(70),y0b+F(11));
   g.fillStyle='#8b93a3';g.fillText(`每 ${Math.round((STATE?.interval||180)/60)} 分鐘一次估算，共 ${h.length} 次`,x0+F(140),y0b+F(11));}
+
+// ================================================================ 復盤畫面（收盤後）
+// 資料來自 /api/review（eod.py 把當天紀錄整理好）；「明天的準備」另外從 /api/review/tomorrow 拿（背景連線抓，傍晚資料出來才有）。
+let RV=null, RV_CUR=null, RV_TOM=null, RV_AUTO=false, RV_TIMER=null;
+const rvPct=(v,d=2)=>v==null?'-':`<span class="num ${cls(v)}">${(v>0?'+':'')+Number(v).toFixed(d)}%</span>`;
+function todayIso(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+function applyView(){const rv=VIEW==='review';$('review').classList.toggle('hidden',!rv);
+  if(rv){$('picker').classList.add('hidden');$('main').classList.add('hidden');}else showPicker(PICKER_ON);
+  $('tabs').style.display=rv?'none':'';const b=$('view-btn');b.textContent=rv?'← 回盤中畫面':'復盤';b.classList.toggle('on',rv);
+  clearInterval(RV_TIMER);if(rv){loadReview(RV&&RV.date);RV_TIMER=setInterval(()=>loadReview(RV&&RV.date),60000);}}
+function toggleView(){RV_AUTO=true;VIEW=VIEW==='review'?'live':'review';applyView();}
+// 有在監控、而且已經過 13:35：自動切到復盤一次（之後照使用者自己按的）
+function autoReview(){if(RV_AUTO||!STATE||!STATE.codes||!STATE.codes.length)return;const n=new Date();const hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  if(hm>='13:35'){RV_AUTO=true;VIEW='review';applyView();}}
+setInterval(autoReview,5000);
+async function loadReview(date){
+  try{const r=await fetch('/api/review?_='+Date.now()+(date?'&date='+encodeURIComponent(date):''));RV=await r.json();}catch(e){$('rv-meta').innerHTML='<span class="stale">讀不到復盤資料：'+esc(e)+'</span>';return;}
+  if(RV.error){$('rv-meta').innerHTML='<span class="stale">'+esc(RV.error)+'</span>';return;}
+  if(!RV_CUR||!RV.codes.includes(RV_CUR))RV_CUR=(CUR&&RV.codes.includes(CUR))?CUR:(RV.codes.find(c=>RV.by_code[c].signals.length)||RV.codes[0]||null);
+  renderReview();
+  if(RV.date===RV.dates[0]&&RV.codes.length)loadTomorrow();else{RV_TOM=null;renderTomorrow();}}
+async function loadTomorrow(){try{const r=await fetch('/api/review/tomorrow?codes='+encodeURIComponent(RV.codes.join(','))+'&_='+Date.now());RV_TOM=await r.json();}catch(e){RV_TOM={status:'error',error:String(e)};}
+  renderTomorrow();if(RV_TOM.status==='running')setTimeout(()=>{if(VIEW==='review')loadTomorrow();},5000);}
+function rvPick(c){RV_CUR=c;renderReview();renderTomorrow();}
+const RES={win:'贏',loss:'輸',nofill:'沒成交',flat:'平'};
+function rvTally(t){return t.n?`成交 ${t.filled}（<b>${t.win}</b> 贏 <b>${t.loss}</b> 輸）、沒成交 ${t.nofill}`:'沒有';}
+function renderReview(){if(!RV)return;const sc=RV.scorecard;
+  $('rv-date').innerHTML=RV.dates.map(d=>`<option value="${d}" ${d===RV.date?'selected':''}>${d}${d===todayIso()?'（今天）':''}</option>`).join('');
+  $('rv-tabs').innerHTML=RV.codes.map(c=>{const b=RV.by_code[c];return `<div class="rv-tab ${c===RV_CUR?'active':''}" onclick="rvPick('${c}')">${c} ${esc(b.name||'')}<span class="n">${b.signals.length} 個訊號</span></div>`;}).join('');
+  $('rv-meta').textContent=RV.first?`紀錄 ${RV.first.slice(0,5)}～${RV.last.slice(0,5)}，每分鐘一點`:'這一天沒有 monitor 紀錄';
+  // 1. 成績單
+  const m=sc.mine;
+  const box=(title,big,sub,extra)=>`<div class="rv-box"><h4>${title}</h4><div class="big">${big}</div><div class="sub">${sub}</div>${extra||''}</div>`;
+  $('rv-score').innerHTML=
+    box('你的單（持倉面板記的）',m.n?rvPct(m.net_sum):'沒有記錄',m.n?`${m.n} 筆：${m.win} 賺 ${m.loss} 賠，平均每筆 ${m.net_avg>0?'+':''}${f(m.net_avg,2)}%`:'這一天沒有在持倉面板按「排隊／成交／出場」，所以看不到你實際的成績。',
+      m.n?`<table class="rv" style="margin-top:6px">${m.list.map(t=>`<tr><td class="n">${esc(t.time.slice(0,5))}</td><td>${esc(t.code)} ${esc(t.label)}</td><td class="n">${fp(t.entry_px)} → ${fp(t.price)}</td><td class="n">${rvPct(t.net_pct)}</td><td class="small muted" style="white-space:nowrap">${esc(t.how)}</td></tr>`).join('')}</table>`:'')
+   +box('模型發出的訊號（全部照做）',sc.issued.net_n?rvPct(sc.issued.net_sum):'-',`${sc.issued.n} 個：${rvTally(sc.issued)}${sc.issued.net_avg!=null?`，平均每筆 ${sc.issued.net_avg>0?'+':''}${f(sc.issued.net_avg,2)}%`:''}`)
+   +box('被過濾擋掉的訊號（如果照做）',sc.blocked.net_n?rvPct(sc.blocked.net_sum):'-',`${sc.blocked.n} 個：${rvTally(sc.blocked)}${sc.blocked.net_avg!=null?`，平均每筆 ${sc.blocked.net_avg>0?'+':''}${f(sc.blocked.net_avg,2)}%`:''}`);
+  $('rv-score-note').textContent='合計是把每一筆的百分比直接相加（每筆用一樣的資金）。一天只有十幾筆，單日結果不能下結論，請對照第 3 塊的累計。';
+  // 2. 訊號
+  const d=RV.by_code[RV_CUR];
+  if(!d){$('rv-chart-t').textContent='';$('rv-sigs').innerHTML='<span class="muted">這一天沒有資料</span>';}
+  else{$('rv-chart-t').textContent=`${RV_CUR} ${d.name||''}`;drawReview();
+    $('rv-sigs').innerHTML=d.signals.length?`<table class="rv"><tr><th>#</th><th>時間</th><th>方向</th><th class="n">提示時價位</th><th class="n">進場價</th><th>結果</th><th class="n">損益</th><th class="n" title="成交後最大逆向 / 最大順向，單位是檔">逆向/順向</th><th>說明</th></tr>
+      ${d.signals.map((g,i)=>`<tr class="${g.blocked?'blk':''}"><td class="n">${i+1}</td><td class="n">${esc(g.time.slice(0,5))}</td><td class="${g.side==='short'?'dn':'up'}">${esc(g.label||g.side)}</td><td class="n">${fp(g.alert_px)}</td><td class="n">${fp(g.price)}</td>
+        <td><span class="rv-res ${esc(g.verdict||'')}">${RES[g.verdict]||esc(g.verdict||'?')}</span>${g.blocked?` <span class="rv-tag">擋：${esc(g.block_kind||'過濾')}</span>`:''}</td>
+        <td class="n">${g.net_pct!=null?rvPct(g.net_pct):''}</td><td class="n">${g.mae_ticks!=null?`${f(g.mae_ticks,0)} / ${f(g.mfe_ticks,0)}`:''}</td>
+        <td class="small">${esc(g.blocked?(g.block_reason||''):(g.why||''))}</td></tr>`).join('')}</table>`:'<span class="muted">這一檔這一天沒有進場訊號</span>';}
+  // 3. 被擋掉的
+  const bt=(rows)=>`<table class="rv"><tr><th></th><th class="n">個數</th><th class="n">贏/輸</th><th class="n">沒成交</th><th class="n">每筆</th></tr>${rows.map(b=>`<tr class="${/合計/.test(b.kind)?'sum':''}"><td>${esc(b.kind)}${b.dup?` <span class="rv-tag" title="同一天、同一檔、同一個進場價與出場價的訊號是同一筆被提示了好幾次，只算一次">另 ${b.dup} 個重複</span>`:''}</td><td class="n">${b.n}</td><td class="n">${b.win} / ${b.loss}</td><td class="n">${b.nofill}</td><td class="n">${rvPct(b.net_avg)}</td></tr>`).join('')}</table>`;
+  $('rv-blocked').innerHTML=`<div class="small muted">${esc(RV.date)}</div>${bt(RV.blocked.day)}
+    <div class="small muted" style="margin-top:10px">累計 ${RV.blocked.cum_days} 天（${esc(RV.blocked.cum_first||'')} 起，新判法）</div>${bt(RV.blocked.cum)}
+    <div class="rv-note">「每筆」是成交的訊號扣成本後的平均。被擋的比發出去的好，代表那個過濾可能擋錯了；但筆數少的時候差距很可能只是運氣。</div>`;
+  // 4. 方向
+  const dr=(x)=>x&&x.n?`<td class="n">${x.n}</td><td class="n">${x.hit_rate!=null?f(x.hit_rate,0)+'%':'-'}</td><td class="n muted">${x.base_up!=null?f(x.base_up,0)+'%':''}</td><td class="n">${rvPct(x.avg,2)}</td>`:'<td class="n">0</td><td class="n">-</td><td class="n"></td><td class="n">-</td>';
+  const D=RV.direction.day,C=RV.direction.cum,P=(d&&d.direction)||{};
+  $('rv-dir').innerHTML=`<table class="rv"><tr><th></th><th class="n">樣本</th><th class="n">方向對</th><th class="n" title="同樣這些時點如果一律猜漲，會對幾 %">一律猜漲</th><th class="n">順向平均</th></tr>
+    <tr><td>${esc(RV_CUR||'')} 這一天</td>${dr(P)}</tr><tr><td>全部標的這一天</td>${dr(D)}</tr>
+    ${Object.entries(D.by_phase||{}).map(([k,v])=>`<tr class="blk"><td>　${esc(k)}</td>${dr(v)}</tr>`).join('')}
+    ${Object.entries(D.by_side||{}).map(([k,v])=>`<tr class="blk"><td>　偏${esc(k)}時</td>${dr(v)}</tr>`).join('')}
+    <tr class="sum"><td>累計 ${C.days} 天</td>${dr(C)}</tr>
+    ${Object.entries(C.by_side||{}).map(([k,v])=>`<tr class="blk"><td>　偏${esc(k)}時</td>${dr(v)}</tr>`).join('')}</table>
+    <div class="rv-note">算法：多空強度差 ≥${RV.edge} 時，看 ${RV.horizon} 分鐘後價格有沒有往那邊走。每檔取一個樣本後隔 ${RV.horizon} 分鐘才取下一個，樣本之間不重疊；價格完全沒動（鎖漲跌停）的不算${D.flat?`，這一天有 ${D.flat} 個`:''}。
+      「方向對」要比「一律猜漲」高才代表模型有看對東西：那天一路漲的話，偏多的模型怎麼猜都對。順向平均還沒扣成本 ${RV.cost}%。</div>`;
+  // 5. 警示
+  const cum={};RV.alerts.cum.forEach(a=>cum[a.kind]=a);
+  const rows=RV.alerts.day.length?RV.alerts.day:RV.alerts.cum;
+  const dirTxt=x=>x>0?'<span class="up">看漲</span>':x<0?'<span class="dn">看跌</span>':'<span class="muted">提醒</span>';
+  const nn=a=>`${a.n}${a.flat?`<span class="muted" title="其中價格完全沒動（鎖漲跌停）的則數，不算進順向率">（${a.flat} 沒動）</span>`:''}`;
+  const edge=a=>a.edge==null?'':`<span class="num ${a.edge>=10?'up':a.edge<=-10?'dn':'muted'}" title="順向率 − 基準（基準 ${a.base}%）">${a.edge>0?'+':''}${a.edge}</span>`;
+  const cell=a=>a?(a.dir?`<td class="n">${nn(a)}</td><td class="n">${a.with_dir!=null?a.with_dir+'%':'-'}</td><td class="n">${edge(a)}</td><td class="n">${rvPct(a.avg)}</td>`:`<td class="n">${nn(a)}</td><td class="n muted" title="沒有預期方向：之後上漲的比例">${a.up_rate!=null?'漲 '+a.up_rate+'%':'-'}</td><td></td><td class="n muted" title="平均動多少（不分方向）">±${f(a.avg_abs,2)}%</td>`):'<td class="n">0</td><td></td><td></td><td></td>';
+  const bd=RV.alerts.day[0]&&RV.alerts.day[0].base_up,bc=RV.alerts.cum[0]&&RV.alerts.cum[0].base_up;
+  $('rv-alerts').innerHTML=`<table class="rv"><tr><th>警示</th><th>預期</th><th class="n">這天則數</th><th class="n">順向率</th><th class="n" title="順向率比基準多幾個百分點">比基準</th><th class="n">平均</th><th class="n">累計則數</th><th class="n">順向率</th><th class="n">比基準</th><th class="n">平均</th></tr>
+    ${rows.map(a=>`<tr><td>${esc(a.kind)}</td><td>${dirTxt(a.dir)}</td>${RV.alerts.day.length?cell(a):cell(null)}${cell(cum[a.kind])}</tr>`).join('')}</table>
+    <div class="rv-note">順向率 = 發出後 30 分鐘價格往預期方向走的比例（價格沒動的不算）。<b>要看「比基準」</b>：基準是「不管哪一種警示，發出後上漲的比例」，這天 ${bd!=null?bd+'%':'-'}、累計 ${bc!=null?bc+'%':'-'}。
+      盯的股票那幾天本來就在漲的話，任何看漲的警示順向率都會高，比基準多 10 點以上才值得注意。累計 ${RV.alerts.cum_days} 天；同一檔同一天會連發很多則，則數少於 20 的先不要當真。</div>`;
+}
+function drawReview(){const c=$('rv-chart');if(!c||!RV)return;const d=RV.by_code[RV_CUR];if(!d)return;
+  const dpr=window.devicePixelRatio||1;const W=c.width=c.clientWidth*dpr,H=c.height=c.clientHeight*dpr;const g=c.getContext('2d');g.clearRect(0,0,W,H);
+  const F=px=>px*dpr;g.font=`${F(11)}px ${getComputedStyle(document.body).fontFamily}`;
+  const mm=t=>{const [h,m]=t.split(':').map(Number);return (h-9)*60+m;};
+  const pts=(d.pts||[]).map(p=>({m:mm(p[0]),c:p[1],pl:p[2],ps:p[3],vw:p[4]})).filter(p=>p.m>=0&&p.m<=270&&p.c!=null);
+  if(!pts.length){g.fillStyle='#8b93a3';g.fillText('這一天沒有走勢紀錄',F(10),F(20));return;}
+  const padL=F(6),padR=F(64),padT=F(10),padB=F(16),subH=Math.round(H*0.16);const x0=padL,x1=W-padR,y0=padT,y1=H-padB-subH-F(8);
+  const X=m=>x0+(x1-x0)*Math.min(270,Math.max(0,m))/270;
+  let lo=Infinity,hi=-Infinity;pts.forEach(p=>{lo=Math.min(lo,p.c);hi=Math.max(hi,p.c);});
+  d.signals.forEach(s=>[s.alert_px,s.price,s.exit_px].forEach(v=>{if(v!=null&&Math.abs(v/pts[0].c-1)<0.12){lo=Math.min(lo,v);hi=Math.max(hi,v);}}));
+  if(d.y&&Math.abs(d.y/pts[0].c-1)<0.11){lo=Math.min(lo,d.y);hi=Math.max(hi,d.y);}
+  const pad=Math.max((hi-lo)*0.08,pts[0].c*0.003);lo-=pad;hi+=pad;const Y=v=>y0+(y1-y0)*(hi-v)/(hi-lo);
+  // 時間格線
+  g.lineWidth=F(1);[['09:00',0],['10:00',60],['10:30',90],['11:00',120],['12:00',180],['13:00',240],['13:30',270]].forEach(([lab,m])=>{const st=(m===90||m===180);g.strokeStyle=st?'#3a4150':'#232833';g.setLineDash(st?[F(2),F(3)]:[]);g.beginPath();g.moveTo(X(m),y0);g.lineTo(X(m),H-padB);g.stroke();g.setLineDash([]);
+    if(m%60===0||m===270){g.fillStyle='#8b93a3';g.fillText(lab,X(m)-F(m===270?30:14),H-F(4));}});
+  // 價格刻度與昨收
+  for(let k=0;k<=4;k++){const v=lo+(hi-lo)*k/4;g.fillStyle='#8b93a3';g.fillText(fp(v),x1+F(4),Y(v)+F(4));g.strokeStyle='#1c2029';g.beginPath();g.moveTo(x0,Y(v));g.lineTo(x1,Y(v));g.stroke();}
+  if(d.y&&d.y>lo&&d.y<hi){g.setLineDash([F(4),F(4)]);g.strokeStyle='#8b93a3';g.beginPath();g.moveTo(x0,Y(d.y));g.lineTo(x1,Y(d.y));g.stroke();g.setLineDash([]);g.fillStyle='#8b93a3';g.fillText('昨收',x0+F(2),Y(d.y)-F(3));}
+  // VWAP、價格
+  g.strokeStyle='#f5c542';g.globalAlpha=.6;g.lineWidth=F(1);g.beginPath();let st=false;pts.forEach(p=>{if(p.vw==null||p.vw<lo||p.vw>hi)return;st?g.lineTo(X(p.m),Y(p.vw)):g.moveTo(X(p.m),Y(p.vw));st=true;});g.stroke();g.globalAlpha=1;
+  g.strokeStyle='#cfd5e1';g.lineWidth=F(1.4);g.beginPath();pts.forEach((p,i)=>{i?g.lineTo(X(p.m),Y(p.c)):g.moveTo(X(p.m),Y(p.c));});g.stroke();
+  // 下方：多空強度差
+  const sy0=H-padB-subH,sy1=H-padB,mid=(sy0+sy1)/2;g.strokeStyle='#232833';g.beginPath();g.moveTo(x0,mid);g.lineTo(x1,mid);g.stroke();
+  const bw=Math.max(F(1),(x1-x0)/270*0.9);pts.forEach(p=>{if(p.pl==null||p.ps==null)return;const e=Math.max(-50,Math.min(50,p.pl-p.ps));const hgt=Math.abs(e)/50*(subH/2);g.fillStyle=e>=0?'rgba(255,77,79,.6)':'rgba(46,204,113,.6)';g.fillRect(X(p.m)-bw/2,e>=0?mid-hgt:mid,bw,hgt);});
+  g.fillStyle='#8b93a3';g.fillText('強度差',x1+F(4),mid+F(4));
+  // 訊號：先畫進出場連線，再畫記號
+  const COL={win:'#f5c542',loss:'#c678dd'};
+  d.signals.forEach(s=>{if(s.fill_at==null||s.exit_at==null||s.exit_px==null||!COL[s.verdict])return;g.globalAlpha=s.blocked?.4:.9;g.strokeStyle=COL[s.verdict];g.lineWidth=F(1.2);g.setLineDash(s.blocked?[F(3),F(3)]:[]);
+    g.beginPath();g.moveTo(X(s.fill_at),Y(s.price));g.lineTo(X(s.exit_at),Y(s.exit_px));g.stroke();g.setLineDash([]);g.beginPath();g.arc(X(s.exit_at),Y(s.exit_px),F(2.2),0,7);g.fillStyle=COL[s.verdict];g.fill();g.globalAlpha=1;});
+  d.signals.forEach((s,i)=>{const x=X(mm(s.time.slice(0,5))),y=Y(s.alert_px!=null?s.alert_px:s.price);const up=s.side!=='short';const r=F(6);const col=COL[s.verdict]||'#8b93a3';
+    g.globalAlpha=s.blocked?.5:1;g.beginPath();if(up){g.moveTo(x,y-r);g.lineTo(x+r,y+r*0.8);g.lineTo(x-r,y+r*0.8);}else{g.moveTo(x,y+r);g.lineTo(x+r,y-r*0.8);g.lineTo(x-r,y-r*0.8);}g.closePath();
+    if(COL[s.verdict]){g.fillStyle=col;g.fill();}else{g.fillStyle='#0f1115';g.fill();g.strokeStyle=col;g.lineWidth=F(1.5);g.stroke();}
+    if(s.blocked){g.setLineDash([F(2),F(2)]);g.strokeStyle='#8b93a3';g.lineWidth=F(1);g.beginPath();g.arc(x,y,r*1.7,0,7);g.stroke();g.setLineDash([]);}
+    g.globalAlpha=1;g.fillStyle='#e6e9ef';g.fillText(String(i+1),x-F(3),up?y+r*0.8+F(12):y-r*0.8-F(4));});
+  // 你自己的單（持倉面板記的）：藍色菱形，成交 → 出場
+  const dia=(x,y,fill)=>{const r=F(5.5);g.beginPath();g.moveTo(x,y-r);g.lineTo(x+r,y);g.lineTo(x,y+r);g.lineTo(x-r,y);g.closePath();g.fillStyle=fill?'#4c8dff':'#0f1115';g.fill();g.strokeStyle='#4c8dff';g.lineWidth=F(1.6);g.stroke();};
+  (d.trades||[]).forEach(t=>{if(t.price==null||!t.time)return;const xe=X(mm(t.time.slice(0,5))),ye=Y(t.price);
+    if(t.fill_time&&t.entry_px!=null){const xf=X(mm(t.fill_time.slice(0,5))),yf=Y(t.entry_px);g.strokeStyle='#4c8dff';g.lineWidth=F(1.6);g.beginPath();g.moveTo(xf,yf);g.lineTo(xe,ye);g.stroke();dia(xf,yf,true);}
+    dia(xe,ye,false);g.fillStyle='#4c8dff';g.fillText((t.net_pct>0?'+':'')+Number(t.net_pct).toFixed(2)+'%',xe+F(8),ye+F(4));});
+}
+function renderTomorrow(){const el=$('rv-tom');if(!el)return;const t=RV_TOM;
+  if(!RV||RV.date!==RV.dates[0]){$('rv-tom-t').textContent='';el.innerHTML='<span class="muted">只有最近一個交易日才有「明天的準備」。</span>';return;}
+  if(!t||t.status==='off'){el.innerHTML='<span class="muted">準備中…</span>';return;}
+  const res=t.result||{};$('rv-tom-t').textContent=t.status==='running'?`抓資料中（${t.started||''} 開始）…`:res.built?`${res.built} 抓的`:'';
+  if(t.status==='error'&&!t.result){el.innerHTML=`<span class="stale">抓不到：${esc(t.error||'')}</span>`;return;}
+  if(!res.brokers){el.innerHTML='<span class="muted"><span class="spin"></span>正在抓今天的分點表與明天的選股（第一次約 10～30 秒）…</span>';return;}
+  const b=res.brokers[RV_CUR];let left='';
+  if(!b)left='<span class="muted">這一檔沒有抓分點表</span>';
+  else if(b.pending)left=`<span class="muted">今天的分點表還沒出（目前最新是 ${esc(b.have||'-')}）。通常傍晚 5～6 點後才有，這個畫面每 10 分鐘會自己再抓一次。</span>`;
+  else if(b.error)left=`<span class="stale">分點表抓不到：${esc(b.error)}</span>`;
+  else{const dt=b.dt||{};
+    left=`<div class="kv"><div>隔日沖分點今天買超<b class="num">${dt.buy||0} 張</b></div><div>佔今天成交量<b class="num">${dt.buy_pct!=null?f(dt.buy_pct,1)+'%':'-'}</b></div><div>照習慣明天約倒回<b class="num">${dt.expect_sell||0} 張</b></div></div>
+      ${dt.list&&dt.list.length?`<table class="rv" style="margin-top:6px"><tr><th>分點</th><th class="n">買超</th><th class="n">佔量</th><th>過去習慣</th></tr>${dt.list.map(r=>`<tr><td>${esc(r.broker)}</td><td class="n">${r.net}</td><td class="n">${r.pct!=null?f(r.pct,1)+'%':'-'}</td><td class="small">${r.rate!=null?`大買 ${r.n} 次，隔天倒回 ${Math.round(r.rate*100)}%`:'固定名單'}</td></tr>`).join('')}</table>`:'<div class="rv-note">今天沒有隔日沖分點買超這一檔。</div>'}
+      <div class="rv-note">前五大買超：${b.buyers.map(r=>`${esc(r.broker)} ${r.net}`).join('、')}<br>前五大賣超：${b.sellers.map(r=>`${esc(r.broker)} ${r.net}`).join('、')}</div>`;}
+  const s=res.screener||{};let right='';
+  if(s.pending)right=`<span class="muted">今天的全市場行情與法人資料還沒出（目前最新是 ${esc(s.have||'-')}），通常下午 3～4 點後才有。</span>`;
+  else if(s.error)right=`<span class="stale">選股失敗：${esc(s.error)}</span>`;
+  else if(s.short){const li=(r,side)=>`<tr><td>${esc(r.code)} ${esc(r.name)}</td><td class="n">${fp(r.close)}</td><td class="n">${rvPct(r.chg1d)}</td><td class="small">${(r.fit&&r.fit.tags||[]).filter(([k])=>k==='warn'||k==='no').map(([k,x])=>esc(x.split('：')[0])).join('；')||'<span class="muted">—</span>'}</td></tr>`;
+    const blk=(side,title,act)=>`<div style="margin-top:6px"><b class="${side==='short'?'dn':'up'}">${title}</b>${act?'':' <span class="rv-tag">大盤環境不符，只列參考</span>'}</div>${(s[side]||[]).length?`<table class="rv">${s[side].slice(0,s.top||3).map(r=>li(r,side)).join('')}</table>`:'<div class="rv-note">沒有符合條件的標的</div>'}`;
+    right=`<div class="small muted">依 ${esc(s.date)} 收盤資料；大盤 ${s.short_active?'偏弱：做空有效':'不弱：做多有效'}</div>${blk('short','▼ 做空：弱勢股',s.short_active)}${blk('long','▲ 做多：強勢股急殺',s.long_active)}`;}
+  el.innerHTML=`<div class="rv-score" style="grid-template-columns:1fr 1fr"><div class="rv-box"><h4>${esc(RV_CUR||'')} ${esc((RV.names||{})[RV_CUR]||'')}：今天的隔日沖分點（明天的庫存）</h4>${left}</div><div class="rv-box"><h4>明天的選股名單</h4>${right}</div></div>`;}
+window.addEventListener('resize',()=>{if(VIEW==='review')drawReview();});
 </script>
 </body>
 </html>

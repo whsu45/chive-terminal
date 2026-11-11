@@ -1,5 +1,45 @@
 [
  {
+  "date": "2026-11-11",
+  "composite": 3.99,
+  "sox": 4.55,
+  "top3Up": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 9.81
+   },
+   {
+    "key": "networking",
+    "title": "網通／光通訊",
+    "pct": 7.71
+   },
+   {
+    "key": "aiserver",
+    "title": "AI 伺服器／資料中心硬體",
+    "pct": 6.77
+   }
+  ],
+  "top3Down": [
+   {
+    "key": "internet",
+    "title": "網路平台",
+    "pct": -0.16
+   },
+   {
+    "key": "devices",
+    "title": "消費電子",
+    "pct": 0.78
+   },
+   {
+    "key": "ev",
+    "title": "電動車／自駕",
+    "pct": 0.87
+   }
+  ],
+  "taiexNext": null
+ },
+ {
   "date": "2026-11-10",
   "composite": -0.6,
   "sox": -0.35,
@@ -1833,8 +1873,8 @@
     "pct": -1.18
    },
    {
-    "key": "software",
-    "title": "軟體／雲端",
+    "key": "ev",
+    "title": "電動車／自駕",
     "pct": 0.45
    }
   ],
@@ -3703,13 +3743,13 @@
     "pct": 1.23
    },
    {
-    "key": "internet",
-    "title": "網路平台",
+    "key": "networking",
+    "title": "網通／光通訊",
     "pct": 0.46
    },
    {
-    "key": "networking",
-    "title": "網通／光通訊",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 0.46
    }
   ],
@@ -4137,8 +4177,8 @@
     "pct": 7.66
    },
    {
-    "key": "cyber",
-    "title": "資安",
+    "key": "networking",
+    "title": "網通／光通訊",
     "pct": 1.09
    }
   ],
@@ -8703,8 +8743,8 @@
     "pct": -0.52
    },
    {
-    "key": "aiserver",
-    "title": "AI 伺服器／資料中心硬體",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 0.69
    }
   ],

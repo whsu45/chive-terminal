@@ -82,9 +82,10 @@ def _monitor_rows(iso):
             if not r.get("price") or not r.get("time"):
                 continue
             inf = r.get("info") or {}
+            q = r.get("quote") or {}
             slim.append({"code": r["code"], "name": r.get("name"), "time": r["time"], "price": r["price"],
                          "p_long": r.get("p_long"), "p_short": r.get("p_short"), "vwap": inf.get("vwap"), "chg_pct": inf.get("chg_pct"),
-                         "src": r.get("src")})
+                         "src": r.get("src"), "h": q.get("h"), "l": q.get("l"), "vol_pace": inf.get("vol_pace")})
         _cache["mon_key_" + iso], _cache["mon_" + iso] = key, slim
     return _cache["mon_" + iso]
 
@@ -127,7 +128,124 @@ def series(rows):
 
 _SIG_KEYS = ("code", "name", "time", "side", "label", "alert_px", "zone", "price", "stop", "t1", "score_stop", "score_tgt", "verdict", "exit",
              "exit_px", "net_pct", "mae_ticks", "mfe_ticks", "fill_min", "first_stop_min", "first_t1_min", "ret_30m", "why", "blocked",
-             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src")
+             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src", "run5", "run5_tk")
+
+CHASE_PCT, CHASE_TICKS = 0.5, 2        # 跟 monitor.CHASE_* 一致：確認前 5 分鐘已順向走這麼多算「追價」
+# 追價的訊號再依「當時離漲跌停多遠」分三段（順向漲跌幅：做多看漲幅、做空看跌幅；漲跌停是 10%）。
+# 研究裡的磁吸效應講的是接近漲跌停時會加速往那邊走，只有這一段的追價有文獻支持；門檻是自己訂的，先拿來分格追蹤。
+NEAR_LIMIT_PCT, STRONG_PCT = 7.0, 4.0
+
+
+def _score_levels(side, px):
+    """評分用的停損 / 停利價，直接用 monitor 那一套（在 monitor 行程裡就拿它自己的類別，不重複載入）。"""
+    import sys
+    M = getattr(sys.modules.get("__main__"), "Monitor", None) or __import__("monitor").Monitor
+    return M.score_levels(side, px)
+
+
+def _bars(iso):
+    """code -> {第幾分鐘（_mins 的單位）: [開, 高, 低, 收]}。monitor 一分鐘記一筆，高低用這一分鐘與上一分鐘的價格、
+    加上今高 / 今低有沒有被刷新來湊；跟實際逐筆判定的輸贏比，30 筆有 25 筆一致，只拿來算對照組。"""
+    rows = _monitor_rows(iso)
+    if _cache.get("bars_key_" + iso) == id(rows):
+        return _cache["bars_" + iso]
+    by = defaultdict(list)
+    for r in rows:
+        by[r["code"]].append(r)
+    out = {}
+    for c, rs in by.items():
+        rs.sort(key=lambda r: r["time"])
+        b = {}
+        pc = ph = pl = None
+        for r in rs:
+            mm = _mins(r["time"]); p = r["price"]
+            hi = max(p, pc if pc is not None else p); lo = min(p, pc if pc is not None else p)
+            if ph is not None and r.get("h") and r["h"] > ph:
+                hi = max(hi, r["h"])
+            if pl is not None and r.get("l") and r["l"] < pl:
+                lo = min(lo, r["l"])
+            if mm in b:
+                b[mm][1] = max(b[mm][1], hi); b[mm][2] = min(b[mm][2], lo); b[mm][3] = p
+            else:
+                b[mm] = [pc if pc is not None else p, hi, lo, p]
+            pc = p; ph = r.get("h") or ph; pl = r.get("l") or pl
+        out[c] = b
+    _cache["bars_key_" + iso], _cache["bars_" + iso] = id(rows), out
+    return out
+
+
+def baseline(iso):
+    """
+    對照組：同一檔、同一天、同方向，09:10–12:25 每一分鐘都照現行輸贏規則進場一次的勝率與平均淨損益。
+    回 {(code, side): {"n", "win", "net"}}。那天那檔一路漲的話，隨便做多也會贏——訊號要比這個好才算有用。
+    """
+    bars = _bars(iso)
+    if _cache.get("base_key_" + iso) == id(bars):
+        return _cache["base_" + iso]
+    out = {}
+    for c, b in bars.items():
+        t_a, t_b, t_end = _mins("09:10:00"), _mins("12:25:00"), _mins("13:25:00")
+        ks = [m for m in sorted(b) if t_a <= m <= t_b]
+        if len(ks) < 60:
+            continue
+        for side in ("long", "short"):
+            sg = -1 if side == "short" else 1
+            wins, nets = 0, []
+            for m0 in ks:
+                px = b[m0][3]
+                sl = _score_levels(side, px)
+                res = last = None
+                for i in range(1, min(61, t_end - m0 + 1)):
+                    x = b.get(m0 + i)
+                    if not x:
+                        continue
+                    if (x[1] >= sl["stop"]) if side == "short" else (x[2] <= sl["stop"]):
+                        res = sg * (sl["stop"] / px - 1) * 100 - COST; break
+                    if (x[2] <= sl["tgt"]) if side == "short" else (x[1] >= sl["tgt"]):
+                        res = sg * (sl["tgt"] / px - 1) * 100 - COST; break
+                    last = x[3]
+                if res is None and last is not None:
+                    res = sg * (last / px - 1) * 100 - COST
+                if res is not None:
+                    nets.append(res); wins += res > 0
+            if nets:
+                out[(c, side)] = {"n": len(nets), "win": round(wins / len(nets) * 100, 1), "net": round(sum(nets) / len(nets), 3)}
+    _cache["base_key_" + iso], _cache["base_" + iso] = id(bars), out
+    return out
+
+
+def _run5_from_rows(iso, r):
+    """舊紀錄沒有 run5：用 monitor 每分鐘的價格補算（訊號當下的價位比 5 分鐘前順向走了多少 %、幾檔）。"""
+    import indicators as I
+    px = r.get("alert_px") or r.get("price")
+    if not px or not r.get("time"):
+        return None, None
+    t0 = _mins(r["time"])
+    prev = [x for x in _monitor_rows(iso) if x["code"] == r["code"] and t0 - 7 <= _mins(x["time"]) <= t0 - 5]
+    if not prev:
+        return None, None
+    ref = max(prev, key=lambda x: x["time"])["price"]
+    sg = -1 if r.get("side") == "short" else 1
+    return round(sg * (px / ref - 1) * 100, 2), round(sg * (px - ref) / I.tick_size(px), 1)
+
+
+def _day_run(iso, r):
+    """訊號當下相對昨收已經順著訊號方向走了多少 %（做多 = 漲幅、做空 = 跌幅），以及當時的量比。用 monitor 每分鐘的紀錄回推昨收。"""
+    px = r.get("alert_px") or r.get("price")
+    if not px or not r.get("time"):
+        return None, None
+    t0 = _mins(r["time"])
+    prev = [x for x in _monitor_rows(iso) if x["code"] == r["code"] and x.get("chg_pct") is not None and t0 - 3 <= _mins(x["time"]) <= t0 and x["time"] <= r["time"]]
+    if not prev:
+        return None, None
+    x = max(prev, key=lambda x: x["time"])
+    y = x["price"] / (1 + x["chg_pct"] / 100)
+    sg = -1 if r.get("side") == "short" else 1
+    return round(sg * (px / y - 1) * 100, 2), (round(x["vol_pace"], 2) if x.get("vol_pace") is not None else None)
+
+
+def _limit_band(day_run):
+    return None if day_run is None else "near" if day_run >= NEAR_LIMIT_PCT else "strong" if day_run >= STRONG_PCT else "far"
 
 
 def signals(iso):
@@ -138,6 +256,14 @@ def signals(iso):
         s = {k: r.get(k) for k in _SIG_KEYS}
         s["date"] = iso
         s["blocked"] = bool(r.get("blocked"))
+        if s.get("run5") is None:
+            s["run5"], s["run5_tk"] = _run5_from_rows(iso, r)
+        s["chase"] = None if s["run5"] is None else bool(s["run5"] >= CHASE_PCT and (s.get("run5_tk") or 0) >= CHASE_TICKS)
+        s["mode"] = "等回掛單" if r.get("filled_at_alert") is False else "現價進場"
+        s["day_run"], s["vol_pace"] = _day_run(iso, r)
+        s["limit_band"] = _limit_band(s["day_run"])
+        bl = baseline(iso).get((r.get("code"), r.get("side")))
+        s["base_win"], s["base_net"] = (bl["win"], bl["net"]) if bl else (None, None)
         fm = r.get("fill_min")
         ex = r.get("first_stop_min") if r.get("verdict") == "loss" else r.get("first_t1_min") if r.get("verdict") == "win" else None
         s["fill_at"] = _mins(r["time"]) + fm if fm is not None else None            # 進場在開盤後第幾分鐘
@@ -163,9 +289,16 @@ def _tally(sigs):
         seen.add(k)
         filled.append(s)
     nets = [s["net_pct"] for s in filled if s.get("net_pct") is not None]
+    # 對照：這些成交的訊號所在的「同一檔同一天同方向任意進場」平均起來是多少（baseline）
+    bw = [s["base_win"] for s in filled if s.get("base_win") is not None]
+    bn = [s["base_net"] for s in filled if s.get("base_net") is not None]
+    net_avg = round(sum(nets) / len(nets), 2) if nets else None
+    base_net = round(sum(bn) / len(bn), 2) if bn else None
     return {"n": len(sigs), "filled": len(filled), "dup": dup, "win": sum(1 for s in filled if s["verdict"] == "win"),
             "loss": sum(1 for s in filled if s["verdict"] == "loss"), "nofill": sum(1 for s in sigs if s.get("verdict") == "nofill"),
-            "net_sum": round(sum(nets), 2) if nets else None, "net_avg": round(sum(nets) / len(nets), 2) if nets else None, "net_n": len(nets)}
+            "net_sum": round(sum(nets), 2) if nets else None, "net_avg": net_avg, "net_n": len(nets),
+            "base_win": round(sum(bw) / len(bw)) if bw else None, "base_net": base_net,
+            "edge": round(net_avg - base_net, 2) if (net_avg is not None and base_net is not None) else None}
 
 
 # ------------------------------------------------------------------ 1. 成績單
@@ -319,10 +452,51 @@ def blocked_table(sigs):
     return out
 
 
+def entry_table(sigs):
+    """
+    依「進場方式 × 確認前有沒有追價」分四格（發出的和被擋的都算，被擋的是假設照做）：
+    追價 = 確認前 5 分鐘已順向走 ≥0.5% 且 ≥2 檔（monitor 的追價過濾，2026-11-11 起這類只追蹤不發）。
+    拿來回答「等回掛單到底有沒有害」：歷史回測沒追價的等回並不差，實際紀錄太少還分不出來。
+    """
+    out = []
+    for chase, cn in ((False, "沒追價"), (True, "追價")):
+        for mode in ("現價進場", "等回掛單"):
+            out.append(dict(_tally([s for s in sigs if s.get("chase") is chase and s.get("mode") == mode]), kind=f"{cn}・{mode}", chase=chase))
+    unk = [s for s in sigs if s.get("chase") is None]
+    if unk:
+        out.append(dict(_tally(unk), kind="沒有前 5 分鐘的資料", chase=None))
+    return out
+
+
+def limit_table(sigs):
+    """
+    追價的訊號（確認前 5 分鐘已順向走 ≥0.5% 且 ≥2 檔）再依「當時離漲跌停多遠」× 進場方式分格，沒有訊號的格不列。
+    用來追蹤一個特例：一般的追價在回測裡比任意進場差，但接近漲跌停時可能會被吸過去（磁吸效應）。
+    這些現在都被追價過濾擋掉，只追蹤假設照做的結果，不影響發不發訊號。
+    """
+    bands = (("near", f"離漲跌停 {10 - NEAR_LIMIT_PCT:.0f}% 內"), ("strong", f"已走 {STRONG_PCT:.0f}～{NEAR_LIMIT_PCT:.0f}%"), ("far", f"已走不到 {STRONG_PCT:.0f}%"))
+    ch = [s for s in sigs if s.get("chase") is True]
+    out = []
+    for key, name in bands:
+        for mode in ("現價進場", "等回掛單"):
+            grp = [s for s in ch if s.get("limit_band") == key and s.get("mode") == mode]
+            if grp:
+                vp = [s["vol_pace"] for s in grp if s.get("vol_pace") is not None]
+                out.append(dict(_tally(grp), kind=f"{name}・{mode}", band=key, vol_pace=round(sum(vp) / len(vp), 1) if vp else None))
+    unk = [s for s in ch if s.get("limit_band") is None]
+    if unk:
+        out.append(dict(_tally(unk), kind="沒有當時漲跌幅的資料", band=None, vol_pace=None))
+    return out
+
+
 # ------------------------------------------------------------------ 組起來
 
 def build(date=None):
     iso = _iso(date)
+    if not date:                         # 沒指定：今天有紀錄就今天，否則最近一個有紀錄的交易日（盤前、休市日、還沒開始監控時打開復盤）
+        ds = dates()
+        if ds and iso not in ds:
+            iso = ds[0]
     rows = _monitor_rows(iso)
     ser = series(rows)
     sigs = signals(iso)
@@ -332,12 +506,8 @@ def build(date=None):
     tr = trades(iso)
 
     # 累計（訊號只算新判法 scoring=2，舊判法大多記平、不能比）
-    all_sigs = []
-    for r in _signals_all():
-        if r.get("scoring") == 2:
-            all_sigs.append({"blocked": bool(r.get("blocked")), "block_kind": r.get("block_kind"), "verdict": r.get("verdict"), "net_pct": r.get("net_pct"),
-                             "date": r.get("date"), "code": r.get("code"), "side": r.get("side"), "price": r.get("price"), "exit_px": r.get("exit_px")})
     sig_days = sorted({r.get("date") for r in _signals_all() if r.get("scoring") == 2})
+    all_sigs = [s for d in sig_days for s in signals(d) if s.get("scoring") == 2]
     cum_dir_rows = []
     for d in dates():
         cum_dir_rows.append(direction(_monitor_rows(d)))
@@ -369,6 +539,8 @@ def build(date=None):
         "by_code": by_code,
         "scorecard": {"mine": tr, "issued": _tally([s for s in sigs if not s["blocked"]]), "blocked": _tally([s for s in sigs if s["blocked"]])},
         "blocked": {"day": blocked_table(sigs), "cum": blocked_table(all_sigs), "cum_days": len(sig_days), "cum_first": sig_days[0] if sig_days else None},
+        "entry": {"day": entry_table(sigs), "cum": entry_table(all_sigs), "chase_pct": CHASE_PCT, "chase_ticks": CHASE_TICKS,
+                  "limit": limit_table(all_sigs), "near_pct": NEAR_LIMIT_PCT, "strong_pct": STRONG_PCT},
         "direction": {"day": direction(rows), "cum": cum_dir},
         "alerts": {"day": alerts(al_day), "cum": alerts(_alerts_all()), "cum_days": len({r.get("date") for r in _alerts_all()})},
     }
@@ -376,18 +548,27 @@ def build(date=None):
 
 # ------------------------------------------------------------------ 6. 明天的準備（要連線）
 
+def ref_day(now=None):
+    """「明天的準備」用哪一天收盤後的資料：最近一個已經收盤的交易日。
+    交易日 13:30 以後是今天；開盤前、盤中、休市日是前一個交易日（那時候看到的是「今天的準備」）。"""
+    now = now or cal.now_tw()
+    d = now.date()
+    if not cal.is_trading_day(d) or now.strftime("%H:%M") < "13:30":
+        d = cal.prev_trading_day(d)
+    return d
+
+
 def tomorrow(codes, names=None):
     """
-    今天收盤後的資料 → 明天的準備。分點表通常傍晚才出、全市場行情下午三點後才有，還沒出就標 pending。
-    回 {"date", "brokers": {code: {...}}, "screener": {...}}
+    最近一個交易日收盤後的資料 → 下一個交易日的準備。分點表通常傍晚才出、全市場行情下午三點後才有，還沒出就標 pending。
+    回 {"date"（資料是哪一天的）, "for_today"（下一個交易日是不是就是今天：隔天開盤前打開時）, "brokers": {code: {...}}, "screener": {...}}
     """
     import src_moneydj
     import daytraders
-    today = cal.today_tw()
-    if not cal.is_trading_day(today):
-        today = cal.prev_trading_day(today)
+    today = ref_day()
     iso = today.isoformat()
-    out = {"date": iso, "brokers": {}, "screener": None, "built": dt.datetime.now().strftime("%H:%M:%S")}
+    out = {"date": iso, "for_today": iso != cal.today_tw().isoformat() and cal.is_trading_day(cal.today_tw()),
+           "brokers": {}, "screener": None, "built": dt.datetime.now().strftime("%H:%M:%S")}
     for c in codes:
         try:
             s = src_moneydj.broker_summary(c)
@@ -402,7 +583,7 @@ def tomorrow(codes, names=None):
             out["brokers"][c] = {"error": str(e)[:120]}
     try:
         import theme_screener as TS
-        res = TS.to_dict(TS.screen(TS.default_ref(), 3))
+        res = TS.to_dict(TS.screen(TS.default_ref(iso), 3))
         out["screener"] = res if res["date"] == iso else {"pending": True, "have": res["date"]}
     except BaseException as e:           # screen() 資料不足時會 SystemExit
         out["screener"] = {"error": str(e)[:160] or e.__class__.__name__}

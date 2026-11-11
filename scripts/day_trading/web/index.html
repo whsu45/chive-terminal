@@ -232,7 +232,7 @@ main#review.hidden{display:none}
   <section class="card"><h3>3. 被擋掉的訊號：照做會怎樣</h3><div id="rv-blocked"></div></section>
   <section class="card"><h3>4. 模型方向準不準</h3><div id="rv-dir"></div></section>
   <section class="card span2"><h3>5. 警示回顧 <span class="small muted">（發出後 30 分鐘）</span></h3><div id="rv-alerts"></div></section>
-  <section class="card rv-full"><h3>6. 明天的準備 <span class="small muted" id="rv-tom-t"></span></h3><div id="rv-tom"></div></section>
+  <section class="card rv-full"><h3>6. <span id="rv-tom-h">明天的準備</span> <span class="small muted" id="rv-tom-t"></span></h3><div id="rv-tom"></div></section>
 </main>
 <main id="main">
   <section class="charts">
@@ -282,7 +282,7 @@ function tick(){const n=new Date();$('clock').textContent=n.toLocaleTimeString('
   const ph=(LIVE&&LIVE.phase)||phaseNow();const el=$('phase');el.className='phase '+ph.key;el.textContent=ph.label+(ph.range?' '+ph.range:'');el.title=ph.hint||'';}
 setInterval(tick,1000);tick();
 
-async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());STATE=await r.json();
+async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());STATE=await r.json();autoReview();
   if(!STATE.codes.length){loadPicker();return;}            // 選股模式：還沒選標的
   showPicker(false);
   if(!CUR||!STATE.codes.includes(CUR))CUR=STATE.codes[0];render();
@@ -308,7 +308,7 @@ setInterval(loadState,10000);setInterval(loadLive,3000);setInterval(loadQuote,50
 // ---------------------------------------------------------------- 選股模式（monitor.py --web 不給代碼）
 let PICK=null, PICK_KEY='', PICK_SENT=false, PICK_T=null;
 let PICKER_ON=false;
-function showPicker(on){PICKER_ON=on;if(VIEW==='review')return;$('picker').classList.toggle('hidden',!on);$('main').classList.toggle('hidden',on);}
+function showPicker(on){PICKER_ON=on;viewBtn();if(VIEW==='review')return;$('picker').classList.toggle('hidden',!on);$('main').classList.toggle('hidden',on);}
 async function loadPicker(){
   try{const r=await fetch('/api/screener?_='+Date.now());PICK=await r.json();}catch(e){return;}
   if(PICK.status==='off')return;
@@ -748,17 +748,20 @@ function drawChart(){const h=HIST[CUR]||[];const c=$('chart');const dpr=window.d
 
 // ================================================================ 復盤畫面（收盤後）
 // 資料來自 /api/review（eod.py 把當天紀錄整理好）；「明天的準備」另外從 /api/review/tomorrow 拿（背景連線抓，傍晚資料出來才有）。
-let RV=null, RV_CUR=null, RV_TOM=null, RV_AUTO=false, RV_TIMER=null;
+let RV=null, RV_CUR=null, RV_TOM=null, RV_TIMER=null;
 const rvPct=(v,d=2)=>v==null?'-':`<span class="num ${cls(v)}">${(v>0?'+':'')+Number(v).toFixed(d)}%</span>`;
 function todayIso(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
 function applyView(){const rv=VIEW==='review';$('review').classList.toggle('hidden',!rv);
   if(rv){$('picker').classList.add('hidden');$('main').classList.add('hidden');}else showPicker(PICKER_ON);
-  $('tabs').style.display=rv?'none':'';const b=$('view-btn');b.textContent=rv?'← 回盤中畫面':'復盤';b.classList.toggle('on',rv);
+  $('tabs').style.display=rv?'none':'';viewBtn();
   clearInterval(RV_TIMER);if(rv){loadReview(RV&&RV.date);RV_TIMER=setInterval(()=>loadReview(RV&&RV.date),60000);}}
-function toggleView(){RV_AUTO=true;VIEW=VIEW==='review'?'live':'review';applyView();}
-// 有在監控、而且已經過 13:35：自動切到復盤一次（之後照使用者自己按的）
-function autoReview(){if(RV_AUTO||!STATE||!STATE.codes||!STATE.codes.length)return;const n=new Date();const hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-  if(hm>='13:35'){RV_AUTO=true;VIEW='review';applyView();}}
+function viewBtn(){const rv=VIEW==='review',b=$('view-btn');b.textContent=rv?(PICKER_ON?'← 去選股':'← 回盤中畫面'):'復盤';b.classList.toggle('on',rv);}
+function toggleView(){VIEW=VIEW==='review'?'live':'review';applyView();}
+// 預設畫面跟著時段走：盤中（交易日 08:25–13:35，後端 in_session）看即時畫面，其餘時間（收盤後、開盤前、休市日）看最新的復盤，
+// 還沒選監控標的也一樣。只在「剛打開」和「時段切換」那一刻切，中間使用者自己按的不會被蓋掉。
+let RV_SESSION=null;
+function autoReview(){if(!STATE||STATE.in_session==null)return;const s=!!STATE.in_session;if(s===RV_SESSION)return;RV_SESSION=s;
+  const want=s?'live':'review';if(VIEW!==want){VIEW=want;applyView();}}
 setInterval(autoReview,5000);
 async function loadReview(date){
   try{const r=await fetch('/api/review?_='+Date.now()+(date?'&date='+encodeURIComponent(date):''));RV=await r.json();}catch(e){$('rv-meta').innerHTML='<span class="stale">讀不到復盤資料：'+esc(e)+'</span>';return;}
@@ -770,20 +773,24 @@ async function loadTomorrow(){try{const r=await fetch('/api/review/tomorrow?code
   renderTomorrow();if(RV_TOM.status==='running')setTimeout(()=>{if(VIEW==='review')loadTomorrow();},5000);}
 function rvPick(c){RV_CUR=c;renderReview();renderTomorrow();}
 const RES={win:'贏',loss:'輸',nofill:'沒成交',flat:'平'};
+// 對照組那一行：同檔同日同方向任意進場的勝率與每筆，以及這組訊號比它好還是差
+function rvBase(t){return t&&t.base_net!=null?`<div class="sub" style="margin-top:4px" title="同一檔、同一天、同方向，09:10–12:25 每一分鐘都照同一套輸贏規則進場一次的平均（用 monitor 每分鐘的紀錄重建，是近似值）">對照（任意時點進場）：勝率 ${t.base_win}%、每筆 ${t.base_net>0?'+':''}${f(t.base_net,2)}% → 這組訊號${t.edge>=0?'好':'差'} <b class="${cls(t.edge)}">${Math.abs(t.edge).toFixed(2)}%</b></div>`:'';}
 function rvTally(t){return t.n?`成交 ${t.filled}（<b>${t.win}</b> 贏 <b>${t.loss}</b> 輸）、沒成交 ${t.nofill}`:'沒有';}
 function renderReview(){if(!RV)return;const sc=RV.scorecard;
   $('rv-date').innerHTML=RV.dates.map(d=>`<option value="${d}" ${d===RV.date?'selected':''}>${d}${d===todayIso()?'（今天）':''}</option>`).join('');
   $('rv-tabs').innerHTML=RV.codes.map(c=>{const b=RV.by_code[c];return `<div class="rv-tab ${c===RV_CUR?'active':''}" onclick="rvPick('${c}')">${c} ${esc(b.name||'')}<span class="n">${b.signals.length} 個訊號</span></div>`;}).join('');
-  $('rv-meta').textContent=RV.first?`紀錄 ${RV.first.slice(0,5)}～${RV.last.slice(0,5)}，每分鐘一點`:'這一天沒有 monitor 紀錄';
+  $('rv-meta').innerHTML=(RV.first?`紀錄 ${RV.first.slice(0,5)}～${RV.last.slice(0,5)}，每分鐘一點`:'這一天沒有 monitor 紀錄')
+    +(RV.date===RV.dates[0]&&RV.date!==todayIso()?' · 最近一個有紀錄的交易日':'')
+    +(PICKER_ON?' · <a href="#" onclick="toggleView();return false" style="color:var(--warn)">還沒選要監控的標的 → 去選股</a>':'');
   // 1. 成績單
   const m=sc.mine;
   const box=(title,big,sub,extra)=>`<div class="rv-box"><h4>${title}</h4><div class="big">${big}</div><div class="sub">${sub}</div>${extra||''}</div>`;
   $('rv-score').innerHTML=
     box('你的單（持倉面板記的）',m.n?rvPct(m.net_sum):'沒有記錄',m.n?`${m.n} 筆：${m.win} 賺 ${m.loss} 賠，平均每筆 ${m.net_avg>0?'+':''}${f(m.net_avg,2)}%`:'這一天沒有在持倉面板按「排隊／成交／出場」，所以看不到你實際的成績。',
       m.n?`<table class="rv" style="margin-top:6px">${m.list.map(t=>`<tr><td class="n">${esc(t.time.slice(0,5))}</td><td>${esc(t.code)} ${esc(t.label)}</td><td class="n">${fp(t.entry_px)} → ${fp(t.price)}</td><td class="n">${rvPct(t.net_pct)}</td><td class="small muted" style="white-space:nowrap">${esc(t.how)}</td></tr>`).join('')}</table>`:'')
-   +box('模型發出的訊號（全部照做）',sc.issued.net_n?rvPct(sc.issued.net_sum):'-',`${sc.issued.n} 個：${rvTally(sc.issued)}${sc.issued.net_avg!=null?`，平均每筆 ${sc.issued.net_avg>0?'+':''}${f(sc.issued.net_avg,2)}%`:''}`)
-   +box('被過濾擋掉的訊號（如果照做）',sc.blocked.net_n?rvPct(sc.blocked.net_sum):'-',`${sc.blocked.n} 個：${rvTally(sc.blocked)}${sc.blocked.net_avg!=null?`，平均每筆 ${sc.blocked.net_avg>0?'+':''}${f(sc.blocked.net_avg,2)}%`:''}`);
-  $('rv-score-note').textContent='合計是把每一筆的百分比直接相加（每筆用一樣的資金）。一天只有十幾筆，單日結果不能下結論，請對照第 3 塊的累計。';
+   +box('模型發出的訊號（全部照做）',sc.issued.net_n?rvPct(sc.issued.net_sum):'-',`${sc.issued.n} 個：${rvTally(sc.issued)}${sc.issued.net_avg!=null?`，平均每筆 ${sc.issued.net_avg>0?'+':''}${f(sc.issued.net_avg,2)}%`:''}`,rvBase(sc.issued))
+   +box('被過濾擋掉的訊號（如果照做）',sc.blocked.net_n?rvPct(sc.blocked.net_sum):'-',`${sc.blocked.n} 個：${rvTally(sc.blocked)}${sc.blocked.net_avg!=null?`，平均每筆 ${sc.blocked.net_avg>0?'+':''}${f(sc.blocked.net_avg,2)}%`:''}`,rvBase(sc.blocked));
+  $('rv-score-note').textContent='合計是把每一筆的百分比直接相加（每筆用一樣的資金）。「對照」是同一檔、同一天、同方向，09:10–12:25 每一分鐘都進場一次的平均——那天那檔一路漲的話，隨便做多也會贏，訊號要比對照好才算有用。一天只有十幾筆，單日結果不能下結論，請看第 3 塊的累計。';
   // 2. 訊號
   const d=RV.by_code[RV_CUR];
   if(!d){$('rv-chart-t').textContent='';$('rv-sigs').innerHTML='<span class="muted">這一天沒有資料</span>';}
@@ -794,10 +801,19 @@ function renderReview(){if(!RV)return;const sc=RV.scorecard;
         <td class="n">${g.net_pct!=null?rvPct(g.net_pct):''}</td><td class="n">${g.mae_ticks!=null?`${f(g.mae_ticks,0)} / ${f(g.mfe_ticks,0)}`:''}</td>
         <td class="small">${esc(g.blocked?(g.block_reason||''):(g.why||''))}</td></tr>`).join('')}</table>`:'<span class="muted">這一檔這一天沒有進場訊號</span>';}
   // 3. 被擋掉的
-  const bt=(rows)=>`<table class="rv"><tr><th></th><th class="n">個數</th><th class="n">贏/輸</th><th class="n">沒成交</th><th class="n">每筆</th></tr>${rows.map(b=>`<tr class="${/合計/.test(b.kind)?'sum':''}"><td>${esc(b.kind)}${b.dup?` <span class="rv-tag" title="同一天、同一檔、同一個進場價與出場價的訊號是同一筆被提示了好幾次，只算一次">另 ${b.dup} 個重複</span>`:''}</td><td class="n">${b.n}</td><td class="n">${b.win} / ${b.loss}</td><td class="n">${b.nofill}</td><td class="n">${rvPct(b.net_avg)}</td></tr>`).join('')}</table>`;
+  const bt=(rows,vp)=>`<table class="rv"><tr><th></th><th class="n">個數</th><th class="n">贏/輸</th><th class="n">沒成交</th>${vp?'<th class="n" title="這一格訊號當時的平均量比（今天到目前的成交量 ÷ 平常同時間的量）">量比</th>':''}<th class="n">每筆</th><th class="n" title="每筆 − 對照（同一檔同一天同方向任意時點進場的平均）：正的才代表這組訊號比隨便進場好。滑到數字上看對照是多少">比對照</th></tr>${rows.map(b=>`<tr class="${/合計/.test(b.kind)?'sum':''}"><td>${esc(b.kind)}${b.dup?` <span class="rv-tag" title="同一天、同一檔、同一個進場價與出場價的訊號是同一筆被提示了好幾次，只算一次">另 ${b.dup} 個重複</span>`:''}</td><td class="n">${b.n}</td><td class="n">${b.win} / ${b.loss}</td><td class="n">${b.nofill}</td>${vp?`<td class="n">${b.vol_pace!=null?f(b.vol_pace,1):'-'}</td>`:''}<td class="n">${rvPct(b.net_avg)}</td><td class="n" title="${b.base_net!=null?`對照（任意時點進場）：勝率 ${b.base_win}%、每筆 ${b.base_net>0?'+':''}${f(b.base_net,2)}%`:''}">${b.edge!=null?rvPct(b.edge):'-'}</td></tr>`).join('')}</table>`;
+  const en=RV.entry;
   $('rv-blocked').innerHTML=`<div class="small muted">${esc(RV.date)}</div>${bt(RV.blocked.day)}
     <div class="small muted" style="margin-top:10px">累計 ${RV.blocked.cum_days} 天（${esc(RV.blocked.cum_first||'')} 起，新判法）</div>${bt(RV.blocked.cum)}
-    <div class="rv-note">「每筆」是成交的訊號扣成本後的平均。被擋的比發出去的好，代表那個過濾可能擋錯了；但筆數少的時候差距很可能只是運氣。</div>`;
+    <div class="rv-note">「每筆」是成交的訊號扣成本後的平均；「比對照」是它減掉同檔同日任意進場的平均。被擋的比對照好很多，才代表那個過濾可能擋錯了；筆數少的時候差距很可能只是運氣。</div>
+    ${en?`<div class="small muted" style="margin-top:12px"><b>進場方式 × 有沒有追價</b>（累計 ${RV.blocked.cum_days} 天；發出的和被擋的都算）</div>${bt(en.cum)}
+    <div class="rv-note">追價 = 確認前 5 分鐘已經順著訊號方向走了 ≥${en.chase_pct}% 且 ≥${en.chase_ticks} 檔。歷史回測（329 個股票日）這類不管現價追還是掛回去等，都比任意進場差，所以 11/11 起改成只追蹤不發（追價過濾）。
+    沒追價的等回掛單在回測裡並不差（+0.13%），但實際紀錄還太少，這張表累積十個交易日左右再看「沒追價・等回掛單」的「比對照」。</div>
+    ${en.limit&&en.limit.length?`<div class="small muted" style="margin-top:12px"><b>追價的訊號 × 當時離漲跌停多遠</b>（累計；只追蹤，不影響發不發）</div>${bt(en.limit,true)}
+    <div class="rv-note">「已走」是訊號當下相對昨收順著訊號方向的漲跌幅（做多看漲幅、做空看跌幅），漲跌停是 10%；「量比」是這一格訊號當時的平均。
+    研究裡只有「接近漲跌停會被吸過去」這個情況支持追價，而且 2015 年漲跌幅放寬到 10% 之後證據變弱；一般的追價在回測裡比任意進場差。
+    所以追價的訊號 11/11 起一律被追價過濾擋掉，這張表記的是假設照做的結果，重點看「離漲跌停 ${f(10-en.near_pct,0)}% 內」和「已走 ${f(en.strong_pct,0)}～${f(en.near_pct,0)}%」的現價進場，累積下來「比對照」是不是穩定為正。
+    每格至少二、三十筆成交再下結論；真的接近漲停還有鎖死買不到、隔天跳空的風險，這張表算不到。</div>`:''}`:''}`;
   // 4. 方向
   const dr=(x)=>x&&x.n?`<td class="n">${x.n}</td><td class="n">${x.hit_rate!=null?f(x.hit_rate,0)+'%':'-'}</td><td class="n muted">${x.base_up!=null?f(x.base_up,0)+'%':''}</td><td class="n">${rvPct(x.avg,2)}</td>`:'<td class="n">0</td><td class="n">-</td><td class="n"></td><td class="n">-</td>';
   const D=RV.direction.day,C=RV.direction.cum,P=(d&&d.direction)||{};
@@ -863,26 +879,27 @@ function drawReview(){const c=$('rv-chart');if(!c||!RV)return;const d=RV.by_code
     dia(xe,ye,false);g.fillStyle='#4c8dff';g.fillText((t.net_pct>0?'+':'')+Number(t.net_pct).toFixed(2)+'%',xe+F(8),ye+F(4));});
 }
 function renderTomorrow(){const el=$('rv-tom');if(!el)return;const t=RV_TOM;
+  const ttl=$('rv-tom-h');if(ttl)ttl.textContent=t&&t.result&&t.result.for_today?`今天的準備（${t.result.date} 收盤後的資料）`:'明天的準備';
   if(!RV||RV.date!==RV.dates[0]){$('rv-tom-t').textContent='';el.innerHTML='<span class="muted">只有最近一個交易日才有「明天的準備」。</span>';return;}
   if(!t||t.status==='off'){el.innerHTML='<span class="muted">準備中…</span>';return;}
-  const res=t.result||{};$('rv-tom-t').textContent=t.status==='running'?`抓資料中（${t.started||''} 開始）…`:res.built?`${res.built} 抓的`:'';
+  const res=t.result||{};const D0=res.for_today?(res.date||'').slice(5).replace('-','/'):'今天',D1=res.for_today?'今天':'明天';$('rv-tom-t').textContent=t.status==='running'?`抓資料中（${t.started||''} 開始）…`:res.built?`${res.built} 抓的`:'';
   if(t.status==='error'&&!t.result){el.innerHTML=`<span class="stale">抓不到：${esc(t.error||'')}</span>`;return;}
-  if(!res.brokers){el.innerHTML='<span class="muted"><span class="spin"></span>正在抓今天的分點表與明天的選股（第一次約 10～30 秒）…</span>';return;}
+  if(!res.brokers){el.innerHTML='<span class="muted"><span class="spin"></span>正在抓分點表與選股名單（第一次約 10～30 秒）…</span>';return;}
   const b=res.brokers[RV_CUR];let left='';
   if(!b)left='<span class="muted">這一檔沒有抓分點表</span>';
-  else if(b.pending)left=`<span class="muted">今天的分點表還沒出（目前最新是 ${esc(b.have||'-')}）。通常傍晚 5～6 點後才有，這個畫面每 10 分鐘會自己再抓一次。</span>`;
+  else if(b.pending)left=`<span class="muted">${D0}的分點表還沒出（目前最新是 ${esc(b.have||'-')}）。通常傍晚 5～6 點後才有，這個畫面每 10 分鐘會自己再抓一次。</span>`;
   else if(b.error)left=`<span class="stale">分點表抓不到：${esc(b.error)}</span>`;
   else{const dt=b.dt||{};
-    left=`<div class="kv"><div>隔日沖分點今天買超<b class="num">${dt.buy||0} 張</b></div><div>佔今天成交量<b class="num">${dt.buy_pct!=null?f(dt.buy_pct,1)+'%':'-'}</b></div><div>照習慣明天約倒回<b class="num">${dt.expect_sell||0} 張</b></div></div>
-      ${dt.list&&dt.list.length?`<table class="rv" style="margin-top:6px"><tr><th>分點</th><th class="n">買超</th><th class="n">佔量</th><th>過去習慣</th></tr>${dt.list.map(r=>`<tr><td>${esc(r.broker)}</td><td class="n">${r.net}</td><td class="n">${r.pct!=null?f(r.pct,1)+'%':'-'}</td><td class="small">${r.rate!=null?`大買 ${r.n} 次，隔天倒回 ${Math.round(r.rate*100)}%`:'固定名單'}</td></tr>`).join('')}</table>`:'<div class="rv-note">今天沒有隔日沖分點買超這一檔。</div>'}
+    left=`<div class="kv"><div>隔日沖分點${D0}買超<b class="num">${dt.buy||0} 張</b></div><div>佔${D0}成交量<b class="num">${dt.buy_pct!=null?f(dt.buy_pct,1)+'%':'-'}</b></div><div>照習慣${D1}約倒回<b class="num">${dt.expect_sell||0} 張</b></div></div>
+      ${dt.list&&dt.list.length?`<table class="rv" style="margin-top:6px"><tr><th>分點</th><th class="n">買超</th><th class="n">佔量</th><th>過去習慣</th></tr>${dt.list.map(r=>`<tr><td>${esc(r.broker)}</td><td class="n">${r.net}</td><td class="n">${r.pct!=null?f(r.pct,1)+'%':'-'}</td><td class="small">${r.rate!=null?`大買 ${r.n} 次，隔天倒回 ${Math.round(r.rate*100)}%`:'固定名單'}</td></tr>`).join('')}</table>`:`<div class="rv-note">${D0}沒有隔日沖分點買超這一檔。</div>`}
       <div class="rv-note">前五大買超：${b.buyers.map(r=>`${esc(r.broker)} ${r.net}`).join('、')}<br>前五大賣超：${b.sellers.map(r=>`${esc(r.broker)} ${r.net}`).join('、')}</div>`;}
   const s=res.screener||{};let right='';
-  if(s.pending)right=`<span class="muted">今天的全市場行情與法人資料還沒出（目前最新是 ${esc(s.have||'-')}），通常下午 3～4 點後才有。</span>`;
+  if(s.pending)right=`<span class="muted">${D0}的全市場行情與法人資料還沒出（目前最新是 ${esc(s.have||'-')}），通常下午 3～4 點後才有。</span>`;
   else if(s.error)right=`<span class="stale">選股失敗：${esc(s.error)}</span>`;
   else if(s.short){const li=(r,side)=>`<tr><td>${esc(r.code)} ${esc(r.name)}</td><td class="n">${fp(r.close)}</td><td class="n">${rvPct(r.chg1d)}</td><td class="small">${(r.fit&&r.fit.tags||[]).filter(([k])=>k==='warn'||k==='no').map(([k,x])=>esc(x.split('：')[0])).join('；')||'<span class="muted">—</span>'}</td></tr>`;
     const blk=(side,title,act)=>`<div style="margin-top:6px"><b class="${side==='short'?'dn':'up'}">${title}</b>${act?'':' <span class="rv-tag">大盤環境不符，只列參考</span>'}</div>${(s[side]||[]).length?`<table class="rv">${s[side].slice(0,s.top||3).map(r=>li(r,side)).join('')}</table>`:'<div class="rv-note">沒有符合條件的標的</div>'}`;
     right=`<div class="small muted">依 ${esc(s.date)} 收盤資料；大盤 ${s.short_active?'偏弱：做空有效':'不弱：做多有效'}</div>${blk('short','▼ 做空：弱勢股',s.short_active)}${blk('long','▲ 做多：強勢股急殺',s.long_active)}`;}
-  el.innerHTML=`<div class="rv-score" style="grid-template-columns:1fr 1fr"><div class="rv-box"><h4>${esc(RV_CUR||'')} ${esc((RV.names||{})[RV_CUR]||'')}：今天的隔日沖分點（明天的庫存）</h4>${left}</div><div class="rv-box"><h4>明天的選股名單</h4>${right}</div></div>`;}
+  el.innerHTML=`<div class="rv-score" style="grid-template-columns:1fr 1fr"><div class="rv-box"><h4>${esc(RV_CUR||'')} ${esc((RV.names||{})[RV_CUR]||'')}：${D0}的隔日沖分點（${D1}的庫存）</h4>${left}</div><div class="rv-box"><h4>${D1}的選股名單</h4>${right}</div></div>`;}
 window.addEventListener('resize',()=>{if(VIEW==='review')drawReview();});
 </script>
 </body>

@@ -148,7 +148,7 @@ def main():
     is_surge = lambda r: any(k in (r.get("block_reason") or "") for k in ("軋空", "停損賣不掉"))
     kind_of = lambda r: r.get("block_kind") or ("急漲過濾" if is_surge(r) else "逆勢過濾")     # 舊紀錄沒有 block_kind，照理由判斷
     notes = {"急漲過濾": "（漲跌 7% / 離漲跌停 3%）", "空間過濾": "（到前方第一個支撐 / 壓力的報酬風險比不到 1.5）", "重複過濾": "（同價位發過、之後沒破新低 / 過新高）"}
-    for kind, grp in ((k + notes.get(k, ""), [r for r in blocked if kind_of(r) == k]) for k in ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾")):
+    for kind, grp in ((k + notes.get(k, ""), [r for r in blocked if kind_of(r) == k]) for k in ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾", "追價過濾")):
         if not grp:
             continue
         w = sum(1 for r in grp if r["verdict"] == "win"); l = sum(1 for r in grp if r["verdict"] == "loss")

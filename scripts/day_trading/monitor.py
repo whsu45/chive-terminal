@@ -41,6 +41,21 @@ from config import CACHE_DIR, HERE
 WEB_DIR = os.path.join(HERE, "web")
 
 
+_TRADING = {}
+
+
+def in_session(now=None):
+    """現在是不是盤中（交易日 08:25–13:35）。儀表板用它決定預設畫面：盤中看即時，其餘時間（收盤後、開盤前、休市日）看最新的復盤。"""
+    now = now or dt.datetime.now()
+    d = now.date()
+    if d not in _TRADING:
+        try:
+            _TRADING[d] = bool(cal.is_trading_day(d))
+        except Exception:
+            _TRADING[d] = d.weekday() < 5
+    return _TRADING[d] and "08:25" <= now.strftime("%H:%M") < "13:35"
+
+
 class WebState:
     """monitor 與網頁共用的狀態。"""
     def __init__(self):
@@ -85,10 +100,11 @@ class WebState:
             self.updated = dt.datetime.now().isoformat()
 
     def snapshot(self):
+        sess = in_session()
         with self.lock:
             return json.dumps({"codes": self.codes, "latest": self.latest, "daily": self.daily, "describe": self.describe,
                                "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji,
-                               "picks": self.picks},
+                               "picks": self.picks, "in_session": sess},
                               ensure_ascii=False, default=str)
 
     def history_json(self, code):
@@ -137,9 +153,11 @@ def tomorrow_json(codes):
     「明天的準備」：分點表與選股要連線、要等傍晚資料出來，所以在背景抓、結果快取。
     沒抓過、換日了、或上次還有資料沒出（且已過 10 分鐘）就重新抓一次；回目前的狀態。
     """
+    import eod
+    want = eod.ref_day().isoformat()
+
     def work():
         try:
-            import eod
             res = eod.tomorrow(codes)
             with WEB.lock:
                 WEB.tomorrow = {"status": "done", "result": res, "ts": time.time()}
@@ -154,7 +172,7 @@ def tomorrow_json(codes):
             or (res.get("screener") or {}).get("error")
         missing = [c for c in codes if c not in (res.get("brokers") or {})]
         stale = t["status"] == "off" or (t["status"] in ("done", "error") and time.time() - t.get("ts", 0) > 600 and (pending or t["status"] == "error")) \
-            or (t["status"] == "done" and (res.get("date") != cal.today_tw().isoformat() and cal.is_trading_day(cal.today_tw()) or missing))
+            or (t["status"] == "done" and (res.get("date") != want or missing))
         if stale and t["status"] != "running":
             WEB.tomorrow = {"status": "running", "started": dt.datetime.now().strftime("%H:%M:%S"), "result": t.get("result")}
             threading.Thread(target=work, daemon=True).start()
@@ -688,6 +706,41 @@ class Monitor:
             if t1 < dn:
                 return f"目標 {t1} 低於跌停 {dn}，到不了"
         return None
+
+    # 追價過濾（2026-11-11）：訊號確認時，前 5 分鐘價格已經順著訊號方向走了 ≥0.5%（而且 ≥2 檔）就不發，照樣追蹤。
+    # 起因：發出去的訊號比「同一檔同一天任意時點進場」還差（兩天 18 筆成交 22% 勝率、每筆 −0.54%，對照 45%、±0）。
+    # 用 9 檔 × 329 個股票日的逐筆（通用支撐壓力訊號 7,119 個、現行輸贏規則）拆開看，不是停損太緊（放寬 2、3 倍一樣差，抱著不動也輸），
+    # 而是「反彈一段之後才確認」的訊號方向偏錯。每筆比任意進場：
+    #   前 5 分鐘已順向走    價格還在進場價→現價    已離開進場價→現價追    已離開→掛回去等（有成交）
+    #   不到 0.5%            +0.01%                −0.03%                +0.13%（t +6～7，最好的一格）
+    #   0.5～0.8%            −0.2%～−0.3%          −0.16%                −0.02%
+    #   0.8% 以上            −0.3%                 −0.2%～−0.3%          −0.1%～−0.2%
+    # 前後半段、tick 大小不同的股票結果一致。所以分界不是「等回或現價」，是「確認前已經跑了多少」：
+    # 不到 0.5% 的照發（等回掛單在這一區並不差）；超過的不管怎麼進場都不如任意進場，改成只追蹤。
+    # 套到這兩天實際發出的 27 個：會擋掉 18 個（成交 11 筆 2 贏 9 輸，合計 −7.0%；其中等回 7 筆全輸），留下 9 個（成交 6 筆 1 贏 5 輸，−3.95%）。
+    # 留下的在實際紀錄裡每筆一樣差，樣本太少分不出來——這個過濾是少做最差的那一類，不是讓訊號變成會賺。
+    CHASE_PCT, CHASE_TICKS, CHASE_MIN = 0.5, 2, 5
+
+    @classmethod
+    def _run_before(cls, bars, p, side, now):
+        """訊號當下，價格比 5 分鐘前（那一根 1 分 K 的收盤）順著訊號方向走了多少 → (百分比, 檔數)；沒有 5 分鐘前的 K 棒回 (None, None)。"""
+        if not (bars and p):
+            return None, None
+        cut = (now - dt.timedelta(minutes=cls.CHASE_MIN)).strftime("%H:%M")
+        prev = [b for b in bars if b[0] <= cut]
+        if not prev or prev[-1][0] < (now - dt.timedelta(minutes=cls.CHASE_MIN + 3)).strftime("%H:%M"):
+            return None, None
+        ref = prev[-1][4]
+        if not ref:
+            return None, None
+        sg = -1 if side == "short" else 1
+        return round(sg * (p / ref - 1) * 100, 2), round(sg * (p - ref) / I.tick_size(p), 1)
+
+    def _chase_block(self, side, run_pct, run_tk):
+        if run_pct is None or run_pct < self.CHASE_PCT or run_tk < self.CHASE_TICKS:
+            return None
+        return (f"前 {self.CHASE_MIN} 分鐘已經{'跌' if side == 'short' else '漲'}了 {run_pct:.1f}%（{run_tk:g} 檔）才確認，太晚了："
+                f"回測這種訊號不管追價還是等回，都比任意時點進場差")
 
     SURGE_PCT, NEAR_LIMIT_PCT = 7.0, 3.0
 
@@ -1336,9 +1389,11 @@ class Monitor:
                 return None
             repeat = None if room else self._repeat_block(c, side, lo, hi, q, tick)
             surge = None if (room or repeat) else self._surge_block(c, side, p, q)
-            blk = room or repeat or surge or self._against_trend(side, info)
+            sig["run5"], sig["run5_tk"] = self._run_before(bars, p, side, now)
+            chase_blk = None if (room or repeat or surge) else self._chase_block(side, sig["run5"], sig["run5_tk"])
+            blk = room or repeat or surge or chase_blk or self._against_trend(side, info)
             if blk:
-                kind = "空間過濾" if room else "重複過濾" if repeat else "急漲過濾" if surge else "逆勢過濾"
+                kind = "空間過濾" if room else "重複過濾" if repeat else "急漲過濾" if surge else "追價過濾" if chase_blk else "逆勢過濾"
                 bkey = ("block",) + key            # 被擋的另外去重：趨勢轉回來後同一個進場區還能正常發
                 if now.timestamp() - self._sig_seen.get(bkey, 0) < 900:
                     return None
@@ -1405,12 +1460,12 @@ class Monitor:
                 return make("long", bo, "做多（突破追）", l["bo_stop"], l["bo_target"], l["bo_target"], f"5 分 K 帶量收過 {bo}（量 {f5[-1][5]} 張，偏多強度 {pl:.0f}）", l.get("bo_target_name"))
         return None
 
-    BLOCK_TYPES = ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾")     # 被擋掉、但照樣追蹤假設進場結果的訊號
+    BLOCK_TYPES = ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾", "追價過濾")     # 被擋掉、但照樣追蹤假設進場結果的訊號
     ALERT_TYPES = exhaust.alert_types() + [("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
-                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
+                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("追價過濾", r"⏸ 追價過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
                    ("掛單薄", r"^⚠ 掛單薄"), ("買盤竭盡", r"^➕ 買盤竭盡"), ("賣盤竭盡", r"^➕ 賣盤竭盡")]
 
     @classmethod
@@ -1458,7 +1513,7 @@ class Monitor:
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -1667,7 +1722,7 @@ class Monitor:
         rec["first_stop_min"] = first_stop; rec["first_t1_min"] = first_t1; rec["suspects"] = suspects
         out = {"date": rec["date"], "time": rec["time"], "src": rec.get("src"), "side": side, "label": sg.get("label"), "price": px, "stop": stop, "t1": t1, "t2": sg.get("t2"),
                "zone": zone, "alert_px": sg.get("alert_px", rec["price"]), "filled_at_alert": sg.get("filled_at_alert"), "fill_min": start,
-               "chase": sg.get("chase"), "rr_now": sg.get("rr_now"), "rr_zone": sg.get("rr_zone"),
+               "chase": sg.get("chase"), "run5": sg.get("run5"), "run5_tk": sg.get("run5_tk"), "rr_now": sg.get("rr_now"), "rr_zone": sg.get("rr_zone"),
                "verdict": verdict, "fast_adverse": fast_adverse, "first_stop_min": first_stop, "first_t1_min": first_t1,
                **score,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),

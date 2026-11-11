@@ -228,6 +228,7 @@ def start_stream(codes, big_lot=None):
                 _ingest(tick.code, tick.datetime, float(tick.close), int(tick.volume), int(tick.tick_type))
                 acc = _state[tick.code]
                 acc["last_t"] = tick.datetime
+                acc["recv_t"] = time.time()          # 本機收到的時間：跟交易所時間的差 = 行情送到這台電腦花了多久
                 for src, dst in (("open", "open"), ("total_volume", "total_volume")):
                     v = getattr(tick, src, None)
                     if v:
@@ -249,6 +250,7 @@ def start_stream(codes, big_lot=None):
             with _lock:
                 acc = _state.setdefault(ba.code, _new_acc())
                 acc["bids"], acc["asks"], acc["book_t"] = bids, asks, getattr(ba, "datetime", None)
+                acc["book_recv_t"] = time.time()
         except Exception:
             pass
 
@@ -383,6 +385,20 @@ def stats(code):
         tv = acc["total_volume"] or sum(b[4] for b in acc["bars"].values())
         return {"last": acc["last"], "open": acc["open"] or (acc["bars"][min(acc["bars"])][0] if acc["bars"] else None),
                 "high": acc["high"], "low": acc["low"], "total_volume": tv, "t": acc["last_t"]}
+
+
+def quote_snapshot(code):
+    """報價快速通道（monitor.quote_json）用：一次鎖把最新成交、今日高低量、五檔和時間都拿出來；沒有成交過回 None。
+    t = 最後一筆成交的交易所時間（epoch）、recv = 本機收到它的時間；回補的逐筆沒有這兩個。"""
+    with _lock:
+        acc = _state.get(code)
+        if not acc or acc["last"] is None:
+            return None
+        lt = acc.get("last_t")
+        return {"last": acc["last"], "open": acc["open"], "high": acc["high"], "low": acc["low"],
+                "total_volume": acc["total_volume"] or sum(b[4] for b in acc["bars"].values()),
+                "t": lt.timestamp() if isinstance(lt, dt.datetime) else None, "recv": acc.get("recv_t"),
+                "bids": list(acc["bids"]), "asks": list(acc["asks"]), "book_recv": acc.get("book_recv_t")}
 
 
 def flow_history(code, step_sec=60):

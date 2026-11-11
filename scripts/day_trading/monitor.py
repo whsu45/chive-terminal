@@ -23,6 +23,7 @@ from config import LOG_DIR, load_env, DEVICE_ID, dev_path
 import prep
 import model
 import indicators as I
+import exhaust
 import history
 import src_mis
 import src_warrants as W
@@ -203,6 +204,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._send(WEB.snapshot())
         if path == "/api/live":
             return self._send(WEB.live_json())
+        if path == "/api/quote":
+            mon = getattr(WEB, "monitor", None)
+            return self._send(mon.quote_json() if mon else '{"on": false}')
         if path.startswith("/api/history/"):
             return self._send(WEB.history_json(path.rsplit("/", 1)[-1]))
         if path == "/api/watchlist":
@@ -453,6 +457,9 @@ class Monitor:
         self._cap_done = set()                       # 已經抓過「只抓一次」那一筆的時段：(日期, pre/trial/after)
         self._cap_tries = {}                         # 同上，失敗重試的次數（最多 3 次）
         self._stream_off = False                     # 收盤後已登出永豐串流
+        self._bg_th = None                           # 背景抓 MIS / 權證快照的執行緒（一次只跑一個，不卡快迴圈）
+        self._wq_ready = {}                          # 背景抓好的權證快照，下一輪快迴圈套用
+        self._mis_fail = 0
         self.peer_hist = {c: {} for c in codes}     # code -> {peer: [[epoch, chg_pct], ...]}，給 model 算族群 10 分鐘趨勢
         self.signals = {}                            # code -> 目前的「建議做空/做多」訊號（快迴圈每 3 秒檢查進場確認條件）
         self.sig_block = {}                          # code -> 最近一次被逆勢過濾擋掉的訊號（照樣追蹤假設進場的結果，驗證過濾有沒有擋對）
@@ -463,6 +470,9 @@ class Monitor:
         self._book_hist = {}                         # code -> [(ts, 價差 tick, 買一張數, 賣一張數, 買五檔合計, 賣五檔合計)]，流動性統計用（_liquidity）
         self.exh = {}                                # code -> 最近一次買盤 / 賣盤竭盡事件（_exhaustion）
         self._exh_seen = {}                          # code -> 已處理過的事件 (side, 打斷時間)
+        self.signs = {}                              # code -> 最近的竭盡跡象（exhaust.detect：掛單虛胖、大單熄火、量縮價滯…；觀察用、不計分）
+        self._sign_seen = {}                         # code -> 已經判斷過的事件
+        self.sign_sum = {}                           # code -> exhaust.summary（三個畫面各亮了哪個），給模型列因子與持倉面板
         self.runs = {}                               # code -> 目前的連外次 / 連內次（_exhaustion 的回傳；訊號用來看反向是不是還亮著燈）
         self.liq = {}                                # code -> 最近一次流動性統計
         self._liq_alerted = set()                    # 今天已經發過「掛單薄」警示的 code
@@ -852,6 +862,25 @@ class Monitor:
         out["last"] = last_ev()
         return out
 
+    def _exh_signs(self, c, q, now):
+        """竭盡跡象（exhaust.py）：五檔、明細、K 棒三個畫面各自的型態。新出現的發 👁 警示（_track_alerts 會追蹤之後的走勢），
+        回最近 5 分鐘三個畫面的狀態給儀表板。回測沒有優勢，所以模型只列出、不計分。要永豐逐筆。"""
+        if not self.flow_src:
+            return None
+        nowts = now.timestamp()
+        ticks, big = self.flow_src.recent_ticks(c, seconds=exhaust.WINDOW)
+        L = self.signs.setdefault(c, [])
+        if ticks:
+            new = exhaust.detect(ticks, big, self.flow_src.series(c) or [], {"bids": q.get("bids"), "asks": q.get("asks")},
+                                 nowts, self._sign_seen.setdefault(c, set()))
+            for sn in new:
+                if nowts - sn["ts"] <= 90:                       # 剛啟動時補出來的舊事件不發
+                    L.append(sn)
+                    self._add_alert(c, now, exhaust.alert_text(sn))
+        L[:] = [x for x in L if nowts - x["ts"] <= exhaust.TTL]
+        self.sign_sum[c] = exhaust.summary(L, nowts)
+        return self.sign_sum[c]
+
     def _exh_bonus(self, c, side, now):
         """訊號方向跟最近 5 分鐘內「推過今高 / 殺破今低後熄燈」的竭盡事件一致就回那個事件（做空 ← 買盤竭盡；做多 ← 賣盤竭盡），否則 None。"""
         ex = self.exh.get(c)
@@ -1124,6 +1153,11 @@ class Monitor:
             ret = sgn * (p / pos["fill_px"] - 1) * 100
             v.update(pnl_ticks=round(sgn * (p - pos["fill_px"]) / tk, 1), pnl_pct=round(ret, 2), net_pct=round(ret - self.COST_PCT, 2),
                      to_stop=round(sgn * (p - pos["stop"]) / tk, 1), to_t1=round(sgn * (pos["t1"] - p) / tk, 1))
+            sm = (self.sign_sum.get(c) or {}).get("buy" if pos["side"] == "long" else "sell") or {}
+            if sm.get("n", 0) >= 2:
+                on = "、".join(f"{exhaust.CAT_LABEL[k]}（{sm[k]['name']}）" for k in ("book", "tick", "bar") if sm.get(k))
+                v["exh_note"] = (f"{'買' if pos['side'] == 'long' else '賣'}盤竭盡跡象 {sm['n']}/3：{on}。"
+                                 f"回測這些型態出現後並沒有更常反轉，照原本的停損和目標走")
         return v
 
     def _pos_watch(self, c, q, now):
@@ -1372,7 +1406,7 @@ class Monitor:
         return None
 
     BLOCK_TYPES = ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾")     # 被擋掉、但照樣追蹤假設進場結果的訊號
-    ALERT_TYPES = [("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
+    ALERT_TYPES = exhaust.alert_types() + [("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
@@ -1782,7 +1816,8 @@ class Monitor:
                 continue
         ex = self.exh.get(c)
         return {"bars": bars, "idx_series": idx_series, "peer_hist": self.peer_hist.get(c, {}), "alerts": alerts, "market": mkt,
-                "exhaust": ex if ex and ex.get("near") and now.timestamp() - ex["ts"] <= self.EXH_TTL else None}
+                "exhaust": ex if ex and ex.get("near") and now.timestamp() - ex["ts"] <= self.EXH_TTL else None,
+                "signs": self.sign_sum.get(c)}
 
     # ------------------------------------------------------------ 快迴圈（圖表、報價、分流、即時警示；有永豐 3 秒，否則 10 秒）
     def _record_flow_hist(self, c, flow, q, now, min_gap=50):
@@ -1880,35 +1915,111 @@ class Monitor:
             q["bids"], q["asks"] = bk["bids"], bk["asks"]
             q["book_src"] = "shioaji"
 
+    def _refresh_mis(self, now):
+        """抓一次 MIS 報價放到 _last_quotes。失敗時有永豐串流就用串流湊（只少族群與五檔），沒有就把錯誤丟出去。"""
+        try:
+            self._last_quotes = src_mis.fetch(sorted(self.ex_codes))
+            self._last_mis_t = time.time()
+            self._mis_fail = 0
+        except hc.HttpError as e:
+            self._mis_fail += 1
+            if not self.flow_src:
+                raise
+            if self._mis_fail in (1, 10, 100):
+                print(f"[fast] MIS 失敗（第 {self._mis_fail} 次），改用 Shioaji 串流報價：{str(e)[:100]}")
+            qs = self._quotes_from_shioaji(now)
+            self._last_mis_t = time.time() - 5   # 5 秒後再試 MIS
+            if not qs:
+                raise
+            self._last_quotes = qs
+
+    def _bg_fetch(self, now, want_mis, want_wq):
+        """在背景抓 MIS 報價和權證快照（一次只跑一個執行緒，上一個還沒回來就不再派）。
+        權證快照的結果放 _wq_ready，由下一輪快迴圈套用並發警示，這樣警示清單只有快迴圈在改。"""
+        if self._bg_th and self._bg_th.is_alive():
+            return
+
+        def work():
+            if want_mis:
+                try:
+                    self._refresh_mis(now)
+                except Exception as e:
+                    print(f"[fast] MIS 抓取失敗（背景）：{str(e)[:100]}")
+            if want_wq:
+                res = {}
+                for c in self.codes:
+                    q = dict((self._last_quotes or {}).get(c) or {})
+                    try:
+                        q["ref"] = self.flow_src.last_price(c) or q.get("ref")
+                    except Exception:
+                        pass
+                    wq = self._warrant_snapshot(c, q, now, 1)
+                    if wq:
+                        res[c] = wq
+                self._wq_ready = res
+                self._last_wq_t = time.time()
+
+        self._bg_th = threading.Thread(target=work, daemon=True)
+        self._bg_th.start()
+
+    def quote_json(self):
+        """
+        /api/quote：成交價與五檔的快速通道。直接讀永豐串流在記憶體裡的最新狀態，不經過快迴圈，頁面每 0.5 秒拉一次。
+        原本的路徑是「快迴圈每 3 秒整理一次 → 頁面每 3 秒拉 /api/live」，平均慢 3 秒、最多 6 秒，快迴圈卡在 MIS 時更久。
+        每檔多回 age（最後一筆成交是本機幾秒前收到的）與 lag（交易所時間到本機收到差幾秒）。只有盤中、有串流時才開。
+        """
+        now = time.time()
+        if not self.flow_src or self._stream_off or not self._last_quotes or self._capture_mode(dt.datetime.now()) != "live":
+            return '{"on": false}'
+        out = {"on": True, "ts": now, "quotes": {}, "index": {}}
+        for c in self.codes:
+            base = self._last_quotes.get(c)
+            sn = self.flow_src.quote_snapshot(c)
+            if not base or not sn or not base.get("y"):
+                continue
+            y = base["y"]
+            q = {"ref": sn["last"], "y": y, "chg_pct": (sn["last"] / y - 1) * 100, "src": "shioaji",
+                 "o": base.get("o") or sn["open"],
+                 "h": max(sn["high"], base.get("h") or 0) if sn["high"] else base.get("h"),
+                 "l": min(sn["low"], base.get("l") or sn["low"]) if sn["low"] else base.get("l"),
+                 "v": max(sn["total_volume"] or 0, base.get("v") or 0),
+                 "age": round(now - sn["recv"], 2) if sn["recv"] else None,
+                 "lag": round(sn["recv"] - sn["t"], 2) if sn["recv"] and sn["t"] else None}
+            if sn["bids"] or sn["asks"]:
+                q["bids"], q["asks"], q["book_src"] = sn["bids"], sn["asks"], "shioaji"
+                q["book_age"] = round(now - sn["book_recv"], 2) if sn["book_recv"] else None
+            out["quotes"][c] = q
+        if self.index_stream:
+            for k in ("t00", "o00"):
+                ref, y = self.flow_src.index_last(k), (self._last_quotes.get(k) or {}).get("y")
+                if ref and y:
+                    out["index"][k] = {"ref": ref, "y": y, "chg": (ref / y - 1) * 100}
+        return json.dumps(out, ensure_ascii=False)
+
     def fast_tick(self, mode="live"):
         """一輪快更新：報價 → 分時序列、分流、分流劇變警示；每 60 秒順便更新權證快照與警示。
         MIS 每 10 秒抓一次（限流），有永豐串流時每 3 秒用串流覆寫成交價/高低/量/五檔；MIS 失敗時整份改用串流湊（只少族群）。
         mode 是 _capture_mode 的時段，只用來告訴儀表板現在還有沒有在抓。"""
         now = dt.datetime.now()
         mis_due = (time.time() - self._last_mis_t >= 10) or not self._last_quotes
-        if mis_due:
-            try:
-                self._last_quotes = src_mis.fetch(sorted(self.ex_codes))
-                self._last_mis_t = time.time()
-                self._mis_fail = 0
-            except hc.HttpError as e:
-                self._mis_fail = getattr(self, "_mis_fail", 0) + 1
-                if not self.flow_src:
-                    raise
-                if self._mis_fail in (1, 10, 100):
-                    print(f"[fast] MIS 失敗（第 {self._mis_fail} 次），改用 Shioaji 串流報價：{str(e)[:100]}")
-                self._last_quotes = self._quotes_from_shioaji(now)
-                self._last_mis_t = time.time() - 5   # 5 秒後再試 MIS
-                if not self._last_quotes:
-                    raise
-        quotes = {k: dict(v) for k, v in self._last_quotes.items()}
         do_wq = time.time() - self._last_wq_t >= 60
+        # 有永豐串流時，成交價和五檔都來自串流，MIS 只補昨收、族群和指數；MIS 一次要 0.7～4 秒、權證快照要連抓好幾次，
+        # 原本都在這條迴圈裡等，等的時候串流的最新價也送不到畫面。所以盤中改丟到背景執行緒，這一輪先用上一份。
+        bg = mode == "live" and bool(self.flow_src) and bool(self._last_quotes)
+        if bg:
+            if mis_due or do_wq:
+                self._bg_fetch(now, mis_due, do_wq)
+            do_wq = False
+        elif mis_due:
+            self._refresh_mis(now)
+        quotes = {k: dict(v) for k, v in self._last_quotes.items()}
+        ready, self._wq_ready = self._wq_ready, {}
         live = {"time": now.strftime("%H:%M:%S"), "phase": model.phase_of(now), "index": {}, "index_series": {},
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
-                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "liquidity": {}, "runs": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
-                "mis_fail": getattr(self, "_mis_fail", 0),
+                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "liquidity": {}, "runs": {}, "signs": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
+                "mis_fail": self._mis_fail,
                 "capture": {"mode": mode, "text": self._capture_text(mode)}}
         for k in ("t00", "o00"):
             q = quotes.get(k)
@@ -1960,12 +2071,11 @@ class Monitor:
                         fs = fs or []
                     self._fs_cache[c] = (time.time(), fs)
                 live["flow_series"][c] = [[dt.datetime.fromtimestamp(r[0]).strftime("%H:%M"), r[1], r[2], r[4]] for r in fs]
-            if do_wq:
-                wq = self._warrant_snapshot(c, q, now, 1)
-                if wq:
-                    self.wq[c] = wq
-                    for w in wq.get("alerts") or []:
-                        self._add_alert(c, now, w)
+            wq = self._warrant_snapshot(c, q, now, 1) if do_wq else ready.get(c)
+            if wq:
+                self.wq[c] = wq
+                for w in wq.get("alerts") or []:
+                    self._add_alert(c, now, w)
             if self.wq.get(c):
                 live["warrants"][c] = self.wq[c]
             try:
@@ -1985,6 +2095,12 @@ class Monitor:
                     self.runs[c] = rn
             except Exception as e:
                 print(f"[fast] 竭盡判斷失敗：{str(e)[:100]}")
+            try:
+                sm = self._exh_signs(c, q, now)
+                if sm:
+                    live["signs"][c] = sm
+            except Exception as e:
+                print(f"[fast] 竭盡跡象失敗：{str(e)[:100]}")
             try:
                 lq = self._liquidity(c, q, now)
                 if lq:

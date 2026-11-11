@@ -248,7 +248,7 @@ main#review.hidden{display:none}
   <section class="card" id="c-plan"><h3>進出場計畫（已畫在個股江波圖）</h3><div class="plan" id="plan"></div></section>
   <section class="card" id="c-ladder"><h3>壓力 / 支撐</h3><div class="ladder" id="ladder"></div></section>
   <section class="card" id="c-factors"><h3>因子（滑鼠停留看理由）</h3><div id="factors"></div></section>
-  <section class="card" id="c-book"><h3>五檔</h3><div class="book" id="book"></div><div id="runs"></div><div id="liq"></div><div id="walls"></div></section>
+  <section class="card" id="c-book"><h3>五檔</h3><div class="book" id="book"></div><div id="runs"></div><div id="signs"></div><div id="liq"></div><div id="walls"></div></section>
   <section class="card" id="c-dt"><h3>隔日沖分點 <span class="small muted" id="dt-t"></span></h3><div id="dt"></div></section>
   <section class="card" id="c-group"><h3>族群</h3><div id="group"></div></section>
   <section class="card" id="c-hist"><h3>交戰紀錄 <span class="small muted">（做熟悉的股票）</span></h3><div id="hist"></div></section>
@@ -288,8 +288,22 @@ async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());S
   if(!CUR||!STATE.codes.includes(CUR))CUR=STATE.codes[0];render();
   const h=await fetch('/api/history/'+CUR+'?_='+Date.now());HIST[CUR]=await h.json();drawChart();}
   catch(e){$('foot').innerHTML='<span class="stale">連線中斷（monitor 還在跑嗎？）：'+esc(e)+'</span>';}}
-async function loadLive(){try{const r=await fetch('/api/live?_='+Date.now());const j=await r.json();LIVE=(j&&j.quotes)?j:null;if(STATE)renderLive();}catch(e){}}
-setInterval(loadState,10000);setInterval(loadLive,3000);loadState();setTimeout(loadLive,1000);
+async function loadLive(){try{const r=await fetch('/api/live?_='+Date.now());const j=await r.json();LIVE=(j&&j.quotes)?j:null;applyFast();if(STATE)renderLive();}catch(e){}}
+// 報價快速通道：成交價與五檔直接讀永豐串流的最新狀態（monitor.quote_json），每 0.5 秒拉一次；其餘資料照舊每 3 秒。
+// 沒有串流或不在盤中時後端回 on:false，就改成每 5 秒問一次。
+let QFAST=null,QFAST_AT=0,QFAST_KEY='',QBUSY=false,QSKIP=0;
+function applyFast(){if(!QFAST||!LIVE||!LIVE.quotes||Date.now()-QFAST_AT>3000)return;   // 3 秒沒更新就不蓋（寧可用 /api/live 的）
+  for(const [c,q] of Object.entries(QFAST.quotes||{}))LIVE.quotes[c]=Object.assign({},LIVE.quotes[c]||{},q);
+  for(const [k,v] of Object.entries(QFAST.index||{}))LIVE.index[k]=Object.assign({},LIVE.index[k]||{},v);}
+async function loadQuote(){if(QBUSY||VIEW==='review'||!STATE||!STATE.codes||!STATE.codes.length)return;
+  if(QSKIP>0){QSKIP--;return;}QBUSY=true;
+  try{const r=await fetch('/api/quote?_='+Date.now());const j=await r.json();
+    if(!j.on){QFAST=null;QSKIP=9;}
+    else{QFAST=j;QFAST_AT=Date.now();applyFast();
+      const key=JSON.stringify([j.quotes[CUR]&&[j.quotes[CUR].ref,j.quotes[CUR].v,j.quotes[CUR].bids,j.quotes[CUR].asks],j.index]);
+      if(LIVE&&LIVE.quotes){if(key!==QFAST_KEY){QFAST_KEY=key;renderPrice();}else renderAge();}}}
+  catch(e){QFAST=null;QSKIP=9;}QBUSY=false;}      // monitor 沒在跑：5 秒後再試，不要每半秒噴一次錯
+setInterval(loadState,10000);setInterval(loadLive,3000);setInterval(loadQuote,500);loadState();setTimeout(loadLive,1000);
 
 // ---------------------------------------------------------------- 選股模式（monitor.py --web 不給代碼）
 let PICK=null, PICK_KEY='', PICK_SENT=false, PICK_T=null;
@@ -445,23 +459,34 @@ function drawAll(){if(!LIVE||!LIVE.quotes)return;const ev=STATE&&STATE.latest[CU
 window.addEventListener('resize',()=>{drawAll();drawChart();});
 
 // ---------------------------------------------------------------- 即時區（10 秒）
-function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
+// 「即時」卡右上的時間：有快速通道時標這筆成交是幾秒前收到的（分得出是畫面慢還是真的沒成交），滑過去看行情從交易所送到本機花了多久
+function renderAge(){const cap=LIVE.capture&&LIVE.capture.mode!=='live'?LIVE.capture:null;const q0=LIVE.quotes[CUR];const el=$('live-t');
+  const fq=!cap&&QFAST&&Date.now()-QFAST_AT<3000&&QFAST.quotes&&QFAST.quotes[CUR];
+  if(fq&&fq.age!=null){const a=fq.age+(Date.now()-QFAST_AT)/1000;
+    el.innerHTML=`逐筆 · 最後成交 <b class="${a>=30?'stale':''}">${a<1.5?'剛剛':a<60?Math.round(a)+' 秒前':Math.floor(a/60)+' 分前'}</b>`;
+    el.title=`成交價與五檔每 0.5 秒更新。這筆成交本機 ${a.toFixed(1)} 秒前收到`+(fq.lag!=null?`；交易所時間到本機收到差 ${fq.lag.toFixed(1)} 秒（含本機時鐘誤差）`:'')+'。很久沒變代表這段時間沒有成交，不是畫面延遲';}
+  else{el.textContent=(cap?'最後一筆 ':'')+(LIVE.time||'')+(q0&&q0.src==='shioaji'?' 逐筆':(LIVE.mis_t?' MIS '+LIVE.mis_t:''));el.title='';}}
+function renderPrice(){if(!LIVE||!LIVE.quotes||!STATE)return;const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
   const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
-  const cap=LIVE.capture&&LIVE.capture.mode!=='live'?LIVE.capture:null;   // 08:25–13:25 以外不連續截取（monitor._capture_mode）
-  $('shioaji').innerHTML=cap?`<span class="muted" title="盤中只在 08:25–13:25 截取資料；畫面停在最後一筆">■ ${esc(cap.text)}</span>`
-    :LIVE.shioaji?`<span class="up">● 永豐串流 ${LIVE.fast_every||3} 秒</span>${LIVE.ticks_used!=null?` <span class="small ${LIVE.ticks_used>=8?'stale':'muted'}">ticks ${LIVE.ticks_used}/${LIVE.ticks_limit||10}</span>`:''}`:'<span class="muted">○ 公開報價 10 秒</span>';
-  renderSignal();
-  renderPos();
-  const q0=LIVE.quotes[CUR];$('live-t').textContent=(cap?'最後一筆 ':'')+(LIVE.time||'')+(q0&&q0.src==='shioaji'?' 逐筆':(LIVE.mis_t?' MIS '+LIVE.mis_t:''));
-  if(q){const rp=(q.h!=null&&q.l!=null&&q.h!==q.l)?Math.round((q.ref-q.l)/(q.h-q.l)*100)+'%':'-';
-    $('price').innerHTML=`<div class="price"><span class="big num ${cls(q.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(q.chg_pct)}">${sgn(q.ref-q.y,dec(q.ref))} <span style="font-size:16px">${pct(q.chg_pct)}</span></span></div>
+  renderAge();
+  if(!q)return;
+  const rp=(q.h!=null&&q.l!=null&&q.h!==q.l)?Math.round((q.ref-q.l)/(q.h-q.l)*100)+'%':'-';
+  $('price').innerHTML=`<div class="price"><span class="big num ${cls(q.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(q.chg_pct)}">${sgn(q.ref-q.y,dec(q.ref))} <span style="font-size:16px">${pct(q.chg_pct)}</span></span></div>
      <div class="kv"><div>開<b class="num">${fp(q.o)}</b></div><div>高<b class="num up">${fp(q.h)}</b></div><div>低<b class="num dn">${fp(q.l)}</b></div><div>昨收<b class="num">${fp(q.y)}</b></div>
      <div>量<b class="num">${q.v??'-'}</b></div><div>量比<b class="num">${f(i.vol_pace,2)}</b></div><div>VWAP<b class="num">${f(LIVE.flow[CUR]?.vwap??i.vwap,2)}</b></div><div>日內位置<b class="num">${rp}</b></div>
      <div>漲停<b class="num up">${fp(d.limit_up)}</b></div><div>跌停<b class="num dn">${fp(d.limit_down)}</b></div><div>跳空<b class="num ${cls(i.gap_pct)}">${pct(i.gap_pct,1)}</b></div><div>相對大盤<b class="num ${cls(i.rs_vs_index)}">${pct(i.rs_vs_index,1)}</b></div></div>`;
-    const bids=q.bids||[],asks=q.asks||[];const mx=Math.max(1,...bids.map(b=>b[1]),...asks.map(a=>a[1]));const bv=bids.reduce((s,b)=>s+b[1],0),av=asks.reduce((s,a)=>s+a[1],0);
-    $('book').innerHTML=`<div><div class="small muted">委買</div>${bids.map(([p,v])=>`<div class="lv bid"><span>${fp(p)}</span><i style="width:${v/mx*100}%"></i><span>${v}</span></div>`).join('')}</div>
+  const bids=q.bids||[],asks=q.asks||[];const mx=Math.max(1,...bids.map(b=>b[1]),...asks.map(a=>a[1]));const bv=bids.reduce((s,b)=>s+b[1],0),av=asks.reduce((s,a)=>s+a[1],0);
+  $('book').innerHTML=`<div><div class="small muted">委買</div>${bids.map(([p,v])=>`<div class="lv bid"><span>${fp(p)}</span><i style="width:${v/mx*100}%"></i><span>${v}</span></div>`).join('')}</div>
       <div><div class="small muted">委賣</div>${asks.map(([p,v])=>`<div class="lv ask"><span>${fp(p)}</span><i style="width:${v/mx*100}%"></i><span>${v}</span></div>`).join('')}</div>`
-      +(bv+av?`<div class="small muted">五檔買 ${bv} / 賣 ${av}（不平衡 ${f((bv-av)/(bv+av),2)}）</div>`:'');
+      +(bv+av?`<div class="small muted">五檔買 ${bv} / 賣 ${av}（不平衡 ${f((bv-av)/(bv+av),2)}）</div>`:'');}
+function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
+  const cap=LIVE.capture&&LIVE.capture.mode!=='live'?LIVE.capture:null;   // 08:25–13:25 以外不連續截取（monitor._capture_mode）
+  $('shioaji').innerHTML=cap?`<span class="muted" title="盤中只在 08:25–13:25 截取資料；畫面停在最後一筆">■ ${esc(cap.text)}</span>`
+    :LIVE.shioaji?`<span class="up" title="成交價與五檔每 0.5 秒更新；圖表、分流、警示每 ${LIVE.fast_every||3} 秒">● 永豐串流 ${QFAST?'報價 0.5 秒':(LIVE.fast_every||3)+' 秒'}</span>${LIVE.ticks_used!=null?` <span class="small ${LIVE.ticks_used>=8?'stale':'muted'}">ticks ${LIVE.ticks_used}/${LIVE.ticks_limit||10}</span>`:''}`:'<span class="muted">○ 公開報價 10 秒</span>';
+  renderSignal();
+  renderPos();
+  renderPrice();
+  if(q){
     // 連外次 / 連內次（每 5 秒比一次內外盤，連 10 次亮燈）與最近 5 分鐘的買盤 / 賣盤竭盡（亮燈後熄燈；monitor._exhaustion，要永豐逐筆才有）
     const rn=LIVE.runs&&LIVE.runs[CUR];
     if(!rn){$('runs').innerHTML='';}else{const o=rn.out_n||0,n=rn.in_n||0,ex=rn.last;
@@ -474,6 +499,12 @@ function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];c
       const evt=ex?`<div class="${ex.kind==='pierce'?'bonus':''}">${esc(ex.time)} <b>${buy?'買盤竭盡':'賣盤竭盡'}</b>（熄燈）：連${buy?'外':'內'} ${ex.n} 次 ${ex.vol} 張`
         +(ex.kind==='pierce'?`，${buy?'推':'殺'} ${ex.push_tk} 檔${buy?'過今高':'破今低'} ${fp(ex.pre)} 到 ${fp(ex.ext)}`:`，${buy?'推':'殺'} ${ex.push_tk} 檔到 ${fp(ex.ext)}`)+tail+`</div>`:'';
       $('runs').innerHTML=`<div class="runs">${cur}${evt}</div>`;}
+    // 竭盡跡象（exhaust.py）：掛單、明細、K 棒三個畫面最近 5 分鐘各亮了哪個型態。觀察用，模型不計分
+    const sg=LIVE.signs&&LIVE.signs[CUR];
+    const sgRow=(d,lab)=>{if(!d||!d.n)return '';
+      const it=[['book','掛單'],['tick','明細'],['bar','K 棒']].map(([k,nm])=>d[k]?`<span title="${esc(d[k].text)}"><b>${nm} ✓</b> ${esc(d[k].name)} ${esc(d[k].time.slice(0,5))}</span>`:`<span>${nm} –</span>`).join(' · ');
+      return `<div class="${d.n>=2?'bonus':''}"><b>${lab}竭盡跡象 ${d.n}/3</b>：${it}</div>`;};
+    $('signs').innerHTML=sg&&(sg.buy.n||sg.sell.n)?`<div class="runs">${sgRow(sg.buy,'買盤')}${sgRow(sg.sell,'賣盤')}<div title="9 檔 × 42 天逐筆回測：這些型態出現後沒有比「正在漲、價格在高點附近」的任意時點更常反轉；掛單虛胖沒有歷史五檔可以回測">觀察用、不計分（回測沒有優勢；滑到項目上看細節）</div></div>`:'';
     // 流動性：最近 20 分鐘最佳一檔掛幾張、價差 ≥2 tick 的時間佔比（monitor._liquidity）。薄 = 小單就推得動，單筆要小、用限價
     const lq=LIVE.liquidity&&LIVE.liquidity[CUR];
     $('liq').innerHTML=!lq?'<div class="liq">流動性：統計中（盤中累積 5 分鐘的五檔資料後顯示）</div>'
@@ -622,7 +653,8 @@ function renderPos(){const el=$('pos');const v=posCur();
       +`<span class="grp"><span class="lbl">出場價</span>`+posIn('exit',v,null,'實際出場價')+`<button class="go" onclick="posSubmit('exit')">出場</button></span>`
       +`<span class="fillx" onclick="posFill(posCur().now)">填現價</span><span class="fillx" onclick="posFill(${v.stop})">填停損 ${fp(v.stop)}</span><span class="fillx" onclick="posFill(${v.t1})">填目標 ${fp(v.t1)}</span>${undo}`
       +(v.now!=null?`<div class="rng" title="左 ${fp(lo)}、右 ${fp(hi)}"><s style="left:${pos(v.fill_px)}%"></s><i style="left:${pos(v.now)}%"></i></div>`:'')
-      +(v.hint?`<div class="hint">${esc(v.hint)}</div>`:'<div class="note">進場後只看停損和目標，中途回吐不用跑</div>');}
+      +(v.hint?`<div class="hint">${esc(v.hint)}</div>`:'<div class="note">進場後只看停損和目標，中途回吐不用跑</div>')
+      +(v.exh_note?`<div class="note">👁 ${esc(v.exh_note)}</div>`:'');}
   else if(v.state==='closed'){h=`<span class="st">已出場 ${esc(v.label)} <b>${fp(v.fill_px)}</b> → <b>${fp(v.exit_px)}</b></span><span class="pnl ${cls(v.ticks)}">${v.ticks>0?'+':''}${v.ticks} tick</span><span class="m">扣成本 <b class="${cls(v.net_pct)}">${pct(v.net_pct)}</b></span>${undo}`;}
   else if(v.state==='cancelled'){h=`<span class="m">已撤單 ${esc(v.label)} <b>${fp(v.q_px)}</b></span>${undo}`;}
   else if(v.state==='skipped'){h=`<span class="m">這筆沒做</span>${undo}`;}

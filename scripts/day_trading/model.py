@@ -568,6 +568,14 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx=None):
                   f"{'過今高' if buy else '破今低'} {ex['near'][1]} 到 {ex.get('ext')} 後熄燈：{'買' if buy else '賣'}盤力道用完的型態，"
                   f"{'空' if buy else '多'}方加分（轉折確認，不是進場訊號）"))
 
+    # 竭盡跡象（exhaust.py：五檔、明細、K 棒三個畫面的「買盤 / 賣盤用完了」型態）。只列出、不計分：
+    # 回測（9 檔 × 42 天逐筆）這些型態出現後並沒有比「正在漲、價格在高點附近」的任意時點更常反轉，幅度也都小於成本。
+    for sd_, lab_ in (("buy", "買盤"), ("sell", "賣盤")):
+        sm_ = (ctx.get("signs") or {}).get(sd_) or {}
+        if sm_.get("n") and not pre_open:
+            on_ = "；".join(f"{sm_[k_]['time'][:5]} {lab2_}：{sm_[k_]['name']}" for k_, lab2_ in (("book", "掛單"), ("tick", "明細"), ("bar", "K 棒")) if sm_.get(k_))
+            F.append((f"{lab_}竭盡跡象 {sm_['n']}/3", 0.0, f"{on_}。觀察用：回測這些型態出現後沒有比對照組更常反轉，只列出不計分"))
+
     # 1 分 K 動能（反彈/殺盤途中不逆勢進場）
     bars = ctx.get("bars") or _bars_from_samples(samples)
     if not pre_open:

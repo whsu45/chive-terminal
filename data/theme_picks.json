@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-11T15:08:59.037Z",
+ "generatedAt": "2026-11-11T19:37:03.646Z",
  "quote_date": "2026-11-11",
  "method": {
   "strongPool": 10,
@@ -255,24 +255,6 @@
    "confidenceLabel": "高"
   },
   {
-   "code": "3406",
-   "name": "玉晶光",
-   "market": "上市",
-   "close": 995,
-   "pct": 9.94,
-   "volume": 6838,
-   "themes": [
-    "蘋概股"
-   ],
-   "asOf": "2026-11-11",
-   "verdict": "賣出",
-   "verdictKey": "SELL",
-   "score": -2.45,
-   "trend": "REBOUND",
-   "confidence": 0,
-   "confidenceLabel": "低"
-  },
-  {
    "code": "6148",
    "name": "驊宏資",
    "market": "上櫃",
@@ -289,6 +271,24 @@
    "trend": "RECOVERY",
    "confidence": 2,
    "confidenceLabel": "高"
+  },
+  {
+   "code": "3406",
+   "name": "玉晶光",
+   "market": "上市",
+   "close": 995,
+   "pct": 9.94,
+   "volume": 6838,
+   "themes": [
+    "蘋概股"
+   ],
+   "asOf": "2026-11-11",
+   "verdict": "賣出",
+   "verdictKey": "SELL",
+   "score": -2.45,
+   "trend": "REBOUND",
+   "confidence": 0,
+   "confidenceLabel": "低"
   },
   {
    "code": "2465",

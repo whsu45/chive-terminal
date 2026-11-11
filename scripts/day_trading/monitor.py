@@ -450,6 +450,9 @@ class Monitor:
         self._last_wq_t = 0
         self._last_mis_t = 0
         self._last_quotes = None
+        self._cap_done = set()                       # 已經抓過「只抓一次」那一筆的時段：(日期, pre/trial/after)
+        self._cap_tries = {}                         # 同上，失敗重試的次數（最多 3 次）
+        self._stream_off = False                     # 收盤後已登出永豐串流
         self.peer_hist = {c: {} for c in codes}     # code -> {peer: [[epoch, chg_pct], ...]}，給 model 算族群 10 分鐘趨勢
         self.signals = {}                            # code -> 目前的「建議做空/做多」訊號（快迴圈每 3 秒檢查進場確認條件）
         self.sig_block = {}                          # code -> 最近一次被逆勢過濾擋掉的訊號（照樣追蹤假設進場的結果，驗證過濾有沒有擋對）
@@ -1877,9 +1880,10 @@ class Monitor:
             q["bids"], q["asks"] = bk["bids"], bk["asks"]
             q["book_src"] = "shioaji"
 
-    def fast_tick(self):
+    def fast_tick(self, mode="live"):
         """一輪快更新：報價 → 分時序列、分流、分流劇變警示；每 60 秒順便更新權證快照與警示。
-        MIS 每 10 秒抓一次（限流），有永豐串流時每 3 秒用串流覆寫成交價/高低/量/五檔；MIS 失敗時整份改用串流湊（只少族群）。"""
+        MIS 每 10 秒抓一次（限流），有永豐串流時每 3 秒用串流覆寫成交價/高低/量/五檔；MIS 失敗時整份改用串流湊（只少族群）。
+        mode 是 _capture_mode 的時段，只用來告訴儀表板現在還有沒有在抓。"""
         now = dt.datetime.now()
         mis_due = (time.time() - self._last_mis_t >= 10) or not self._last_quotes
         if mis_due:
@@ -1904,7 +1908,8 @@ class Monitor:
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
                 "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "liquidity": {}, "runs": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
-                "mis_fail": getattr(self, "_mis_fail", 0)}
+                "mis_fail": getattr(self, "_mis_fail", 0),
+                "capture": {"mode": mode, "text": self._capture_text(mode)}}
         for k in ("t00", "o00"):
             q = quotes.get(k)
             if q and q.get("y"):
@@ -2017,19 +2022,103 @@ class Monitor:
         WEB.put_live(live)
         return live
 
+    # 盤中資料截取的時段（2026-11-11 改）。原本快迴圈沒有收盤的概念：13:25 只停模型估算，報價、權證快照照樣每 10 秒抓，
+    # 13:35 後放慢成每 60 秒、一路抓到隔天；永豐串流也一直掛著（14:30 盤後定價的成交還會進分 K）。
+    # 現在只有 08:25–13:25 連續抓。其餘三段各抓一次就停：
+    #   pre   開盤前啟動：抓一次讓儀表板有東西看，08:25 才開始連續抓
+    #   trial 13:25 收盤試撮開始：抓一次（訊號在這一筆照 13:25 的規則結案），之後不抓
+    #   after 13:31 起（與休市日）：抓一次收盤價、把還沒結案的警示結掉，然後登出永豐串流，全部停止
+    FAST_START, FAST_END, CLOSE_SNAP = "08:25", "13:25", "13:31"
+
+    def _capture_mode(self, now):
+        hhmm = now.strftime("%H:%M")
+        if not self._trading_today():
+            return "after"
+        if hhmm < self.FAST_START:
+            return "pre"
+        if hhmm < self.FAST_END:
+            return "live"
+        return "trial" if hhmm < self.CLOSE_SNAP else "after"
+
+    def _capture_text(self, mode):
+        if mode == "live":
+            return ""
+        if mode == "pre":
+            return f"還沒開盤，{self.FAST_START} 開始截取"
+        if mode == "trial":
+            return f"收盤試撮，已停止截取（{self.CLOSE_SNAP} 抓一次收盤價）"
+        return "已收盤，資料截取已停止" if self._trading_today() else "今天休市，沒有在截取資料"
+
+    def _stop_stream(self):
+        """收盤後登出永豐（逐筆、五檔、指數的訂閱一起斷）。已經收到的資料留在記憶體，圖表照常畫。"""
+        if self.flow_src and not self._stream_off:
+            self._stream_off = True
+            try:
+                self.flow_src.logout()
+            except Exception as e:
+                print(f"[shioaji] 登出失敗：{str(e)[:80]}")
+
+    def _resume_stream(self):
+        """monitor 開著過夜時，隔天 08:25 把收盤後登出的串流接回來。盤前資料還是前一天的，最好還是重啟。"""
+        self._stream_off = False
+        try:
+            ok = self.flow_src.start_stream(self.codes)
+            self.index_stream = bool(self.flow_src.start_index_stream()) if ok else False
+            print(f"[shioaji] 新的交易日，串流重新訂閱 {ok or '失敗'}；盤前資料是前一次啟動時的，建議重啟 monitor")
+        except Exception as e:
+            print(f"[shioaji] 串流重新訂閱失敗：{str(e)[:80]}")
+
+    def _fast_step(self, now, every):
+        """快迴圈的一步，回傳下一步前要等幾秒。live 以外的時段只抓一次（失敗最多試 3 次），之後只看時鐘、不對外取資料。"""
+        mode = self._capture_mode(now)
+        key = (now.date(), mode)
+        if mode == "live":
+            if self._stream_off:
+                self._resume_stream()
+        elif key in self._cap_done:
+            return 15
+        elif self._last_quotes is not None and (mode == "pre" or not self._trading_today()):
+            self._cap_done.add(key)      # 開著過夜／跨到休市日：畫面上已經有資料，不用再抓
+            return 15
+        err = http = None
+        try:
+            self.fast_tick(mode)
+        except hc.HttpError as e:
+            err, http = e, True
+        except Exception as e:
+            err = e
+        if mode == "live":
+            if http:
+                print(f"[fast] MIS 抓取失敗，20 秒後再試：{str(err)[:120]}")   # MIS 偶發回 HTML/限流：這輪跳過，多等 20 秒
+                return every + 20
+            if err:
+                print(f"[fast] {str(err)[:100]}")
+            return every
+        if err:
+            n = self._cap_tries[key] = self._cap_tries.get(key, 0) + 1
+            if n < 3:
+                print(f"[fast] 抓取失敗（第 {n} 次），20 秒後再試：{str(err)[:100]}")
+                return 20
+            print(f"[fast] 抓取失敗 3 次，不再試：{str(err)[:100]}")
+        self._cap_done.add(key)
+        if mode == "after":
+            self._stop_stream()
+            if self._trading_today():
+                what = "已抓收盤價" if not err else "收盤價沒抓到"
+                print(f"[{now:%H:%M:%S}] {what}，資料截取全部停止（報價、權證快照不再抓" + ("，永豐串流已登出" if self.flow_src else "") + "）；儀表板與復盤畫面照常")
+            else:
+                print(f"[{now:%H:%M:%S}] 今天休市：只抓一次報價，之後不再截取")
+        elif mode == "trial":
+            print(f"[{now:%H:%M:%S}] {self.FAST_END} 收盤試撮開始，停止截取報價；{self.CLOSE_SNAP} 抓一次收盤價後全部停止")
+        else:
+            print(f"[{now:%H:%M:%S}] 還沒開盤：先抓一次報價，{self.FAST_START} 起開始連續截取")
+        sys.stdout.flush()
+        return 15
+
     def fast_loop(self, every=10):
         while True:
             t0 = time.time()
-            backoff = 0
-            try:
-                self.fast_tick()
-            except hc.HttpError as e:
-                backoff = 20   # MIS 偶發回 HTML/限流：這輪跳過，多等 20 秒再試
-                print(f"[fast] MIS 抓取失敗，20 秒後再試：{str(e)[:120]}")
-            except Exception as e:
-                print(f"[fast] {str(e)[:100]}")
-            hhmm = dt.datetime.now().strftime("%H:%M")
-            wait = 60 if (hhmm >= "13:35" or hhmm < "08:25") else every + backoff
+            wait = self._fast_step(dt.datetime.now(), every)
             time.sleep(max(1, wait - (time.time() - t0)))
 
     def start_fast(self, every=None):
@@ -2083,14 +2172,19 @@ class Monitor:
         if self.web and not once:
             self.start_fast()
         evaluated = False
+        off_tries = 0
         idle_note = None
         while True:
             t0 = time.time()
             hhmm = dt.datetime.now().strftime("%H:%M")
             in_hours = self.EVAL_START <= hhmm < self.EVAL_END
             # 13:25 一到就停止模型估算（原本收盤後每 5 分鐘還在算、印「偏空，勝率 85%」這種沒有意義的 log，也會寫進 monitor_*.jsonl）。
-            # 盤後才啟動的話只算一次，讓儀表板有東西看。快迴圈（報價、訊號結案、持倉提醒）、校準與資料同步照常。
-            if once or in_hours or not evaluated:
+            # 盤後才啟動的話只算一次，讓儀表板有東西看（抓不到最多試 3 次）。校準與資料同步照常；
+            # 快迴圈也在 13:25 停止截取，13:31 抓一次收盤價後全部停（見 _capture_mode）。
+            if in_hours:
+                off_tries = 0
+            if once or in_hours or (not evaluated and off_tries < 3):
+                off_tries += 0 if in_hours else 1
                 try:
                     results = self.poll()
                     evaluated = evaluated or bool(results)
@@ -2118,7 +2212,7 @@ class Monitor:
                 note = (dt.date.today(), hhmm >= self.EVAL_END)
                 if idle_note != note:
                     idle_note = note
-                    print(f"[{dt.datetime.now():%H:%M:%S}] " + (f"{self.EVAL_END} 起（收盤試撮）模型停止估算，儀表板保留最後一次估算；訊號結案、資料同步照常"
+                    print(f"[{dt.datetime.now():%H:%M:%S}] " + (f"{self.EVAL_END} 起（收盤試撮）模型停止估算、報價停止截取，儀表板保留最後一次估算；{self.CLOSE_SNAP} 抓一次收盤價結案，資料同步照常"
                                                                if note[1] else f"還沒開盤，{self.EVAL_START} 開始估算"))
                     sys.stdout.flush()
             if hhmm >= "13:35" or hhmm < self.EVAL_START:

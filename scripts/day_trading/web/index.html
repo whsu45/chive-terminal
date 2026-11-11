@@ -447,10 +447,12 @@ window.addEventListener('resize',()=>{drawAll();drawChart();});
 // ---------------------------------------------------------------- 即時區（10 秒）
 function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
   const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
-  $('shioaji').innerHTML=LIVE.shioaji?`<span class="up">● 永豐串流 ${LIVE.fast_every||3} 秒</span>${LIVE.ticks_used!=null?` <span class="small ${LIVE.ticks_used>=8?'stale':'muted'}">ticks ${LIVE.ticks_used}/${LIVE.ticks_limit||10}</span>`:''}`:'<span class="muted">○ 公開報價 10 秒</span>';
+  const cap=LIVE.capture&&LIVE.capture.mode!=='live'?LIVE.capture:null;   // 08:25–13:25 以外不連續截取（monitor._capture_mode）
+  $('shioaji').innerHTML=cap?`<span class="muted" title="盤中只在 08:25–13:25 截取資料；畫面停在最後一筆">■ ${esc(cap.text)}</span>`
+    :LIVE.shioaji?`<span class="up">● 永豐串流 ${LIVE.fast_every||3} 秒</span>${LIVE.ticks_used!=null?` <span class="small ${LIVE.ticks_used>=8?'stale':'muted'}">ticks ${LIVE.ticks_used}/${LIVE.ticks_limit||10}</span>`:''}`:'<span class="muted">○ 公開報價 10 秒</span>';
   renderSignal();
   renderPos();
-  const q0=LIVE.quotes[CUR];$('live-t').textContent=(LIVE.time||'')+(q0&&q0.src==='shioaji'?' 逐筆':(LIVE.mis_t?' MIS '+LIVE.mis_t:''));
+  const q0=LIVE.quotes[CUR];$('live-t').textContent=(cap?'最後一筆 ':'')+(LIVE.time||'')+(q0&&q0.src==='shioaji'?' 逐筆':(LIVE.mis_t?' MIS '+LIVE.mis_t:''));
   if(q){const rp=(q.h!=null&&q.l!=null&&q.h!==q.l)?Math.round((q.ref-q.l)/(q.h-q.l)*100)+'%':'-';
     $('price').innerHTML=`<div class="price"><span class="big num ${cls(q.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(q.chg_pct)}">${sgn(q.ref-q.y,dec(q.ref))} <span style="font-size:16px">${pct(q.chg_pct)}</span></span></div>
      <div class="kv"><div>開<b class="num">${fp(q.o)}</b></div><div>高<b class="num up">${fp(q.h)}</b></div><div>低<b class="num dn">${fp(q.l)}</b></div><div>昨收<b class="num">${fp(q.y)}</b></div>

@@ -26,9 +26,10 @@
   "market": "tse",
   "group": null,
   "days": [
-   "2026-11-09"
+   "2026-11-09",
+   "2026-11-11"
   ],
-  "launches": 4,
+  "launches": 5,
   "signals": [
    {
     "date": "2026-11-09",
@@ -216,6 +217,105 @@
    "2026-11-09"
   ],
   "launches": 2,
+  "signals": [],
+  "notes": []
+ },
+ "5228": {
+  "name": "鈺鎧",
+  "market": "otc",
+  "group": null,
+  "days": [
+   "2026-11-11"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "1815": {
+  "name": "富喬",
+  "market": "otc",
+  "group": "玻纖紗布",
+  "days": [
+   "2026-11-11"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3029": {
+  "name": "零壹",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-11"
+  ],
+  "launches": 2,
+  "signals": [],
+  "notes": []
+ },
+ "8042": {
+  "name": "金山電",
+  "market": "otc",
+  "group": null,
+  "days": [
+   "2026-11-11"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "6257": {
+  "name": "矽格",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-11"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3605": {
+  "name": "宏致",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-11"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "1802": {
+  "name": "台玻",
+  "market": "tse",
+  "group": "玻纖紗布",
+  "days": [
+   "2026-11-11"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "5498": {
+  "name": "凱崴",
+  "market": "otc",
+  "group": null,
+  "days": [
+   "2026-11-11"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2221": {
+  "name": "大甲",
+  "market": "otc",
+  "group": null,
+  "days": [
+   "2026-11-11"
+  ],
+  "launches": 1,
   "signals": [],
   "notes": []
  }

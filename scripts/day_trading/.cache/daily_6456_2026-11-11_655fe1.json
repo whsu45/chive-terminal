@@ -1,0 +1,1596 @@
+{
+ "version": 9,
+ "code": "6456",
+ "name": "GIS-KY",
+ "market": "tse",
+ "date": "2026-11-11",
+ "prev_date": "2026-11-10",
+ "group": null,
+ "peers": [],
+ "peers_arg": null,
+ "peer_info": {},
+ "tech": {
+  "date": "2026-11-10",
+  "close": 84.2,
+  "open": 81.2,
+  "high": 84.2,
+  "low": 80.4,
+  "vol": 32277,
+  "ma5": 85.0,
+  "ma10": 91.2,
+  "ma20": 92.575,
+  "ma60": 79.94333333333334,
+  "bb_up": 108.4011650440023,
+  "bb_dn": 76.74883495599771,
+  "atr14": 9.864285714285716,
+  "rsi14": 46.993103664952045,
+  "vol_ma5": 49449.0,
+  "vol_ma20": 35559.5,
+  "chg_pct": 9.921671018276768,
+  "high20": 113.5,
+  "low20": 75.4,
+  "high60": 113.5,
+  "low60": 61.4,
+  "prev_high": 81.9,
+  "prev_low": 75.4,
+  "ret5": -3.9908779931584926,
+  "ret20": -15.799999999999992,
+  "streak": 1,
+  "atr_pct": 11.715303698676621
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-23",
+   "o": 76.5,
+   "h": 80.9,
+   "l": 76.5,
+   "c": 78.6,
+   "v": 26940,
+   "amt": 2142419927.0
+  },
+  {
+   "date": "2026-09-24",
+   "o": 78.0,
+   "h": 82.5,
+   "l": 75.6,
+   "c": 81.3,
+   "v": 14497,
+   "amt": 1146567549.0
+  },
+  {
+   "date": "2026-09-29",
+   "o": 85.0,
+   "h": 89.4,
+   "l": 84.1,
+   "c": 89.4,
+   "v": 18926,
+   "amt": 1676209772.0
+  },
+  {
+   "date": "2026-09-30",
+   "o": 91.5,
+   "h": 95.7,
+   "l": 89.5,
+   "c": 92.0,
+   "v": 63213,
+   "amt": 5878777895.0
+  },
+  {
+   "date": "2026-10-01",
+   "o": 91.9,
+   "h": 92.0,
+   "l": 86.1,
+   "c": 87.9,
+   "v": 20200,
+   "amt": 1779470957.0
+  },
+  {
+   "date": "2026-10-02",
+   "o": 89.1,
+   "h": 94.0,
+   "l": 87.0,
+   "c": 92.9,
+   "v": 20444,
+   "amt": 1866172794.0
+  },
+  {
+   "date": "2026-10-05",
+   "o": 92.9,
+   "h": 93.6,
+   "l": 87.1,
+   "c": 90.6,
+   "v": 18149,
+   "amt": 1644115128.0
+  },
+  {
+   "date": "2026-10-06",
+   "o": 97.6,
+   "h": 99.6,
+   "l": 96.2,
+   "c": 99.6,
+   "v": 15976,
+   "amt": 1586942209.0
+  },
+  {
+   "date": "2026-10-07",
+   "o": 101.0,
+   "h": 108.0,
+   "l": 96.3,
+   "c": 102.0,
+   "v": 71277,
+   "amt": 7261104265.0
+  },
+  {
+   "date": "2026-10-08",
+   "o": 101.5,
+   "h": 104.5,
+   "l": 99.4,
+   "c": 100.0,
+   "v": 17868,
+   "amt": 1810035804.0
+  },
+  {
+   "date": "2026-10-12",
+   "o": 98.5,
+   "h": 103.5,
+   "l": 95.5,
+   "c": 102.0,
+   "v": 24578,
+   "amt": 2448216143.0
+  },
+  {
+   "date": "2026-10-13",
+   "o": 99.0,
+   "h": 102.5,
+   "l": 96.4,
+   "c": 97.4,
+   "v": 19737,
+   "amt": 1946387942.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 98.0,
+   "h": 98.4,
+   "l": 90.6,
+   "c": 91.2,
+   "v": 27400,
+   "amt": 2554354224.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 87.1,
+   "h": 96.4,
+   "l": 87.1,
+   "c": 88.7,
+   "v": 30323,
+   "amt": 2779175391.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 89.1,
+   "h": 94.3,
+   "l": 87.7,
+   "c": 88.1,
+   "v": 20323,
+   "amt": 1830916222.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 85.1,
+   "h": 88.1,
+   "l": 83.3,
+   "c": 84.4,
+   "v": 12171,
+   "amt": 1039494057.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 85.1,
+   "h": 92.8,
+   "l": 84.5,
+   "c": 89.5,
+   "v": 16952,
+   "amt": 1547726991.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 91.5,
+   "h": 98.4,
+   "l": 89.7,
+   "c": 98.4,
+   "v": 36231,
+   "amt": 3424810278.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 101.5,
+   "h": 108.0,
+   "l": 99.8,
+   "c": 102.0,
+   "v": 68501,
+   "amt": 7187191324.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 105.0,
+   "h": 105.0,
+   "l": 95.5,
+   "c": 97.8,
+   "v": 34192,
+   "amt": 3426205373.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 101.5,
+   "h": 107.5,
+   "l": 99.3,
+   "c": 107.5,
+   "v": 33530,
+   "amt": 3535783809.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 112.0,
+   "h": 113.5,
+   "l": 100.5,
+   "c": 102.5,
+   "v": 50505,
+   "amt": 5290143784.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 96.9,
+   "h": 98.9,
+   "l": 92.3,
+   "c": 92.3,
+   "v": 23528,
+   "amt": 2211022278.0
+  },
+  {
+   "date": "2026-11-02",
+   "o": 87.0,
+   "h": 99.5,
+   "l": 87.0,
+   "c": 97.0,
+   "v": 37084,
+   "amt": 3580924325.0
+  },
+  {
+   "date": "2026-11-03",
+   "o": 92.3,
+   "h": 94.5,
+   "l": 87.3,
+   "c": 87.7,
+   "v": 28890,
+   "amt": 2620501997.0
+  },
+  {
+   "date": "2026-11-04",
+   "o": 89.2,
+   "h": 96.4,
+   "l": 82.2,
+   "c": 96.4,
+   "v": 40799,
+   "amt": 3628600053.0
+  },
+  {
+   "date": "2026-11-05",
+   "o": 90.8,
+   "h": 93.9,
+   "l": 86.8,
+   "c": 87.2,
+   "v": 47894,
+   "amt": 4327000785.0
+  },
+  {
+   "date": "2026-11-06",
+   "o": 78.5,
+   "h": 86.7,
+   "l": 78.5,
+   "c": 80.6,
+   "v": 50383,
+   "amt": 4126874526.0
+  },
+  {
+   "date": "2026-11-09",
+   "o": 80.8,
+   "h": 81.9,
+   "l": 75.4,
+   "c": 76.6,
+   "v": 75892,
+   "amt": 5949454290.0
+  },
+  {
+   "date": "2026-11-10",
+   "o": 81.2,
+   "h": 84.2,
+   "l": 80.4,
+   "c": 84.2,
+   "v": 32277,
+   "amt": 2692032456.0
+  }
+ ],
+ "limit_up": 92.6,
+ "limit_down": 75.8,
+ "insti": {
+  "2026-11-10": {
+   "foreign": 9684,
+   "trust": 0,
+   "dealer": 73,
+   "total": 9758
+  },
+  "2026-11-09": {
+   "foreign": -7125,
+   "trust": 0,
+   "dealer": 30,
+   "total": -7095
+  },
+  "2026-11-06": {
+   "foreign": -3438,
+   "trust": 0,
+   "dealer": -18,
+   "total": -3456
+  }
+ },
+ "insti_sum": {
+  "foreign": -879,
+  "trust": 0,
+  "dealer": 85,
+  "total": -793
+ },
+ "weak_screen": {
+  "close": 84.2,
+  "r10": -13.91,
+  "idx_r10": -7.34,
+  "ma60": 79.94,
+  "idx": 42711.92,
+  "idx_ma20": 45396.65,
+  "mkt_weak": true,
+  "foreign": 9684,
+  "trust": 0,
+  "under": true,
+  "drop10": true,
+  "below_ma": false,
+  "px100": false,
+  "sell": false,
+  "n_ok": 2,
+  "hit": false
+ },
+ "margin": {
+  "fin_prev": 26220,
+  "fin_now": 21274,
+  "fin_chg": -4946,
+  "short_prev": 157,
+  "short_now": 299,
+  "short_chg": 142,
+  "fin_limit": 84484
+ },
+ "sbl": {
+  "sbl_sell": 568,
+  "sbl_return": 486,
+  "sbl_bal": 17137
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": 3281,
+   "daytrade_buy": 5046,
+   "foreign_net": 8295,
+   "top5_buy": 10845,
+   "top5_sell": -2992,
+   "daytrade_names": [
+    "富邦證券",
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "富邦證券",
+     "bid": "9600",
+     "bhid": "9600",
+     "buy": 6093,
+     "sell": 2055,
+     "net": 4038,
+     "pct": 12.63
+    },
+    {
+     "broker": "港商野村",
+     "bid": "1560",
+     "bhid": "1560",
+     "buy": 3340,
+     "sell": 15,
+     "net": 3325,
+     "pct": 10.4
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "bid": "1470",
+     "bhid": "1470",
+     "buy": 1452,
+     "sell": 70,
+     "net": 1382,
+     "pct": 4.32
+    },
+    {
+     "broker": "美商高盛",
+     "bid": "1480",
+     "bhid": "1480",
+     "buy": 1268,
+     "sell": 207,
+     "net": 1061,
+     "pct": 3.32
+    },
+    {
+     "broker": "美林",
+     "bid": "1440",
+     "bhid": "1440",
+     "buy": 1064,
+     "sell": 25,
+     "net": 1039,
+     "pct": 3.25
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "凱基-信義",
+     "bid": "9216",
+     "bhid": "9200",
+     "buy": 106,
+     "sell": 1017,
+     "net": -911,
+     "pct": 2.85
+    },
+    {
+     "broker": "凱基-城中",
+     "bid": "9227",
+     "bhid": "9200",
+     "buy": 12,
+     "sell": 643,
+     "net": -631,
+     "pct": 1.97
+    },
+    {
+     "broker": "華南永昌",
+     "bid": "9300",
+     "bhid": "9300",
+     "buy": 35,
+     "sell": 572,
+     "net": -537,
+     "pct": 1.68
+    },
+    {
+     "broker": "統一-敦南",
+     "bid": "5852",
+     "bhid": "5850",
+     "buy": 12,
+     "sell": 493,
+     "net": -481,
+     "pct": 1.5
+    },
+    {
+     "broker": "台新-西松",
+     "bid": "003900420032006e",
+     "bhid": "9B00",
+     "buy": 0,
+     "sell": 432,
+     "net": -432,
+     "pct": 1.35
+    }
+   ],
+   "daytrade_buy_pct": 15.780000000000001,
+   "foreign_net_pct": 25.699414443721537,
+   "top5_buy_pct": 33.59977693094154,
+   "top5_sell_pct": 9.269758651671468
+  },
+  "day_date": "2026/11/10",
+  "range4": {
+   "daytrade_net": 1358,
+   "daytrade_buy": 4926,
+   "foreign_net": -5798,
+   "top5_buy": 6383,
+   "top5_sell": -10440,
+   "daytrade_names": [
+    "富邦證券",
+    "凱基-台北",
+    "台新"
+   ],
+   "top_buyers": [
+    {
+     "broker": "富邦證券",
+     "bid": "9600",
+     "bhid": "9600",
+     "buy": 6859,
+     "sell": 3937,
+     "net": 2922,
+     "pct": 1.42
+    },
+    {
+     "broker": "凱基-台北",
+     "bid": "9268",
+     "bhid": "9200",
+     "buy": 13634,
+     "sell": 11958,
+     "net": 1676,
+     "pct": 0.81
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "bid": "1650",
+     "bhid": "1650",
+     "buy": 4096,
+     "sell": 3157,
+     "net": 939,
+     "pct": 0.46
+    },
+    {
+     "broker": "美林",
+     "bid": "1440",
+     "bhid": "1440",
+     "buy": 1943,
+     "sell": 1425,
+     "net": 518,
+     "pct": 0.25
+    },
+    {
+     "broker": "台新",
+     "bid": "0039004200300030",
+     "bhid": "9B00",
+     "buy": 1794,
+     "sell": 1466,
+     "net": 328,
+     "pct": 0.16
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "美商高盛",
+     "bid": "1480",
+     "bhid": "1480",
+     "buy": 6839,
+     "sell": 11071,
+     "net": -4232,
+     "pct": 2.05
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "bid": "1470",
+     "bhid": "1470",
+     "buy": 5950,
+     "sell": 7752,
+     "net": -1802,
+     "pct": 0.87
+    },
+    {
+     "broker": "凱基-信義",
+     "bid": "9216",
+     "bhid": "9200",
+     "buy": 205,
+     "sell": 2000,
+     "net": -1795,
+     "pct": 0.87
+    },
+    {
+     "broker": "統一-南京",
+     "bid": "0035003800350055",
+     "bhid": "5850",
+     "buy": 39,
+     "sell": 1420,
+     "net": -1381,
+     "pct": 0.67
+    },
+    {
+     "broker": "國票-安和",
+     "bid": "003700370039005a",
+     "bhid": "7790",
+     "buy": 401,
+     "sell": 1631,
+     "net": -1230,
+     "pct": 0.6
+    }
+   ],
+   "daytrade_buy_pct": 2.3860961219883166,
+   "foreign_net_pct": -2.8084826056208403,
+   "top5_buy_pct": 3.091849684663302,
+   "top5_sell_pct": 5.057012487527005
+  },
+  "daytraders": {
+   "buy": 5046,
+   "buy_pct": 15.78,
+   "expect_sell": 2922,
+   "list": [
+    {
+     "broker": "富邦證券",
+     "net": 4038,
+     "buy": 6093,
+     "sell": 2055,
+     "pct": 12.63,
+     "n": 325,
+     "rate": 0.612,
+     "mean_f": 0.584,
+     "here_n": 3,
+     "here_flip": 2
+    },
+    {
+     "broker": "凱基-台北",
+     "net": 1008,
+     "buy": 2094,
+     "sell": 1086,
+     "pct": 3.15,
+     "n": 412,
+     "rate": 0.573,
+     "mean_f": 0.559,
+     "here_n": 4,
+     "here_flip": 2
+    }
+   ],
+   "source": "dynamic",
+   "stat_days": 61,
+   "stat_last": "2026-11-09"
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "永豐金證券",
+    "count": 13,
+    "cum_net": -1125,
+    "buy_days": 6,
+    "sell_days": 7,
+    "last_date": "2026-11-10",
+    "last_net": 261,
+    "scored": 12,
+    "win_rate": 0.9166666666666666,
+    "avg_capture_pct": 3.352248479118971,
+    "t": 2.431696664740739,
+    "cum_net_pct": -0.15818557628763058,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "元大-三重",
+    "count": 6,
+    "cum_net": 12,
+    "buy_days": 3,
+    "sell_days": 3,
+    "last_date": "2026-11-06",
+    "last_net": -450,
+    "scored": 6,
+    "win_rate": 0.8333333333333334,
+    "avg_capture_pct": 5.220388700827336,
+    "t": 2.3355135200601955,
+    "cum_net_pct": 0.0016873128137347261,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "國泰-敦南",
+    "count": 14,
+    "cum_net": 492,
+    "buy_days": 9,
+    "sell_days": 5,
+    "last_date": "2026-11-10",
+    "last_net": -331,
+    "scored": 13,
+    "win_rate": 0.6923076923076923,
+    "avg_capture_pct": 3.0412397616261804,
+    "t": 2.039355347223591,
+    "cum_net_pct": 0.06917982536312377,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "富邦證券",
+    "count": 12,
+    "cum_net": 3340,
+    "buy_days": 6,
+    "sell_days": 6,
+    "last_date": "2026-11-10",
+    "last_net": 4038,
+    "scored": 11,
+    "win_rate": 0.2727272727272727,
+    "avg_capture_pct": -3.464012558420588,
+    "t": -2.1475857971188512,
+    "cum_net_pct": 0.46963539982283214,
+    "daytrade": true,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "美好",
+    "count": 12,
+    "cum_net": -1348,
+    "buy_days": 6,
+    "sell_days": 6,
+    "last_date": "2026-11-10",
+    "last_net": 51,
+    "scored": 11,
+    "win_rate": 0.2727272727272727,
+    "avg_capture_pct": -3.9325229977760916,
+    "t": -2.629135429413281,
+    "cum_net_pct": -0.1895414727428676,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "台新",
+    "count": 10,
+    "cum_net": 431,
+    "buy_days": 7,
+    "sell_days": 3,
+    "last_date": "2026-11-06",
+    "last_net": 156,
+    "scored": 10,
+    "win_rate": 0.2,
+    "avg_capture_pct": -3.928942593407008,
+    "t": -2.93419919493015,
+    "cum_net_pct": 0.06060265189330559,
+    "daytrade": true,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "台新-台北",
+    "count": 6,
+    "cum_net": -295,
+    "buy_days": 2,
+    "sell_days": 4,
+    "last_date": "2026-11-05",
+    "last_net": -397,
+    "scored": 6,
+    "win_rate": 0.16666666666666666,
+    "avg_capture_pct": -4.112317037433862,
+    "t": -3.016194582550878,
+    "cum_net_pct": -0.041479773337645354,
+    "daytrade": true,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": -70,
+  "winners_last_net_pct": -0.2168726957276079,
+  "winners_inventory": -621,
+  "winners_inventory_pct": -0.08731843811077208,
+  "losers_last_net": 3714,
+  "losers_last_net_pct": 11.506645599033368,
+  "n_scored": 158
+ },
+ "warrants": {
+  "call_vol": 12513,
+  "put_vol": 11,
+  "call_amt": 11899060.0,
+  "put_amt": 22220.0,
+  "n_call": 116,
+  "n_put": 3,
+  "n_call_active": 65,
+  "n_put_active": 3,
+  "call_share": 0.9991216863621846,
+  "amt_share": 0.9962722123798786,
+  "hedge_net": 79,
+  "hedge_pct": 0.24475632803544317,
+  "call_amt_5d": 13089800.0,
+  "call_surge": 0.909032987516998,
+  "list": [
+   {
+    "code": "032169",
+    "name": "GIS中信64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032170",
+    "name": "GIS中信66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032196",
+    "name": "GIS永豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032222",
+    "name": "GIS統一6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032303",
+    "name": "GIS元大64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032304",
+    "name": "GIS元大64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032305",
+    "name": "GIS元大64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032306",
+    "name": "GIS元大64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032307",
+    "name": "GIS元大67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032381",
+    "name": "GIS台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032382",
+    "name": "GIS台新64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032383",
+    "name": "GIS台新64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032450",
+    "name": "GIS凱基64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032499",
+    "name": "GIS國票65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032500",
+    "name": "GIS國票67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032516",
+    "name": "GIS國泰65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032560",
+    "name": "GIS群益64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032561",
+    "name": "GIS群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032614",
+    "name": "GIS富邦64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032801",
+    "name": "GIS元大64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032802",
+    "name": "GIS元大64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032803",
+    "name": "GIS元大64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032804",
+    "name": "GIS元大65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032805",
+    "name": "GIS元大67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033418",
+    "name": "GIS凱基64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034624",
+    "name": "GIS富邦67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034867",
+    "name": "GIS群益64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034987",
+    "name": "GIS國泰65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035292",
+    "name": "GIS富邦64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035564",
+    "name": "GIS永豐64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035804",
+    "name": "GIS凱基64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036185",
+    "name": "GIS凱基67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036270",
+    "name": "GIS台新67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036397",
+    "name": "GIS群益65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036454",
+    "name": "GIS統一6A購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036455",
+    "name": "GIS統一73購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036506",
+    "name": "GIS永豐66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036593",
+    "name": "GIS凱基64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036594",
+    "name": "GIS凱基64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036595",
+    "name": "GIS凱基65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036636",
+    "name": "GIS國票64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036830",
+    "name": "GIS群益65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039527",
+    "name": "GIS永豐66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039528",
+    "name": "GIS永豐67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039595",
+    "name": "GIS台新65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039754",
+    "name": "GIS凱基65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039755",
+    "name": "GIS凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039866",
+    "name": "GIS中信65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039867",
+    "name": "GIS中信65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039868",
+    "name": "GIS中信68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039983",
+    "name": "GIS國泰66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040082",
+    "name": "GIS永豐65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058636",
+    "name": "GIS統一62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058637",
+    "name": "GIS統一63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058860",
+    "name": "GIS統一63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058861",
+    "name": "GIS統一73購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058862",
+    "name": "GIS統一73購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060194",
+    "name": "GIS永豐5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060238",
+    "name": "GIS統一63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060478",
+    "name": "GIS富邦5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060610",
+    "name": "GIS凱基5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060666",
+    "name": "GIS元大5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061768",
+    "name": "GIS富邦62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061827",
+    "name": "GIS凱基5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064436",
+    "name": "GIS統一66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064520",
+    "name": "GIS國泰5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064546",
+    "name": "GIS永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070812",
+    "name": "GIS永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070871",
+    "name": "GIS群益5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070876",
+    "name": "GIS富邦5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070914",
+    "name": "GIS國票5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070915",
+    "name": "GIS國票5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070930",
+    "name": "GIS台新5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071092",
+    "name": "GIS凱基5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071455",
+    "name": "GIS統一66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071456",
+    "name": "GIS統一6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072212",
+    "name": "GIS台新5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075757",
+    "name": "GIS元大61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076496",
+    "name": "GIS永豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080490",
+    "name": "GIS凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080565",
+    "name": "GIS國票63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080597",
+    "name": "GIS國泰63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081013",
+    "name": "GIS凱基63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081048",
+    "name": "GIS富邦62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081096",
+    "name": "GIS台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083451",
+    "name": "GIS元大68購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083794",
+    "name": "GIS群益63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083846",
+    "name": "GIS凱基69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083908",
+    "name": "GIS國票64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084888",
+    "name": "GIS元大63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085751",
+    "name": "GIS元大63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086105",
+    "name": "GIS凱基63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088185",
+    "name": "GIS統一6C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088339",
+    "name": "GIS元大64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088340",
+    "name": "GIS元大65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088663",
+    "name": "GIS統一66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088883",
+    "name": "GIS永豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088903",
+    "name": "GIS統一79購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088952",
+    "name": "GIS國泰64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089260",
+    "name": "GIS台新63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089261",
+    "name": "GIS台新63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089360",
+    "name": "GIS凱基63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089361",
+    "name": "GIS凱基65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089388",
+    "name": "GIS富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089538",
+    "name": "GIS統一6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089539",
+    "name": "GIS統一71購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089541",
+    "name": "GIS統一7A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089593",
+    "name": "GIS元大64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089594",
+    "name": "GIS元大64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089595",
+    "name": "GIS元大64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089596",
+    "name": "GIS元大65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089597",
+    "name": "GIS元大68購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089598",
+    "name": "GIS元大69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089649",
+    "name": "GIS群益65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089684",
+    "name": "GIS國票66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089787",
+    "name": "GIS凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "04738T",
+    "name": "GIS台新63售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04870T",
+    "name": "GIS台新64售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05047T",
+    "name": "GIS台新64售05",
+    "right": "put",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [
+  "注意股(前日)"
+ ],
+ "market_ctx": {
+  "prev_date": "2026-11-10",
+  "breadth": {
+   "up": 526,
+   "down": 491
+  },
+  "foreign_amt_b": -341.2,
+  "trust_amt_b": 398.9,
+  "tx_night": {
+   "contract": "202611",
+   "o": 42503.0,
+   "h": 43147.0,
+   "l": 42030.0,
+   "c": 42522.0,
+   "chg": -124.0,
+   "chg_pct": -0.29,
+   "vol": 56759,
+   "title": "2026/11/10"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 42701.0,
+   "h": 43108.0,
+   "l": 41873.0,
+   "c": 42623.0,
+   "chg": 1145.0,
+   "chg_pct": 2.76,
+   "vol": 55081,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -103473,
+   "raw": [
+    86285,
+    727977694,
+    88046,
+    742662545,
+    -1761,
+    -14684851,
+    9875,
+    84238258,
+    113348,
+    966831234,
+    -103473,
+    -882592976
+   ]
+  },
+  "us": {
+   "SOX": {
+    "date": "2026/11/10",
+    "c": 10043.0,
+    "pct": 0.42,
+    "src": "taifex",
+    "label": "費半期",
+    "vol": 115
+   },
+   "NDX": {
+    "date": "2026/11/10",
+    "c": 27906.0,
+    "pct": -0.55,
+    "src": "taifex",
+    "label": "那斯達克100期",
+    "vol": 270
+   },
+   "SPX": {
+    "date": "2026/11/10",
+    "c": 7530.25,
+    "pct": -0.8,
+    "src": "taifex",
+    "label": "標普期",
+    "vol": 42
+   },
+   "DOW": {
+    "date": "2026/11/10",
+    "c": 52303.0,
+    "pct": -0.77,
+    "src": "taifex",
+    "label": "道瓊期",
+    "vol": 33
+   }
+  }
+ },
+ "fit": {
+  "cap_e8": 33.79,
+  "market": "tse",
+  "mcap_rank": 307,
+  "heavy": false,
+  "amp5": 9.2,
+  "amp_x_cost": 36.8,
+  "tags": [
+   [
+    "ok",
+    "近 5 日平均振幅 9.2%（來回成本的 37 倍）"
+   ],
+   [
+    "ok",
+    "股本 34 億"
+   ]
+  ]
+ }
+}

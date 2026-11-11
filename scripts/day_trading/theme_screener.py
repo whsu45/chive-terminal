@@ -15,7 +15,16 @@ FinLab「概念股主題」只拿來標族群與看族群強弱，不參與選�
   做多：大盤不弱 59 天 139 筆 每筆 +0.59%、勝率 52%、t 1.6（證據較弱）；大盤弱時照做 −1.76% → 不做。
   舊版「昨日大漲 + 收高檔 + 量增」做多每筆 −1.06%（t −3.3），是反指標，已移除。
 
+當沖適合度（2026-11-10 加，出自權證小哥「不要當沖權值股」的說法）：每檔候選標出是不是權值股（市值前 50 名）、近 5 日平均振幅
+（及它是來回成本的幾倍）、股本、權證檔數與成交、前五大買賣超佔量、隔日沖分點昨天買多少。只標註，不改排序也不排除：
+  同一段回測拿這些條件當濾網，結果都沒有比較好——
+    做空：現行每筆 +1.80%；排除市值前 50 → +1.51%；只留股本 10–50 億 → +1.12%；振幅 ≥3% → +1.78%（幾乎沒差，候選本來就都 ≥3%）
+    做多：現行 +0.84%；排除市值前 50 → +0.71%；股本 ≥10 億 → +1.18%（t 1.7，不顯著）；只做市值前 50 → +0.35%（31 筆，扣成本剩 +0.10%）
+  近 60 日成交值 ≥5 億的股票日：市值前 50 名平均振幅 4.4%（67% 的日子 ≥3%、只有 6% <1.5%），400 名以後 8.1%。
+  權值股振幅確實比較小，但這段期間沒有小到吃不掉成本；想照原則硬性排除可加 --skip-heavy。
+
     python3 theme_screener.py                  # 最近一個有資料的交易日，多空各 3 檔
+    python3 theme_screener.py --skip-heavy     # 候選直接排除權值股（市值前 50 名）
     python3 theme_screener.py --top 5 --json
     python3 theme_screener.py --date 2026-11-06
     python3 theme_screener.py --backtest       # 用快取裡的全市場資料回測（--days 170 先補資料）
@@ -55,6 +64,13 @@ SHORT_SKIP_GAP = -3.0    # 開盤跳空跌超過這個 % 不空
 LONG_DROP1 = -7.0
 LONG_MIN_ATR = 2.5
 COST = 0.25              # 當沖來回成本 %
+
+# 當沖適合度（權證小哥的選股條件）：只標註與警告，不改排序、不排除（回測見檔頭說明）
+CAP_FILE = os.path.join(CACHE_DIR, "company_cap.json")
+HEAVY_RANK = 50          # 市值前幾名算權值股
+FIT_AMP = 3.0            # 近 5 日平均振幅 % 的及格線
+FIT_CAP = (10.0, 50.0)   # 股本（億）適中的範圍
+FIT_TOP5 = 20.0          # 前五大買超或賣超佔成交量 % 以上算籌碼集中
 
 
 # ================================================================ 條件（prep.py 也用）
@@ -354,9 +370,147 @@ def _safe_theme(slug):
         return None
 
 
+# ================================================================ 當沖適合度
+
+def load_caps(max_age_days=7):
+    """
+    股本與發行股數 → {code: [股本(億), 發行股數, "tse"|"otc"]}。來源：證交所、櫃買的公開資料（上市/上櫃公司基本資料），
+    存 .cache/company_cap.json，7 天更新一次；抓不到就用舊的，都沒有回 {}。
+    """
+    old = {}
+    try:
+        with open(CAP_FILE, encoding="utf-8") as f:
+            j = json.load(f)
+        old = j.get("caps") or {}
+        if old and (cal.today_tw() - dt.date.fromisoformat(j["date"])).days < max_age_days:
+            return old
+    except (OSError, ValueError, KeyError):
+        pass
+    caps = {}
+    try:
+        for r in http.get_json("https://openapi.twse.com.tw/v1/opendata/t187ap03_L", headers={"Accept": "application/json"}):
+            cap, sh = http.to_float(r.get("實收資本額")), http.to_float(r.get("已發行普通股數或TDR原股發行股數"))
+            if cap:
+                caps[str(r.get("公司代號", "")).strip()] = [round(cap / 1e8, 2), sh or cap / 10, "tse"]
+        for r in http.get_json("https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap03_O", headers={"Accept": "application/json"}):
+            cap = http.to_float(r.get("Paidin.Capital.NTDollars"))
+            sh = next((http.to_float(v) for k, v in r.items() if "issue" in k.lower() and http.to_float(v)), None)
+            if cap:
+                caps[str(r.get("SecuritiesCompanyCode", "")).strip()] = [round(cap / 1e8, 2), sh or cap / 10, "otc"]
+    except Exception as e:
+        print(f"  [warn] 股本資料: {str(e)[:100]}", file=sys.stderr)
+    if len(caps) < 500:          # 只抓到一邊或都失敗：不覆蓋舊檔
+        return old or caps
+    try:
+        with open(CAP_FILE + ".tmp", "w", encoding="utf-8") as f:
+            json.dump({"date": cal.today_tw().isoformat(), "caps": caps}, f, ensure_ascii=False)
+        os.replace(CAP_FILE + ".tmp", CAP_FILE)
+    except OSError:
+        pass
+    return caps
+
+
+def mcap_ranks(q, caps):
+    """某一天的市值排名 {code: 名次}（市值 = 發行股數 × 收盤）。"""
+    mc = sorted(((caps[c][1] * v[3], c) for c, v in q.items() if c in caps and v[3]), reverse=True)
+    return {c: k + 1 for k, (_, c) in enumerate(mc)}
+
+
+def amp_avg(rows, n=5):
+    """近 n 日平均振幅 %：(最高 − 最低) ÷ 前一天收盤。rows = [(h, l, c)]，舊到新，至少 n+1 筆；不夠回 None。"""
+    rows = [r for r in rows if r and r[0] and r[1] and r[2]]
+    if len(rows) < n + 1:
+        return None
+    return sum((rows[k][0] - rows[k][1]) / rows[k - 1][2] * 100 for k in range(len(rows) - n, len(rows))) / n
+
+
+def fit_info(code, hlc_rows, caps, ranks):
+    """一檔股票的當沖適合度基本資料：股本、市值排名、是不是權值股、近 5 日平均振幅與它是成本的幾倍。"""
+    cap = caps.get(code)
+    amp = amp_avg(hlc_rows)
+    rank = (ranks or {}).get(code)
+    return {"cap_e8": cap[0] if cap else None, "market": cap[2] if cap else None, "mcap_rank": rank,
+            "heavy": bool(rank and rank <= HEAVY_RANK), "amp5": round(amp, 2) if amp is not None else None,
+            "amp_x_cost": round(amp / COST, 1) if amp is not None else None}
+
+
+def fit_tags(fit, side=None):
+    """
+    適合度 → [[狀態, 文字]]，狀態 "ok" / "no" / "warn" / "info"。對照權證小哥說的當沖標的四個特徵
+    （股本適中、有權證且成交活躍、籌碼集中、近幾日振幅大）加上「不是權值股」。
+    """
+    T = []
+    if fit.get("heavy"):
+        T.append(["warn", f"權值股（市值第 {fit['mcap_rank']} 名）：期現套利、ETF 調整的程式單多，分點籌碼不好判讀"])
+    a = fit.get("amp5")
+    if a is not None:
+        T.append(["ok" if a >= FIT_AMP else "no", f"近 5 日平均振幅 {a:.1f}%（來回成本的 {fit['amp_x_cost']:.0f} 倍）" + ("" if a >= FIT_AMP else "：空間小，停損一次要賺好幾次才補得回")])
+    c = fit.get("cap_e8")
+    if c is not None:
+        T.append(["ok" if FIT_CAP[0] <= c < FIT_CAP[1] else "info", f"股本 {c:,.0f} 億" + ("" if FIT_CAP[0] <= c < FIT_CAP[1] else ("（偏小）" if c < FIT_CAP[0] else "（偏大）"))])
+    w = fit.get("warrants")
+    if w is not None:
+        if not (w.get("n_call") or w.get("n_put")):
+            T.append(["no", "沒有權證"])
+        else:
+            act = (w.get("n_call_active") or 0) + (w.get("n_put_active") or 0)
+            T.append(["ok" if act >= 10 else "info", f"權證 {w['n_call'] + w['n_put']} 檔，昨天有成交的 {act} 檔、認購 {w['call_vol']:,} 張" + ("" if act >= 10 else "（冷清）")])
+    b = fit.get("top5")
+    if b is not None:
+        conc = max(b[0], b[1]) >= FIT_TOP5
+        T.append(["ok" if conc else "info", f"前五大買超佔 {b[0]:.0f}% 量、賣超佔 {b[1]:.0f}%" + ("（集中）" if conc else "（分散）")])
+    d = fit.get("dt")
+    if d and d.get("buy"):
+        note = {"short": "他們今天多半要賣，對空方有利", "long": "他們今天多半要賣，多一股賣壓"}.get(side, "他們今天多半要賣")
+        T.append(["warn" if side == "long" else "info", f"隔日沖分點昨買 {d['buy']:,} 張（{d.get('buy_pct') or 0:.1f}% 量，" + "、".join(x["broker"] for x in d["list"][:3]) + f"）：{note}"])
+    return T
+
+
+def _enrich(f, date, caps, twse_w):
+    """候選股補上要連線才有的資料：權證（昨天成交）、前五大買賣超、隔日沖分點。抓不到就略過那一項。"""
+    fit = f["fit"]
+    try:
+        import src_warrants as W
+        mk = fit.get("market")
+        if mk:
+            wd = W.warrants_for(f["code"], f["name"], mk, date, twse_w if mk == "tse" else None)
+            fit["warrants"] = {k: v for k, v in W.summarize(wd).items() if k in ("n_call", "n_put", "n_call_active", "n_put_active", "call_vol", "put_vol")}
+    except Exception as e:
+        print(f"  [warn] 權證 {f['code']}: {str(e)[:80]}", file=sys.stderr)
+    try:
+        import src_moneydj, daytraders
+        summ = src_moneydj.zco_day(f["code"], date) if date < cal.today_tw() else src_moneydj.broker_summary_range(f["code"], date, date)
+        if summ and (summ.get("buyers") or summ.get("sellers")) and f["vol"]:
+            fit["top5"] = [round(sum(r["net"] for r in summ["buyers"][:5]) / f["vol"] * 100, 1),
+                           round(-sum(r["net"] for r in summ["sellers"][:5]) / f["vol"] * 100, 1)]
+            d = daytraders.for_stock(summ, f["vol"])
+            fit["dt"] = {"buy": d["buy"], "buy_pct": d["buy_pct"], "expect_sell": d["expect_sell"], "list": d["list"][:5], "source": d["source"]}
+    except Exception as e:
+        print(f"  [warn] 分點 {f['code']}: {str(e)[:80]}", file=sys.stderr)
+
+
+def fit_for(code, hist):
+    """
+    給 prep.py 用：單一股票的適合度（hist = 日 K [{h,l,c}]，舊到新）。市值排名用選股快取裡最新一天的全市場收盤，
+    沒有快取就不排名（不為了這個去連線）。
+    """
+    caps = load_caps()
+    ranks = None
+    try:
+        with open(STORE, encoding="utf-8") as f:
+            store = json.load(f)
+        ranks = mcap_ranks(store[max(store)]["q"], caps) if store else None
+    except (OSError, ValueError):
+        pass
+    fit = fit_info(code, [(r.get("h"), r.get("l"), r.get("c")) for r in hist[-6:]], caps, ranks)
+    fit["tags"] = fit_tags(fit)
+    return fit
+
+
 # ================================================================ 即時名單
 
-def screen(ref, top=3):
+def screen(ref, top=3, skip_heavy=False):
+    """skip_heavy=True：候選直接排除權值股（市值前 HEAVY_RANK 名）。預設不排除，只標註。"""
     store, dates = load_store(ref)
     if len(dates) < 61:
         raise SystemExit(f"資料不足 61 個交易日（只有 {len(dates)} 天），稍後再試")
@@ -374,11 +528,30 @@ def screen(ref, top=3):
         punish.update(src_tpex.disposal())
     except Exception as e:
         print(f"  [warn] tpex 處置: {str(e)[:80]}", file=sys.stderr)
-    shorts, longs = pick(feats, exclude=punish)
+    caps = load_caps()
+    ranks = mcap_ranks(store[dates[-1]]["q"], caps) if caps else {}
+    heavy = {c for c, k in ranks.items() if k <= HEAVY_RANK}
+    shorts, longs = pick(feats, exclude=set(punish) | (heavy if skip_heavy else set()))
     member, tstats = load_themes()
+    # 當沖適合度：只算會列出來的那幾檔（權證與分點要連線）
+    shown = shorts[: top + 3] + longs[: top + 3]
+    twse_w = None
+    if any((caps.get(f["code"]) or [0, 0, ""])[2] == "tse" for f in shown):
+        try:
+            import src_warrants as W
+            twse_w = W.twse_warrants_daily(d)
+        except Exception as e:
+            print(f"  [warn] 上市權證: {str(e)[:80]}", file=sys.stderr)
+    for side, lst in (("short", shorts[: top + 3]), ("long", longs[: top + 3])):
+        for f in lst:
+            win = [store[x]["q"].get(f["code"]) for x in dates[-6:]]
+            f["fit"] = fit_info(f["code"], [(w[1], w[2], w[3]) if w else None for w in win], caps, ranks)
+            _enrich(f, d, caps, twse_w)
+            f["fit"]["tags"] = fit_tags(f["fit"], side)
     # 多留幾檔備用：開盤跳空不符時往下遞補
     return {"date": dates[-1], "mkt": mkt, "short": shorts[: top + 3], "long": longs[: top + 3], "top": top,
-            "member": member, "themes": tstats, "punished": [c for c in punish if c in feats]}
+            "member": member, "themes": tstats, "punished": [c for c in punish if c in feats],
+            "skipped_heavy": sorted(c for c in heavy if c in feats and (feats[c]["weak5"] or long_conditions(feats[c]))) if skip_heavy else []}
 
 
 def _plan(side, f):
@@ -404,7 +577,7 @@ def _row(side, f, r):
     return {"code": f["code"], "name": f["name"], "themes": r["member"].get(f["code"], []), "close": f["c"],
             "chg1d": round(f["chg1"], 2), "r10": f["r10"], "r20": round(f["r20"], 2), "value_e8": round(f["value"], 1),
             "atr_pct": round(f["atrp"], 2), "foreign": f["foreign"], "trust": f["trust"],
-            "reasons": _reasons(side, f, r["mkt"]), "plan": _plan(side, f)}
+            "reasons": _reasons(side, f, r["mkt"]), "plan": _plan(side, f), "fit": f.get("fit") or {}}
 
 
 def print_report(r):
@@ -426,9 +599,14 @@ def print_report(r):
             print(f"     收 {j['close']:g}｜昨 {j['chg1d']:+.2f}%｜10日 {j['r10']:+.1f}%｜20日 {j['r20']:+.1f}%｜成交值 {j['value_e8']:.0f} 億｜ATR {j['atr_pct']:.1f}%")
             for why in j["reasons"]:
                 print(f"     • {why}")
+            mark = {"ok": "✓", "no": "✗", "warn": "⚠", "info": "·"}
+            if j["fit"].get("tags"):
+                print("     當沖適合度：" + "；".join(f"{mark[k]} {t}" for k, t in j["fit"]["tags"]))
             print(f"     → {j['plan']}")
     if r["punished"]:
         print("\n排除（處置股）：" + "、".join(r["punished"]))
+    if r.get("skipped_heavy"):
+        print("排除（權值股，--skip-heavy）：" + "、".join(r["skipped_heavy"]))
     print("\n※ 回測是開盤進、收盤出的平均；實際進場仍用 monitor.py 看開盤量能與均價線。放空前確認可先賣後買。僅供研究，不構成投資建議。\n")
 
 
@@ -445,7 +623,7 @@ def to_dict(r):
     return {"date": r["date"], "top": r["top"],
             "market": {k: (round(v, 2) if isinstance(v, float) else v) for k, v in r["mkt"].items()},
             "short_active": r["mkt"]["weak"], "long_active": not r["mkt"]["weak"],
-            "short": rows("short"), "long": rows("long"), "punished": r["punished"],
+            "short": rows("short"), "long": rows("long"), "punished": r["punished"], "skipped_heavy": r.get("skipped_heavy") or [],
             "themes": [{"name": n, "chg1d": round(a, 2), "chg5d": round(b, 2)} for n, a, b in r["themes"]]}
 
 
@@ -456,6 +634,7 @@ def main():
     ap.add_argument("--json", action="store_true", help="輸出 JSON")
     ap.add_argument("--backtest", action="store_true", help="用快取的全市場資料回測")
     ap.add_argument("--days", type=int, default=None, help="回測前先確保快取有這麼多交易日（最多 %d）" % KEEP_DAYS)
+    ap.add_argument("--skip-heavy", action="store_true", help=f"候選直接排除權值股（市值前 {HEAVY_RANK} 名）；預設只標註不排除")
     a = ap.parse_args()
     ref = default_ref(a.date)
     if a.backtest:
@@ -465,7 +644,7 @@ def main():
             raise SystemExit("資料不足，先用 --days 170 補資料")
         print_backtest(first, last, res, a.top)
         return
-    r = screen(ref, a.top)
+    r = screen(ref, a.top, a.skip_heavy)
     if a.json:
         print(json.dumps(to_dict(r), ensure_ascii=False, indent=1))
     else:

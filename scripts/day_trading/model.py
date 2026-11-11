@@ -85,13 +85,13 @@ def daily_factors(d):
         if li.get("foreign", 0) + li.get("trust", 0) < -vma5 * 0.05 and t["chg_pct"] > 2:
             F.append(("漲勢法人出貨", -0.4, f"前日漲 {t['chg_pct']:.1f}% 但外資+投信 {li['foreign']+li['trust']} 張"))
 
-    # 隔日沖庫存
+    # 隔日沖庫存（名單是 daytraders.py 動態算的：近 60 日大買後隔天倒回 ≥55% 的分點）
+    # 回測 9/04–11/06 強勢股 528 個股票日：庫存 ≥2% 量的隔天開盤到收盤平均 −0.82%（415 次，54% 收黑），
+    # 沒有庫存的 +0.02%（113 次）；差 0.84%、t 只有 −1.7，也看不出庫存越多跌越多，所以只留一級、不再寫「必倒」。
     b = (d.get("brokers") or {}).get("day") or {}
     dtp = b.get("daytrade_buy_pct") or 0
-    if dtp >= 5:
-        F.append(("隔日沖庫存重", -0.7, f"隔日沖分點昨買 {b['daytrade_buy']} 張 = {dtp:.1f}% 量 ({','.join(b.get('daytrade_names', []))})，今日開高必倒"))
-    elif dtp >= 2:
-        F.append(("隔日沖庫存", -0.3, f"隔日沖分點昨買 {b['daytrade_buy']} 張 ({dtp:.1f}% 量)"))
+    if dtp >= 2:
+        F.append(("隔日沖庫存", -0.3, f"隔日沖分點昨買 {b['daytrade_buy']} 張 = {dtp:.1f}% 量 ({','.join(b.get('daytrade_names', []))})：他們多半今天賣，回測這種日子開盤到收盤平均偏弱約 0.8%，但只有一半多一點收黑"))
     # 外資主力分點 4 日
     r4 = (d.get("brokers") or {}).get("range4") or {}
     fnp = r4.get("foreign_net_pct") or 0
@@ -105,24 +105,17 @@ def daily_factors(d):
     if b.get("top5_buy_pct", 0) > 25:
         F.append(("買方集中", 0.2, f"前五買超佔量 {b['top5_buy_pct']:.0f}%"))
 
-    # 常勝主力（近 20 日在此股隔日勝率 ≥65% 的分點）昨天的動作與庫存
+    # 常勝分點（winners.py：近 20 日 ≥6 次、買賣後隔天開盤到收盤明顯站對邊）昨天的動作。
+    # 逐日前推回測 864 個股票日：常勝昨天淨買 → 隔天開盤到收盤超額 +1.43%（73 次，t 3.3）；淨賣 → −0.22%（70 次，沒用）。
+    # 所以只有進場加分；出場只列出不計分。庫存、常敗分點回測都沒有用，不再當因子。
     w = d.get("winners") or {}
-    if w.get("n_scored"):
+    if w.get("n_scored") and w.get("winners"):
         wl = w.get("winners_last_net_pct") or 0
+        names = "、".join(s['broker'] for s in w['winners'][:3])
         if wl >= 1.5:
-            F.append(("常勝主力進場", 0.5, f"常勝分點昨淨買 {w['winners_last_net']:+} 張 ({wl:+.1f}% 量)：" + "、".join(s['broker'] for s in w['winners'][:3])))
+            F.append(("常勝分點進場", 0.3, f"常勝分點昨淨買 {w['winners_last_net']:+} 張 ({wl:+.1f}% 量)：{names}。回測這種日子隔天盤中平均偏強，但樣本只有 73 次"))
         elif wl <= -1.5:
-            F.append(("常勝主力出場", -0.5, f"常勝分點昨淨賣 {w['winners_last_net']:+} 張 ({wl:+.1f}% 量)：" + "、".join(s['broker'] for s in w['winners'][:3])))
-        inv = w.get("winners_inventory_pct") or 0
-        if inv >= 3:
-            F.append(("常勝主力持有庫存", 0.2, f"常勝分點 20 日累積 {w['winners_inventory']:+} 張 ({inv:+.1f}% 量)，有貨要拉"))
-        elif inv <= -3:
-            F.append(("常勝主力已出清", -0.2, f"常勝分點 20 日累積 {w['winners_inventory']:+} 張 ({inv:+.1f}% 量)"))
-        ll = w.get("losers_last_net_pct") or 0
-        if ll >= 2:
-            F.append(("常敗分點追買", -0.2, f"反指標：常敗分點昨淨買 {w['losers_last_net']:+} 張 ({ll:+.1f}% 量)"))
-        elif ll <= -2:
-            F.append(("常敗分點殺出", 0.2, f"反指標：常敗分點昨淨賣 {w['losers_last_net']:+} 張 ({ll:+.1f}% 量)"))
+            F.append(("常勝分點出場", 0.0, f"常勝分點昨淨賣 {w['winners_last_net']:+} 張 ({wl:+.1f}% 量)：{names}。回測他們賣了之後隔天並沒有比較弱，只列出不計分"))
 
     # 信用
     m = d.get("margin")
@@ -432,7 +425,8 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx=None):
         info["gap_pct"] = gap
         dtp = ((d.get("brokers") or {}).get("day") or {}).get("daytrade_buy_pct") or 0
         if gap >= 3 and dtp >= 2:
-            F.append(("開高有庫存", -0.6, f"跳空 {gap:+.1f}% 且隔日沖庫存 {dtp:.1f}%，拉高倒貨劇本"))
+            # 回測：開高 ≥3% 又有庫存，開盤到收盤平均 −1.69%（94 次，一半收黑）；沒庫存的 −0.67%（只有 22 次）
+            F.append(("開高有庫存", -0.4, f"跳空 {gap:+.1f}% 且隔日沖庫存 {dtp:.1f}%：回測這種開法當天平均收低約 1.7%，但只有一半收黑，不是每次都倒"))
         elif gap >= 3:
             F.append(("跳空開高", -0.2, f"跳空 {gap:+.1f}%，追多風險高、反彈不過開盤價可空"))
         elif gap <= -3 and p < y:
@@ -456,6 +450,7 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx=None):
     inv_scale = 0.5 if leader_strong else 1.0
     inv_note = f"；但族群 {leader[2] or leader[1]} {leader[0]:+.1f}% 接近漲停，族群資金可能接走這批貨，權重折半" if leader_strong else ""
     if dtp_inv >= 5 and chg >= 5 and not pre_open:
+        # 回測：昨天強勢、今天盤中碰到 +5% 的股票，從 +5% 到收盤平均回落 1.0～1.4%（約 36～39% 繼續漲）；有沒有隔日沖庫存差不多
         F.append(("庫存倒貨點", -0.6 * inv_scale, f"隔日沖分點昨買 {dtp_inv:.0f}% 量，盤中已拉 {chg:+.1f}%：他們的獲利了結區，反彈不過高點就是空點（但首 10 分鐘先不追）{inv_note}"))
     elif dtp_inv >= 5 and chg >= 2.5 and not pre_open:
         F.append(("庫存逼近倒貨區", -0.3 * inv_scale, f"隔日沖庫存 {dtp_inv:.0f}% 量，盤中 {chg:+.1f}%，接近他們的出貨區{inv_note}"))
@@ -561,6 +556,17 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx=None):
     if w_surge and info.get("book_imb", 0) > 0.35 and not pre_open:
         F.append(("權證急漲+委買厚", 0.3, f"5 分鐘內認購權證急漲，且五檔買 {info.get('bid5')} / 賣 {info.get('ask5')}：散戶追價、避險買盤、掛單護盤同時出現，現股常在幾分鐘內急拉"))
         warns.append("⚠ 權證急漲 + 委買變厚：空單等 5 分鐘再進；已進場的空單照原停損走，不提早砍")
+
+    # 買盤 / 賣盤竭盡（monitor._exhaustion：每 5 秒比內外盤，連 10 次亮燈後出現反向的 5 秒 = 熄燈）。
+    # 只有「推 ≥2 檔、推過今高（賣方：殺破今低）之後熄燈」才加分 5 分鐘；回測這個型態之後 5～30 分鐘反轉 +0.03% ~ +0.11%（對照組 −0.02%）。
+    # 效果遠小於成本，所以是同方向訊號的確認，不是進場訊號。
+    ex = ctx.get("exhaust")
+    if ex and ex.get("near") and t_now - ex.get("ts", 0) <= 300 and not pre_open:
+        buy = ex["side"] == "buy"
+        F.append(("買盤竭盡" if buy else "賣盤竭盡", -0.3 if buy else 0.3,
+                  f"{ex.get('time')} 連{'外' if buy else '內'} {ex.get('n')} 次 {ex.get('vol')} 張，{'推' if buy else '殺'} {ex.get('push_tk')} 檔"
+                  f"{'過今高' if buy else '破今低'} {ex['near'][1]} 到 {ex.get('ext')} 後熄燈：{'買' if buy else '賣'}盤力道用完的型態，"
+                  f"{'空' if buy else '多'}方加分（轉折確認，不是進場訊號）"))
 
     # 1 分 K 動能（反彈/殺盤途中不逆勢進場）
     bars = ctx.get("bars") or _bars_from_samples(samples)

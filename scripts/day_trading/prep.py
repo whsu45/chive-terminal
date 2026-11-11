@@ -16,6 +16,7 @@ import tw_calendar as cal
 import src_mis, src_twse, src_tpex, src_moneydj, src_yahoo, src_taifex
 import indicators as I
 import winners
+import daytraders
 import src_warrants as W
 import theme_screener
 
@@ -80,7 +81,7 @@ def markets_for(codes):
 _MIS_ERR = None
 
 
-PREP_VERSION = 8  # 快取結構版本：欄位有增減就 +1，舊快取會自動重建
+PREP_VERSION = 9  # 快取結構版本：欄位有增減就 +1，舊快取會自動重建
 
 
 def build(code, peers_arg=None, refresh=False):
@@ -121,6 +122,9 @@ def build(code, peers_arg=None, refresh=False):
     prev_close = tech.get("close") or mk[code]["y"]
     up, dn = I.limits(prev_close) if prev_close else (None, None)
 
+    # --- 當沖適合度（權值股 / 振幅 / 股本）：只提醒，不進分數 ---
+    fit = _safe(lambda: theme_screener.fit_for(code, hist), None, "當沖適合度")
+
     # --- 法人 3 日 ---
     days3 = cal.last_n_trading_days(today, 3)
     insti = {}
@@ -146,12 +150,16 @@ def build(code, peers_arg=None, refresh=False):
 
     # --- 分點 ---
     vol_prev = tech.get("vol") or 0
+    # 隔日沖分點名單先補到最新（每天第一次才會連線；失敗就用現有的名單）
+    _safe(lambda: daytraders.update(today, max_days=3), 0, "隔日沖名單")
     br1 = _safe(lambda: src_moneydj.broker_summary(code), None, "分點(昨)")
     br4 = _safe(lambda: src_moneydj.broker_summary_range(code, cal.prev_trading_day(today, 4), prev), None, "分點(4日)")
     brokers = {
         "day": src_moneydj.classify(br1, vol_prev) if br1 else None,
         "day_date": br1.get("date") if br1 else None,
         "range4": src_moneydj.classify(br4, sum(r["v"] for r in hist[-4:]) or None) if br4 else None,
+        # 昨天買進的隔日沖分點明細（儀表板「隔日沖分點」卡與啟動摘要用）
+        "daytraders": _safe(lambda: daytraders.for_stock(br1, vol_prev), None, "隔日沖分點") if br1 else None,
     }
 
     # --- 常勝主力（近 20 日分點勝率）---
@@ -160,6 +168,8 @@ def build(code, peers_arg=None, refresh=False):
         bd = winners.broker_daily_history(code, 20, today)
         sc = winners.score_branches(hist, bd)
         win = winners.summarize(sc, prev.isoformat(), vol_prev)
+        if brokers.get("daytraders"):
+            daytraders.add_local_habit(brokers["daytraders"], bd, {r["date"]: r["v"] for r in hist})
     except Exception as e:
         print(f"  [warn] 常勝主力: {str(e)[:120]}")
 
@@ -235,8 +245,13 @@ def build(code, peers_arg=None, refresh=False):
         "group": gname, "peers": peers, "peers_arg": peers_arg, "peer_info": peer_info,
         "tech": tech, "hist_tail": hist[-30:], "limit_up": up, "limit_down": dn,
         "insti": insti, "insti_sum": insti_sum, "weak_screen": weak, "margin": margin, "sbl": sbl, "brokers": brokers, "winners": win, "warrants": warr, "flags": flags,
-        "market_ctx": mkt,
+        "market_ctx": mkt, "fit": fit,
     }
+    if fit:
+        if fit.get("heavy"):
+            out["flags"] = list(out["flags"] or []) + [f"權值股（市值第 {fit['mcap_rank']} 名）：程式單多、盤口籌碼不好判讀"]
+        if fit.get("amp5") is not None and fit["amp5"] < theme_screener.FIT_AMP:
+            out["flags"] = list(out["flags"] or []) + [f"近 5 日平均振幅只有 {fit['amp5']:.1f}%（來回成本的 {fit['amp_x_cost']:.0f} 倍），當沖空間小"]
     with open(cache, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1, default=str)
     print(f"[prep] 完成，快取 {cache}")
@@ -253,6 +268,9 @@ def describe(d):
         L.append(f"  前日 {t['date']} 收 {t['close']} ({t.get('chg_pct') or 0:+.2f}%)  量 {t['vol']} 張 (5日均 {t['vol_ma5'] and round(t['vol_ma5'])})  連{'漲' if t['streak']>0 else '跌'} {abs(t['streak'])} 天")
         L.append(f"  MA5 {t['ma5'] and round(t['ma5'],2)}  MA10 {t['ma10'] and round(t['ma10'],2)}  MA20 {t['ma20'] and round(t['ma20'],2)}  MA60 {t['ma60'] and round(t['ma60'],2)}  BB {t['bb_dn'] and round(t['bb_dn'],1)}~{t['bb_up'] and round(t['bb_up'],1)}  ATR {t['atr14'] and round(t['atr14'],2)} ({t['atr_pct'] and round(t['atr_pct'],1)}%)  RSI {t['rsi14'] and round(t['rsi14'],1)}")
         L.append(f"  今日漲停 {d['limit_up']} / 跌停 {d['limit_down']}  20日高低 {t['high20']}/{t['low20']}  昨日高低 {t.get('high')}/{t.get('low')}（前一日 {t['prev_high']}/{t['prev_low']}）")
+    if d.get("fit") and d["fit"].get("tags"):
+        mark = {"ok": "✓", "no": "✗", "warn": "⚠", "info": "·"}
+        L.append("  當沖適合度：" + "；".join(f"{mark.get(k, '·')} {t}" for k, t in d["fit"]["tags"]))
     s = d["insti_sum"]
     L.append(f"  法人3日：外資 {s['foreign']:+} 投信 {s['trust']:+} 自營 {s['dealer']:+} 張  | 逐日 " +
              " ".join(f"{k[5:]}:外{v['foreign']:+}/投{v['trust']:+}" for k, v in d["insti"].items()))
@@ -265,9 +283,13 @@ def describe(d):
     b = d["brokers"]
     if b.get("day"):
         bd = b["day"]
-        L.append(f"  分點({b['day_date']})：隔日沖買 {bd['daytrade_buy']} 張 ({bd.get('daytrade_buy_pct', 0):.1f}% 量) {','.join(bd['daytrade_names']) or ''}  外資淨 {bd['foreign_net']:+}  前五買 {bd['top5_buy']} / 前五賣 {bd['top5_sell']}")
+        L.append(f"  分點({b['day_date']})：外資淨 {bd['foreign_net']:+}  前五買 {bd['top5_buy']} / 前五賣 {bd['top5_sell']}")
         L.append("    買：" + "  ".join(f"{r['broker']} {r['net']:+}" for r in bd["top_buyers"]))
         L.append("    賣：" + "  ".join(f"{r['broker']} {r['net']:+}" for r in bd["top_sellers"]))
+        if b.get("daytraders"):
+            L.append(daytraders.describe_stock(b["daytraders"]))
+        else:
+            L.append(f"  隔日沖分點買 {bd['daytrade_buy']} 張 ({bd.get('daytrade_buy_pct', 0):.1f}% 量) {','.join(bd['daytrade_names']) or ''}")
     if b.get("range4"):
         r4 = b["range4"]
         L.append(f"  4日分點：外資淨 {r4['foreign_net']:+}  隔日沖淨 {r4['daytrade_net']:+}  主買 " + "  ".join(f"{r['broker']} {r['net']:+}" for r in r4["top_buyers"][:3]) + "  主賣 " + "  ".join(f"{r['broker']} {r['net']:+}" for r in r4["top_sellers"][:3]))

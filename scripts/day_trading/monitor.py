@@ -411,6 +411,9 @@ class Monitor:
         self.pending = []                            # 警示結果追蹤：每則 ⚠/▶ 記下當時狀態，10/30 分鐘後補上漲跌，寫 logs/alert_outcomes.jsonl
         self._tracked = set()
         self._book_hist = {}                         # code -> [(ts, 價差 tick, 買一張數, 賣一張數, 買五檔合計, 賣五檔合計)]，流動性統計用（_liquidity）
+        self.exh = {}                                # code -> 最近一次買盤 / 賣盤竭盡事件（_exhaustion）
+        self._exh_seen = {}                          # code -> 已處理過的事件 (side, 打斷時間)
+        self.runs = {}                               # code -> 目前的連外次 / 連內次（_exhaustion 的回傳；訊號用來看反向是不是還亮著燈）
         self.liq = {}                                # code -> 最近一次流動性統計
         self._liq_alerted = set()                    # 今天已經發過「掛單薄」警示的 code
         self._sig_done = {}                          # code -> [結束的訊號 {side, lo, hi, since, label, res, ext}]：同價位不重發用（_repeat_block）
@@ -439,6 +442,10 @@ class Monitor:
             except Exception as e:
                 print(f"  [warn] 交戰紀錄: {str(e)[:80]}")
             WEB.daily[c]["warrants"] = {k: v for k, v in (dd.get("warrants") or {}).items() if k != "list"}
+            br = dd.get("brokers") or {}
+            if br.get("daytraders"):
+                # 昨天買進的隔日沖分點（儀表板「隔日沖分點」卡）；date = 那張分點表的日期
+                WEB.daily[c]["daytraders"] = dict(br["daytraders"], date=br.get("day_date"))
             WEB.describe[c] = prep.describe(dd)
             pc = (self.daily[c].get("tech") or {}).get("close")
             if pc:
@@ -669,6 +676,150 @@ class Monitor:
         lo = max(I.round_tick(base - max(tick, risk / 3), "up"), I.round_tick((t1 + rr_min * stop) / (1 + rr_min), "up"))
         hi = I.round_tick(base + tick, "up")
         return (lo, hi) if lo <= hi else None
+
+    EXH_BUCKET = 5          # 每幾秒比一次內外盤：這 5 秒外盤量 > 內盤量算「連外 1 次」，反過來算「連內 1 次」（當沖神器的算法）
+    EXH_MIN_N = 10          # 連 10 次亮燈；亮過燈之後出現反方向的 5 秒 = 熄燈 = 竭盡點
+    EXH_GAP = 6             # 連續 6 個 5 秒（30 秒）沒成交或內外盤平手 → 這一串散掉，不算竭盡
+    EXH_MIN_PUSH = 2        # 這一串至少把價格推動幾檔（沒推動的「連 10 次」只是在同一個價位換手，回測之後是往原方向走）
+    EXH_SHORT_TICKS = 3     # 離今高 / 今低這麼近卻沒過就熄燈：回測多半會再試一次，只標示、不加分
+    EXH_WINDOW = 900        # 回頭看幾秒的逐筆（一串超過 15 分鐘的話，次數只算到這個範圍內）
+    EXH_TTL = 300           # 竭盡事件的加分維持幾秒
+    EXH_BONUS = 0.3         # 加分的分數（跟其他盤中因子同一個量級；換算強度約 3 點）
+
+    def _exhaustion(self, c, q, now):
+        """
+        連外次 / 連內次與買盤竭盡 / 賣盤竭盡，照權證小哥「當沖神器」的算法：每 5 秒比一次這 5 秒內外盤成交量，外盤多 = 連外 +1、
+        內盤多 = 連內 +1；同一邊連 10 次「亮燈」（急拉 / 急殺），亮燈後出現反方向的 5 秒 =「熄燈」= 竭盡點（空在爆量漲不動、買在爆量跌不動）。
+        連外量 / 連內量 = 這一串裡該方向的成交張數。要永豐逐筆（內外盤），MIS 模式沒有。
+        回 {out_n, out_v, in_n, in_v（目前還在連的那一串，只算走完的 5 秒）, lit（是否亮燈）, last（最近 5 分鐘的竭盡事件）}。
+
+        **是轉折的確認，不是進場訊號。** 11/10 用 9 檔、338 個股票日逐筆回測（進場價用保守價：做空賣在買價、做多買在賣價）：
+        - 連 ≥10 次後熄燈、不加其他條件 8,861 次：之後 5 / 10 / 30 分鐘的反轉報酬 −0.09% / −0.08% / −0.09%，單獨進場是賠的。
+        - 其中超過一半（4,824 次）整串推不到 1 檔，只是同一個價位換手 → 要求至少推 2 檔。
+        - **推 ≥2 檔、而且把價格推過這一串之前的今高（賣方：殺破今低）之後熄燈**（470 次）：買盤竭盡 +0.03% / +0.04% / +0.05%、
+          賣盤竭盡 +0.08% / +0.05% / +0.11%；同一時段「價格在今高 / 今低 2 檔內的任意時點」對照組是 −0.02% ~ −0.03%。前後半段方向一致。
+          → kind = "pierce"，空方 / 多方 +0.3 分 5 分鐘，發警示。
+        - **差 0–3 檔沒過今高 / 今低就熄燈**（350 次）：−0.14% / −0.18%（買）、−0.09% / −0.13% / −0.19%（賣）——後面多半會再試一次。
+          → kind = "short"，只在面板標示，不加分。
+        - 昨高 / 昨低、昨收、開盤價當關卡都沒有效果；連量倍數越大並沒有越準（4 倍以上反而差）。所以關卡只認今高 / 今低，量只顯示不當條件。
+        - 亮燈當下逆勢進場（連次剛到 10、已推 ≥2 檔，1,197 次）：之後 1 分鐘 −0.07% ~ −0.14%（t −6 ~ −8）→ 訊號碰到反向亮燈會提醒等熄燈。
+        效果都遠小於來回成本 0.235%，所以只當「同方向訊號的加分與確認」，不會單獨觸發進場。
+        """
+        if not self.flow_src:
+            return None
+        ticks, _ = self.flow_src.recent_ticks(c, seconds=self.EXH_WINDOW)
+        nowts = now.timestamp()
+        out = {"out_n": 0, "out_v": 0, "in_n": 0, "in_v": 0, "lit": False, "last": None}
+
+        def last_ev():
+            cur = self.exh.get(c)
+            return cur if cur and nowts - cur["ts"] <= self.EXH_TTL else None
+
+        B = self.EXH_BUCKET
+        cur_b = int(nowts // B)                             # 還沒走完的那 5 秒不算
+        bk = {}                                             # 桶 -> [外盤量, 內盤量, 開, 高, 低, 收]
+        for ts, p, v, tt in ticks:
+            b = int(ts // B)
+            if b >= cur_b:
+                break
+            d = bk.get(b)
+            if d is None:
+                d = bk[b] = [0, 0, p, p, p, p]
+            if tt == 1:
+                d[0] += v
+            elif tt == 2:
+                d[1] += v
+            if p > d[3]:
+                d[3] = p
+            if p < d[4]:
+                d[4] = p
+            d[5] = p
+        if not bk:
+            out["last"] = last_ev()
+            return out
+        side, run, gap, lastb, ended = 0, [], 0, None, None
+        for b in sorted(bk):
+            if lastb is not None:
+                gap += b - lastb - 1
+            lastb = b
+            d = bk[b]
+            s = 1 if d[0] > d[1] else 2 if d[1] > d[0] else 0
+            if s == 0:
+                gap += 1
+            if gap >= self.EXH_GAP:
+                side, run, gap = 0, [], 0
+            if s == 0:
+                continue
+            if s == side:
+                run.append(b)
+                gap = 0
+            else:
+                if side and len(run) >= self.EXH_MIN_N:
+                    ended = (side, run, b)                  # 最近一串「亮過燈、被反向的 5 秒打斷」的
+                side, run, gap = s, [b], 0
+        if side and run and gap + (cur_b - 1 - lastb) < self.EXH_GAP:
+            k = 0 if side == 1 else 1
+            out["out_n" if side == 1 else "in_n"] = len(run)
+            out["out_v" if side == 1 else "in_v"] = sum(bk[b][k] for b in run)
+            out["lit"] = len(run) >= self.EXH_MIN_N
+        if ended:
+            sd, rn, bb = ended
+            tb = (bb + 1) * B
+            key = (sd, bb)
+            if self._exh_seen.get(c) != key and nowts - tb <= 30:      # 太舊的不補發（剛啟動時）
+                self._exh_seen[c] = key
+                buy = sd == 1
+                sg = 1 if buy else -1
+                p0 = bk[rn[0]][2]
+                tick = I.tick_size(p0)
+                ext = max(bk[b][3] for b in rn) if buy else min(bk[b][4] for b in rn)
+                vol = sum(bk[b][0 if buy else 1] for b in rn)
+                push = round(sg * (ext - p0) / tick)
+                # 今高 / 今低要用這一串「之前」的（不然它自己創的高低點永遠算突破）：分 K 取起點那一分鐘以前的，加上逐筆裡起點以前的
+                t0 = rn[0] * B
+                hm = dt.datetime.fromtimestamp(t0).strftime("%H:%M")
+                pre = [x[2] if buy else x[3] for x in (self.flow_src.series(c) or []) if x[0] < hm]
+                pre += [p for ts, p, _, _ in ticks if ts < t0]
+                pre_ext = (max(pre) if buy else min(pre)) if pre else None
+                over = round(sg * (ext - pre_ext) / tick) if pre_ext else None
+                kind = None
+                if push >= self.EXH_MIN_PUSH and over is not None:
+                    kind = "pierce" if over > 0 else "short" if over >= -self.EXH_SHORT_TICKS else None
+                mins = max(1.0, (now.hour * 60 + now.minute + now.second / 60) - 540)
+                vpm = (q.get("v") or 0) / mins
+                d = bk[bb]
+                lvl = "今高" if buy else "今低"
+                ev = {"side": "buy" if buy else "sell", "ts": tb, "time": dt.datetime.fromtimestamp(tb).strftime("%H:%M:%S"), "n": len(rn), "vol": vol,
+                      "vr": round(vol / vpm, 1) if vpm else None, "push_tk": push, "push_pct": round(sg * (ext / p0 - 1) * 100, 2), "ext": ext,
+                      "pre": pre_ext, "over": over, "kind": kind, "brk_px": d[5], "brk_vol": d[1] if buy else d[0],
+                      "near": [lvl, pre_ext] if kind == "pierce" else None}
+                self.exh[c] = ev
+                if kind == "pierce":
+                    lab, who, io, verb, back = (("買盤竭盡", "空方", "外", "推", "回落") if buy else ("賣盤竭盡", "多方", "內", "殺", "回升"))
+                    self._add_alert(c, now, f"➕ {lab}（{who}加分）：連{io} {len(rn)} 次 {vol} 張，{verb} {push} 檔{'過' if buy else '破'}{lvl} {pre_ext} 到 {ext} 後熄燈"
+                                            f"（出現{'內' if buy else '外'}盤較多的 5 秒）。回測這個型態之後 5～30 分鐘小幅{back}的機會略高；"
+                                            f"是轉折的確認，不是進場訊號")
+        out["last"] = last_ev()
+        return out
+
+    def _exh_bonus(self, c, side, now):
+        """訊號方向跟最近 5 分鐘內「推過今高 / 殺破今低後熄燈」的竭盡事件一致就回那個事件（做空 ← 買盤竭盡；做多 ← 賣盤竭盡），否則 None。"""
+        ex = self.exh.get(c)
+        if not ex or not ex.get("near") or now.timestamp() - ex["ts"] > self.EXH_TTL:
+            return None
+        return ex if (ex["side"] == "buy") == (side == "short") else None
+
+    def _exh_lit_against(self, c, side):
+        """訊號方向的反向正在亮燈就回 (連次, 連量)：做空時連外還亮著、做多時連內還亮著。
+        回測亮燈當下逆勢進場，之後 1 分鐘平均 −0.07% ~ −0.14%（價格多半還會往原方向再走），所以提醒等熄燈。"""
+        rn = self.runs.get(c) or {}
+        if not rn.get("lit"):
+            return None
+        if side == "short" and rn.get("out_n", 0) >= self.EXH_MIN_N:
+            return rn["out_n"], rn["out_v"]
+        if side == "long" and rn.get("in_n", 0) >= self.EXH_MIN_N:
+            return rn["in_n"], rn["in_v"]
+        return None
 
     LIQ_WINDOW_S, LIQ_MIN_N = 1200, 30      # 看最近 20 分鐘、每 10 秒取一次五檔，至少 30 筆才判斷
     LIQ_WIDE_THIN, LIQ_WIDE_SOFT = 40, 20   # 價差 ≥2 tick 的時間佔比（%）：≥40 算薄、≥20 算偏薄
@@ -1044,6 +1195,13 @@ class Monitor:
         mom = (info.get("momentum") or {}).get("dir")
         tick = I.tick_size(p)
         ps, pl = ev.get("p_short", 0), ev.get("p_long", 0)
+        # 竭盡加分立刻生效：模型 60 秒才重算一次，這一輪估算還沒把它列成因子的話，先在這裡補上（±0.3 分 ≈ 強度 3 點）
+        counted = {f[0] for f in (ev.get("intraday_factors") or [])}
+        pts = round(11 * self.EXH_BONUS, 1)
+        if self._exh_bonus(c, "short", now) and "買盤竭盡" not in counted:
+            ps, pl = min(85, ps + pts), max(15, pl - pts)
+        if self._exh_bonus(c, "long", now) and "賣盤竭盡" not in counted:
+            pl, ps = min(85, pl + pts), max(15, ps - pts)
 
         def vol_ok():
             if len(f5) < 4:
@@ -1116,6 +1274,16 @@ class Monitor:
             sc = self.score_levels(sig["side"], p if inzone else (lo if short else hi))
             sig["score"] = sc
             score_txt = f"｜評分：逆向超過 {sc['heat_ticks']} tick（{sc['stop']}）算輸、到 {sc['tgt']} 算贏，60 分鐘內都沒到看扣成本損益"
+            ex = self._exh_bonus(c, side, now)
+            if ex:
+                sig["exh"] = {k: ex.get(k) for k in ("side", "time", "n", "vol", "vr", "push_tk", "push_pct", "ext", "pre", "over", "kind")}
+                score_txt += (f"｜➕ 轉折確認：{ex['time']} {'買' if short else '賣'}盤竭盡（連{'外' if short else '內'} {ex['n']} 次 {ex['vol']} 張"
+                              f"{'推過今高' if short else '殺破今低'} {ex['pre']} 到 {ex['ext']} 後熄燈）")
+            la = self._exh_lit_against(c, side)
+            if la:
+                sig["exh_lit"] = {"n": la[0], "vol": la[1]}
+                score_txt += (f"｜⏳ 連{'外' if short else '內'}還亮著燈（{la[0]} 次 {la[1]} 張）：{'買' if short else '賣'}盤還沒停，"
+                              f"等熄燈再進比較穩（回測亮燈中逆勢進場，下一分鐘多半還會往原方向走）")
             lq = self.liq.get(c)
             if lq and lq["level"] == "thin":
                 sig["liq"] = lq
@@ -1159,7 +1327,7 @@ class Monitor:
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
                    ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
-                   ("掛單薄", r"^⚠ 掛單薄")]
+                   ("掛單薄", r"^⚠ 掛單薄"), ("買盤竭盡", r"^➕ 買盤竭盡"), ("賣盤竭盡", r"^➕ 賣盤竭盡")]
 
     @classmethod
     def _alert_type(cls, text):
@@ -1206,7 +1374,7 @@ class Monitor:
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -1419,7 +1587,7 @@ class Monitor:
                "verdict": verdict, "fast_adverse": fast_adverse, "first_stop_min": first_stop, "first_t1_min": first_t1,
                **score,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
-               "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors")}
+               "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors"), "exh": sg.get("exh"), "exh_lit": sg.get("exh_lit")}
         if sg.get("blocked"):
             out.update(blocked=True, block_reason=sg.get("block_reason"), block_kind=sg.get("block_kind"))
         if sg.get("cancelled"):
@@ -1562,7 +1730,9 @@ class Monitor:
                 alerts.append((now.replace(hour=int(hh), minute=int(mm), second=int(ss), microsecond=0).timestamp(), txt))
             except Exception:
                 continue
-        return {"bars": bars, "idx_series": idx_series, "peer_hist": self.peer_hist.get(c, {}), "alerts": alerts, "market": mkt}
+        ex = self.exh.get(c)
+        return {"bars": bars, "idx_series": idx_series, "peer_hist": self.peer_hist.get(c, {}), "alerts": alerts, "market": mkt,
+                "exhaust": ex if ex and ex.get("near") and now.timestamp() - ex["ts"] <= self.EXH_TTL else None}
 
     # ------------------------------------------------------------ 快迴圈（圖表、報價、分流、即時警示；有永豐 3 秒，否則 10 秒）
     def _record_flow_hist(self, c, flow, q, now, min_gap=50):
@@ -1686,7 +1856,7 @@ class Monitor:
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
-                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "liquidity": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
+                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "liquidity": {}, "runs": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
                 "mis_fail": getattr(self, "_mis_fail", 0)}
         for k in ("t00", "o00"):
             q = quotes.get(k)
@@ -1756,6 +1926,13 @@ class Monitor:
                 # 週末/休市日報價是凍結的舊價：不發訊號、不追蹤結果（11/07、11/08 舊版這樣寫進 22 筆假訊號）
                 live["alerts"][c] = list(self.live_alerts.get(c, []))[-12:]
                 continue
+            try:
+                rn = self._exhaustion(c, q, now)
+                if rn:
+                    live["runs"][c] = rn
+                    self.runs[c] = rn
+            except Exception as e:
+                print(f"[fast] 竭盡判斷失敗：{str(e)[:100]}")
             try:
                 lq = self._liquidity(c, q, now)
                 if lq:

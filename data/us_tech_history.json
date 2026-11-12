@@ -1,5 +1,45 @@
 [
  {
+  "date": "2026-11-12",
+  "composite": -0.69,
+  "sox": 0.23,
+  "top3Up": [
+   {
+    "key": "devices",
+    "title": "消費電子",
+    "pct": 1.02
+   },
+   {
+    "key": "semis",
+    "title": "半導體",
+    "pct": 0.93
+   },
+   {
+    "key": "semicap",
+    "title": "半導體設備",
+    "pct": 0.21
+   }
+  ],
+  "top3Down": [
+   {
+    "key": "ev",
+    "title": "電動車／自駕",
+    "pct": -4.31
+   },
+   {
+    "key": "cyber",
+    "title": "資安",
+    "pct": -1.47
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -1.28
+   }
+  ],
+  "taiexNext": null
+ },
+ {
   "date": "2026-11-11",
   "composite": 4.49,
   "sox": 5.66,
@@ -8746,8 +8786,8 @@
     "pct": -0.52
    },
    {
-    "key": "internet",
-    "title": "網路平台",
+    "key": "aiserver",
+    "title": "AI 伺服器／資料中心硬體",
     "pct": 0.69
    }
   ],

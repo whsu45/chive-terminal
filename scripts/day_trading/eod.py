@@ -38,6 +38,7 @@ ALERT_DIR = {
 }
 for _t, _ in __import__("exhaust").alert_types():      # 竭盡跡象（觀察用的 👁 警示）：買盤用完 → 預期跌；賣盤用完 → 預期漲
     ALERT_DIR[_t] = -1 if _t.startswith("買盤") else 1
+ALERT_DIR.update({"大盤急漲": 1, "大盤急跌": -1})          # 大盤 5 分鐘 ≥0.4% 或 10 分鐘 ≥0.6%：看個股之後有沒有跟著走
 ALERT_DIR.update(__import__("combo").directions())     # 因子組合提醒（👁 組合·…）：三方同向、逆勢強弱、族群先動還沒跟
 # 「其他」裡面其實有好幾種，照文字再分；訊號結案的訊息（贏 / 輸 / 未成交…）不是警示，不列
 _OTHER = (

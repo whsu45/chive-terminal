@@ -629,6 +629,56 @@ class Monitor:
             results.append(ev)
         return results
 
+    IDX_MOVE = ((5, 0.4), (10, 0.6))    # 大盤急漲急跌：(幾分鐘, 變化 % 門檻)。11/05–11/11 五個交易日 5 分鐘變化的中位數 0.14%、九成在 0.42% 內
+    IDX_COOLDOWN = 600                  # 同一個指數同一個方向 10 分鐘內只通知一次
+    IDX_SHOW = 300                      # 通知後畫面上方的指數反白 5 分鐘
+
+    def _index_alerts(self, live, now):
+        """
+        大盤急漲 / 急跌通知：加權或櫃買指數在 5 分鐘內變化 ≥0.4%、或 10 分鐘內 ≥0.6%（跟模型「大盤急拉 / 急殺」因子同一個門檻）。
+        指數急動會帶動個股情緒，所以每一檔監控中的標的都發一則警示（櫃買的只發給上櫃股），之後個股的走勢照樣由 _track_alerts 追蹤。
+        用指數分 K 的收盤比：現在的指數 vs N 分鐘前那一分鐘的收盤。
+        """
+        hhmm = now.strftime("%H:%M")
+        if not ("09:05" <= hhmm <= "13:25"):
+            return
+        st = self.__dict__.setdefault("_idx_alert", {})          # (指數, 方向) -> 上次通知的 epoch；指數 -> 最近一次通知的內容
+        for k, nm in (("t00", "加權"), ("o00", "櫃買")):
+            ix = live["index"].get(k)
+            ser = dict(live["index_series"].get(k) or [])
+            if not ix or not ser:
+                continue
+            ref = ix["ref"]
+            hit = None
+            for win, th in self.IDX_MOVE:
+                past = None
+                for back in (win, win + 1):                        # 那一分鐘剛好沒有資料就再往前一分鐘
+                    past = ser.get((now - dt.timedelta(minutes=back)).strftime("%H:%M"))
+                    if past:
+                        break
+                if not past:
+                    continue
+                ch = (ref / past - 1) * 100
+                if abs(ch) >= th and (hit is None or abs(ch) / th > abs(hit[1]) / hit[3]):
+                    hit = (win, ch, past, th)
+            if hit:
+                win, ch, past, _ = hit
+                d = 1 if ch > 0 else -1
+                if now.timestamp() - st.get((k, d), 0) >= self.IDX_COOLDOWN:
+                    st[(k, d)] = now.timestamp()
+                    word = "急漲" if d > 0 else "急跌"
+                    tail = "個股容易被帶上去，空單留意軋空" if d > 0 else "個股容易被帶下去，多單不要急著接"
+                    nd = 0 if ref >= 1000 else 2                  # 櫃買指數只有三百多點，要留小數
+                    text = f"⚠ 大盤{word}：{nm} {win} 分鐘 {ch:+.2f}%（{ref - past:+,.{nd}f} 點，{past:,.{nd}f} → {ref:,.{nd}f}），{tail}"
+                    st[k] = {"dir": d, "pct": round(ch, 2), "win": win, "pts": round(ref - past, nd), "t": now.strftime("%H:%M:%S"), "ts": now.timestamp()}
+                    for c in self.codes:
+                        if k == "t00" or (self.daily.get(c) or {}).get("market") == "otc":
+                            self._add_alert(c, now, text)
+                    print(f"[{now:%H:%M:%S}] {text}")
+            mv = st.get(k)
+            if mv and now.timestamp() - mv["ts"] <= self.IDX_SHOW:
+                ix["move"] = {x: mv[x] for x in ("dir", "pct", "win", "pts", "t")}
+
     def _combos(self, c, ev, now):
         """因子組合提醒（combo.py）：大盤、族群、個股相對強弱同向，或族群先動個股還沒跟。回目前成立的組合（給儀表板），
         新出現的發 👁 警示（同一檔同一種 30 分鐘一次），之後的走勢由 _track_alerts 追蹤。觀察用，不改多空強度。"""
@@ -1486,7 +1536,8 @@ class Monitor:
         return None
 
     BLOCK_TYPES = ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾", "追價過濾")     # 被擋掉、但照樣追蹤假設進場結果的訊號
-    ALERT_TYPES = exhaust.alert_types() + combo.alert_types() + [("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
+    ALERT_TYPES = exhaust.alert_types() + combo.alert_types() + [("大盤急漲", r"^⚠ 大盤急漲"), ("大盤急跌", r"^⚠ 大盤急跌"),
+                   ("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
@@ -2114,6 +2165,11 @@ class Monitor:
                     else:
                         self._mis_bar(self.idx_bars[k], now, ref, 0)
                         live["index_series"][k] = [[kk, v[3]] for kk, v in sorted(self.idx_bars[k].items()) if kk != "_v"]
+        if mode == "live" and self._trading_today():
+            try:
+                self._index_alerts(live, now)
+            except Exception as e:
+                print(f"[fast] 大盤急漲急跌判斷失敗：{str(e)[:100]}")
         for c in self.codes:
             q = quotes.get(c)
             if not q or not q.get("ref"):

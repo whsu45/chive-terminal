@@ -1,16 +1,24 @@
 """
 權證資料：某標的的認購/認售（含牛熊證）清單、日成交統計、發行商避險買賣、盤中彙總。
 - 上市：TWSE MI_INDEX type=0999(認購) / 0999P(認售) / 0999C(牛) / 0999B(熊)，表內有「標的代號」欄。
-- 上櫃：TPEx dailyQuotes 把 7xxxxx 權證混在股票表裡、沒有標的欄 → 用名稱前綴配對；有 Shioaji 時用合約的 target_code。
+- 上櫃：TPEx dailyQuotes 把 7xxxxx 權證混在股票表裡、沒有標的欄 → 用櫃買中心 OpenAPI「上櫃權證發行基本資料」
+  （tpex_warrant_issue，有標的代號與認購 / 認售）對應，對應表併存在本機（到期下市的之後還查得到）；
+  對應表抓不到、本機也沒有時才退回名稱前綴配對（會把「名稱開頭相同」的別檔股票算進來，不準）。
 - 避險：T86「自營商買賣超股數(避險)」(TWSE r[17]) / TPEx insti r[19]，這就是發行商為權證部位在現股的對沖。
 """
+import os
 import re
+import json
 import http_client as http
 import src_mis
+from config import CACHE_DIR
 
 TWSE = "https://www.twse.com.tw/rwd/zh/afterTrading/MI_INDEX"
 TPEX = "https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes"
 TTL = 86400 * 30
+TPEX_ISSUE = "https://www.tpex.org.tw/openapi/v1/tpex_warrant_issue"
+TPEX_MAP_FILE = os.path.join(CACHE_DIR, "tpex_warrant_map.json")
+_memo = {}
 
 _TYPES = {"0999": "call", "0999P": "put", "0999C": "call", "0999B": "put"}
 
@@ -53,8 +61,89 @@ def twse_warrants_daily(date):
     return out
 
 
+def tpex_issue_map():
+    """
+    上櫃權證代號 → [標的代號, "call" / "put"]。來源是櫃買中心「上櫃權證發行基本資料」（官方、每檔都有標的代號），一天抓一次，
+    抓到就併進本機檔（只增不減：到期下市的權證算前幾天的成交還用得到）。抓不到就用本機檔，都沒有回 {}。
+    """
+    if "map" in _memo:
+        return _memo["map"]
+    m = {}
+    try:
+        with open(TPEX_MAP_FILE, encoding="utf-8") as f:
+            m = json.load(f)
+    except (OSError, ValueError):
+        pass
+    try:
+        n0 = len(m)
+        for r in http.get_json(TPEX_ISSUE, cache_ttl=43200, retries=1):
+            c = str(r.get("Code") or "").strip(); t = str(r.get("UnderlyingStockCode") or "").strip(); typ = str(r.get("Type") or "")
+            if c and t and ("購" in typ or "售" in typ):
+                m[c] = [t, "put" if "售" in typ else "call"]
+        if len(m) != n0:
+            tmp = TPEX_MAP_FILE + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(m, f)
+            os.replace(tmp, TPEX_MAP_FILE)
+    except Exception as e:
+        print(f"  [warn] 上櫃權證對應表抓不到，用本機的 {len(m)} 筆：{str(e)[:80]}")
+    _memo["map"] = m
+    return m
+
+
+def tpex_warrants_all(date):
+    """
+    上櫃全市場 → ({target_code: {"call": [w...], "put": [w...]}}, 對不到標的的權證數)。
+    成交來自 dailyQuotes（有歷史日期），標的與認購 / 認售來自 tpex_issue_map()。
+    2026-11-11 核對：12,732 檔權證兩邊完全對上，每個標的的認購 / 認售張數與金額跟官方「上櫃權證收盤行情日報表」一致。
+    """
+    key = ("tpex", date)
+    if key in _memo:
+        return _memo[key]
+    m = tpex_issue_map()
+    j = http.get_json(TPEX, params={"date": date.strftime("%Y/%m/%d"), "response": "json"}, cache_ttl=TTL)
+    out, miss = {}, 0
+    for t in j.get("tables", []):
+        if "上櫃股票行情" not in (t.get("title") or ""):
+            continue
+        for r in t.get("data", []):
+            c = str(r[0]).strip()
+            if not c.startswith("7") or len(c) != 6:
+                continue
+            hit = m.get(c)
+            if not hit:
+                miss += 1
+                continue
+            close = http.to_float(r[2]); chg = http.to_float(r[3])
+            prev = close - chg if (close is not None and chg is not None) else None
+            out.setdefault(hit[0], {"call": [], "put": []})[hit[1]].append(
+                {"code": c, "name": str(r[1]).strip(), "vol": http.to_int(r[8]) // 1000, "amt": http.to_float(r[9]) or 0.0,
+                 "close": close, "chg_pct": ((close / prev - 1) * 100) if (prev and close) else None, "right": hit[1], "ex": "otc"})
+    _memo[key] = (out, miss)
+    return _memo[key]
+
+
+def market_summary(date):
+    """全市場（上市 + 上櫃）每個標的的權證日統計 → {target_code: summarize()}。選股用。任何一邊抓不到就丟例外（不回一半的資料）。"""
+    key = ("sum", date)
+    if key not in _memo:
+        tse = twse_warrants_daily(date)
+        if not tse:
+            raise http.HttpError(f"上市權證 {date} 沒有資料")
+        otc, _ = tpex_warrants_all(date)
+        if not otc:
+            raise http.HttpError(f"上櫃權證 {date} 沒有資料（或對應表是空的）")
+        out = {t: summarize(wd) for t, wd in tse.items()}
+        for t, wd in otc.items():
+            out.setdefault(t, summarize(wd))
+        _memo[key] = out
+    return _memo[key]
+
+
 def tpex_warrants_daily(date, code, name):
-    """上櫃權證：名稱以標的名稱開頭的 7 開頭代碼。"""
+    """上櫃單一標的的權證。有對應表就用標的代號（準）；對應表是空的才退回「名稱以標的名稱開頭」的舊做法。"""
+    if tpex_issue_map():
+        return tpex_warrants_all(date)[0].get(code, {"call": [], "put": []})
     j = http.get_json(TPEX, params={"date": date.strftime("%Y/%m/%d"), "response": "json"}, cache_ttl=TTL)
     out = {"call": [], "put": []}
     for t in j.get("tables", []):
@@ -111,6 +200,29 @@ def hedge_net(date, code, market):
             if len(r) > 19 and r[0].strip() == code:
                 return http.to_int(r[19]) // 1000
     return 0
+
+
+def hedge_all(date):
+    """全市場自營商(避險)買賣超（張）→ {code: 張}，上市 T86 + 上櫃三大法人日報，跟 hedge_net() 同一個來源。任何一邊抓不到就丟例外。"""
+    key = ("hedge", date)
+    if key not in _memo:
+        out = {}
+        j = http.get_json("https://www.twse.com.tw/rwd/zh/fund/T86", params={"date": date.strftime("%Y%m%d"), "selectType": "ALL", "response": "json"},
+                          cache_ttl=TTL)
+        for r in j.get("data", []):
+            if len(r) > 17:
+                out[r[0].strip()] = http.to_int(r[17]) // 1000
+        n_tse = len(out)
+        j = http.get_json("https://www.tpex.org.tw/www/zh-tw/insti/dailyTrade", params={"type": "Daily", "sect": "EW", "date": date.strftime("%Y/%m/%d"), "response": "json"},
+                          cache_ttl=TTL)
+        for t in j.get("tables", []):
+            for r in t.get("data", []):
+                if len(r) > 19:
+                    out[r[0].strip()] = http.to_int(r[19]) // 1000
+        if not n_tse or len(out) == n_tse:
+            raise http.HttpError(f"三大法人 {date} 資料不完整（上市 {n_tse} 檔、上櫃 {len(out) - n_tse} 檔）")
+        _memo[key] = out
+    return _memo[key]
 
 
 def intraday(wd):

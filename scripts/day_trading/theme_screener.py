@@ -73,6 +73,26 @@ FIT_CAP = (10.0, 50.0)   # 股本（億）適中的範圍
 FIT_TOP5 = 20.0          # 前五大買超或賣超佔成交量 % 以上算籌碼集中
 
 
+# 權證昨日大量買進（2026-11-12 加）：認購權證成交金額 ≥ 前 5 個交易日平均的 WARR_SURGE 倍，而且金額夠大（倍數的分母太小沒有意義）
+WARR_SURGE = 3.0
+WARR_MIN_AMT = 5e6       # 元
+WARR_LIST = 5            # 名單最多列幾檔
+WARR_BIG = 10.0          # 倍數到這裡另外標出來（回測 23 次，隔天開→收平均 −1.3%，樣本少）
+# 回測（2026-11-12；上市標的、成交值 ≥5 億、2026/03–11 共 110 個訊號日 19,487 個股票日，其中符合這個條件的 752 個；隔天開盤進、收盤出）：
+#   符合的：隔天跳空 +0.61%、開→收 −0.20%（中位 −0.48%）；不符合的：開→收 −0.31%。同一天兩組相減：開→收 −0.01%（t −0.1）、跳空 −0.11%（t −0.8）。
+#   依當天漲幅分組比（爆量 / 對照）：漲 2–5% −0.37 / −0.52；漲 5–9.4% −0.31 / −0.21；漲停 −0.02 / −0.45。隔天振幅也跟對照一樣。
+#   加上發行商避險買超 ≥2%：−0.24%；避險賣超：+0.21%。開盤放空扣成本 0.25%：−0.05%。
+#   唯二看起來不一樣、但次數太少的：倍數 ≥10（23 次）開→收 −1.26%；隔天開高 ≥3%（78 次）開→收 −0.91%、中位 −0.16%。
+#   精確度：同日差的標準誤 0.15%，95% 區間 −0.30% ～ +0.29%——能排除的是「效果比 0.3% 大」，±0.3% 以內的小效果這個樣本分辨不出來。
+#   量的是權證「成交金額」（買賣都算），不是淨買進；淨買進只能用發行商避險買賣超間接看。只測了開盤進、收盤出。
+# → 看不出「權證前一天被大量買進」讓隔天的方向、跳空、開高走低、振幅有差別（有的話也小於來回成本），所以只列成觀察名單，不當做多或做空的候選。
+WARR_NOTE = ("觀察名單，不是做多或做空的建議。回測 110 個交易日、752 個符合的股票日（上市標的）：隔天平均開高 0.6%、開盤到收盤 −0.2%，"
+             "跟同一天沒有權證爆量的股票幾乎一樣（差 −0.01%，誤差範圍 ±0.3%），開盤放空扣成本後是 −0.05%。也就是「昨天權證被大買」這件事本身看不出隔天會怎麼走；"
+             "列出來是讓你知道這幾檔有權證資金和發行商避險部位在裡面，盤中照 monitor 的訊號做。")
+WARR_PLAN = ("不因為這個條件預設方向。隔天開高 3% 以上的那一小部分，回測開盤到收盤平均 −0.9%（78 次、中位數 −0.2%，次數少）：開高不追，"
+             "要做等 monitor 的訊號。")
+
+
 # ================================================================ 條件（prep.py 也用）
 
 def short_conditions(closes, idx_closes, foreign, trust, vol=None):
@@ -240,6 +260,42 @@ def pick(feats, exclude=(), min_value=MIN_VALUE):
     shorts = sorted((f for f in pool if f["weak5"]), key=lambda f: f["r10"])
     longs = sorted((f for f in pool if long_conditions(f)), key=lambda f: -f["r20"])
     return shorts, longs
+
+
+def warrant_activity(date):
+    """
+    篩選日全市場每個標的的權證成交 → {code: {call_amt, call_vol, n_call, n_call_active, put_amt, put_vol, avg5, surge, hedge}}。
+      call_amt / put_amt：當天認購 / 認售權證成交金額（元）；avg5：前 5 個交易日認購金額的平均；surge = call_amt / avg5（avg5 = 0 時 None）
+      hedge：自營商(避險)買賣超（張）——發行商為權證部位在現股的對沖
+    來源：上市 = 證交所每日收盤行情（認購 / 認售 / 牛熊證，表內有標的代號）；上櫃 = 櫃買中心行情表 + 權證發行基本資料的標的代號。
+    六天裡任何一天抓不到就整個丟例外：少一天平均就會錯，寧可不列也不要給錯的倍數。
+    """
+    import src_warrants as W
+    today = W.market_summary(date)
+    hist = [W.market_summary(d) for d in cal.last_n_trading_days(date, 5)]
+    hedge = W.hedge_all(date)
+    out = {}
+    for code, sm in today.items():
+        avg5 = sum((h.get(code) or {}).get("call_amt", 0.0) for h in hist) / len(hist)
+        out[code] = {"call_amt": sm["call_amt"], "call_vol": sm["call_vol"], "n_call": sm["n_call"], "n_call_active": sm["n_call_active"],
+                     "put_amt": sm["put_amt"], "put_vol": sm["put_vol"], "avg5": avg5,
+                     "surge": (sm["call_amt"] / avg5) if avg5 > 0 else None, "hedge": hedge.get(code)}
+    return out
+
+
+def warrant_hit(w):
+    """權證昨日大量買進：認購金額 ≥ WARR_MIN_AMT，且是前 5 日平均的 WARR_SURGE 倍以上（前 5 日完全沒成交也算）。"""
+    return bool(w and w["call_amt"] >= WARR_MIN_AMT and (w["surge"] is None or w["surge"] >= WARR_SURGE))
+
+
+def warrant_pick(feats, wa, exclude=(), min_value=MIN_VALUE):
+    """權證昨日大量買進的名單：成交值夠大、不是處置股、符合 warrant_hit，依「認購金額占現股成交值」由大到小。"""
+    out = []
+    for f in feats.values():
+        w = wa.get(f["code"])
+        if f["value"] >= min_value and f["code"] not in exclude and warrant_hit(w):
+            out.append(dict(f, warr=dict(w, ratio=w["call_amt"] / (f["value"] * 1e8) * 100, hedge_pct=(w["hedge"] / f["vol"] * 100) if (w["hedge"] is not None and f["vol"]) else None)))
+    return sorted(out, key=lambda f: -f["warr"]["ratio"])
 
 
 def open_ok(side, f, o):
@@ -533,8 +589,20 @@ def screen(ref, top=3, skip_heavy=False):
     heavy = {c for c, k in ranks.items() if k <= HEAVY_RANK}
     shorts, longs = pick(feats, exclude=set(punish) | (heavy if skip_heavy else set()))
     member, tstats = load_themes()
+    # 權證昨日大量買進：全市場算一次（六天的權證日成交 + 避險），抓不到就不列、把原因帶出去
+    wa, warr, warr_err = {}, [], None
+    try:
+        wa = warrant_activity(d)
+        warr = warrant_pick(feats, wa, exclude=set(punish))[:WARR_LIST]
+    except Exception as e:
+        warr_err = str(e)[:160] or e.__class__.__name__
+        print(f"  [warn] 權證昨日成交: {warr_err}", file=sys.stderr)
+    for f in shorts[: top + 3] + longs[: top + 3]:              # 做空 / 做多候選剛好也是權證大買的，一併標出來
+        w = wa.get(f["code"])
+        if warrant_hit(w):
+            f["warr"] = dict(w, ratio=w["call_amt"] / (f["value"] * 1e8) * 100, hedge_pct=(w["hedge"] / f["vol"] * 100) if (w["hedge"] is not None and f["vol"]) else None)
     # 當沖適合度：只算會列出來的那幾檔（權證與分點要連線）
-    shown = shorts[: top + 3] + longs[: top + 3]
+    shown = shorts[: top + 3] + longs[: top + 3] + warr
     twse_w = None
     if any((caps.get(f["code"]) or [0, 0, ""])[2] == "tse" for f in shown):
         try:
@@ -542,7 +610,7 @@ def screen(ref, top=3, skip_heavy=False):
             twse_w = W.twse_warrants_daily(d)
         except Exception as e:
             print(f"  [warn] 上市權證: {str(e)[:80]}", file=sys.stderr)
-    for side, lst in (("short", shorts[: top + 3]), ("long", longs[: top + 3])):
+    for side, lst in (("short", shorts[: top + 3]), ("long", longs[: top + 3]), ("warrant", warr)):
         for f in lst:
             win = [store[x]["q"].get(f["code"]) for x in dates[-6:]]
             f["fit"] = fit_info(f["code"], [(w[1], w[2], w[3]) if w else None for w in win], caps, ranks)
@@ -550,13 +618,26 @@ def screen(ref, top=3, skip_heavy=False):
             f["fit"]["tags"] = fit_tags(f["fit"], side)
     # 多留幾檔備用：開盤跳空不符時往下遞補
     return {"date": dates[-1], "mkt": mkt, "short": shorts[: top + 3], "long": longs[: top + 3], "top": top,
+            "warrant": warr, "warrant_error": warr_err,
             "member": member, "themes": tstats, "punished": [c for c in punish if c in feats],
             "skipped_heavy": sorted(c for c in heavy if c in feats and (feats[c]["weak5"] or long_conditions(feats[c]))) if skip_heavy else []}
+
+
+def _warr_text(w):
+    """權證昨日成交的一句話：金額、倍數、占現股成交值、避險。"""
+    mul = "前 5 日幾乎沒成交" if w["surge"] is None else f"前 5 日平均（{w['avg5'] / 1e4:,.0f} 萬）的 {w['surge']:.1f} 倍"
+    if w["surge"] is not None and w["surge"] >= WARR_BIG:
+        mul += f"（≥{WARR_BIG:g} 倍：回測 23 次，隔天開盤到收盤平均 −1.3%，次數少、只當提醒）"
+    hg = "" if w.get("hedge") is None else f"；發行商避險{'買超' if w['hedge'] >= 0 else '賣超'} {abs(w['hedge']):,} 張" + (f"（{w['hedge_pct']:+.1f}% 量）" if w.get("hedge_pct") is not None else "")
+    return (f"認購權證昨天成交 {w['call_amt'] / 1e4:,.0f} 萬（{w['call_vol']:,} 張、{w['n_call_active']}/{w['n_call']} 檔有量），是{mul}，"
+            f"約占現股成交值 {w['ratio']:.2f}%{hg}")
 
 
 def _plan(side, f):
     """停損用進場價 ± 半個 ATR（進場價開盤後才知道；昨日收在跌停時「昨低 = 收盤」不能當停損）。"""
     half = round(f["atr"] * 0.5, 1 if f["c"] >= 50 else 2)
+    if side == "warrant":
+        return WARR_PLAN
     if side == "short":
         return (f"開盤跳空跌超過 {-SHORT_SKIP_GAP:.0f}%（低於 {I.round_tick(f['c'] * (1 + SHORT_SKIP_GAP / 100), 'down'):g}）或開盤鎖跌停不空；"
                 f"開盤後反彈站不回均價線、跌破開盤價再空，停損設進場價上方約 {half:g} 元（半個 ATR）")
@@ -565,6 +646,10 @@ def _plan(side, f):
 
 def _reasons(side, f, mkt):
     ins = f"外資 {f['foreign']:+,} / 投信 {f['trust']:+,} 張" if f["foreign"] is not None else "法人資料缺"
+    if side == "warrant":
+        w = f["warr"]
+        put = f"認售 {w['put_amt'] / 1e4:,.0f} 萬" if w["put_amt"] else "認售沒有成交"
+        return [_warr_text(w), f"昨天 {f['chg1']:+.1f}%，{put}；法人：{ins}", f"成交值 {f['value']:.0f} 億、ATR {f['atrp']:.1f}%"]
     if side == "short":
         return [f"10 日 {f['r10']:+.1f}%，劣於大盤（{mkt['r10']:+.1f}%）且跌超過 10%",
                 f"收盤 {f['c']:g} 在季線 {f['ma60']:.1f} 之下", f"外資、投信同步賣超（{ins}）",
@@ -577,7 +662,9 @@ def _row(side, f, r):
     return {"code": f["code"], "name": f["name"], "themes": r["member"].get(f["code"], []), "close": f["c"],
             "chg1d": round(f["chg1"], 2), "r10": f["r10"], "r20": round(f["r20"], 2), "value_e8": round(f["value"], 1),
             "atr_pct": round(f["atrp"], 2), "foreign": f["foreign"], "trust": f["trust"],
-            "reasons": _reasons(side, f, r["mkt"]), "plan": _plan(side, f), "fit": f.get("fit") or {}}
+            "reasons": _reasons(side, f, r["mkt"]) + ([_warr_text(f["warr"]) + "（權證昨日大量買進）"] if side != "warrant" and f.get("warr") else []),
+            "plan": _plan(side, f), "fit": f.get("fit") or {},
+            "warr": {k: (round(v, 2) if isinstance(v, float) else v) for k, v in f["warr"].items()} if f.get("warr") else None}
 
 
 def print_report(r):
@@ -603,6 +690,22 @@ def print_report(r):
             if j["fit"].get("tags"):
                 print("     當沖適合度：" + "；".join(f"{mark[k]} {t}" for k, t in j["fit"]["tags"]))
             print(f"     → {j['plan']}")
+    print(f"\n⚡ 權證昨日大量買進（認購金額 ≥ 前 5 日平均 {WARR_SURGE:g} 倍且 ≥ {WARR_MIN_AMT / 1e4:.0f} 萬；依占現股成交值排序）")
+    print(f"  {WARR_NOTE}")
+    if r.get("warrant_error"):
+        print(f"  ⚠ 權證資料抓不到，這一區今天不列：{r['warrant_error']}")
+    elif not r.get("warrant"):
+        print("  （沒有符合條件的標的）")
+    for k, f in enumerate(r.get("warrant") or [], 1):
+        j = _row("warrant", f, r)
+        th = f"[{'、'.join(j['themes'][:3])}]" if j["themes"] else ""
+        print(f"\n  {k}. {j['code']} {j['name']} {th}")
+        print(f"     收 {j['close']:g}｜昨 {j['chg1d']:+.2f}%｜10日 {j['r10']:+.1f}%｜20日 {j['r20']:+.1f}%｜成交值 {j['value_e8']:.0f} 億｜ATR {j['atr_pct']:.1f}%")
+        for why in j["reasons"]:
+            print(f"     • {why}")
+        if j["fit"].get("tags"):
+            print("     當沖適合度：" + "；".join(f"{ {'ok': '✓', 'no': '✗', 'warn': '⚠', 'info': '·'}[k2]} {t}" for k2, t in j["fit"]["tags"]))
+        print(f"     → {j['plan']}")
     if r["punished"]:
         print("\n排除（處置股）：" + "、".join(r["punished"]))
     if r.get("skipped_heavy"):
@@ -624,6 +727,8 @@ def to_dict(r):
             "market": {k: (round(v, 2) if isinstance(v, float) else v) for k, v in r["mkt"].items()},
             "short_active": r["mkt"]["weak"], "long_active": not r["mkt"]["weak"],
             "short": rows("short"), "long": rows("long"), "punished": r["punished"], "skipped_heavy": r.get("skipped_heavy") or [],
+            "warrant": rows("warrant") if r.get("warrant") else [], "warrant_error": r.get("warrant_error"), "warrant_note": WARR_NOTE,
+            "warrant_rule": f"認購成交金額 ≥ 前 5 日平均 {WARR_SURGE:g} 倍且 ≥ {WARR_MIN_AMT / 1e4:.0f} 萬",
             "themes": [{"name": n, "chg1d": round(a, 2), "chg5d": round(b, 2)} for n, a, b in r["themes"]]}
 
 

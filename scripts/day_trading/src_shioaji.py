@@ -67,7 +67,8 @@ def _new_acc():
     return {"ticks": [], "last": None, "high": None, "low": None, "open": None, "total_volume": None, "last_t": None,
             "bid_total": None, "ask_total": None, "bid_cnt": None, "ask_cnt": None,
             "bids": [], "asks": [], "book_t": None,     # 五檔 [[price, vol] ×5]（BidAsk 串流）
-            "bars": {}}   # "HH:MM" -> [o, h, l, c, vol, amt]（分 K，給江波圖）
+            "bars": {},   # "HH:MM" -> [o, h, l, c, vol, amt]（分 K，給江波圖）
+            "auction": {}}   # 集合競價那一筆：{"open": [價, 張, 永豐標的內外盤], "close": [...]}，不算進買賣分流
 
 
 def _bar_update(acc, ts, price, vol):
@@ -96,11 +97,36 @@ def get_contract(api, code):
     return api.Contracts.Stocks[code]
 
 
+OPEN_AUCTION_END = 9 * 3600 + 5 * 60      # 當天第一筆、而且在 09:05 前 → 開盤集合競價（延緩開盤也涵蓋；歷史 339 個股票日最晚 09:02）
+CLOSE_AUCTION_START = 13 * 3600 + 25 * 60  # 13:25 之後只剩 13:30 收盤集合競價和 14:30 盤後定價
+DIST_AMOUNTS = (200000, 500000)           # flow()["dist"] 散戶那一段再細分的級距下緣（單筆金額）；再上去就是散戶 / 主力門檻
+
+
+def _auction_kind(ts, first):
+    """這一筆是不是集合競價撮合出來的。集合競價是所有委託一次撮合成一個價，沒有「誰主動」，但永豐照樣標外盤 / 內盤，
+    而且常常一筆就是幾百張——會被當成一張大戶主動買賣單，一整天掛在大戶累積買賣超上（2026-11-12 台郡：開盤那筆約 520 張標外盤，
+    dashboard 整天顯示大戶買超，籌碼K線是賣超）。"""
+    if not isinstance(ts, dt.datetime):
+        return None
+    tod = ts.hour * 3600 + ts.minute * 60 + ts.second
+    if tod >= CLOSE_AUCTION_START:
+        return "close"
+    if first and tod < OPEN_AUCTION_END:
+        return "open"
+    return None
+
+
 def _ingest(code, ts, price, vol, tick_type, big_lot=None):
-    """只存逐筆 (ts, price, vol, tick_type)；大單/散戶分類在 flow() 時依當下價格與分布決定。"""
+    """只存逐筆 (ts, price, vol, tick_type)；大單/散戶分類在 flow() 時依當下價格與分布決定。
+    集合競價那一筆（開盤、收盤、盤後定價）內外盤改記 0：照樣算進成交量和 VWAP，但不算進任何一邊的買賣。"""
     acc = _state.setdefault(code, _new_acc())
     if vol <= 0 or price is None:
         return
+    kind = _auction_kind(ts, not acc["ticks"]) if int(tick_type) in (1, 2) else None
+    if kind:
+        a = acc.setdefault("auction", {}).setdefault(kind, [float(price), 0, int(tick_type)])
+        a[0] = float(price); a[1] += int(vol)
+        tick_type = 0
     acc["last"] = price
     acc["high"] = price if acc["high"] is None else max(acc["high"], price)
     acc["low"] = price if acc["low"] is None else min(acc["low"], price)
@@ -509,12 +535,24 @@ def flow(code, window_min=None, price=None):
     ice_keys = {(i["size"], 1 if i["side"] == "買" else 2) for i in ice if i["regular"] or i["share_cnt"] >= 0.2}
 
     bb = bs = sb = ss = mb = ms = hb = hs = 0
-    vol = 0; amt = 0.0
+    vol = 0; amt = 0.0; unsided = 0
+    # 單筆大小分佈：每一級的買 / 賣張數。大戶的門檻各家不一樣（籌碼K線只分兩級、門檻依個股調整），有了分佈就能換任何門檻來看
+    per_lot = max(ref, 0.01) * 1000
+    lows = [1]
+    for lo in [max(1, math.ceil(a / per_lot)) for a in DIST_AMOUNTS if a < th["small_amount"]] + [small, big]:   # 最上面兩級對齊散戶 / 主力門檻
+        if lo > lows[-1]:
+            lows.append(lo)
+    dist = [{"lo": lo, "hi": (lows[i + 1] - 1 if i + 1 < len(lows) else None), "buy": 0, "sell": 0, "n": 0} for i, lo in enumerate(lows)]
     for ts, p, v, tt in ticks:
         vol += v; amt += p * v
         if tt not in (1, 2):
+            unsided += v
             continue
         is_buy = tt == 1
+        for d in reversed(dist):
+            if v >= d["lo"]:
+                d["buy" if is_buy else "sell"] += v; d["n"] += 1
+                break
         if (v, tt) in ice_keys:            # 規律小單 → 主力藏單
             if is_buy: hb += v
             else: hs += v
@@ -536,6 +574,7 @@ def flow(code, window_min=None, price=None):
             "big_net_pct": big_net / vol * 100, "small_net_pct": (sb - ss) / vol * 100,
             "hidden_net_pct": (hb - hs) / vol * 100,
             "thresholds": th, "iceberg": ice, "window_min": window_min,
+            "dist": dist, "unsided_vol": unsided, "auction": {k: list(v) for k, v in (acc.get("auction") or {}).items()},
             "bid_total": bid_total, "ask_total": ask_total, "bid_cnt": bid_cnt, "ask_cnt": ask_cnt, "ticks": len(ticks)}
 
 

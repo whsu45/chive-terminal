@@ -34,7 +34,7 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .price{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
 .price .big{font-size:44px;font-weight:700;line-height:1}
 .price .chg{font-size:22px;font-weight:600}
-.lim{padding:0 8px;border-radius:6px;color:#fff!important}.lim.up{background:var(--up)}.lim.dn{background:var(--dn);color:#06240f!important}
+.lim{padding:0 8px;border-radius:6px;color:#fff!important}.lim.lim-up{background:var(--up)}.lim.lim-dn{background:var(--dn);color:#06240f!important}
 .limtag{font-size:13px;font-weight:700;padding:2px 8px;border-radius:6px;align-self:center}.limtag.up{border:1px solid var(--up);color:var(--up)}.limtag.dn{border:1px solid var(--dn);color:var(--dn)}
 header .tab .cb{color:var(--warn);margin-left:4px}
 .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px 12px;margin-top:10px}
@@ -175,7 +175,9 @@ main#review.hidden{display:none}
 .pk-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:900px){.pk-cols{grid-template-columns:1fr}}
 .pk-col h3{margin:0 0 8px;font-size:15px}
-.pk-col.short h3{color:var(--dn)}.pk-col.long h3{color:var(--up)}
+.pk-col.short h3{color:var(--dn)}.pk-col.long h3{color:var(--up)}.pk-col.warr h3{color:var(--warn)}
+.pk-col.warr .pk-wgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}@media (max-width:900px){.pk-col.warr .pk-wgrid{grid-template-columns:1fr}}
+.pk-col.warr .pk-note{font-size:12px;color:var(--muted);margin:0 0 8px;line-height:1.5}
 .pk-col .off{font-size:12px;color:var(--warn);font-weight:400;margin-left:6px}
 .pk-card{display:grid;grid-template-columns:24px 1fr;gap:4px 8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
 .pk-card:hover{border-color:var(--accent)}
@@ -217,6 +219,7 @@ main#review.hidden{display:none}
   <div class="pk-head"><h2>今日當沖標的</h2><span class="small muted" id="pk-status"></span></div>
   <div class="pk-mkt" id="pk-mkt"></div>
   <div class="pk-cols"><div class="pk-col short" id="pk-short"></div><div class="pk-col long" id="pk-long"></div></div>
+  <div class="pk-col warr" id="pk-warr" style="margin-top:14px"></div>
   <div class="pk-foot">
     <label class="small">自選代號 <input id="pk-manual" placeholder="例：2330, 3042" autocomplete="off"></label>
     <span class="small muted" id="pk-count"></span>
@@ -321,10 +324,11 @@ async function loadPicker(){
   clearTimeout(PICK_T);PICK_T=setTimeout(PICK.selected?loadState:loadPicker,2000);   // 跑選股或準備盤前資料時 2 秒輪詢
 }
 function pkCard(side,r,top,active,sel){
-  const on=sel?sel.includes(r.code):active&&r.rank<=top;   // 送出後依實際選定的顯示
+  const wr=side==='warrant';                                // 權證昨日大買那一區：預設不勾、沒有備用
+  const on=sel?sel.includes(r.code):(!wr&&active&&r.rank<=top);   // 送出後依實際選定的顯示
   const st=`收 ${fp(r.close)}｜昨 ${pct(r.chg1d)}｜10日 ${pct(r.r10,1)}｜20日 ${pct(r.r20,1)}｜${f(r.value_e8,0)} 億｜ATR ${f(r.atr_pct,1)}%`;
   return `<label class="pk-card ${on?'on':''} ${active?'':'dim'}"><input type="checkbox" value="${esc(r.code)}" ${on?'checked':''} onchange="pkCount()">
-    <div class="t"><span class="rk">#${r.rank}</span>${esc(r.code)} ${esc(r.name)}${r.themes&&r.themes.length?`<span class="th">${esc(r.themes.slice(0,3).join('、'))}</span>`:''}${r.rank>top?'<span class="bk">備用</span>':''}</div>
+    <div class="t"><span class="rk">#${r.rank}</span>${esc(r.code)} ${esc(r.name)}${r.themes&&r.themes.length?`<span class="th">${esc(r.themes.slice(0,3).join('、'))}</span>`:''}${!wr&&r.rank>top?'<span class="bk">備用</span>':''}</div>
     <div class="st">${st}</div>
     <ul>${r.reasons.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
     ${r.fit&&r.fit.tags&&r.fit.tags.length?`<div class="fit"><span class="muted">當沖適合度</span>${r.fit.tags.map(([k,t])=>`<span class="ft ${esc(k)}">${({ok:'✓',no:'✗',warn:'⚠',info:'·'})[k]||'·'} ${esc(t)}</span>`).join('')}</div>`:''}
@@ -344,8 +348,14 @@ function renderPicker(){
       +((res[side]||[]).length?res[side].map(r=>pkCard(side,r,res.top,active,p.selected)).join(''):'<div class="pk-empty">沒有符合條件的標的</div>');
     $('pk-short').innerHTML=col('short','▼ 做空：弱勢股',res.short_active);
     $('pk-long').innerHTML=col('long','▲ 做多：強勢股急殺',res.long_active);
-  }else{$('pk-mkt').innerHTML=p.status==='running'?'等待選股結果…':'沒有選股結果';$('pk-short').innerHTML='';$('pk-long').innerHTML='';}
-  if(sent){const listed=new Set([...(res?.short||[]),...(res?.long||[])].map(r=>r.code));$('pk-manual').value=p.selected.filter(c=>!listed.has(c)).join(', ');}
+    // 權證昨日大量買進（theme_screener.warrant_pick）：不分多空的觀察名單，預設不勾
+    const W=res.warrant||[];
+    $('pk-warr').innerHTML=res.warrant_rule?`<h3>⚡ 權證昨日大量買進<span class="off" style="color:var(--muted)">${esc(res.warrant_rule)}；依占現股成交值排序</span></h3>
+      <div class="pk-note">${esc(res.warrant_note||'')}</div>`
+      +(res.warrant_error?`<div class="pk-empty">⚠ 權證資料抓不到，這一區今天不列：${esc(res.warrant_error)}</div>`
+        :W.length?`<div class="pk-wgrid">${W.map(r=>pkCard('warrant',r,res.top,true,p.selected)).join('')}</div>`:'<div class="pk-empty">沒有符合條件的標的</div>'):'';
+  }else{$('pk-mkt').innerHTML=p.status==='running'?'等待選股結果…':'沒有選股結果';$('pk-short').innerHTML='';$('pk-long').innerHTML='';$('pk-warr').innerHTML='';}
+  if(sent){const listed=new Set([...(res?.short||[]),...(res?.long||[]),...(res?.warrant||[])].map(r=>r.code));$('pk-manual').value=p.selected.filter(c=>!listed.has(c)).join(', ');}
   $('pk-go').disabled=sent||PICK_SENT;$('pk-manual').disabled=sent;
   document.querySelectorAll('#picker input[type=checkbox]').forEach(x=>x.disabled=sent);
   pkCount();}
@@ -471,9 +481,20 @@ function renderAge(){const cap=LIVE.capture&&LIVE.capture.mode!=='live'?LIVE.cap
   else{el.textContent=(cap?'最後一筆 ':'')+(LIVE.time||'')+(q0&&q0.src==='shioaji'?' 逐筆':(LIVE.mis_t?' MIS '+LIVE.mis_t:''));el.title='';}}
 // 漲停 / 跌停：成交價到了當天的漲跌停價 → 'up' / 'dn'（數字反白）；沒有就 ''
 function limOf(c,px){const d=(STATE&&STATE.daily[c])||{};if(px==null)return '';return d.limit_up&&px>=d.limit_up-1e-9?'up':d.limit_down&&px<=d.limit_down+1e-9?'dn':'';}
-function limCls(c,px){const k=limOf(c,px);return k?' lim '+k:'';}
+function limCls(c,px){const k=limOf(c,px);return k?' lim lim-'+k:'';}   // 用 lim-up / lim-dn，不跟漲跌顏色的 up / dn 混在一起（今低 = 漲停價時會同時有 dn）
+// 單筆大小分佈（flow.dist）：每一級的買 / 賣 / 淨，以及「這一級以上」合計的淨額與占量。
+// 各家看盤軟體對「大戶」的門檻不一樣（籌碼K線只分大戶 / 散戶兩級，門檻依個股調整），拿「這級以上」那兩欄去對就知道它切在哪。
+function flowDist(fl,th){const D=fl.dist||[];if(!D.length)return '';
+  const tv=D.reduce((s,d)=>s+d.buy+d.sell,0)||1;let cn=0,cv=0;const cum=D.slice().reverse().map(d=>{cn+=d.buy-d.sell;cv+=d.buy+d.sell;return [cn,cv];}).reverse();
+  const px=fl.vwap||0;const lab=d=>d.hi==null?`${d.lo} 張以上`:d.hi===d.lo?`${d.lo} 張`:`${d.lo}–${d.hi} 張`;
+  const sg=n=>`<td class="n num ${cls(n)}">${n>0?'+':''}${n}</td>`;
+  return `<table class="rv" style="margin-top:8px"><tr><th title="單筆成交的張數（括號是大約的金額）">單筆</th><th class="n">買</th><th class="n">賣</th><th class="n">淨</th><th class="n" title="把這一級和比它大的全部加起來的買賣淨額——等於「把大戶門檻設在這一級」會看到的大戶買賣超">這級以上淨額</th><th class="n" title="這一級以上的成交量占全部（有分買賣的）成交量的比例">占量</th></tr>
+    ${D.map((d,i)=>`<tr><td title="約 ${f(d.lo*px*1000/1e4,0)} 萬以上">${lab(d)} <span class="rv-tag">${d.lo>=(th.big_lots||1e9)?'主力':d.lo>=(th.small_lots||1e9)?'中實戶':'散戶'}</span></td><td class="n num">${d.buy}</td><td class="n num">${d.sell}</td>${sg(d.buy-d.sell)}${sg(cum[i][0])}<td class="n num">${f(cum[i][1]/tv*100,0)}%</td></tr>`).join('')}</table>
+    <div class="small muted" style="margin-top:4px" title="這裡的主力 = 單筆 ≥${th.big_lots} 張（約 300 萬以上，且不低於當日單筆的 95 分位），中間還有一級中實戶。籌碼K線的盤中大戶散戶只分兩級，門檻依個股歷史動態調整、通常低很多，所以它的大戶成交量和買賣超都會比這裡的主力大">「大戶」的門檻各家不同：這裡主力是 ≥${th.big_lots} 張，籌碼K線只分兩級而且門檻低很多。要對照就看「這級以上淨額」哪一列跟它接近（滑過來看說明）</div>`;}
 function renderPrice(){if(!LIVE||!LIVE.quotes||!STATE)return;const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
-  const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
+  const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>{const mv=v.move;   // move：剛發過大盤急漲 / 急跌通知（monitor._index_alerts），反白 5 分鐘
+    return `${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}${mv?' lim lim-'+(mv.dir>0?'up':'dn'):''}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`
+      +(mv?` <span class="limtag ${mv.dir>0?'up':'dn'}" title="${esc(mv.t)}：${mv.win} 分鐘內 ${mv.pct>0?'+':''}${mv.pct}%（${mv.pts>0?'+':''}${mv.pts} 點）。指數急動會帶動個股，警示區也有一則">${mv.dir>0?'急漲':'急跌'} ${mv.win}分 ${mv.pct>0?'+':''}${f(mv.pct,2)}%</span>`:'');}).join(' &nbsp; ');
   renderAge();
   if(!q)return;
   const rp=(q.h!=null&&q.l!=null&&q.h!==q.l)?Math.round((q.ref-q.l)/(q.h-q.l)*100)+'%':'-';
@@ -527,7 +548,8 @@ function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];c
   if(fl){const vol=fl.volume||1;const row=(lab,net,p)=>{const w=Math.min(50,Math.abs(p||0)*2.5);return `<div class="row"><span>${lab}</span><div class="track"><i class="${(net||0)>=0?'p':'n'}" style="width:${w}%"></i></div><b class="num ${cls(net)}">${net>0?'+':''}${net??0} <span class="muted">${pct(p,1)}</span></b></div>`};
     const th=fl.thresholds||{};
     $('flow').innerHTML=row('主力',fl.big_net,fl.big_net_pct)+row('藏單',fl.hidden_net,fl.hidden_net_pct)+row('散戶',fl.small_net,fl.small_net_pct)+row('中實戶',fl.mid_net,fl.mid_net/vol*100)
-      +`<div class="small muted" style="margin-top:6px">外盤 ${fl.buy_vol} / 內盤 ${fl.sell_vol} · VWAP ${f(fl.vwap,2)} · 門檻 大單 ≥${th.big_lots} 張（${f(th.big_amount/1e4,0)} 萬${th.p95?'，P95 '+th.p95:''}）散戶 &lt;${th.small_lots} 張</div>`
+      +`<div class="small muted" style="margin-top:6px">外盤 ${fl.buy_vol} / 內盤 ${fl.sell_vol}${fl.unsided_vol?` / <span title="開盤、收盤集合競價（和盤後定價）是所有委託一次撮合成一個價，沒有誰主動買或賣；券商資料照樣會標外盤或內盤，而且一筆常常幾百張，這裡不算進任何一邊${fl.auction&&fl.auction.open?'。開盤那筆 '+fl.auction.open[1]+' 張 @'+fp(fl.auction.open[0]):''}">集合競價 ${fl.unsided_vol}</span>`:''} · VWAP ${f(fl.vwap,2)} · 門檻 大單 ≥${th.big_lots} 張（${f(th.big_amount/1e4,0)} 萬${th.p95?'，P95 '+th.p95:''}）散戶 &lt;${th.small_lots} 張</div>`
+      +flowDist(fl,th)
       +(fl.iceberg||[]).filter(x=>x.regular||x.share_cnt>=0.2).map(x=>`<div class="alert" style="margin-top:6px">規律小單：${x.size} 張 × ${x.count} 筆 ${x.side}，共 ${x.volume} 張${x.avg_gap_s?`，每 ${f(x.avg_gap_s,0)} 秒`:''}${x.regular?' ← 機器單':''}</div>`).join('');}
   else $('flow').innerHTML='<span class="muted">需要永豐串流（.env 填金鑰）</span>';
   drawFlowSeries(fl);

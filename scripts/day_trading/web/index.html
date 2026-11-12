@@ -34,6 +34,9 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .price{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
 .price .big{font-size:44px;font-weight:700;line-height:1}
 .price .chg{font-size:22px;font-weight:600}
+.lim{padding:0 8px;border-radius:6px;color:#fff!important}.lim.up{background:var(--up)}.lim.dn{background:var(--dn);color:#06240f!important}
+.limtag{font-size:13px;font-weight:700;padding:2px 8px;border-radius:6px;align-self:center}.limtag.up{border:1px solid var(--up);color:var(--up)}.limtag.dn{border:1px solid var(--dn);color:var(--dn)}
+header .tab .cb{color:var(--warn);margin-left:4px}
 .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px 12px;margin-top:10px}
 .kv div{color:var(--muted);font-size:12px}.kv b{display:block;color:var(--fg);font-weight:500;font-size:15px}
 .verdict{font-size:18px;font-weight:600;margin:6px 0 10px}
@@ -454,7 +457,7 @@ function drawAll(){if(!LIVE||!LIVE.quotes)return;const ev=STATE&&STATE.latest[CU
     $(tid).innerHTML=`${nm} <b class="num ${cls(ix?.chg)}">${ix?f(ix.ref,0):'-'} ${ix?chgTxt(ix.ref,ix.y,0):''}</b>${LIVE.index_stream?'':' <span class="small muted">(MIS 取樣)</span>'}`;
     drawJB($(id),{series:s,y:ix?.y,last:ix?.ref,stock:false});drawKD($(id.replace('jb-','kd-')),{series:s,stock:false});}
   const q=LIVE.quotes[CUR];const s=LIVE.series[CUR]||[];
-  $('t-stk').innerHTML=`${CUR} ${esc(q?.name||ev?.name||'')} <b class="num ${cls(q?.chg_pct)}">${q?fp(q.ref):'-'} ${q?chgTxt(q.ref,q.y,dec(q.ref)):''}</b> <span class="small muted">— 價 · <span style="color:var(--vwap)">VWAP</span> · ${LIVE.shioaji?'逐筆分K':'MIS 取樣'} · 線：<span style="color:#9aa4b2">壓/撐</span>＝要先測試的價位、<span class="dn">空進</span>/<span class="up">多進</span>＝測試失敗後才掛的進場價、<span style="color:var(--warn)">損</span>、T1/T2</span>`;
+  $('t-stk').innerHTML=`${CUR} ${esc(q?.name||ev?.name||'')} <b class="num ${cls(q?.chg_pct)}${q?limCls(CUR,q.ref):''}">${q?fp(q.ref):'-'} ${q?chgTxt(q.ref,q.y,dec(q.ref)):''}</b> <span class="small muted">— 價 · <span style="color:var(--vwap)">VWAP</span> · ${LIVE.shioaji?'逐筆分K':'MIS 取樣'} · 線：<span style="color:#9aa4b2">壓/撐</span>＝要先測試的價位、<span class="dn">空進</span>/<span class="up">多進</span>＝測試失敗後才掛的進場價、<span style="color:var(--warn)">損</span>、T1/T2</span>`;
   drawJB($('jb-stk'),{series:s,y:q?.y,last:q?.ref,stock:true,plan:ev?.plan,side:activeSide(ev)});drawKD($('kd-stk'),{series:s,stock:true});}
 window.addEventListener('resize',()=>{drawAll();drawChart();});
 
@@ -466,13 +469,19 @@ function renderAge(){const cap=LIVE.capture&&LIVE.capture.mode!=='live'?LIVE.cap
     el.innerHTML=`逐筆 · 最後成交 <b class="${a>=30?'stale':''}">${a<1.5?'剛剛':a<60?Math.round(a)+' 秒前':Math.floor(a/60)+' 分前'}</b>`;
     el.title=`成交價與五檔每 0.5 秒更新。這筆成交本機 ${a.toFixed(1)} 秒前收到`+(fq.lag!=null?`；交易所時間到本機收到差 ${fq.lag.toFixed(1)} 秒（含本機時鐘誤差）`:'')+'。很久沒變代表這段時間沒有成交，不是畫面延遲';}
   else{el.textContent=(cap?'最後一筆 ':'')+(LIVE.time||'')+(q0&&q0.src==='shioaji'?' 逐筆':(LIVE.mis_t?' MIS '+LIVE.mis_t:''));el.title='';}}
+// 漲停 / 跌停：成交價到了當天的漲跌停價 → 'up' / 'dn'（數字反白）；沒有就 ''
+function limOf(c,px){const d=(STATE&&STATE.daily[c])||{};if(px==null)return '';return d.limit_up&&px>=d.limit_up-1e-9?'up':d.limit_down&&px<=d.limit_down+1e-9?'dn':'';}
+function limCls(c,px){const k=limOf(c,px);return k?' lim '+k:'';}
 function renderPrice(){if(!LIVE||!LIVE.quotes||!STATE)return;const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
   const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
   renderAge();
   if(!q)return;
   const rp=(q.h!=null&&q.l!=null&&q.h!==q.l)?Math.round((q.ref-q.l)/(q.h-q.l)*100)+'%':'-';
-  $('price').innerHTML=`<div class="price"><span class="big num ${cls(q.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(q.chg_pct)}">${sgn(q.ref-q.y,dec(q.ref))} <span style="font-size:16px">${pct(q.chg_pct)}</span></span></div>
-     <div class="kv"><div>開<b class="num">${fp(q.o)}</b></div><div>高<b class="num up">${fp(q.h)}</b></div><div>低<b class="num dn">${fp(q.l)}</b></div><div>昨收<b class="num">${fp(q.y)}</b></div>
+  const lk=limOf(CUR,q.ref);const locked=lk&&!((lk==='up'?q.asks:q.bids)||[]).length;
+  const cb=ev.combos||[];
+  $('price').innerHTML=`<div class="price"><span class="big num ${cls(q.chg_pct)}${limCls(CUR,q.ref)}">${fp(q.ref)}</span><span class="chg num ${cls(q.chg_pct)}">${sgn(q.ref-q.y,dec(q.ref))} <span style="font-size:16px">${pct(q.chg_pct)}</span></span>${lk?`<span class="limtag ${lk}" title="${lk==='up'?'成交價在漲停價'+(locked?'，委賣沒有掛單（鎖死，買不到）':'，委賣還有掛單（沒鎖死）'):'成交價在跌停價'+(locked?'，委買沒有掛單（鎖死，賣不掉）':'，委買還有掛單（沒鎖死）')}">${lk==='up'?'漲停':'跌停'}${locked?'鎖死':''}</span>`:''}</div>
+     ${cb.length?`<div class="runs">${cb.map(x=>`<div class="bonus" title="${esc(x.note)}"><b>👁 ${esc(x.name)}</b>：${esc(x.text)}</div>`).join('')}<div title="大盤、族群、個股相對強弱同時成立的組合。9 檔 × 41 天回測：這些組合出現後 30 分鐘並沒有比平常更常續漲 / 續跌，所以只提醒、不改多空強度；之後的走勢會記在復盤的警示回顧">組合提醒：觀察用、不計分（滑到項目上看回測結果）</div></div>`:''}
+     <div class="kv"><div>開<b class="num">${fp(q.o)}</b></div><div>高<b class="num up${limCls(CUR,q.h)}">${fp(q.h)}</b></div><div>低<b class="num dn${limCls(CUR,q.l)}">${fp(q.l)}</b></div><div>昨收<b class="num">${fp(q.y)}</b></div>
      <div>量<b class="num">${q.v??'-'}</b></div><div>量比<b class="num">${f(i.vol_pace,2)}</b></div><div>VWAP<b class="num">${f(LIVE.flow[CUR]?.vwap??i.vwap,2)}</b></div><div>日內位置<b class="num">${rp}</b></div>
      <div>漲停<b class="num up">${fp(d.limit_up)}</b></div><div>跌停<b class="num dn">${fp(d.limit_down)}</b></div><div>跳空<b class="num ${cls(i.gap_pct)}">${pct(i.gap_pct,1)}</b></div><div>相對大盤<b class="num ${cls(i.rs_vs_index)}">${pct(i.rs_vs_index,1)}</b></div></div>`;
   const bids=q.bids||[],asks=q.asks||[];const mx=Math.max(1,...bids.map(b=>b[1]),...asks.map(a=>a[1]));const bv=bids.reduce((s,b)=>s+b[1],0),av=asks.reduce((s,a)=>s+a[1],0);
@@ -680,7 +689,7 @@ function renderWarr(ev){const w=(LIVE&&LIVE.warrants&&LIVE.warrants[CUR])||ev.wa
 // ---------------------------------------------------------------- 估算區（每 interval 秒）
 function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   $('tabs').innerHTML=STATE.codes.map(c=>{const lq=LIVE&&LIVE.quotes[c];const e=STATE.latest[c];const ch=lq?lq.chg_pct:e?.info?.chg_pct;
-    const hd=(STATE.daily[c]||{}).history;return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||'')} <span class="num ${cls(ch)}">${pct(ch)}</span>${hd?`<span class="days">${hd.days}天</span>`:''}</div>`}).join('');
+    const hd=(STATE.daily[c]||{}).history;return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||'')} <span class="num ${cls(ch)}${limCls(c,lq?lq.ref:e?.quote?.ref)}">${pct(ch)}</span>${(e?.combos||[]).length?`<span class="cb" title="${esc(e.combos.map(x=>x.name).join('、'))}">◆</span>`:''}${hd?`<span class="days">${hd.days}天</span>`:''}</div>`}).join('');
   renderHist();renderDT();
   if(!LIVE){const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
     $('shioaji').innerHTML=STATE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';}
@@ -714,7 +723,7 @@ function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
     ${i.group_leader?`<div class="alert hard" style="margin:6px 0">族群領漲 <b>${esc(i.group_leader[2]||i.group_leader[1])}</b> <b class="num up">${pct(i.group_leader[0])}</b>：族群資金輪動，空單防接貨軋空</div>`:''}
     <table class="grid"><tr><th>代碼</th><th>名稱</th><th style="text-align:right">漲跌</th></tr>${gd.map(([p,c,n])=>`<tr><td class="num">${c}</td><td>${esc(n||'')}</td><td class="n ${cls(p)}">${pct(p)}</td></tr>`).join('')}</table>`;
   if(!LIVE){renderAlerts(ev);renderWarr(ev);
-    const q=ev.quote;$('price').innerHTML=`<div class="price"><span class="big num ${cls(i.chg_pct)}">${fp(q.ref)}</span><span class="chg num ${cls(i.chg_pct)}">${chgTxt(q.ref,q.y,dec(q.ref))}</span><span class="muted">${esc(ev.time)}</span></div>`;}
+    const q=ev.quote;$('price').innerHTML=`<div class="price"><span class="big num ${cls(i.chg_pct)}${limCls(CUR,q.ref)}">${fp(q.ref)}</span><span class="chg num ${cls(i.chg_pct)}">${chgTxt(q.ref,q.y,dec(q.ref))}</span><span class="muted">${esc(ev.time)}</span></div>`;}
   else renderLive();
 }
 function drawChart(){const h=HIST[CUR]||[];const c=$('chart');const dpr=window.devicePixelRatio||1;const W=c.width=c.clientWidth*dpr,H=c.height=220*dpr;const g=c.getContext('2d');g.clearRect(0,0,W,H);

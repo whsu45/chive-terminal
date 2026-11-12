@@ -24,6 +24,7 @@ import prep
 import model
 import indicators as I
 import exhaust
+import combo
 import history
 import src_mis
 import src_warrants as W
@@ -491,6 +492,7 @@ class Monitor:
         self.signs = {}                              # code -> 最近的竭盡跡象（exhaust.detect：掛單虛胖、大單熄火、量縮價滯…；觀察用、不計分）
         self._sign_seen = {}                         # code -> 已經判斷過的事件
         self.sign_sum = {}                           # code -> exhaust.summary（三個畫面各亮了哪個），給模型列因子與持倉面板
+        self._combo_at = {}                          # code -> {組合種類: 上次提醒的時間}（combo.py：因子組合提醒，觀察用、不計分）
         self.runs = {}                               # code -> 目前的連外次 / 連內次（_exhaustion 的回傳；訊號用來看反向是不是還亮著燈）
         self.liq = {}                                # code -> 最近一次流動性統計
         self._liq_alerted = set()                    # 今天已經發過「掛單薄」警示的 code
@@ -617,11 +619,34 @@ class Monitor:
             ev = model.evaluate(d, q, idx, peers_q, flow, self.samples[c], now, warrants=wq, ctx=self._ctx(c, now))
             if wq and wq.get("alerts"):
                 ev["warnings"] = wq["alerts"] + ev["warnings"]
+            try:
+                ev["combos"] = self._combos(c, ev, now)
+            except Exception as e:
+                print(f"[{now:%H:%M:%S}] {c} 組合提醒失敗：{str(e)[:100]}")
             if self.fast_thread:
                 ev["live_alerts"] = list(self.live_alerts.get(c, []))[-12:]
             WEB.put(ev, quotes)
             results.append(ev)
         return results
+
+    def _combos(self, c, ev, now):
+        """因子組合提醒（combo.py）：大盤、族群、個股相對強弱同向，或族群先動個股還沒跟。回目前成立的組合（給儀表板），
+        新出現的發 👁 警示（同一檔同一種 30 分鐘一次），之後的走勢由 _track_alerts 追蹤。觀察用，不改多空強度。"""
+        if not self._trading_today():
+            return []
+        own10 = None
+        ss = self.samples.get(c) or []
+        if ss and ss[-1][1]:
+            past = [x for x in ss if 540 <= (now - x[0]).total_seconds() <= 720 and x[1]]
+            if past:
+                own10 = (ss[-1][1] / past[-1][1] - 1) * 100
+        act = combo.detect(ev.get("info") or {}, own10, now.strftime("%H:%M"))
+        seen = self._combo_at.setdefault(c, {})
+        for x in act:
+            if now.timestamp() - seen.get(x["key"], 0) >= combo.COOLDOWN:
+                seen[x["key"]] = now.timestamp()
+                self._add_alert(c, now, combo.alert_text(x))
+        return act
 
     def _backfill_flow(self, codes):
         """盤中才啟動：用回補的逐筆重建 09:00 起每分鐘的主力/散戶淨額，並把那段時間該出的分流警示補發（帶原本的時間戳）。"""
@@ -1461,7 +1486,7 @@ class Monitor:
         return None
 
     BLOCK_TYPES = ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾", "追價過濾")     # 被擋掉、但照樣追蹤假設進場結果的訊號
-    ALERT_TYPES = exhaust.alert_types() + [("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
+    ALERT_TYPES = exhaust.alert_types() + combo.alert_types() + [("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),

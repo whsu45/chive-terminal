@@ -38,6 +38,7 @@ ALERT_DIR = {
 }
 for _t, _ in __import__("exhaust").alert_types():      # 竭盡跡象（觀察用的 👁 警示）：買盤用完 → 預期跌；賣盤用完 → 預期漲
     ALERT_DIR[_t] = -1 if _t.startswith("買盤") else 1
+ALERT_DIR.update(__import__("combo").directions())     # 因子組合提醒（👁 組合·…）：三方同向、逆勢強弱、族群先動還沒跟
 # 「其他」裡面其實有好幾種，照文字再分；訊號結案的訊息（贏 / 輸 / 未成交…）不是警示，不列
 _OTHER = (
     (r"賣單牆.*撤單", "賣單牆撤單（假壓力）", 1), (r"買單牆.*撤單", "買單牆撤單（假支撐）", -1),

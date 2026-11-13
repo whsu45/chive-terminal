@@ -37,7 +37,10 @@
     "pct": -1.89
    }
   ],
-  "taiexNext": null
+  "taiexNext": {
+   "date": "2026-11-13",
+   "pct": 2.5
+  }
  },
  {
   "date": "2026-11-11",

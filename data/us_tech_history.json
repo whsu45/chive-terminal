@@ -1,40 +1,40 @@
 [
  {
   "date": "2026-11-12",
-  "composite": -1.21,
-  "sox": -0.52,
+  "composite": -1.33,
+  "sox": -0.54,
   "top3Up": [
    {
     "key": "semis",
     "title": "半導體",
-    "pct": 0.22
+    "pct": 0
+   },
+   {
+    "key": "cyber",
+    "title": "資安",
+    "pct": -0.25
    },
    {
     "key": "devices",
     "title": "消費電子",
-    "pct": -0.05
-   },
-   {
-    "key": "networking",
-    "title": "網通／光通訊",
-    "pct": -0.16
+    "pct": -0.45
    }
   ],
   "top3Down": [
    {
     "key": "ev",
     "title": "電動車／自駕",
-    "pct": -5.19
+    "pct": -5.03
+   },
+   {
+    "key": "aiserver",
+    "title": "AI 伺服器／資料中心硬體",
+    "pct": -2.01
    },
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.42
-   },
-   {
-    "key": "semicap",
-    "title": "半導體設備",
-    "pct": -1.67
+    "pct": -1.89
    }
   ],
   "taiexNext": null
@@ -3786,13 +3786,13 @@
     "pct": 1.23
    },
    {
-    "key": "networking",
-    "title": "網通／光通訊",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 0.46
    },
    {
-    "key": "internet",
-    "title": "網路平台",
+    "key": "networking",
+    "title": "網通／光通訊",
     "pct": 0.46
    }
   ],
@@ -4220,8 +4220,8 @@
     "pct": 7.66
    },
    {
-    "key": "networking",
-    "title": "網通／光通訊",
+    "key": "cyber",
+    "title": "資安",
     "pct": 1.09
    }
   ],

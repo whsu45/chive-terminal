@@ -1,0 +1,2378 @@
+{
+ "version": 9,
+ "code": "3035",
+ "name": "智原",
+ "market": "tse",
+ "date": "2026-11-13",
+ "prev_date": "2026-11-12",
+ "group": "矽智財IC設計",
+ "peers": [
+  "3443",
+  "3661",
+  "3529",
+  "6531",
+  "5269"
+ ],
+ "peers_arg": null,
+ "peer_info": {
+  "3443": {
+   "name": "創意",
+   "ex": "tse",
+   "y": 7860.0,
+   "prev_chg_pct": -0.3170577045022216,
+   "prev_vol": 3592
+  },
+  "3661": {
+   "name": "世芯-KY",
+   "ex": "tse",
+   "y": 3675.0,
+   "prev_chg_pct": 0.6849315068493178,
+   "prev_vol": 5341
+  },
+  "3529": {
+   "name": "力旺",
+   "ex": "otc",
+   "y": 2205.0,
+   "prev_chg_pct": -2.6490066225165587,
+   "prev_vol": 877
+  },
+  "6531": {
+   "name": "愛普*",
+   "ex": "tse",
+   "y": 677.0,
+   "prev_chg_pct": -7.639836289222379,
+   "prev_vol": 5310
+  },
+  "5269": {
+   "name": "祥碩",
+   "ex": "tse",
+   "y": 1125.0,
+   "prev_chg_pct": -5.857740585774063,
+   "prev_vol": 489
+  }
+ },
+ "tech": {
+  "date": "2026-11-12",
+  "close": 178.5,
+  "open": 184.0,
+  "high": 189.5,
+  "low": 178.5,
+  "vol": 5640,
+  "ma5": 173.9,
+  "ma10": 184.55,
+  "ma20": 193.15,
+  "ma60": 188.75,
+  "bb_up": 226.26510229487448,
+  "bb_dn": 160.03489770512553,
+  "atr14": 15.785714285714286,
+  "rsi14": 44.37939203524694,
+  "vol_ma5": 5693.6,
+  "vol_ma20": 8769.2,
+  "chg_pct": -2.9891304347826053,
+  "high20": 231.5,
+  "low20": 154.5,
+  "high60": 231.5,
+  "low60": 154.5,
+  "prev_high": 184.0,
+  "prev_low": 176.0,
+  "ret5": 4.081632653061229,
+  "ret20": -7.03125,
+  "streak": -1,
+  "atr_pct": 8.843537414965986
+ },
+ "hist_tail": [
+  {
+   "date": "2026-09-29",
+   "o": 208.0,
+   "h": 217.0,
+   "l": 204.5,
+   "c": 210.0,
+   "v": 7221,
+   "amt": 1528588509.0
+  },
+  {
+   "date": "2026-09-30",
+   "o": 210.5,
+   "h": 215.5,
+   "l": 208.0,
+   "c": 210.5,
+   "v": 5825,
+   "amt": 1228911393.0
+  },
+  {
+   "date": "2026-10-01",
+   "o": 210.0,
+   "h": 214.0,
+   "l": 208.5,
+   "c": 213.0,
+   "v": 4389,
+   "amt": 929383257.0
+  },
+  {
+   "date": "2026-10-02",
+   "o": 213.0,
+   "h": 217.0,
+   "l": 210.0,
+   "c": 215.5,
+   "v": 4927,
+   "amt": 1053531119.0
+  },
+  {
+   "date": "2026-10-05",
+   "o": 220.5,
+   "h": 223.5,
+   "l": 215.0,
+   "c": 216.0,
+   "v": 6547,
+   "amt": 1431913332.0
+  },
+  {
+   "date": "2026-10-06",
+   "o": 219.0,
+   "h": 219.0,
+   "l": 210.0,
+   "c": 210.5,
+   "v": 3928,
+   "amt": 835581853.0
+  },
+  {
+   "date": "2026-10-07",
+   "o": 211.0,
+   "h": 213.0,
+   "l": 208.0,
+   "c": 209.0,
+   "v": 3130,
+   "amt": 656857181.0
+  },
+  {
+   "date": "2026-10-08",
+   "o": 210.0,
+   "h": 210.0,
+   "l": 201.5,
+   "c": 202.0,
+   "v": 3361,
+   "amt": 687228629.0
+  },
+  {
+   "date": "2026-10-12",
+   "o": 202.0,
+   "h": 203.0,
+   "l": 196.0,
+   "c": 197.5,
+   "v": 2717,
+   "amt": 539719960.0
+  },
+  {
+   "date": "2026-10-13",
+   "o": 194.5,
+   "h": 195.5,
+   "l": 186.0,
+   "c": 192.0,
+   "v": 4451,
+   "amt": 844708162.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 194.0,
+   "h": 211.0,
+   "l": 192.0,
+   "c": 211.0,
+   "v": 5694,
+   "amt": 1162813682.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 204.0,
+   "h": 209.5,
+   "l": 197.0,
+   "c": 197.5,
+   "v": 10995,
+   "amt": 2231081712.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 201.0,
+   "h": 208.0,
+   "l": 197.5,
+   "c": 197.5,
+   "v": 5773,
+   "amt": 1164357265.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 193.0,
+   "h": 199.0,
+   "l": 188.0,
+   "c": 195.5,
+   "v": 3190,
+   "amt": 616217186.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 197.5,
+   "h": 199.5,
+   "l": 190.5,
+   "c": 192.5,
+   "v": 2904,
+   "amt": 566409368.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 197.0,
+   "h": 203.0,
+   "l": 194.5,
+   "c": 198.0,
+   "v": 3909,
+   "amt": 776581427.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 200.5,
+   "h": 203.5,
+   "l": 191.5,
+   "c": 192.0,
+   "v": 3338,
+   "amt": 656352123.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 195.0,
+   "h": 196.5,
+   "l": 186.5,
+   "c": 191.5,
+   "v": 2209,
+   "amt": 421948606.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 210.5,
+   "h": 210.5,
+   "l": 210.5,
+   "c": 210.5,
+   "v": 2678,
+   "amt": 563771815.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 222.0,
+   "h": 231.5,
+   "l": 222.0,
+   "c": 231.5,
+   "v": 35582,
+   "amt": 8184433209.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 218.5,
+   "h": 221.0,
+   "l": 208.5,
+   "c": 213.5,
+   "v": 28891,
+   "amt": 6160617121.0
+  },
+  {
+   "date": "2026-11-02",
+   "o": 202.5,
+   "h": 213.5,
+   "l": 200.5,
+   "c": 209.5,
+   "v": 11882,
+   "amt": 2464324843.0
+  },
+  {
+   "date": "2026-11-03",
+   "o": 202.5,
+   "h": 206.5,
+   "l": 190.0,
+   "c": 191.0,
+   "v": 10907,
+   "amt": 2152647199.0
+  },
+  {
+   "date": "2026-11-04",
+   "o": 195.0,
+   "h": 195.0,
+   "l": 175.0,
+   "c": 190.5,
+   "v": 11324,
+   "amt": 2117934686.0
+  },
+  {
+   "date": "2026-11-05",
+   "o": 185.0,
+   "h": 186.0,
+   "l": 171.5,
+   "c": 171.5,
+   "v": 7640,
+   "amt": 1353372362.0
+  },
+  {
+   "date": "2026-11-06",
+   "o": 154.5,
+   "h": 164.0,
+   "l": 154.5,
+   "c": 160.5,
+   "v": 7237,
+   "amt": 1146498594.0
+  },
+  {
+   "date": "2026-11-09",
+   "o": 163.0,
+   "h": 175.5,
+   "l": 162.0,
+   "c": 172.0,
+   "v": 4542,
+   "amt": 772901171.0
+  },
+  {
+   "date": "2026-11-10",
+   "o": 176.5,
+   "h": 183.5,
+   "l": 171.5,
+   "c": 174.5,
+   "v": 6236,
+   "amt": 1106476262.0
+  },
+  {
+   "date": "2026-11-11",
+   "o": 176.0,
+   "h": 184.0,
+   "l": 176.0,
+   "c": 184.0,
+   "v": 4813,
+   "amt": 870553120.0
+  },
+  {
+   "date": "2026-11-12",
+   "o": 184.0,
+   "h": 189.5,
+   "l": 178.5,
+   "c": 178.5,
+   "v": 5640,
+   "amt": 1042298998.0
+  }
+ ],
+ "limit_up": 196.0,
+ "limit_down": 161.0,
+ "insti": {
+  "2026-11-12": {
+   "foreign": 758,
+   "trust": 0,
+   "dealer": -51,
+   "total": 708
+  },
+  "2026-11-11": {
+   "foreign": 1000,
+   "trust": 0,
+   "dealer": 127,
+   "total": 1127
+  },
+  "2026-11-10": {
+   "foreign": 214,
+   "trust": 0,
+   "dealer": 38,
+   "total": 252
+  }
+ },
+ "insti_sum": {
+  "foreign": 1972,
+  "trust": 0,
+  "dealer": 114,
+  "total": 2087
+ },
+ "weak_screen": {
+  "close": 178.5,
+  "r10": -22.89,
+  "idx_r10": -7.07,
+  "ma60": 188.75,
+  "idx": 43091.87,
+  "idx_ma20": 44881.94,
+  "mkt_weak": true,
+  "foreign": 758,
+  "trust": 0,
+  "under": true,
+  "drop10": true,
+  "below_ma": true,
+  "px100": true,
+  "sell": false,
+  "n_ok": 4,
+  "hit": false
+ },
+ "margin": {
+  "fin_prev": 8922,
+  "fin_now": 8569,
+  "fin_chg": -353,
+  "short_prev": 72,
+  "short_now": 79,
+  "short_chg": 7,
+  "fin_limit": 65137
+ },
+ "sbl": {
+  "sbl_sell": 59,
+  "sbl_return": 17,
+  "sbl_bal": 9058
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": 250,
+   "daytrade_buy": 250,
+   "foreign_net": 576,
+   "top5_buy": 944,
+   "top5_sell": -364,
+   "daytrade_names": [
+    "凱基-台北",
+    "台新",
+    "凱基-城中"
+   ],
+   "top_buyers": [
+    {
+     "broker": "美商高盛",
+     "bid": "1480",
+     "bhid": "1480",
+     "buy": 618,
+     "sell": 256,
+     "net": 362,
+     "pct": 6.42
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "bid": "1650",
+     "bhid": "1650",
+     "buy": 301,
+     "sell": 23,
+     "net": 278,
+     "pct": 4.93
+    },
+    {
+     "broker": "凱基-台北",
+     "bid": "9268",
+     "bhid": "9200",
+     "buy": 508,
+     "sell": 284,
+     "net": 224,
+     "pct": 3.97
+    },
+    {
+     "broker": "群益金鼎-新莊",
+     "bid": "0039003100380047",
+     "bhid": "9100",
+     "buy": 52,
+     "sell": 2,
+     "net": 50,
+     "pct": 0.89
+    },
+    {
+     "broker": "摩根大通",
+     "bid": "8440",
+     "bhid": "8440",
+     "buy": 89,
+     "sell": 59,
+     "net": 30,
+     "pct": 0.53
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "統一",
+     "bid": "5850",
+     "bhid": "5850",
+     "buy": 26,
+     "sell": 120,
+     "net": -94,
+     "pct": 1.67
+    },
+    {
+     "broker": "港商野村",
+     "bid": "1560",
+     "bhid": "1560",
+     "buy": 64,
+     "sell": 158,
+     "net": -94,
+     "pct": 1.67
+    },
+    {
+     "broker": "元大證券",
+     "bid": "9800",
+     "bhid": "9800",
+     "buy": 334,
+     "sell": 419,
+     "net": -85,
+     "pct": 1.51
+    },
+    {
+     "broker": "元大-草屯",
+     "bid": "0039003800390045",
+     "bhid": "9800",
+     "buy": 10,
+     "sell": 58,
+     "net": -48,
+     "pct": 0.85
+    },
+    {
+     "broker": "台灣企銀-豐原",
+     "bid": "1118",
+     "bhid": "1110",
+     "buy": 68,
+     "sell": 111,
+     "net": -43,
+     "pct": 0.76
+    }
+   ],
+   "daytrade_buy_pct": 4.44,
+   "foreign_net_pct": 10.212765957446807,
+   "top5_buy_pct": 16.73758865248227,
+   "top5_sell_pct": 6.453900709219858
+  },
+  "day_date": "2026/11/12",
+  "range4": {
+   "daytrade_net": 259,
+   "daytrade_buy": 259,
+   "foreign_net": 1939,
+   "top5_buy": 1964,
+   "top5_sell": -832,
+   "daytrade_names": [
+    "凱基-台北",
+    "台新"
+   ],
+   "top_buyers": [
+    {
+     "broker": "新加坡商瑞銀",
+     "bid": "1650",
+     "bhid": "1650",
+     "buy": 1024,
+     "sell": 311,
+     "net": 713,
+     "pct": 3.36
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "bid": "1470",
+     "bhid": "1470",
+     "buy": 1407,
+     "sell": 769,
+     "net": 638,
+     "pct": 3.0
+    },
+    {
+     "broker": "凱基-台北",
+     "bid": "9268",
+     "bhid": "9200",
+     "buy": 1407,
+     "sell": 1182,
+     "net": 225,
+     "pct": 1.06
+    },
+    {
+     "broker": "美林",
+     "bid": "1440",
+     "bhid": "1440",
+     "buy": 318,
+     "sell": 116,
+     "net": 202,
+     "pct": 0.95
+    },
+    {
+     "broker": "美商高盛",
+     "bid": "1480",
+     "bhid": "1480",
+     "buy": 1755,
+     "sell": 1569,
+     "net": 186,
+     "pct": 0.88
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "統一-東湖",
+     "bid": "0035003800350052",
+     "bhid": "5850",
+     "buy": 6,
+     "sell": 208,
+     "net": -202,
+     "pct": 0.95
+    },
+    {
+     "broker": "元大證券",
+     "bid": "9800",
+     "bhid": "9800",
+     "buy": 1295,
+     "sell": 1481,
+     "net": -186,
+     "pct": 0.88
+    },
+    {
+     "broker": "永豐金-板盛",
+     "bid": "0039004100390059",
+     "bhid": "9A00",
+     "buy": 6,
+     "sell": 161,
+     "net": -155,
+     "pct": 0.73
+    },
+    {
+     "broker": "台新-五權西",
+     "bid": "0039004200320035",
+     "bhid": "9B00",
+     "buy": 8,
+     "sell": 154,
+     "net": -146,
+     "pct": 0.69
+    },
+    {
+     "broker": "元大-草屯",
+     "bid": "0039003800390045",
+     "bhid": "9800",
+     "buy": 32,
+     "sell": 175,
+     "net": -143,
+     "pct": 0.67
+    }
+   ],
+   "daytrade_buy_pct": 1.2199142762940982,
+   "foreign_net_pct": 9.132871744147709,
+   "top5_buy_pct": 9.25062408741934,
+   "top5_sell_pct": 3.918797984079883
+  },
+  "daytraders": {
+   "buy": 250,
+   "buy_pct": 4.44,
+   "expect_sell": 142,
+   "list": [
+    {
+     "broker": "凱基-台北",
+     "net": 224,
+     "buy": 508,
+     "sell": 284,
+     "pct": 3.97,
+     "n": 408,
+     "rate": 0.569,
+     "mean_f": 0.557,
+     "here_n": 7,
+     "here_flip": 3
+    },
+    {
+     "broker": "台新",
+     "net": 15,
+     "buy": 46,
+     "sell": 31,
+     "pct": 0.27,
+     "n": 146,
+     "rate": 0.562,
+     "mean_f": 0.524,
+     "here_n": 0,
+     "here_flip": 0
+    },
+    {
+     "broker": "凱基-城中",
+     "net": 11,
+     "buy": 11,
+     "sell": 0,
+     "pct": 0.2,
+     "n": 174,
+     "rate": 0.828,
+     "mean_f": 0.81,
+     "here_n": 2,
+     "here_flip": 1
+    }
+   ],
+   "source": "dynamic",
+   "stat_days": 61,
+   "stat_last": "2026-11-11"
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "新光",
+    "count": 6,
+    "cum_net": -52,
+    "buy_days": 4,
+    "sell_days": 2,
+    "last_date": "2026-11-11",
+    "last_net": -60,
+    "scored": 6,
+    "win_rate": 1.0,
+    "avg_capture_pct": 3.289249375192501,
+    "t": 4.540546125843543,
+    "cum_net_pct": -0.02964922683939242,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   },
+   {
+    "broker": "富邦-建國",
+    "count": 10,
+    "cum_net": -66,
+    "buy_days": 3,
+    "sell_days": 7,
+    "last_date": "2026-11-12",
+    "last_net": -43,
+    "scored": 9,
+    "win_rate": 0.8888888888888888,
+    "avg_capture_pct": 2.2669490689342293,
+    "t": 3.796306928959543,
+    "cum_net_pct": -0.03763171098845961,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "群益金鼎",
+    "count": 9,
+    "cum_net": 93,
+    "buy_days": 5,
+    "sell_days": 4,
+    "last_date": "2026-11-04",
+    "last_net": 47,
+    "scored": 9,
+    "win_rate": 0.2222222222222222,
+    "avg_capture_pct": -2.5114560224665983,
+    "t": -2.278721587013337,
+    "cum_net_pct": 0.0530265018473749,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": -43,
+  "winners_last_net_pct": -0.7624113475177304,
+  "winners_inventory": -118,
+  "winners_inventory_pct": -0.06728093782785204,
+  "losers_last_net": 0,
+  "losers_last_net_pct": 0.0,
+  "n_scored": 201
+ },
+ "warrants": {
+  "call_vol": 22764,
+  "put_vol": 152,
+  "call_amt": 16416840.0,
+  "put_amt": 417630.0,
+  "n_call": 247,
+  "n_put": 5,
+  "n_call_active": 119,
+  "n_put_active": 3,
+  "call_share": 0.9933670797695933,
+  "amt_share": 0.950383944371281,
+  "hedge_net": -13,
+  "hedge_pct": -0.23049645390070922,
+  "call_amt_5d": 6395642.0,
+  "call_surge": 2.5668791342604855,
+  "list": [
+   {
+    "code": "030073",
+    "name": "智原凱基64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030270",
+    "name": "智原元大64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030271",
+    "name": "智原元大64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030272",
+    "name": "智原元大64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030273",
+    "name": "智原元大66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030367",
+    "name": "智原國泰65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030500",
+    "name": "智原凱基64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030844",
+    "name": "智原群益64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030951",
+    "name": "智原元大64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030952",
+    "name": "智原元大68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031217",
+    "name": "智原凱基64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031552",
+    "name": "智原群益64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031913",
+    "name": "智原元大64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031914",
+    "name": "智原元大6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032126",
+    "name": "智原凱基64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032482",
+    "name": "智原國票65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032546",
+    "name": "智原群益64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032602",
+    "name": "智原富邦66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032770",
+    "name": "智原元大64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032771",
+    "name": "智原元大68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032772",
+    "name": "智原元大6A購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032971",
+    "name": "智原凱基68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033450",
+    "name": "智原富邦65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033536",
+    "name": "智原永豐67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033580",
+    "name": "智原國票65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033754",
+    "name": "智原元大64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033755",
+    "name": "智原元大64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033846",
+    "name": "智原凱基6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034179",
+    "name": "智原元大64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034180",
+    "name": "智原元大64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034181",
+    "name": "智原元大64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034182",
+    "name": "智原元大64購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034326",
+    "name": "智原群益64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034327",
+    "name": "智原群益64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034484",
+    "name": "智原中信64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034913",
+    "name": "智原凱基64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035211",
+    "name": "智原國票66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035252",
+    "name": "智原台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035253",
+    "name": "智原台新68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035449",
+    "name": "智原群益64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035450",
+    "name": "智原群益66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035780",
+    "name": "智原凱基64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035872",
+    "name": "智原元大65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035873",
+    "name": "智原元大67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035874",
+    "name": "智原元大68購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036071",
+    "name": "智原元大65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036072",
+    "name": "智原元大67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036486",
+    "name": "智原永豐64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036570",
+    "name": "智原凱基65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036628",
+    "name": "智原國票64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037312",
+    "name": "智原永豐66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037313",
+    "name": "智原永豐68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037485",
+    "name": "智原國泰66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037569",
+    "name": "智原富邦67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037629",
+    "name": "智原群益71購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037649",
+    "name": "智原統一64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037666",
+    "name": "智原中信69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037690",
+    "name": "智原富邦69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037715",
+    "name": "智原統一7B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037808",
+    "name": "智原元大65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037809",
+    "name": "智原元大65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037869",
+    "name": "智原凱基65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037896",
+    "name": "智原國票66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037914",
+    "name": "智原台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037915",
+    "name": "智原台新66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038007",
+    "name": "智原群益66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038008",
+    "name": "智原群益66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038088",
+    "name": "智原永豐65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038089",
+    "name": "智原永豐69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038302",
+    "name": "智原元大65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038303",
+    "name": "智原元大65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038304",
+    "name": "智原元大65購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038466",
+    "name": "智原群益69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038654",
+    "name": "智原凱基65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038736",
+    "name": "智原國泰69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039084",
+    "name": "智原國票65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039124",
+    "name": "智原富邦68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039181",
+    "name": "智原群益6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039739",
+    "name": "智原凱基66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040332",
+    "name": "智原群益65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040453",
+    "name": "智原國票65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040998",
+    "name": "智原富邦66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052206",
+    "name": "智原統一71購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052792",
+    "name": "智原統一61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "058922",
+    "name": "智原元大5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059457",
+    "name": "智原元大5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059714",
+    "name": "智原元大5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059798",
+    "name": "智原凱基5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059833",
+    "name": "智原國票5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061391",
+    "name": "智原中信63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061536",
+    "name": "智原元大5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061590",
+    "name": "智原富邦5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061680",
+    "name": "智原凱基5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061853",
+    "name": "智原群益5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062015",
+    "name": "智原凱基5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064055",
+    "name": "智原群益5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064892",
+    "name": "智原群益5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "064934",
+    "name": "智原凱基5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065069",
+    "name": "智原永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065163",
+    "name": "智原永豐5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065181",
+    "name": "智原群益5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065189",
+    "name": "智原富邦5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065336",
+    "name": "智原國泰5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065337",
+    "name": "智原國泰5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065347",
+    "name": "智原兆豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065366",
+    "name": "智原國票5B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065414",
+    "name": "智原富邦61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065524",
+    "name": "智原元大64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066327",
+    "name": "智原凱基5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066463",
+    "name": "智原兆豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "066951",
+    "name": "智原永豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067056",
+    "name": "智原永豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067078",
+    "name": "智原富邦5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067112",
+    "name": "智原元大61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067166",
+    "name": "智原群益5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067201",
+    "name": "智原兆豐61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067254",
+    "name": "智原永豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067286",
+    "name": "智原國票5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067328",
+    "name": "智原凱基5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067525",
+    "name": "智原元大5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067526",
+    "name": "智原元大5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067661",
+    "name": "智原凱基5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067864",
+    "name": "智原元大5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068049",
+    "name": "智原統一65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068155",
+    "name": "智原元大5B購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068156",
+    "name": "智原元大5B購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068157",
+    "name": "智原元大5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068193",
+    "name": "智原凱基5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068283",
+    "name": "智原統一5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068573",
+    "name": "智原元大5B購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068693",
+    "name": "智原國票5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068759",
+    "name": "智原凱基61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068838",
+    "name": "智原台新5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068839",
+    "name": "智原台新5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068917",
+    "name": "智原國泰5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069040",
+    "name": "智原元大5B購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069086",
+    "name": "智原兆豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069103",
+    "name": "智原永豐63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069170",
+    "name": "智原凱基5B購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069211",
+    "name": "智原群益5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069732",
+    "name": "智原元大5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069810",
+    "name": "智原富邦62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069915",
+    "name": "智原元大5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070978",
+    "name": "智原元大61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071081",
+    "name": "智原凱基5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071099",
+    "name": "智原中信66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071154",
+    "name": "智原富邦5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071488",
+    "name": "智原元大5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071562",
+    "name": "智原統一6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072278",
+    "name": "智原永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072393",
+    "name": "智原元大5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072424",
+    "name": "智原永豐61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072542",
+    "name": "智原元大5C購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072572",
+    "name": "智原中信66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072624",
+    "name": "智原台新5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072625",
+    "name": "智原台新5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072638",
+    "name": "智原富邦62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072660",
+    "name": "智原凱基5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072738",
+    "name": "智原群益5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072783",
+    "name": "智原國票61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072892",
+    "name": "智原群益5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072929",
+    "name": "智原元大5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072973",
+    "name": "智原永豐5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072986",
+    "name": "智原國泰61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073046",
+    "name": "智原凱基5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073073",
+    "name": "智原群益5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073126",
+    "name": "智原元大5C購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073537",
+    "name": "智原元大5C購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073538",
+    "name": "智原元大65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073584",
+    "name": "智原國票62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073637",
+    "name": "智原永豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073690",
+    "name": "智原元大61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073691",
+    "name": "智原元大66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073740",
+    "name": "智原凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073900",
+    "name": "智原台新61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073929",
+    "name": "智原元大64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074891",
+    "name": "智原中信61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074900",
+    "name": "智原永豐64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074940",
+    "name": "智原凱基61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075144",
+    "name": "智原凱基66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075525",
+    "name": "智原元大61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075651",
+    "name": "智原統一6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075818",
+    "name": "智原元大61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075819",
+    "name": "智原元大63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075933",
+    "name": "智原富邦61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075954",
+    "name": "智原凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076479",
+    "name": "智原永豐61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076528",
+    "name": "智原凱基61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076885",
+    "name": "智原群益61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077580",
+    "name": "智原富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077651",
+    "name": "智原永豐63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077684",
+    "name": "智原國泰63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078113",
+    "name": "智原國票62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078236",
+    "name": "智原永豐64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078365",
+    "name": "智原凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078390",
+    "name": "智原富邦63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078452",
+    "name": "智原富邦63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078947",
+    "name": "智原凱基63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079109",
+    "name": "智原群益62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079302",
+    "name": "智原國票66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079406",
+    "name": "智原群益63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079442",
+    "name": "智原凱基63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079513",
+    "name": "智原統一6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080621",
+    "name": "智原群益63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080998",
+    "name": "智原凱基63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082541",
+    "name": "智原群益62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082764",
+    "name": "智原凱基62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083319",
+    "name": "智原國票63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083549",
+    "name": "智原凱基65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083684",
+    "name": "智原永豐63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083776",
+    "name": "智原群益63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084211",
+    "name": "智原國票64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084412",
+    "name": "智原富邦64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084989",
+    "name": "智原國票69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085730",
+    "name": "智原元大69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085863",
+    "name": "智原台新63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085864",
+    "name": "智原台新63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085865",
+    "name": "智原台新63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086063",
+    "name": "智原群益63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086215",
+    "name": "智原元大63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087061",
+    "name": "智原凱基64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087124",
+    "name": "智原元大63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087464",
+    "name": "智原群益63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087543",
+    "name": "智原永豐63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087746",
+    "name": "智原群益64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088032",
+    "name": "智原台新63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088033",
+    "name": "智原台新63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088035",
+    "name": "智原台新69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088047",
+    "name": "智原富邦65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088085",
+    "name": "智原群益63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088141",
+    "name": "智原凱基69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088365",
+    "name": "智原國泰64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088507",
+    "name": "智原中信63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088692",
+    "name": "智原富邦64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088707",
+    "name": "智原台新63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088877",
+    "name": "智原永豐65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088878",
+    "name": "智原永豐66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088893",
+    "name": "智原統一69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088929",
+    "name": "智原群益63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088963",
+    "name": "智原台新69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089002",
+    "name": "智原國票67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089285",
+    "name": "智原群益63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089347",
+    "name": "智原凱基63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089348",
+    "name": "智原凱基63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089349",
+    "name": "智原凱基69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089630",
+    "name": "智原群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089631",
+    "name": "智原群益64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "03869T",
+    "name": "智原國票61售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03894T",
+    "name": "智原凱基61售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04029T",
+    "name": "智原國票63售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05141T",
+    "name": "智原台新65售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05142T",
+    "name": "智原台新65售03",
+    "right": "put",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-12",
+  "breadth": {
+   "up": 277,
+   "down": 730
+  },
+  "foreign_amt_b": -6.8,
+  "trust_amt_b": 125.7,
+  "tx_night": {
+   "contract": "202611",
+   "o": 43180.0,
+   "h": 44034.0,
+   "l": 42371.0,
+   "c": 43676.0,
+   "chg": 548.0,
+   "chg_pct": 1.27,
+   "vol": 79972,
+   "title": "2026/11/12"
+  },
+  "tx_day_prev": {
+   "contract": "202611",
+   "o": 44166.0,
+   "h": 44555.0,
+   "l": 43057.0,
+   "c": 43178.0,
+   "chg": -958.0,
+   "chg_pct": -2.17,
+   "vol": 47550,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -99573,
+   "raw": [
+    84418,
+    743789316,
+    79685,
+    702646082,
+    4733,
+    41143234,
+    7218,
+    62273914,
+    106791,
+    921223884,
+    -99573,
+    -858949970
+   ]
+  },
+  "us": {
+   "SOX": {
+    "date": "2026/11/12",
+    "c": 10481.5,
+    "pct": 1.94,
+    "src": "taifex",
+    "label": "費半期",
+    "vol": 159
+   },
+   "NDX": {
+    "date": "2026/11/12",
+    "c": 28421.0,
+    "pct": 0.93,
+    "src": "taifex",
+    "label": "那斯達克100期",
+    "vol": 242
+   },
+   "SPX": {
+    "date": "2026/11/12",
+    "c": 7671.0,
+    "pct": 0.62,
+    "src": "taifex",
+    "label": "標普期",
+    "vol": 2
+   },
+   "DOW": {
+    "date": "2026/11/12",
+    "c": 52501.0,
+    "pct": -0.28,
+    "src": "taifex",
+    "label": "道瓊期",
+    "vol": 478
+   }
+  }
+ },
+ "fit": {
+  "cap_e8": 26.06,
+  "market": "tse",
+  "mcap_rank": 220,
+  "heavy": false,
+  "amp5": 6.3,
+  "amp_x_cost": 25.2,
+  "tags": [
+   [
+    "ok",
+    "近 5 日平均振幅 6.3%（來回成本的 25 倍）"
+   ],
+   [
+    "ok",
+    "股本 26 億"
+   ]
+  ]
+ }
+}

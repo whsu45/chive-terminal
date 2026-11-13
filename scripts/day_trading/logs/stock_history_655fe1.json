@@ -313,7 +313,343 @@
   "market": "otc",
   "group": null,
   "days": [
-   "2026-11-11"
+   "2026-11-11",
+   "2026-11-13"
+  ],
+  "launches": 3,
+  "signals": [],
+  "notes": []
+ },
+ "2467": {
+  "name": "志聖",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-12"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2492": {
+  "name": "華新科",
+  "market": "tse",
+  "group": "被動元件",
+  "days": [
+   "2026-11-12"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "6269": {
+  "name": "台郡",
+  "market": "tse",
+  "group": "電源供應",
+  "days": [
+   "2026-11-12"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "6196": {
+  "name": "帆宣",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 3,
+  "signals": [],
+  "notes": []
+ },
+ "2344": {
+  "name": "華邦電",
+  "market": "tse",
+  "group": "DRAM原廠",
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 2,
+  "signals": [],
+  "notes": []
+ },
+ "6756": {
+  "name": "威鋒電子",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 2,
+  "signals": [
+   {
+    "date": "2026-11-13",
+    "time": "09:36:07",
+    "src": "shioaji",
+    "side": "long",
+    "label": "做多",
+    "price": 126.5,
+    "stop": 124.5,
+    "t1": 130.0,
+    "t2": 132.0,
+    "zone": [
+     126.5,
+     126.5
+    ],
+    "alert_px": 127.0,
+    "filled_at_alert": false,
+    "fill_min": 7,
+    "chase": 0.455,
+    "run5": 0.4,
+    "run5_tk": 1.0,
+    "rr_now": 1.2,
+    "rr_zone": 1.75,
+    "verdict": "win",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": 15,
+    "scoring": 2,
+    "score_stop": 125.5,
+    "score_tgt": 128.5,
+    "heat_ticks": 1,
+    "tick": 0.5,
+    "exit": "target",
+    "exit_px": 128.5,
+    "net_pct": 1.346,
+    "mae_ticks": 0.0,
+    "mfe_ticks": 4.0,
+    "ret_10m": 0.3937007874015741,
+    "ret_30m": 0.7874015748031482,
+    "suspects": [],
+    "why": "回測 126.5 守住，1 分 K 收 127.0 確認（偏多強度 68）",
+    "features": {
+     "idx_trend_10m": 0.003515633979223054,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 1.3050096252854009,
+     "rs_vs_index": 2.856182422964415,
+     "group_avg": null,
+     "chg_pct": 5.833333333333335,
+     "warrant_surge": false,
+     "small_net_pct": 3.633217993079585,
+     "p_long": 68.04,
+     "p_short": 31.959999999999997,
+     "liq_level": "thin",
+     "liq_l1": 3.5,
+     "liq_wide_pct": 14,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": -0.15384615384615385,
+     "big_net_10m": 0,
+     "phase": "early",
+     "range_pos": 0.6
+    },
+    "factors": [
+     "強於大盤",
+     "站上開盤價"
+    ],
+    "exh": null,
+    "exh_lit": null
+   }
+  ],
+  "notes": []
+ },
+ "3715": {
+  "name": "定穎投控",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 2,
+  "signals": [],
+  "notes": []
+ },
+ "3441": {
+  "name": "聯一光",
+  "market": "otc",
+  "group": null,
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2355": {
+  "name": "敬鵬",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 1,
+  "signals": [
+   {
+    "date": "2026-11-13",
+    "time": "09:28:10",
+    "src": "shioaji",
+    "side": "long",
+    "label": "做多",
+    "price": 65.2,
+    "stop": 64.4,
+    "t1": 66.6,
+    "t2": 70.0,
+    "zone": [
+     65.0,
+     65.2
+    ],
+    "alert_px": 66.0,
+    "filled_at_alert": false,
+    "fill_min": 9,
+    "chase": 0.727,
+    "run5": -0.6,
+    "run5_tk": -4.0,
+    "rr_now": 0.37,
+    "rr_zone": 1.75,
+    "verdict": "win",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": 23,
+    "scoring": 2,
+    "score_stop": 64.8,
+    "score_tgt": 66.0,
+    "heat_ticks": 3,
+    "tick": 0.1,
+    "exit": "target",
+    "exit_px": 66.0,
+    "net_pct": 0.992,
+    "mae_ticks": 3.0,
+    "mfe_ticks": 8.0,
+    "ret_10m": -0.7575757575757569,
+    "ret_30m": 0.4545454545454408,
+    "suspects": [],
+    "why": "回測 65.0 守住，1 分 K 收 66.0 確認（偏多強度 62）",
+    "features": {
+     "idx_trend_10m": 0.03636415347705313,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 9.247312279655242,
+     "rs_vs_index": 5.891510569818693,
+     "group_avg": null,
+     "chg_pct": 8.731466227347596,
+     "warrant_surge": false,
+     "small_net_pct": 4.630214109016463,
+     "p_long": 62.32,
+     "p_short": 37.68,
+     "liq_level": "soft",
+     "liq_l1": 73.5,
+     "liq_wide_pct": 30,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": -0.1712962962962963,
+     "big_net_10m": 3011,
+     "phase": "early",
+     "range_pos": 0.9090909090909098
+    },
+    "factors": [
+     "庫存倒貨點",
+     "強於大盤",
+     "日內高檔",
+     "站上開盤價",
+     "VWAP之上",
+     "委賣厚",
+     "大單淨買",
+     "外盤強",
+     "量能爆增",
+     "認購爆量順勢"
+    ],
+    "exh": null,
+    "exh_lit": null
+   }
+  ],
+  "notes": []
+ },
+ "4916": {
+  "name": "事欣科",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 4,
+  "signals": [],
+  "notes": []
+ },
+ "3305": {
+  "name": "昇貿",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 3,
+  "signals": [],
+  "notes": []
+ },
+ "6214": {
+  "name": "精誠",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 3,
+  "signals": [],
+  "notes": []
+ },
+ "2466": {
+  "name": "冠西電",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 4,
+  "signals": [],
+  "notes": []
+ },
+ "2408": {
+  "name": "南亞科",
+  "market": "tse",
+  "group": "DRAM原廠",
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 3,
+  "signals": [],
+  "notes": []
+ },
+ "3019": {
+  "name": "亞光",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2404": {
+  "name": "漢唐",
+  "market": "tse",
+  "group": "半導體設備",
+  "days": [
+   "2026-11-13"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3035": {
+  "name": "智原",
+  "market": "tse",
+  "group": "矽智財IC設計",
+  "days": [
+   "2026-11-13"
   ],
   "launches": 1,
   "signals": [],

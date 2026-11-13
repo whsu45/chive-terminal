@@ -4,6 +4,7 @@
 - 盤中只用「訂閱串流」累積逐筆成交（大單/散戶分流），不輪詢 ticks/kbars：
   官方限制盤中 ticks 查詢 10 次/日，kbars 270 次/日，輪詢歷史查詢可能被停權。
 - 開盤後才啟動時，用一次 api.ticks(AllDay) 回補當日逐筆（只佔 1 次額度）。
+  額度是硬上限（fetch_ticks 用完就不再送查詢）；收到的逐筆每分鐘存到本機（.cache/ticks_live），重啟時先讀本機的，不重複查。
 - 大單/散戶不是用固定張數分：用「單筆金額」加「該股當日成交張數分位」推算，見 lot_thresholds()；
   另外偵測「同張數、同方向、等間隔」的規律小單（主力切單藏量），見 detect_iceberg()。
 """
@@ -15,7 +16,30 @@ import datetime as dt
 
 from config import load_env, CACHE_DIR
 
-TICKS_DAILY_LIMIT = 10   # 永豐官方：盤中 ticks 歷史查詢每日 10 次（kbars 270 次）
+# 永豐官方「使用限制」（https://sinotrade.github.io/zh/tutor/limit/，2026-11-13 查）：盤中查詢 ticks 次數不得超過 10 次、kbars 270 次；
+# 超過 → 暫停服務一分鐘，當日連續多次超過 → 暫停該 IP 及 ID 使用權。限制是算在同一個身分證字號（person_id）上，不是每台電腦各 10 次。
+TICKS_DAILY_LIMIT = 10
+LIVE_DIR = os.path.join(CACHE_DIR, "ticks_live")     # 盤中收到的逐筆，每分鐘存一次；重啟時先讀這裡，不重複查（不進 git）
+CACHE_GAP_OK = 300       # 本機存的逐筆離現在不到這麼多秒就直接用，不花額度補中間那一小段
+
+
+class TicksQuota(Exception):
+    """今天盤中的 ticks 查詢額度用完了，這次查詢沒有送出去。"""
+
+
+def ticks_budget():
+    """這台電腦今天盤中最多查幾次 ticks。預設 10（官方上限）；同一個帳號有兩台電腦在跑時，在 .env 設 SHIOAJI_TICKS_BUDGET=5 各分一半。"""
+    load_env()
+    try:
+        return max(0, min(TICKS_DAILY_LIMIT, int(os.environ.get("SHIOAJI_TICKS_BUDGET", TICKS_DAILY_LIMIT))))
+    except ValueError:
+        return TICKS_DAILY_LIMIT
+
+
+def _intraday(now=None):
+    """官方限制的是「盤中」的查詢。週一到週五 08:30–13:35 都當盤中（不查假日，寧可多算）。"""
+    now = now or dt.datetime.now()
+    return now.weekday() < 5 and "08:30" <= now.strftime("%H:%M") < "13:35"
 
 
 def _ticks_usage_path():
@@ -23,7 +47,7 @@ def _ticks_usage_path():
 
 
 def ticks_usage():
-    """今天這台機器呼叫過幾次 api.ticks（本機計數檔，跨程式累加；永豐沒有查詢額度的 API）。"""
+    """今天這台機器在盤中呼叫過幾次 api.ticks（本機計數檔，跨程式累加；永豐沒有查詢次數的 API，另一台電腦用掉的這裡看不到）。"""
     try:
         import json
         with open(_ticks_usage_path()) as f:
@@ -32,20 +56,121 @@ def ticks_usage():
         return 0
 
 
+def ticks_left():
+    return max(0, ticks_budget() - ticks_usage())
+
+
 def fetch_ticks(api, contract, date, why=""):
-    """所有 api.ticks 都走這裡：先記一次，再查。啟動時印「今日 ticks 已用 N/10」。"""
+    """
+    所有 api.ticks 都走這裡。盤中：額度用完就丟 TicksQuota、不送查詢（官方超過會停權）；還有額度就先記一次再查。
+    收盤後的查詢（校準、回補歷史）不算盤中額度，也不擋。
+    """
     import json
-    n = ticks_usage() + 1
+    code = getattr(contract, "code", "?")
+    if not _intraday():
+        print(f"[shioaji] ticks 歷史查詢 {code} {date}（{why or '回補'}，盤後，不計入盤中額度）")
+        return api.ticks(contract=contract, date=date)
+    used, budget = ticks_usage(), ticks_budget()
+    if used >= budget:
+        raise TicksQuota(f"今天盤中 ticks 查詢已用 {used}/{budget}，不再送出（官方上限 {TICKS_DAILY_LIMIT} 次，超過會被暫停）")
+    n = used + 1
     try:
         os.makedirs(CACHE_DIR, exist_ok=True)
         with open(_ticks_usage_path(), "w") as f:
             json.dump({"count": n, "last": dt.datetime.now().isoformat(), "why": why}, f)
     except Exception:
         pass
-    code = getattr(contract, "code", "?")
-    flag = "  ⚠ 快到上限，今天不要再重啟" if n >= TICKS_DAILY_LIMIT - 2 else ""
-    print(f"[shioaji] ticks 歷史查詢 {code} {date}（{why or '回補'}）→ 今日 ticks 已用 {n}/{TICKS_DAILY_LIMIT}{flag}")
+    flag = "  ⚠ 快到上限" if n >= budget - 2 else ""
+    print(f"[shioaji] ticks 歷史查詢 {code} {date}（{why or '回補'}）→ 今日盤中 ticks 已用 {n}/{budget}{flag}")
     return api.ticks(contract=contract, date=date)
+
+
+def _live_path(code, day):
+    return os.path.join(LIVE_DIR, f"{code}_{day}.json")
+
+
+def save_ticks_cache():
+    """把記憶體裡今天的逐筆存到本機（每檔一個檔，整檔覆寫）。monitor 的快迴圈每分鐘叫一次、登出前再叫一次。回存了幾檔。"""
+    import json
+    today = dt.date.today()
+    with _lock:
+        snap = {c: (list(a["ticks"]), {k: list(v) for k, v in (a.get("auction") or {}).items()}) for c, a in _state.items() if a.get("ticks")}
+    n = 0
+    for code, (ticks, auction) in snap.items():
+        rows = [[round(t.hour * 3600 + t.minute * 60 + t.second + t.microsecond / 1e6, 3), p, v, tt]
+                for t, p, v, tt in ticks if isinstance(t, dt.datetime) and t.date() == today]
+        if not rows:
+            continue
+        try:
+            os.makedirs(LIVE_DIR, exist_ok=True)
+            path = _live_path(code, today.isoformat()); tmp = path + ".tmp"
+            with open(tmp, "w") as f:
+                json.dump({"code": code, "date": today.isoformat(), "saved": dt.datetime.now().strftime("%H:%M:%S"), "auction": auction, "ticks": rows}, f)
+            os.replace(tmp, path)
+            n += 1
+        except Exception as e:
+            print(f"[shioaji] {code} 逐筆存檔失敗：{str(e)[:80]}")
+    return n
+
+
+def _load_ticks_cache(code, day=None):
+    """讀本機存的今天逐筆 → ([(datetime, 價, 量, 內外盤)], auction dict)；沒有或壞掉回 (None, {})。"""
+    import json
+    day = day or dt.date.today()
+    try:
+        with open(_live_path(code, day.isoformat())) as f:
+            j = json.load(f)
+        if j.get("date") != day.isoformat() or not j.get("ticks"):
+            return None, {}
+        base = dt.datetime.combine(day, dt.time())
+        return [(base + dt.timedelta(seconds=r[0]), float(r[1]), int(r[2]), int(r[3])) for r in j["ticks"]], (j.get("auction") or {})
+    except Exception:
+        return None, {}
+
+
+def backfill_today(api, contract, code, now=None):
+    """
+    盤中啟動時把今天已經成交的逐筆補回來，回一句說明（給啟動訊息印）。順序：
+      1. 還沒開盤（09:00 前）：沒有東西要補，不查。
+      2. 本機有存而且離現在不到 5 分鐘：直接用，不花額度（中間那一小段沒有逐筆）。
+      3. 還有額度：查一次 api.ticks（完整的全日逐筆）；查失敗而本機有存就退回用本機的。
+      4. 額度用完：本機有存就用（中間空一段），沒有就只有啟動之後的逐筆。
+    """
+    now = now or dt.datetime.now()
+    if now.strftime("%H:%M") < "09:00":
+        with _lock:
+            _state[code] = _new_acc()
+        return "還沒開盤，不用回補"
+    cached, auction = _load_ticks_cache(code, now.date())
+    gap = (now - cached[-1][0]).total_seconds() if cached else None
+
+    def use_cache(note):
+        with _lock:
+            _state[code] = _new_acc()
+            for ts, p, v, tt in cached:
+                _ingest(code, ts, p, v, tt)
+            if auction:
+                _state[code]["auction"] = {k: list(v) for k, v in auction.items()}
+        return f"用本機存的逐筆 {len(cached)} 筆（到 {cached[-1][0]:%H:%M:%S}，{note}）"
+
+    if cached and gap is not None and gap <= CACHE_GAP_OK:
+        return use_cache(f"離現在 {gap:.0f} 秒，不花額度")
+    if _intraday(now) and ticks_left() <= 0:
+        if cached:
+            return use_cache(f"額度用完；{cached[-1][0]:%H:%M} 到現在這段沒有逐筆")
+        return f"額度用完（{ticks_usage()}/{ticks_budget()}）又沒有本機存檔：只有現在開始的逐筆，今天的主力 / 散戶分流不完整"
+    try:
+        t = fetch_ticks(api, contract, now.date().isoformat(), "盤中啟動回補")
+        with _lock:
+            _state[code] = _new_acc()
+            for ts, c, v, tt in zip(t.ts, t.close, t.volume, t.tick_type):
+                _ingest(code, ns_to_dt(ts), float(c), int(v), int(tt))
+            n = len(_state[code]["ticks"])
+        return f"查詢回補 {n} 筆"
+    except Exception as e:
+        if cached:
+            return use_cache(f"查詢失敗（{str(e)[:60]}）；{cached[-1][0]:%H:%M} 到現在這段沒有逐筆")
+        return f"回補逐筆失敗：{str(e)[:100]}"
 
 _api = None
 _lock = threading.Lock()
@@ -286,15 +411,8 @@ def start_stream(codes, big_lot=None):
             contract = get_contract(api, code)
             if contract is None:
                 continue
-            # 回補今日逐筆（1 次額度）
-            try:
-                t = fetch_ticks(api, contract, today, "盤中啟動回補")
-                with _lock:
-                    _state[code] = _new_acc()
-                    for ts, c, v, tt in zip(t.ts, t.close, t.volume, t.tick_type):
-                        _ingest(code, ns_to_dt(ts), float(c), int(v), int(tt))
-            except Exception as e:
-                print(f"[shioaji] {code} 回補逐筆失敗：{e}")
+            # 回補今日逐筆：先用本機存的，不夠才花 1 次額度，額度用完就不查（backfill_today）
+            print(f"[shioaji] {code} {backfill_today(api, contract, code)}")
             api.quote.subscribe(contract, quote_type=sj.constant.QuoteType.Tick, version=sj.constant.QuoteVersion.v1)
             try:
                 api.quote.subscribe(contract, quote_type=sj.constant.QuoteType.BidAsk, version=sj.constant.QuoteVersion.v1)

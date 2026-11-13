@@ -106,6 +106,24 @@ def disposal():
     return out
 
 
+def disposal_on(day):
+    """day 那一天的上櫃處置狀況 → (正在處置 {code: 期間}, 還沒開始 {code: 期間})；規則同 src_twse.punish_on。"""
+    import tw_calendar as cal
+    j = http.get_json(f"{BASE}/bulletin/disposal", params={"response": "json"}, cache_ttl=3600 * 6)
+    active, future = {}, {}
+    for t in j.get("tables", []):
+        for r in t.get("data", []):
+            if len(r) <= 5:
+                continue
+            code, period = str(r[2]).strip(), str(r[5]).strip()
+            stt = cal.period_state(period, day)
+            if stt in ("active", "unknown"):
+                active[code] = period
+            elif stt == "future" and (code not in future or cal.roc_period(period)[0] < cal.roc_period(future[code])[0]):
+                future[code] = period
+    return active, {c: p for c, p in future.items() if c not in active}
+
+
 def attention():
     j = http.get_json(f"{BASE}/bulletin/attention", params={"response": "json"}, cache_ttl=3600 * 6)
     out = set()

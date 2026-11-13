@@ -74,6 +74,34 @@ def last_n_trading_days(ref: dt.date, n: int, include_ref=False):
     return out
 
 
+def next_trading_day(d: dt.date) -> dt.date:
+    cur = d + dt.timedelta(days=1)
+    while not is_trading_day(cur):
+        cur += dt.timedelta(days=1)
+    return cur
+
+
+def roc_period(s):
+    """處置期間字串「115/11/04～115/11/10」（民國年；上市用全形 ～、上櫃用 ~）→ (起日, 迄日)；解析不了回 None。"""
+    import re
+    m = re.findall(r"(\d{2,3})/(\d{1,2})/(\d{1,2})", str(s or ""))
+    if len(m) < 2:
+        return None
+    try:
+        a, b = (dt.date(int(y) + 1911, int(mo), int(dd)) for y, mo, dd in m[:2])
+        return (a, b) if a <= b else None
+    except ValueError:
+        return None
+
+
+def period_state(period, day):
+    """處置期間相對於 day：'active'（當天在期間內）/ 'future'（還沒開始）/ 'past'（已經結束）/ 'unknown'（字串解析不了）。"""
+    p = roc_period(period)
+    if not p:
+        return "unknown"
+    return "past" if day > p[1] else "future" if day < p[0] else "active"
+
+
 def today_tw() -> dt.date:
     return (dt.datetime.utcnow() + dt.timedelta(hours=8)).date()
 

@@ -190,7 +190,16 @@ def run_screener(top=3):
         WEB.picker = {"status": "running", "started": dt.datetime.now().strftime("%H:%M:%S")}
     try:
         import theme_screener as TS
-        res = TS.to_dict(TS.screen(TS.default_ref(), top))
+        res = None
+        try:
+            res = TS.load_precomputed()          # GitHub Actions 收盤後預先算好的（資料日要對得上），有就直接用
+        except Exception as e:
+            print(f"[選股] 讀預算結果失敗：{str(e)[:100]}")
+        if res:
+            print(f"[選股] 用預先算好的結果：資料日 {res['date']}（{res.get('generated_by')} 於 {res.get('generated_at')} 產生）")
+        else:
+            print("[選股] 沒有可用的預算結果，本機現在算（第一次要補抓資料會久一點）")
+            res = TS.to_dict(TS.screen(TS.default_ref(), top))
         with WEB.lock:
             WEB.picker = {"status": "done", "result": res, "finished": dt.datetime.now().strftime("%H:%M:%S")}
         print(f"[選股] {res['date']} 完成：做空 {','.join(r['code'] for r in res['short'][:top]) or '無'}"
@@ -436,6 +445,9 @@ def render(ev, d, brief=False):
                 L.append(f"  空：{s['entry']}  停損 {s['stop']} (風險 {s['risk_pct']:.1f}%)  目標 {s['t1']} → {s['t2']} (報酬 {s['reward_pct']:.1f}%)")
                 if s.get("breakdown"):
                     L.append(f"      {s['breakdown']}")
+            for k in ("short_na", "long_na"):
+                if pl.get(k):
+                    L.append(f"  {'空' if k == 'short_na' else '多'}：{pl[k]}")
             lg = pl.get("long")
             if lg:
                 L.append(f"  多：{lg['entry']}  停損 {lg['stop']} (風險 {lg['risk_pct']:.1f}%)  目標 {lg['t1']} → {lg['t2']} (報酬 {lg['reward_pct']:.1f}%)")
@@ -569,7 +581,7 @@ class Monitor:
                         print(f"[shioaji] 指數串流失敗：{str(e)[:80]}")
                     u = src_shioaji.usage()
                     print(f"[shioaji] 串流已啟動 {ok}" + (f"，今日流量 {u['used_mb']:.0f}/{u['limit_mb']:.0f} MB" if u else "")
-                          + f"；今日 ticks 已用 {src_shioaji.ticks_usage()}/{src_shioaji.TICKS_DAILY_LIMIT}（每次啟動每檔用 1 次）")
+                          + f"；今日盤中 ticks 查詢已用 {src_shioaji.ticks_usage()}/{src_shioaji.ticks_budget()}（用完就不再查；逐筆每分鐘存本機，重啟先讀本機的）")
             else:
                 print("[shioaji] 未安裝或 .env 無金鑰，大單/散戶分流停用（其餘功能正常）")
 
@@ -2149,7 +2161,7 @@ class Monitor:
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
-                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "liquidity": {}, "runs": {}, "signs": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": 10,
+                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "liquidity": {}, "runs": {}, "signs": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": (self.flow_src.ticks_budget() if self.flow_src else None),
                 "mis_fail": self._mis_fail,
                 "capture": {"mode": mode, "text": self._capture_text(mode)}}
         for k in ("t00", "o00"):
@@ -2170,6 +2182,12 @@ class Monitor:
                 self._index_alerts(live, now)
             except Exception as e:
                 print(f"[fast] 大盤急漲急跌判斷失敗：{str(e)[:100]}")
+        if mode == "live" and self.flow_src and time.time() - getattr(self, "_ticks_saved_at", 0) >= 60:
+            self._ticks_saved_at = time.time()             # 逐筆每分鐘存本機一次：重啟時不用再花 ticks 查詢額度
+            try:
+                self.flow_src.save_ticks_cache()
+            except Exception as e:
+                print(f"[fast] 逐筆存檔失敗：{str(e)[:100]}")
         for c in self.codes:
             q = quotes.get(c)
             if not q or not q.get("ref"):
@@ -2305,6 +2323,10 @@ class Monitor:
         """收盤後登出永豐（逐筆、五檔、指數的訂閱一起斷）。已經收到的資料留在記憶體，圖表照常畫。"""
         if self.flow_src and not self._stream_off:
             self._stream_off = True
+            try:
+                self.flow_src.save_ticks_cache()        # 今天的逐筆存到本機：之後重啟不用再查，也累積成回測資料
+            except Exception as e:
+                print(f"[shioaji] 逐筆存檔失敗：{str(e)[:80]}")
             try:
                 self.flow_src.logout()
             except Exception as e:

@@ -198,15 +198,19 @@ def build(code, peers_arg=None, refresh=False):
     # --- 處置 / 注意 ---
     flags = []
     if is_tse:
-        pun = _safe(lambda: src_twse.punish(today - dt.timedelta(days=12), today + dt.timedelta(days=10)), {}, "處置")
+        pun, soon = _safe(lambda: src_twse.punish_on(today), ({}, {}), "處置")       # 只算今天真的在處置期間內的
         if code in pun:
             flags.append(f"處置股 {pun[code]}")
+        elif code in soon:
+            flags.append(f"即將處置（{soon[code]} 起分盤撮合，今天還不是）")
         if code in _safe(lambda: src_twse.notice(prev), set(), "注意"):
             flags.append("注意股(前日)")
     else:
-        disp = _safe(src_tpex.disposal, {}, "處置")
+        disp, soon = _safe(lambda: src_tpex.disposal_on(today), ({}, {}), "處置")
         if code in disp:
             flags.append(f"處置股 {disp[code]}")
+        elif code in soon:
+            flags.append(f"即將處置（{soon[code]} 起分盤撮合，今天還不是）")
         if code in _safe(src_tpex.attention, set(), "注意"):
             flags.append("注意股")
 

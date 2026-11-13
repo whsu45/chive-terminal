@@ -175,7 +175,7 @@ main#review.hidden{display:none}
 .pk-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:900px){.pk-cols{grid-template-columns:1fr}}
 .pk-col h3{margin:0 0 8px;font-size:15px}
-.pk-col.short h3{color:var(--dn)}.pk-col.long h3{color:var(--up)}.pk-col.warr h3{color:var(--warn)}
+.pk-col.short h3{color:var(--dn)}.pk-col.long h3{color:var(--up)}.pk-col.warr h3{color:var(--warn)}.pk-col.strong h3{color:var(--up)}
 .pk-col.warr .pk-wgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}@media (max-width:900px){.pk-col.warr .pk-wgrid{grid-template-columns:1fr}}
 .pk-col.warr .pk-note{font-size:12px;color:var(--muted);margin:0 0 8px;line-height:1.5}
 .pk-col .off{font-size:12px;color:var(--warn);font-weight:400;margin-left:6px}
@@ -219,6 +219,7 @@ main#review.hidden{display:none}
   <div class="pk-head"><h2>今日當沖標的</h2><span class="small muted" id="pk-status"></span></div>
   <div class="pk-mkt" id="pk-mkt"></div>
   <div class="pk-cols"><div class="pk-col short" id="pk-short"></div><div class="pk-col long" id="pk-long"></div></div>
+  <div class="pk-col warr strong" id="pk-strong" style="margin-top:14px"></div>
   <div class="pk-col warr" id="pk-warr" style="margin-top:14px"></div>
   <div class="pk-foot">
     <label class="small">自選代號 <input id="pk-manual" placeholder="例：2330, 3042" autocomplete="off"></label>
@@ -324,7 +325,7 @@ async function loadPicker(){
   clearTimeout(PICK_T);PICK_T=setTimeout(PICK.selected?loadState:loadPicker,2000);   // 跑選股或準備盤前資料時 2 秒輪詢
 }
 function pkCard(side,r,top,active,sel){
-  const wr=side==='warrant';                                // 權證昨日大買那一區：預設不勾、沒有備用
+  const wr=side==='warrant'||side==='strong';               // 強勢股、權證昨日大買這兩區：預設不勾、沒有備用
   const on=sel?sel.includes(r.code):(!wr&&active&&r.rank<=top);   // 送出後依實際選定的顯示
   const st=`收 ${fp(r.close)}｜昨 ${pct(r.chg1d)}｜10日 ${pct(r.r10,1)}｜20日 ${pct(r.r20,1)}｜${f(r.value_e8,0)} 億｜ATR ${f(r.atr_pct,1)}%`;
   return `<label class="pk-card ${on?'on':''} ${active?'':'dim'}"><input type="checkbox" value="${esc(r.code)}" ${on?'checked':''} onchange="pkCount()">
@@ -337,7 +338,7 @@ function renderPicker(){
   const p=PICK||{};const res=p.result;const sent=!!p.selected;
   $('pk-status').innerHTML=p.status==='running'?`<span class="spin"></span>執行選股中（${esc(p.started||'')} 開始；第一次要補抓全市場資料會久一點）…`
     :p.status==='error'?`<span class="pk-err">選股失敗：${esc(p.error)}；仍可在下方手動輸入代碼</span>`
-    :res?`資料日 ${esc(res.date)}（${esc(p.finished||'')} 完成）`:'';
+    :res?`資料日 ${esc(res.date)}（${res.generated_at?esc(res.generated_by||'')+' 於 '+esc(res.generated_at)+' 預先算好':esc(p.finished||'')+' 完成'}）`:'';
   if(sent){$('pk-status').innerHTML=`<span class="spin"></span>已選定 ${esc(p.selected.join('、'))}，正在抓盤前資料、啟動監控（每檔約 10～30 秒）…`;}
   if(res){const m=res.market;
     const th=(res.themes||[]);
@@ -348,14 +349,20 @@ function renderPicker(){
       +((res[side]||[]).length?res[side].map(r=>pkCard(side,r,res.top,active,p.selected)).join(''):'<div class="pk-empty">沒有符合條件的標的</div>');
     $('pk-short').innerHTML=col('short','▼ 做空：弱勢股',res.short_active);
     $('pk-long').innerHTML=col('long','▲ 做多：強勢股急殺',res.long_active);
+    // 強勢股（theme_screener.strong_pick）：權證連續大買 × 法人買超。隔天容易開高、波動大，但回測開盤後沒有續漲，所以也是預設不勾
+    const SG=res.strong||[];
+    $('pk-strong').innerHTML=res.strong_rule?`<h3>🔥 強勢股<span class="off" style="color:var(--muted)">${esc(res.strong_rule)}</span></h3>
+      <div class="pk-note">${esc(res.strong_note||'')}</div>`
+      +(res.warrant_error?`<div class="pk-empty">⚠ 權證資料抓不到，這一區今天不列：${esc(res.warrant_error)}</div>`
+        :SG.length?`<div class="pk-wgrid">${SG.map(r=>pkCard('strong',r,res.top,true,p.selected)).join('')}</div>`:'<div class="pk-empty">沒有符合條件的標的</div>'):'';
     // 權證昨日大量買進（theme_screener.warrant_pick）：不分多空的觀察名單，預設不勾
     const W=res.warrant||[];
     $('pk-warr').innerHTML=res.warrant_rule?`<h3>⚡ 權證昨日大量買進<span class="off" style="color:var(--muted)">${esc(res.warrant_rule)}；依占現股成交值排序</span></h3>
       <div class="pk-note">${esc(res.warrant_note||'')}</div>`
       +(res.warrant_error?`<div class="pk-empty">⚠ 權證資料抓不到，這一區今天不列：${esc(res.warrant_error)}</div>`
         :W.length?`<div class="pk-wgrid">${W.map(r=>pkCard('warrant',r,res.top,true,p.selected)).join('')}</div>`:'<div class="pk-empty">沒有符合條件的標的</div>'):'';
-  }else{$('pk-mkt').innerHTML=p.status==='running'?'等待選股結果…':'沒有選股結果';$('pk-short').innerHTML='';$('pk-long').innerHTML='';$('pk-warr').innerHTML='';}
-  if(sent){const listed=new Set([...(res?.short||[]),...(res?.long||[]),...(res?.warrant||[])].map(r=>r.code));$('pk-manual').value=p.selected.filter(c=>!listed.has(c)).join(', ');}
+  }else{$('pk-mkt').innerHTML=p.status==='running'?'等待選股結果…':'沒有選股結果';$('pk-short').innerHTML='';$('pk-long').innerHTML='';$('pk-warr').innerHTML='';$('pk-strong').innerHTML='';}
+  if(sent){const listed=new Set([...(res?.short||[]),...(res?.long||[]),...(res?.warrant||[]),...(res?.strong||[])].map(r=>r.code));$('pk-manual').value=p.selected.filter(c=>!listed.has(c)).join(', ');}
   $('pk-go').disabled=sent||PICK_SENT;$('pk-manual').disabled=sent;
   document.querySelectorAll('#picker input[type=checkbox]').forEach(x=>x.disabled=sent);
   pkCount();}
@@ -512,7 +519,7 @@ function renderPrice(){if(!LIVE||!LIVE.quotes||!STATE)return;const q=LIVE.quotes
 function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
   const cap=LIVE.capture&&LIVE.capture.mode!=='live'?LIVE.capture:null;   // 08:25–13:25 以外不連續截取（monitor._capture_mode）
   $('shioaji').innerHTML=cap?`<span class="muted" title="盤中只在 08:25–13:25 截取資料；畫面停在最後一筆">■ ${esc(cap.text)}</span>`
-    :LIVE.shioaji?`<span class="up" title="成交價與五檔每 0.5 秒更新；圖表、分流、警示每 ${LIVE.fast_every||3} 秒">● 永豐串流 ${QFAST?'報價 0.5 秒':(LIVE.fast_every||3)+' 秒'}</span>${LIVE.ticks_used!=null?` <span class="small ${LIVE.ticks_used>=8?'stale':'muted'}">ticks ${LIVE.ticks_used}/${LIVE.ticks_limit||10}</span>`:''}`:'<span class="muted">○ 公開報價 10 秒</span>';
+    :LIVE.shioaji?`<span class="up" title="成交價與五檔每 0.5 秒更新；圖表、分流、警示每 ${LIVE.fast_every||3} 秒">● 永豐串流 ${QFAST?'報價 0.5 秒':(LIVE.fast_every||3)+' 秒'}</span>${LIVE.ticks_used!=null?` <span class="small ${LIVE.ticks_used>=(LIVE.ticks_limit||10)-2?'stale':'muted'}" title="今天這台電腦在盤中查了幾次歷史逐筆 / 這台的上限。永豐官方規定同一個帳號盤中最多 10 次，超過會被暫停；用完之後程式不會再查，重啟時改讀本機存的逐筆。另一台電腦用掉的不會算在這裡">ticks ${LIVE.ticks_used}/${LIVE.ticks_limit||10}</span>`:''}`:'<span class="muted">○ 公開報價 10 秒</span>';
   renderSignal();
   renderPos();
   renderPrice();
@@ -737,7 +744,9 @@ function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   const box=(k,o,title)=>o?`<div class="box ${k} ${k===act?'':'dim'}"><h4>${title}${k===act?' <span class="small muted">主計畫</span>':''}</h4>${o.note?`<div class="note">⚠ ${esc(o.note)}</div>`:''}<div class="entry">${esc(o.entry)}</div><table>
     <tr><td>停損</td><td class="num">${fp(o.stop)} <span class="muted">(${f(o.risk_pct,1)}%)</span></td></tr><tr><td>目標 1</td><td class="num">${fp(o.t1)} <span class="muted">(${f(o.reward_pct,1)}%)</span></td></tr><tr><td>目標 2</td><td class="num">${fp(o.t2)}</td></tr></table>
     ${o.breakdown||o.breakout?`<div class="small muted" style="margin-top:6px">${esc(o.breakdown||o.breakout)}</div>`:''}</div>`:'';
-  $('plan').innerHTML=box('short',ev.p_short>0?pl.short:null,`空 <span class="num dn">強度 ${f(ev.p_short,0)}</span>`)+box('long',pl.long,`多 <span class="num up">強度 ${f(ev.p_long,0)}</span>`);
+  // short_na / long_na：最近的價位就是漲跌停、或停損會落在漲跌停之外時不規劃那一邊（model.build_plan），把原因講出來
+  const na=(k,txt)=>txt?`<div class="box ${k} dim"><h4>${k==='short'?'空':'多'} <span class="small muted">不規劃</span></h4><div class="note">${esc(txt)}</div></div>`:'';
+  $('plan').innerHTML=(box('short',ev.p_short>0?pl.short:null,`空 <span class="num dn">強度 ${f(ev.p_short,0)}</span>`)||na('short',pl.short_na))+(box('long',pl.long,`多 <span class="num up">強度 ${f(ev.p_long,0)}</span>`)||na('long',pl.long_na));
   const res=(pl.resistance||[]).slice().reverse(),sup=pl.support||[];const cur=(LIVE&&LIVE.quotes[CUR]&&LIVE.quotes[CUR].ref)||ev.quote.ref;
   $('ladder').innerHTML=res.map(([n,v])=>`<div class="row r"><span>${esc(n)}</span><span>${fp(v)}</span></div>`).join('')+`<div class="row now"><span>現價</span><span>${fp(cur)}</span></div>`+sup.map(([n,v])=>`<div class="row s"><span>${esc(n)}</span><span>${fp(v)}</span></div>`).join('');
   const gd=i.group_detail||[];

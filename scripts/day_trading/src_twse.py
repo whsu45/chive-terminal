@@ -124,6 +124,30 @@ def punish(start, end):
     return {r[2].strip(): r[6] for r in j.get("data", []) if len(r) > 6}
 
 
+def punish_on(day):
+    """
+    day 那一天的處置狀況 → (正在處置 {code: 期間}, 還沒開始 {code: 期間})。
+    公告清單裡同一檔可能有好幾筆（已經結束的、接著公告的），要一筆一筆對期間；原本只看「代號有沒有在清單裡」，
+    處置已經結束的也被當成處置股（2026-11-13 冠西電：兩筆分別到 11/05、11/10，當天其實已經解除）。
+    期間解析不了的當成正在處置（寧可多擋）。
+    """
+    import datetime as dt
+    import tw_calendar as cal
+    j = http.get_json(f"{BASE}/rwd/zh/announcement/punish",
+                      params={"startDate": _ymd(day - dt.timedelta(days=35)), "endDate": _ymd(day + dt.timedelta(days=10)), "response": "json"}, cache_ttl=3600 * 6)
+    active, future = {}, {}
+    for r in j.get("data", []):
+        if len(r) <= 6:
+            continue
+        code, period = r[2].strip(), r[6]
+        stt = cal.period_state(period, day)
+        if stt in ("active", "unknown"):
+            active[code] = period
+        elif stt == "future" and (code not in future or cal.roc_period(period)[0] < cal.roc_period(future[code])[0]):
+            future[code] = period
+    return active, {c: p for c, p in future.items() if c not in active}
+
+
 def notice(date):
     """注意股 → set(code)。"""
     j = http.get_json(f"{BASE}/rwd/zh/announcement/notice",

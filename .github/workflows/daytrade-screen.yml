@@ -1,0 +1,82 @@
+name: Day-trading pre-market screen
+
+# 收盤後預先跑 scripts/day_trading/theme_screener.py，把結果寫進 scripts/day_trading/precomputed/screen.json。
+# 隔天打開 monitor.py --web 時會直接讀這個檔（資料日對得上才用），不用在自己電腦上等選股跑完。
+# 只用到公開資料（證交所、櫃買中心等），不需要任何金鑰。
+
+on:
+  schedule:
+    - cron: '40 9 * * 1-5'    # 台北 17:40（週一到週五）：法人、權證日成交大致出齊
+    - cron: '20 12 * * 1-5'   # 台北 20:20：備援（前一次資料還沒出齊時補跑；內容沒變不會多 commit）
+    - cron: '30 22 * * 0-4'   # 台北隔天 06:30：開盤前最後一次備援
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daytrade-screen
+  cancel-in-progress: false
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      TZ: Asia/Taipei
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 全市場日 K / 法人（65 天）與權證每日彙總（26 天）存在 cache 裡，每天只補一天。
+      # 第一次（或 cache 被清掉）要重抓，證交所的權證日表一張約 30 秒，整個約 30～40 分鐘。
+      - name: Restore data cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            scripts/day_trading/.cache/screen_daily.json
+            scripts/day_trading/.cache/warrant_daily.json
+            scripts/day_trading/.cache/tpex_warrant_map.json
+            scripts/day_trading/.cache/company_cap.json
+          key: daytrade-screen-${{ github.run_id }}
+          restore-keys: |
+            daytrade-screen-
+
+      - name: Run screener
+        working-directory: scripts/day_trading
+        run: python theme_screener.py --out default
+
+      # 就算選股那一步失敗，也把已經抓到的資料存起來，下次不用從頭抓
+      - name: Save data cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            scripts/day_trading/.cache/screen_daily.json
+            scripts/day_trading/.cache/warrant_daily.json
+            scripts/day_trading/.cache/tpex_warrant_map.json
+            scripts/day_trading/.cache/company_cap.json
+          key: daytrade-screen-${{ github.run_id }}
+
+      - name: Commit result
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add scripts/day_trading/precomputed/screen.json
+          if git diff --staged --quiet; then
+            echo "選股結果沒有變，不 commit"
+            exit 0
+          fi
+          DAY=$(python -c "import json; print(json.load(open('scripts/day_trading/precomputed/screen.json'))['date'])")
+          git commit -m "auto: day_trading 盤前選股 ${DAY} [skip ci]"
+          for i in 1 2 3; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep 10
+          done
+          echo "push 失敗"
+          exit 1

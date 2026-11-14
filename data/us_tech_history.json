@@ -1,7 +1,7 @@
 [
  {
   "date": "2026-11-13",
-  "composite": -2.25,
+  "composite": -2.55,
   "sox": -3.43,
   "top3Up": [
    {
@@ -10,31 +10,31 @@
     "pct": 0.64
    },
    {
-    "key": "software",
-    "title": "軟體／雲端",
-    "pct": 0.2
-   },
-   {
     "key": "internet",
     "title": "網路平台",
-    "pct": -0.71
+    "pct": 0.32
+   },
+   {
+    "key": "software",
+    "title": "軟體／雲端",
+    "pct": -0.31
    }
   ],
   "top3Down": [
    {
-    "key": "networking",
-    "title": "網通／光通訊",
-    "pct": -5.61
+    "key": "ev",
+    "title": "電動車／自駕",
+    "pct": -5.29
    },
    {
-    "key": "semis",
-    "title": "半導體",
-    "pct": -3.63
+    "key": "networking",
+    "title": "網通／光通訊",
+    "pct": -5.24
    },
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -3.54
+    "pct": -4.05
    }
   ],
   "taiexNext": null

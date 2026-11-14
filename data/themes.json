@@ -6,7 +6,7 @@
  "date_counts": {
   "2026-11-13": 369
  },
- "members_fetched": "2026-11-14",
+ "members_fetched": "2026-11-15",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -1481,7 +1481,7 @@
      "volume": 4453
     }
    ],
-   "avg_pct": 2.83,
+   "avg_pct": 2.82,
    "up": 7,
    "down": 1,
    "flat": 0

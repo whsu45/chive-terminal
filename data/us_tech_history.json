@@ -1,40 +1,40 @@
 [
  {
   "date": "2026-11-13",
-  "composite": -2.45,
-  "sox": -3.74,
+  "composite": -2.25,
+  "sox": -3.43,
   "top3Up": [
    {
     "key": "devices",
     "title": "消費電子",
-    "pct": 1.04
-   },
-   {
-    "key": "internet",
-    "title": "網路平台",
-    "pct": 0.23
+    "pct": 0.64
    },
    {
     "key": "software",
     "title": "軟體／雲端",
-    "pct": -0.14
+    "pct": 0.2
+   },
+   {
+    "key": "internet",
+    "title": "網路平台",
+    "pct": -0.71
    }
   ],
   "top3Down": [
    {
     "key": "networking",
     "title": "網通／光通訊",
-    "pct": -5.41
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -4.77
+    "pct": -5.61
    },
    {
     "key": "semis",
     "title": "半導體",
-    "pct": -3.97
+    "pct": -3.63
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -3.54
    }
   ],
   "taiexNext": null

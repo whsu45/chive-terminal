@@ -3,6 +3,10 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // 台股代碼（4～6 碼數字，ETF 可帶一個英文字尾）連到「個股策略分析」頁；開新分頁，保留本頁的篩選與展開狀態。美股、期貨代碼不連
+  const stockA = (code, inner = esc(code), cls = '') => (/^(\d{4,6}|\d{4,5}[A-Z])$/.test(String(code ?? ''))
+    ? `<a href="./stock.html?id=${encodeURIComponent(code)}" target="_blank" rel="noopener" title="開啟 ${esc(code)} 個股策略分析" class="underline decoration-dotted decoration-1 underline-offset-2 hover:text-indigo-600 hover:decoration-solid ${cls}">${inner}</a>`
+    : inner);
   const num = (v, d = 0) => (v == null || !isFinite(v) ? '—' : Number(v).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }));
   const dec = v => (v == null ? 0 : Math.abs(v) >= 1000 ? 0 : Math.abs(v) >= 100 ? 1 : 2);
   const signCls = v => (v == null || v === 0 ? 'text-slate-500' : v > 0 ? 'text-red-500' : 'text-green-600');
@@ -47,7 +51,7 @@
         <div class="flex justify-between items-start gap-2">
           <div class="min-w-0">
             <div class="text-xs font-semibold text-slate-400 tracking-wider">${esc(KIND[c.kind] || '')}</div>
-            <div class="font-bold text-slate-800 truncate">${esc(c.name)} <span class="text-xs font-normal text-slate-400">${esc(c.kind === 'index' ? c.fut : `${c.code}｜${c.fut}`)}</span></div>
+            <div class="font-bold text-slate-800 truncate">${esc(c.name)} <span class="text-xs font-normal text-slate-400">${c.kind === 'index' ? esc(c.fut) : `${stockA(c.code)}｜${esc(c.fut)}`}</span></div>
           </div>
           <span class="text-[11px] text-slate-400 text-right shrink-0">${esc(nightLabel(s, i))}</span>
         </div>
@@ -97,7 +101,7 @@
     return `
       <div class="min-w-0">
         <div class="flex flex-wrap items-baseline justify-between gap-2">
-          <div class="font-bold text-slate-800">${esc(c.name)} <span class="text-xs font-normal text-slate-400">${esc(c.kind === 'index' ? c.fut : `${c.code}｜${c.fut}`)}</span></div>
+          <div class="font-bold text-slate-800">${esc(c.name)} <span class="text-xs font-normal text-slate-400">${c.kind === 'index' ? esc(c.fut) : `${stockA(c.code)}｜${esc(c.fut)}`}</span></div>
           <div class="flex items-center gap-3 text-[11px] text-slate-500">
             <span><span class="inline-block w-2.5 h-2.5 align-middle bg-red-300 mr-1"></span><span class="inline-block w-2.5 h-2.5 align-middle bg-green-300 mr-1"></span>夜盤漲跌</span>
             <span><span class="inline-block w-2 h-2 rounded-full align-middle bg-slate-700 mr-1"></span>開盤跳空</span>
@@ -119,7 +123,7 @@
       const v = last?.night?.chg_pct;
       return `<tr class="${r.night_futures.length ? 'bg-indigo-50/60' : 'hover:bg-slate-50'}">
         <td class="py-2 px-2 text-slate-400">${r.rank}</td>
-        <td class="py-2 px-2 font-semibold text-slate-800 whitespace-nowrap">${esc(r.code)} <span class="font-normal text-slate-600">${esc(r.name)}</span></td>
+        <td class="py-2 px-2 font-semibold text-slate-800 whitespace-nowrap">${stockA(r.code, `${esc(r.code)} <span class="font-normal text-slate-600">${esc(r.name)}</span>`)}</td>
         <td class="py-2 px-2 text-right whitespace-nowrap hidden sm:table-cell">${num(r.mcap_e8)}</td>
         <td class="py-2 px-2 whitespace-nowrap">${r.night_futures.length ? `<span class="font-semibold text-indigo-700">${esc(r.night_futures.join('、'))}</span>` : '<span class="text-slate-400">沒有</span>'}</td>
         <td class="py-2 px-2 text-right font-bold whitespace-nowrap ${signCls(v)}">${r.night_futures.length ? pctStr(v) : ''}</td>
@@ -147,7 +151,7 @@
           <table class="w-full text-sm text-left text-slate-600">${head}<tbody class="divide-y divide-slate-100">${rest.map(line).join('')}</tbody></table>
         </div>
       </details>
-      ${others.length ? `<p class="mt-3 text-xs text-slate-400">不在前 50 名、但也有夜盤的：${others.map(e => `${esc(e.code)} ${esc(e.name)}（${esc(e.fut)}）`).join('、')}</p>` : ''}`;
+      ${others.length ? `<p class="mt-3 text-xs text-slate-400">不在前 50 名、但也有夜盤的：${others.map(e => `${stockA(e.code, `${esc(e.code)} ${esc(e.name)}`)}（${esc(e.fut)}）`).join('、')}</p>` : ''}`;
   }
 
   function renderMethod(d, contracts) {

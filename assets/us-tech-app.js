@@ -3,6 +3,10 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // 台股代碼（4～6 碼數字，ETF 可帶一個英文字尾）連到「個股策略分析」頁；開新分頁，保留本頁的篩選與展開狀態。美股、期貨代碼不連
+  const stockA = (code, inner = esc(code), cls = '') => (/^(\d{4,6}|\d{4,5}[A-Z])$/.test(String(code ?? ''))
+    ? `<a href="./stock.html?id=${encodeURIComponent(code)}" target="_blank" rel="noopener" title="開啟 ${esc(code)} 個股策略分析" class="underline decoration-dotted decoration-1 underline-offset-2 hover:text-indigo-600 hover:decoration-solid ${cls}">${inner}</a>`
+    : inner);
   const num = (v, d = 2) => (v == null || !isFinite(v) ? 'NA' : Number(v).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }));
   const signCls = v => (v == null || v === 0 ? 'text-slate-500' : v > 0 ? 'text-red-500' : 'text-green-600');
   const pctStr = v => (v == null ? 'NA' : `${v > 0 ? '▲ +' : v < 0 ? '▼ ' : ''}${Number(v).toFixed(2)}%`);
@@ -88,7 +92,7 @@
         <div class="flex items-start justify-between gap-2">
           <div>
             <div class="text-[11px] font-semibold text-slate-400">第 ${rank} 名｜${esc(s.market || '')}${s.themes?.length ? '｜' + s.themes.map(esc).join('、') : ''}</div>
-            <div class="font-extrabold text-slate-800"><a href="./stock.html?id=${encodeURIComponent(s.code)}" class="hover:text-indigo-600 hover:underline">${esc(s.code)} ${esc(s.name)}</a></div>
+            <div class="font-extrabold text-slate-800">${stockA(s.code, `${esc(s.code)} ${esc(s.name)}`)}</div>
           </div>
           <div class="text-right shrink-0">
             <div class="text-lg ${corrCls(s.corr)}">r = ${corrStr(s.corr)}</div>
@@ -133,7 +137,7 @@
           <span class="flex-1 min-w-0">
             <span class="font-bold text-slate-800">${esc(g.title)}</span>
             <span class="ml-2 text-[11px] text-slate-400 hidden md:inline">${esc(g.desc)}</span>
-            <span class="block md:inline md:ml-2 text-[11px] text-slate-400">成分 ${g.members.length} 檔｜台股前三：${(g.top3 || []).map(s => `${esc(s.code)} ${esc(s.name)} (${corrStr(s.corr)})`).join('、') || 'NA'}</span>
+            <span class="block md:inline md:ml-2 text-[11px] text-slate-400">成分 ${g.members.length} 檔｜台股前三：${(g.top3 || []).map(s => `${stockA(s.code, `${esc(s.code)} ${esc(s.name)}`)} (${corrStr(s.corr)})`).join('、') || 'NA'}</span>
           </span>
           <span class="hidden lg:inline">${sparkline(g.spark)}</span>
           <span class="hidden sm:flex flex-col items-end text-[11px] text-slate-500 w-24">
@@ -182,7 +186,7 @@
           <tbody class="divide-y divide-slate-100">${d.groups.map(g => `<tr>
             <td class="py-2 px-2 font-semibold text-slate-800 whitespace-nowrap">${esc(g.title)}</td>
             <td class="py-2 px-2 text-right font-bold ${signCls(g.pct)} whitespace-nowrap">${pctPlain(g.pct)}</td>
-            ${[0, 1, 2].map(i => { const s = g.top3?.[i]; return `<td class="py-2 px-2 whitespace-nowrap">${s ? `<a href="./stock.html?id=${encodeURIComponent(s.code)}" class="text-slate-800 hover:text-indigo-600 hover:underline">${esc(s.code)} ${esc(s.name)}</a> <span class="${corrCls(s.corr)}">${corrStr(s.corr)}</span>` : 'NA'}</td>`; }).join('')}
+            ${[0, 1, 2].map(i => { const s = g.top3?.[i]; return `<td class="py-2 px-2 whitespace-nowrap">${s ? `${stockA(s.code, `${esc(s.code)} ${esc(s.name)}`, 'text-slate-800')} <span class="${corrCls(s.corr)}">${corrStr(s.corr)}</span>` : 'NA'}</td>`; }).join('')}
           </tr>`).join('')}</tbody>
         </table>
       </div>`;

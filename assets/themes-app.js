@@ -3,6 +3,10 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // 台股代碼（4～6 碼數字，ETF 可帶一個英文字尾）連到「個股策略分析」頁；開新分頁，保留本頁的篩選與展開狀態。美股、期貨代碼不連
+  const stockA = (code, inner = esc(code), cls = '') => (/^(\d{4,6}|\d{4,5}[A-Z])$/.test(String(code ?? ''))
+    ? `<a href="./stock.html?id=${encodeURIComponent(code)}" target="_blank" rel="noopener" title="開啟 ${esc(code)} 個股策略分析" class="underline decoration-dotted decoration-1 underline-offset-2 hover:text-indigo-600 hover:decoration-solid ${cls}">${inner}</a>`
+    : inner);
   const num = (v, d = 2) => (v == null || !isFinite(v) ? 'NA' : Number(v).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }));
   const signCls = v => (v == null || v === 0 ? 'text-slate-500' : v > 0 ? 'text-red-500' : 'text-green-600');
   const pctStr = v => (v == null ? 'NA' : `${v > 0 ? '▲ +' : v < 0 ? '▼ ' : ''}${v.toFixed(2)}%`);
@@ -21,7 +25,7 @@
         <div class="flex items-start justify-between gap-2">
           <div>
             <div class="text-[11px] font-semibold text-slate-400">第 ${rank} 名｜${esc(s.market || '')}｜${s.themes.map(esc).join('、')}</div>
-            <div class="text-lg font-extrabold text-slate-800">${esc(s.code)} ${esc(s.name)}</div>
+            <div class="text-lg font-extrabold text-slate-800">${stockA(s.code, `${esc(s.code)} ${esc(s.name)}`)}</div>
             <div class="text-sm"><span class="font-bold text-slate-700">${num(s.close)}</span> <span class="font-bold ${signCls(s.pct)}">${pctStr(s.pct)}</span> <span class="text-xs text-slate-400">量 ${Number(s.volume).toLocaleString()} 張</span></div>
           </div>
           <div class="flex flex-col items-end gap-1 shrink-0">
@@ -33,7 +37,7 @@
         <ul class="mt-3 space-y-1 text-xs text-slate-600">${s.reasons.map(r => `<li class="flex gap-1.5"><span class="${side === 'strong' ? 'text-red-400' : 'text-green-500'}">▸</span><span>${esc(r)}</span></li>`).join('')}</ul>
         <div class="mt-3 flex justify-between items-center text-[11px] text-slate-400">
           <span>策略資料日 ${esc(s.asOf)}</span>
-          <a href="./stock.html?id=${encodeURIComponent(s.code)}" class="text-indigo-600 font-semibold hover:underline">完整策略分析 →</a>
+          <a href="./stock.html?id=${encodeURIComponent(s.code)}" target="_blank" rel="noopener" class="text-indigo-600 font-semibold hover:underline">完整策略分析 →</a>
         </div>
       </div>`;
   }
@@ -81,14 +85,14 @@
       const w = m.pct == null ? 0 : Math.abs(m.pct) / maxAbs * 100;
       return `<tr class="hover:bg-slate-50" data-search="${esc(`${m.code} ${m.name}`)}">
         <td class="py-2 px-2 sm:px-3 text-slate-400">${i + 1}</td>
-        <td class="py-2 px-2 sm:px-3 font-semibold whitespace-nowrap"><a href="./stock.html?id=${encodeURIComponent(m.code)}" class="text-slate-800 hover:text-indigo-600 hover:underline">${esc(m.code)} ${esc(m.name)}</a>${m.no_trade ? ' <span class="text-[10px] font-normal text-slate-400">今日未成交</span>' : ''}${m.date ? ` <span class="text-[10px] font-normal text-amber-600">${esc(m.date.slice(5))} 行情</span>` : ''}</td>
+        <td class="py-2 px-2 sm:px-3 font-semibold whitespace-nowrap">${stockA(m.code, `${esc(m.code)} ${esc(m.name)}`, 'text-slate-800')}${m.no_trade ? ' <span class="text-[10px] font-normal text-slate-400">今日未成交</span>' : ''}${m.date ? ` <span class="text-[10px] font-normal text-amber-600">${esc(m.date.slice(5))} 行情</span>` : ''}</td>
         <td class="py-2 px-2 sm:px-3 text-xs text-slate-500 whitespace-nowrap hidden sm:table-cell">${esc(m.market || '—')}</td>
         <td class="py-2 px-2 sm:px-3 text-right">${num(m.close)}</td>
         <td class="py-2 px-2 sm:px-3 text-right ${signCls(m.change)} whitespace-nowrap hidden sm:table-cell">${m.change == null ? 'NA' : `${m.change > 0 ? '+' : ''}${num(m.change)}`}</td>
         <td class="py-2 px-2 sm:px-3 text-right font-bold ${signCls(m.pct)} whitespace-nowrap">${pctStr(m.pct)}</td>
         <td class="py-2 px-2 sm:px-3 w-32 hidden md:table-cell"><div class="h-2 rounded-full bg-slate-100 overflow-hidden"><div class="h-full rounded-full ${m.pct >= 0 ? 'bg-red-400' : 'bg-green-500'}" style="width:${w.toFixed(1)}%"></div></div></td>
         <td class="py-2 px-2 sm:px-3 text-right text-slate-500 hidden sm:table-cell">${m.volume == null ? 'NA' : Number(m.volume).toLocaleString()}</td>
-        <td class="py-2 px-2 sm:px-3 text-right hidden sm:table-cell"><a href="./stock.html?id=${encodeURIComponent(m.code)}" class="text-xs text-indigo-600 hover:underline whitespace-nowrap">策略分析</a></td>
+        <td class="py-2 px-2 sm:px-3 text-right hidden sm:table-cell"><a href="./stock.html?id=${encodeURIComponent(m.code)}" target="_blank" rel="noopener" class="text-xs text-indigo-600 hover:underline whitespace-nowrap">策略分析</a></td>
       </tr>`;
     }).join('');
     return `

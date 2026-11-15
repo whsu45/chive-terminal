@@ -3,13 +3,17 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // 台股代碼（4～6 碼數字，ETF 可帶一個英文字尾）連到「個股策略分析」頁；開新分頁，保留本頁的篩選與展開狀態。美股、期貨代碼不連
+  const stockA = (code, inner = esc(code), cls = '') => (/^(\d{4,6}|\d{4,5}[A-Z])$/.test(String(code ?? ''))
+    ? `<a href="./stock.html?id=${encodeURIComponent(code)}" target="_blank" rel="noopener" title="開啟 ${esc(code)} 個股策略分析" class="underline decoration-dotted decoration-1 underline-offset-2 hover:text-indigo-600 hover:decoration-solid ${cls}">${inner}</a>`
+    : inner);
   const signCls = v => (v == null || v === 0 ? 'text-slate-500' : v > 0 ? 'text-red-500' : 'text-green-600');
   const money = v => (v == null ? 'NA' : `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toLocaleString()} 元`);
   const pct = (v, d = 1, sign = false) => (v == null || !isFinite(v) ? 'NA' : `${sign && v > 0 ? '+' : ''}${(v * 100).toFixed(d)}%`);
   const pf = v => (v == null ? '∞' : v.toFixed(2));
   const pctStr = v => (v == null ? 'NA' : `${v > 0 ? '▲ +' : v < 0 ? '▼ ' : ''}${v.toFixed(2)}%`);
   const tag = s => (s.standalone ? '<span class="ml-1 px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 text-[10px] font-semibold align-middle">獨立策略</span>' : '');
-  const stockLink = s => `<a href="./stock.html?id=${encodeURIComponent(s.code)}" class="hover:underline">${esc(s.code)} ${esc(s.name)}</a>`;
+  const stockLink = s => stockA(s.code, `${esc(s.code)} ${esc(s.name)}`);
 
   function rankCard(s, rank, side) {
     const list = side === 'top' ? s.topStocks : s.bottomStocks;

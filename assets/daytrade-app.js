@@ -3,6 +3,10 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // 台股代碼（4～6 碼數字，ETF 可帶一個英文字尾）連到「個股策略分析」頁；開新分頁，保留本頁的篩選與展開狀態。美股、期貨代碼不連
+  const stockA = (code, inner = esc(code), cls = '') => (/^(\d{4,6}|\d{4,5}[A-Z])$/.test(String(code ?? ''))
+    ? `<a href="./stock.html?id=${encodeURIComponent(code)}" target="_blank" rel="noopener" title="開啟 ${esc(code)} 個股策略分析" class="underline decoration-dotted decoration-1 underline-offset-2 hover:text-indigo-600 hover:decoration-solid ${cls}">${inner}</a>`
+    : inner);
   const num = (v, d = 2) => (v == null || !isFinite(v) ? 'NA' : Number(v).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }));
   const pct = (v, d = 1, sign = false) => (v == null || !isFinite(v) ? 'NA' : `${sign && v > 0 ? '+' : ''}${(v * 100).toFixed(d)}%`);
   const signCls = v => (v == null || v === 0 ? 'text-slate-500' : v > 0 ? 'text-red-500' : 'text-green-600');
@@ -123,7 +127,7 @@
         <div class="flex flex-col lg:flex-row lg:items-center gap-5">
           <div class="lg:w-72">
             <div class="text-sm text-slate-500">${esc(entry.market)}｜${entry.themes.map(esc).join('、') || '—'}</div>
-            <div class="text-2xl font-extrabold text-slate-800">${esc(d.code)} ${esc(d.name)}</div>
+            <div class="text-2xl font-extrabold text-slate-800">${stockA(d.code, `${esc(d.code)} ${esc(d.name)}`)}</div>
             <div class="mt-3 inline-block px-4 py-2 rounded-xl text-xl font-extrabold ${VERDICT_STYLE[d.verdict.key]}">${esc(d.verdict.label)}</div>
             <div class="text-xs text-slate-500 mt-2">${esc(d.verdict.note)}｜日均量約 ${entry.avgVolLots == null ? 'NA' : entry.avgVolLots.toLocaleString()} 張</div>
           </div>

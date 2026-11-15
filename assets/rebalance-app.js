@@ -3,12 +3,16 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // 台股代碼（4～6 碼數字，ETF 可帶一個英文字尾）連到「個股策略分析」頁；開新分頁，保留本頁的篩選與展開狀態。美股、期貨代碼不連
+  const stockA = (code, inner = esc(code), cls = '') => (/^(\d{4,6}|\d{4,5}[A-Z])$/.test(String(code ?? ''))
+    ? `<a href="./stock.html?id=${encodeURIComponent(code)}" target="_blank" rel="noopener" title="開啟 ${esc(code)} 個股策略分析" class="underline decoration-dotted decoration-1 underline-offset-2 hover:text-indigo-600 hover:decoration-solid ${cls}">${inner}</a>`
+    : inner);
   const num = (v, d = 2) => (v == null || !isFinite(v) ? 'NA' : Number(v).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }));
   const pct = (v, d = 1, sign = false) => (v == null || !isFinite(v) ? '—' : `${sign && v > 0 ? '+' : ''}${(v * 100).toFixed(d)}%`);
   const signCls = v => (v == null || v === 0 ? 'text-slate-500' : v > 0 ? 'text-red-500' : 'text-green-600');
   const SIDE = { add: '新增', delete: '刪除' };
   const SIDE_CLS = { add: 'bg-red-100 text-red-700', delete: 'bg-green-100 text-green-700' };
-  const stockLink = (code, name) => `<a href="./stock.html?id=${encodeURIComponent(code)}" class="text-indigo-600 hover:underline font-semibold">${esc(code)} ${esc(name)}</a>`;
+  const stockLink = (code, name) => stockA(code, `${esc(code)} ${esc(name)}`, 'text-indigo-600 font-semibold');
   let D = null;
 
   const STAGE_ROWS = [

@@ -1,9 +1,25 @@
+import re
 from datetime import datetime, timezone, timedelta
 from .utils import format_signed_num, format_pts_str
 from .chart_generator import generate_svg_kline_chart
 
 
 _WEEKDAY_ZH = ["一", "二", "三", "四", "五", "六", "日"]
+
+# 台股代碼（4～6 碼數字，ETF 可帶一個英文字尾），與 assets/*-app.js 的 stockA() 同一套規則
+_STOCK_CODE_RE = re.compile(r"^(\d{4,6}|\d{4,5}[A-Z])$")
+
+
+def stock_link(item, inner):
+    """個股代碼連到「個股策略分析」頁（新分頁開，保留本頁狀態）；舊紀錄沒有 code 欄位時從「2303聯電」字串取出"""
+    code = str(item.get("code") or "")
+    if not code:
+        m = re.match(r"\d{4,6}[A-Z]?", str(item.get("stock") or ""))
+        code = m.group(0) if m else ""
+    if not _STOCK_CODE_RE.match(code):
+        return inner
+    return (f'<a href="./stock.html?id={code}" target="_blank" rel="noopener" title="開啟 {code} 個股策略分析" '
+            f'class="underline decoration-dotted decoration-1 underline-offset-2 hover:text-indigo-600 hover:decoration-solid">{inner}</a>')
 
 
 def _fmt_md(date_str):
@@ -379,7 +395,7 @@ def render_top_cards(items_list, category_label, theme="indigo"):
                     <span class="px-2.5 py-0.5 text-xs font-bold bg-slate-800 text-white rounded-full">第 {rank} 名</span>
                     <span class="text-xs font-bold {count_text} {count_bg} px-2 py-1 rounded-md">{item['count']} 家券商</span>
                 </div>
-                <h3 class="text-lg font-extrabold text-slate-800 my-1">{item['stock']} <span class="text-sm font-semibold text-slate-500">{price_str}</span></h3>
+                <h3 class="text-lg font-extrabold text-slate-800 my-1">{stock_link(item, item['stock'])} <span class="text-sm font-semibold text-slate-500">{price_str}</span></h3>
                 <div class="flex flex-wrap gap-1 my-3">
                     {brokers_badge}
                 </div>
@@ -417,7 +433,7 @@ def generate_broker_html(broker_records):
         for s in record.get("top_stocks", [])[:5]:
             p_str = f" (${s['price']})" if s.get("price") is not None else ""
             stock_str_list.append(
-                f'<span class="inline-block bg-slate-50 border border-slate-200 px-2 py-1 rounded text-xs mr-1 mb-1"><b>{s["stock"]}</b><span class="text-slate-500 font-normal">{p_str}</span> ({s["count"]}家: +{s["total_net_buy"]:,}張)</span>'
+                f'<span class="inline-block bg-slate-50 border border-slate-200 px-2 py-1 rounded text-xs mr-1 mb-1"><b>{stock_link(s, s["stock"])}</b><span class="text-slate-500 font-normal">{p_str}</span> ({s["count"]}家: +{s["total_net_buy"]:,}張)</span>'
             )
         stocks_display = "".join(stock_str_list) if stock_str_list else '<span class="text-slate-400 text-xs">無紀錄</span>'
 
@@ -425,21 +441,21 @@ def generate_broker_html(broker_records):
         for e in record.get("top_etfs", [])[:5]:
             ep_str = f" (${e['price']})" if e.get("price") is not None else ""
             etf_str_list.append(
-                f'<span class="inline-block bg-indigo-50/50 border border-indigo-100 px-2 py-1 rounded text-xs mr-1 mb-1 text-indigo-900"><b>{e["stock"]}</b><span class="text-slate-500 font-normal">{ep_str}</span> ({e["count"]}家: +{e["total_net_buy"]:,}張)</span>'
+                f'<span class="inline-block bg-indigo-50/50 border border-indigo-100 px-2 py-1 rounded text-xs mr-1 mb-1 text-indigo-900"><b>{stock_link(e, e["stock"])}</b><span class="text-slate-500 font-normal">{ep_str}</span> ({e["count"]}家: +{e["total_net_buy"]:,}張)</span>'
             )
         etfs_display = "".join(etf_str_list) if etf_str_list else '<span class="text-slate-400 text-xs">無紀錄</span>'
 
         dom_str_list = []
         for d in record.get("top_domestic_stocks", [])[:3]:
             dom_str_list.append(
-                f'<span class="inline-block bg-purple-50/50 border border-purple-100 px-2 py-1 rounded text-xs mr-1 mb-1 text-purple-900"><b>{d["stock"]}</b> ({d["count"]}家: +{d["total_net_buy"]:,}張)</span>'
+                f'<span class="inline-block bg-purple-50/50 border border-purple-100 px-2 py-1 rounded text-xs mr-1 mb-1 text-purple-900"><b>{stock_link(d, d["stock"])}</b> ({d["count"]}家: +{d["total_net_buy"]:,}張)</span>'
             )
         dom_display = "".join(dom_str_list) if dom_str_list else '<span class="text-slate-400 text-xs">無紀錄</span>'
 
         for_str_list = []
         for f_stk in record.get("top_foreign_stocks", [])[:3]:
             for_str_list.append(
-                f'<span class="inline-block bg-blue-50/50 border border-blue-100 px-2 py-1 rounded text-xs mr-1 mb-1 text-blue-900"><b>{f_stk["stock"]}</b> ({f_stk["count"]}家: +{f_stk["total_net_buy"]:,}張)</span>'
+                f'<span class="inline-block bg-blue-50/50 border border-blue-100 px-2 py-1 rounded text-xs mr-1 mb-1 text-blue-900"><b>{stock_link(f_stk, f_stk["stock"])}</b> ({f_stk["count"]}家: +{f_stk["total_net_buy"]:,}張)</span>'
             )
         for_display = "".join(for_str_list) if for_str_list else '<span class="text-slate-400 text-xs">無紀錄</span>'
 

@@ -3,6 +3,10 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // 台股代碼（4～6 碼數字，ETF 可帶一個英文字尾）連到「個股策略分析」頁；開新分頁，保留本頁的篩選與展開狀態。美股、期貨代碼不連
+  const stockA = (code, inner = esc(code), cls = '') => (/^(\d{4,6}|\d{4,5}[A-Z])$/.test(String(code ?? ''))
+    ? `<a href="./stock.html?id=${encodeURIComponent(code)}" target="_blank" rel="noopener" title="開啟 ${esc(code)} 個股策略分析" class="underline decoration-dotted decoration-1 underline-offset-2 hover:text-indigo-600 hover:decoration-solid ${cls}">${inner}</a>`
+    : inner);
   const num = (v, d = 0) => (v == null || !isFinite(v) ? '—' : Number(v).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }));
   const dec = v => (v == null ? 2 : v >= 1000 ? 0 : v >= 100 ? 1 : 2);
   const px = v => num(v, dec(v));
@@ -109,8 +113,7 @@
       <div class="tick bg-white p-4 rounded-xl shadow-sm border border-slate-200 min-w-0" data-code="${esc(s.code)}">
         <div class="flex justify-between items-start gap-2">
           <div class="min-w-0">
-            <div class="font-bold text-slate-800 truncate"><span class="text-slate-400 font-normal text-xs mr-1">#${rank}</span>${esc(s.name)}
-              <span class="text-xs font-normal text-slate-400">${esc(s.code)}｜${esc(s.market)}</span></div>
+            <div class="font-bold text-slate-800 truncate"><span class="text-slate-400 font-normal text-xs mr-1">#${rank}</span>${stockA(s.code, `${esc(s.name)} <span class="text-xs font-normal text-slate-400">${esc(s.code)}</span>`)}<span class="text-xs font-normal text-slate-400">｜${esc(s.market)}</span></div>
             <div class="mt-1 flex flex-wrap gap-1">${tags(s)}</div>
           </div>
           <div class="text-right shrink-0">
@@ -185,7 +188,7 @@
               <th class="py-2 px-2">股票</th><th class="py-2 px-2">原因</th><th class="py-2 px-2 text-right">量（張）</th>
               <th class="py-2 px-2 text-right hidden sm:table-cell">隔日沖（張）</th><th class="py-2 px-2 text-right hidden sm:table-cell">收盤</th><th class="py-2 px-2 text-right hidden sm:table-cell">月線／上軌</th></tr></thead>
             <tbody class="divide-y divide-slate-100">${out.map(s => `<tr>
-              <td class="py-2 px-2 whitespace-nowrap"><b class="text-slate-800">${esc(s.code)}</b> ${esc(s.name)} <span class="text-[11px] text-slate-400">${esc(s.market)}</span></td>
+              <td class="py-2 px-2 whitespace-nowrap">${stockA(s.code, `<b class="text-slate-800">${esc(s.code)}</b> ${esc(s.name)}`)} <span class="text-[11px] text-slate-400">${esc(s.market)}</span></td>
               <td class="py-2 px-2 text-red-600 font-semibold whitespace-nowrap">${esc(reasons(s, f).join('、'))}</td>
               <td class="py-2 px-2 text-right">${num(s.vol_lots)}</td>
               <td class="py-2 px-2 text-right hidden sm:table-cell">${s.dt?.status === 'ok' ? num(s.dt.buy) : '—'}</td>

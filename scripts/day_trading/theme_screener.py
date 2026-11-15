@@ -295,6 +295,18 @@ WARR_DAYS = 26           # 存檔至少要涵蓋幾個交易日（20 日中位�
 WARR_KEEP = 40
 
 
+def _warrant_bad_days(store):
+    """
+    存檔裡哪幾天不完整：有認購權證的標的數 < 其他天中位數的 80%（上市約占六成，少一張上市或上櫃的表就會掉到四～六成），
+    不到 5 天可以比時用絕對門檻 500。回日期的 set。
+    """
+    cnt = {d: sum(1 for x in v.values() if x[3] > 0) for d, v in store.items()}
+    if not cnt:
+        return set()
+    floor = 0.8 * st.median(cnt.values()) if len(cnt) >= 5 else 500
+    return {d for d, n in cnt.items() if n < max(floor, 500)}
+
+
 def load_warrant_store(ref, n=WARR_DAYS, max_new=60):
     """
     全市場權證每日彙總的本機存檔（.cache/warrant_daily.json，不進 git）：{日期: {標的: [認購金額, 認購張數, 認購有量檔數, 認購檔數, 認售金額, 認售張數]}}。
@@ -307,6 +319,10 @@ def load_warrant_store(ref, n=WARR_DAYS, max_new=60):
             store = json.load(f)
     except (OSError, ValueError):
         store = {}
+    bad = _warrant_bad_days(store)
+    if bad:
+        print(f"[screen] 權證存檔有 {len(bad)} 天不完整（有權證的標的數明顯偏少），丟掉重抓：{'、'.join(sorted(bad))}", file=sys.stderr)
+        store = {k: v for k, v in store.items() if k not in bad}
     days = sorted(cal.last_n_trading_days(ref, n, include_ref=True), reverse=True)        # 新的先抓：中途停掉也先有最近幾天
     todo = [d for d in days if d.isoformat() not in store][:max_new]
     if todo:
@@ -317,7 +333,11 @@ def load_warrant_store(ref, n=WARR_DAYS, max_new=60):
         except Exception as e:
             print(f"  [warn] 權證 {d}: {str(e)[:100]}", file=sys.stderr)
             continue
-        store[d.isoformat()] = {c: [x["call_amt"], x["call_vol"], x["n_call_active"], x["n_call"], x["put_amt"], x["put_vol"]] for c, x in sm.items()}
+        row = {c: [x["call_amt"], x["call_vol"], x["n_call_active"], x["n_call"], x["put_amt"], x["put_vol"]] for c, x in sm.items()}
+        if _warrant_bad_days(dict(store, **{d.isoformat(): row})).intersection({d.isoformat()}):
+            print(f"  [warn] 權證 {d}: 有認購權證的標的只有 {sum(1 for x in row.values() if x[3] > 0)} 個，比其他天少很多，當成沒抓到、不存", file=sys.stderr)
+            continue
+        store[d.isoformat()] = row
         keep = {x.isoformat() for x in cal.last_n_trading_days(ref, max(n, WARR_KEEP), include_ref=True)}
         store = {k: v for k, v in store.items() if k in keep}
         with open(WARR_STORE + ".tmp", "w", encoding="utf-8") as f:
@@ -326,7 +346,7 @@ def load_warrant_store(ref, n=WARR_DAYS, max_new=60):
     return store, sorted(store)
 
 
-def warrant_activity(date):
+def warrant_activity(date, max_new=60):
     """
     篩選日全市場每個標的的權證成交 → {code: {call_amt, call_vol, n_call, n_call_active, put_amt, put_vol, avg5, surge, hedge, med20, big, streak}}。
       call_amt / put_amt：當天認購 / 認售權證成交金額（元）；avg5：前 5 個交易日認購金額的平均；surge = call_amt / avg5（avg5 = 0 時 None）
@@ -337,12 +357,13 @@ def warrant_activity(date):
     篩選日和前五天任何一天抓不到就整個丟例外：少一天平均就會錯，寧可不列也不要給錯的倍數。
     """
     import src_warrants as W
-    store, have = load_warrant_store(date)
+    store, have = load_warrant_store(date, max_new=max_new)
     iso = date.isoformat()
     prev5 = [d.isoformat() for d in cal.last_n_trading_days(date, 5)]
     miss = [d for d in [iso] + prev5 if d not in store]
     if miss:
-        raise http.HttpError("權證日成交缺 " + "、".join(miss))
+        raise http.HttpError(f"權證每日存檔還沒建好（已有 {len(have)} 天，還缺 {'、'.join(miss)}）。證交所的權證表一張要 30 秒以上，"
+                             f"這次最多補 {max_new} 天，下次打開會接著補；GitHub Actions 的預算結果出來後就不用在這台算")
     back = [d.isoformat() for d in cal.last_n_trading_days(date, WARR_DAYS - 1)]          # 新到舊，不含篩選日
     hedge = W.hedge_all(date)
     amt = lambda d, c: (store[d].get(c) or [0.0])[0] if d in store else None
@@ -674,8 +695,10 @@ def fit_for(code, hist):
 
 # ================================================================ 即時名單
 
-def screen(ref, top=3, skip_heavy=False):
-    """skip_heavy=True：候選直接排除權值股（市值前 HEAVY_RANK 名）。預設不排除，只標註。"""
+def screen(ref, top=3, skip_heavy=False, warr_max_new=60):
+    """skip_heavy=True：候選直接排除權值股（市值前 HEAVY_RANK 名）。預設不排除，只標註。
+    warr_max_new：這次最多補抓幾天的權證日表。排程（GitHub Actions、命令列）用預設值一次補完；
+    monitor 裡互動式的呼叫給 2——第一次要建 26 天得花四十分鐘以上，不能讓畫面一直等，寧可這次先不列權證那兩區、之後每次接著補。"""
     store, dates = load_store(ref)
     if len(dates) < 61:
         raise SystemExit(f"資料不足 61 個交易日（只有 {len(dates)} 天），稍後再試")
@@ -700,9 +723,12 @@ def screen(ref, top=3, skip_heavy=False):
     shorts, longs = pick(feats, exclude=set(punish) | (heavy if skip_heavy else set()))
     member, tstats = load_themes()
     # 權證昨日大量買進：全市場算一次（六天的權證日成交 + 避險），抓不到就不列、把原因帶出去
-    wa, warr, strong, warr_err = {}, [], [], None
+    wa, warr, strong, warr_err, strong_err = {}, [], [], None, None
     try:
-        wa = warrant_activity(d)
+        wa = warrant_activity(d, max_new=warr_max_new)
+        base_days = sum(1 for x in wa.values() if x.get("med20") is not None)
+        if not base_days:                           # 存檔天數不夠算 20 日中位數：連續天數全部是 0，不能當成「沒有符合的」
+            strong_err = "權證每日存檔的天數還不夠（連續大買要有前 10 天以上的資料當基準），這一區之後才會有"
         warr = warrant_pick(feats, wa, exclude=set(punish))[:WARR_LIST]
         strong = strong_pick(feats, wa, exclude=set(punish))[:STRONG_LIST]
     except Exception as e:
@@ -729,7 +755,7 @@ def screen(ref, top=3, skip_heavy=False):
             f["fit"]["tags"] = fit_tags(f["fit"], side)
     # 多留幾檔備用：開盤跳空不符時往下遞補
     return {"date": dates[-1], "mkt": mkt, "short": shorts[: top + 3], "long": longs[: top + 3], "top": top,
-            "warrant": warr, "strong": strong, "warrant_error": warr_err,
+            "warrant": warr, "strong": strong, "warrant_error": warr_err, "strong_error": strong_err,
             "member": member, "themes": tstats, "punished": [c for c in punish if c in feats],
             "skipped_heavy": sorted(c for c in heavy if c in feats and (feats[c]["weak5"] or long_conditions(feats[c]))) if skip_heavy else []}
 
@@ -825,8 +851,8 @@ def print_report(r):
             print(f"     → {j['plan']}")
     print(f"\n🔥 強勢股：權證連續大買 × 法人買超")
     print(f"  {STRONG_NOTE}")
-    if r.get("warrant_error"):
-        print(f"  ⚠ 權證資料抓不到，這一區今天不列：{r['warrant_error']}")
+    if r.get("warrant_error") or r.get("strong_error"):
+        print(f"  ⚠ 這一區現在不列：{r.get('warrant_error') or r.get('strong_error')}")
     elif not r.get("strong"):
         print("  （沒有符合條件的標的）")
     for k, f in enumerate(r.get("strong") or [], 1):
@@ -875,7 +901,7 @@ def to_dict(r):
             "short_active": r["mkt"]["weak"], "long_active": not r["mkt"]["weak"],
             "short": rows("short"), "long": rows("long"), "punished": r["punished"], "skipped_heavy": r.get("skipped_heavy") or [],
             "warrant": rows("warrant") if r.get("warrant") else [], "warrant_error": r.get("warrant_error"), "warrant_note": WARR_NOTE,
-            "strong": rows("strong") if r.get("strong") else [], "strong_note": STRONG_NOTE,
+            "strong": rows("strong") if r.get("strong") else [], "strong_note": STRONG_NOTE, "strong_error": r.get("strong_error"),
             "strong_rule": f"認購權證連續 ≥{STRONG_WARR_DAYS} 天大買 且 法人買超 ≥ 成交量 {STRONG_INST_PCT:g}%",
             "warrant_rule": f"認購成交金額 ≥ 前 5 日平均 {WARR_SURGE:g} 倍且 ≥ {WARR_MIN_AMT / 1e4:.0f} 萬",
             "themes": [{"name": n, "chg1d": round(a, 2), "chg5d": round(b, 2)} for n, a, b in r["themes"]]}
@@ -931,7 +957,7 @@ def write_precomputed(res, path=PRE_FILE):
     return True
 
 
-def load_precomputed(now=None):
+def load_precomputed(now=None, want=None):
     """
     找預先算好的選股結果：GitHub 上的（raw.githubusercontent.com，不用先 git pull）和本機 checkout 裡的都看，
     只收「版本對、資料日 = expected_date()」的；兩個都合格用比較晚產生的。沒有合格的回 None（呼叫端就自己算）。
@@ -939,7 +965,7 @@ def load_precomputed(now=None):
     """
     if os.environ.get("DAYTRADE_SCREEN_LOCAL") == "1":
         return None
-    want = expected_date(now).isoformat()
+    want = want or expected_date(now).isoformat()        # want：指定要哪一個資料日（復盤的「明天的準備」用）
     found = []
     slug = _repo_slug()
     if slug:

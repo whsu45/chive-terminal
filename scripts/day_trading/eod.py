@@ -585,7 +585,13 @@ def tomorrow(codes, names=None):
             out["brokers"][c] = {"error": str(e)[:120]}
     try:
         import theme_screener as TS
-        res = TS.to_dict(TS.screen(TS.default_ref(iso), 3))
+        res = None
+        try:
+            res = TS.load_precomputed(want=iso)          # GitHub Actions 已經算好這一天的就直接用，不在這台重跑
+        except Exception:
+            pass
+        if not res:
+            res = TS.to_dict(TS.screen(TS.default_ref(iso), 3, warr_max_new=2))
         out["screener"] = res if res["date"] == iso else {"pending": True, "have": res["date"]}
     except BaseException as e:           # screen() 資料不足時會 SystemExit
         out["screener"] = {"error": str(e)[:160] or e.__class__.__name__}

@@ -85,6 +85,79 @@ def fetch_ticks(api, contract, date, why=""):
     return api.ticks(contract=contract, date=date)
 
 
+KBARS_DAILY_LIMIT = 270  # 官方：盤中查詢 kbars 次數不得超過 270 次
+
+
+def kbars_budget():
+    """這台電腦今天盤中最多查幾次分 K。預設 120（官方上限 270 的一半不到，留給另一台電腦）；.env 的 SHIOAJI_KBARS_BUDGET 可以改。"""
+    load_env()
+    try:
+        return max(0, min(KBARS_DAILY_LIMIT, int(os.environ.get("SHIOAJI_KBARS_BUDGET", 120))))
+    except ValueError:
+        return 120
+
+
+def _kbars_usage_path():
+    return os.path.join(CACHE_DIR, f"kbars_usage_{dt.date.today():%Y%m%d}.json")
+
+
+def kbars_usage():
+    try:
+        import json
+        with open(_kbars_usage_path()) as f:
+            return int(json.load(f).get("count", 0))
+    except Exception:
+        return 0
+
+
+def fetch_kbars(api, contract, day, why=""):
+    """所有 api.kbars 都走這裡：盤中先記一次、用到上限就丟 TicksQuota 不送查詢；盤後不計。回 Kbars（ts 是每根的「結束」時間）。"""
+    import json
+    if _intraday():
+        used, budget = kbars_usage(), kbars_budget()
+        if used >= budget:
+            raise TicksQuota(f"今天盤中 kbars 查詢已用 {used}/{budget}，不再送出（官方上限 {KBARS_DAILY_LIMIT} 次）")
+        try:
+            os.makedirs(CACHE_DIR, exist_ok=True)
+            with open(_kbars_usage_path(), "w") as f:
+                json.dump({"count": used + 1, "last": dt.datetime.now().isoformat(), "why": why}, f)
+        except Exception:
+            pass
+    return api.kbars(contract=contract, start=day, end=day)
+
+
+def backfill_bars(api, contract, code, now=None):
+    """
+    用分 K 查詢把今天稍早的線圖補回來：逐筆補不回來（額度用完、或本機存檔中間有空檔）時，江波圖至少要有完整的價格走勢。
+    只補「已經走完、而且現在還沒有」的那些分鐘，不動逐筆——所以主力 / 散戶分流、大單統計還是只有逐筆涵蓋的那一段。
+    永豐分 K 的 ts 是每根的結束時間（09:01 那根 = 09:00–09:01），這裡往前挪一分鐘跟逐筆做的分 K 對齊；量是張、金額是元。
+    回補了幾根（失敗回 0）。
+    """
+    now = now or dt.datetime.now()
+    try:
+        k = fetch_kbars(api, contract, now.date().isoformat(), "補線圖")
+    except Exception as e:
+        print(f"[shioaji] {code} 分 K 回補失敗：{str(e)[:100]}")
+        return 0
+    cur = now.strftime("%H:%M")
+    n = 0
+    with _lock:
+        acc = _state.setdefault(code, _new_acc())
+        for ts, o, h, l, c, v, a in zip(k.ts, k.Open, k.High, k.Low, k.Close, k.Volume, k.Amount):
+            t = ns_to_dt(ts)
+            if t.date() != now.date():
+                continue
+            key = "13:30" if t.strftime("%H:%M") == "13:30" else (t - dt.timedelta(minutes=1)).strftime("%H:%M")
+            if key >= cur or key in acc["bars"]:          # 現在這一分鐘交給串流；逐筆已經做出來的不覆蓋
+                continue
+            acc["bars"][key] = [float(o), float(h), float(l), float(c), int(v), float(a) / 1000.0]     # amt 的單位跟逐筆一樣：價 × 張
+            acc.setdefault("kbar_keys", set()).add(key)
+            acc["high"] = float(h) if acc["high"] is None else max(acc["high"], float(h))
+            acc["low"] = float(l) if acc["low"] is None else min(acc["low"], float(l))
+            n += 1
+    return n
+
+
 def _live_path(code, day):
     return os.path.join(LIVE_DIR, f"{code}_{day}.json")
 
@@ -153,12 +226,18 @@ def backfill_today(api, contract, code, now=None):
                 _state[code]["auction"] = {k: list(v) for k, v in auction.items()}
         return f"用本機存的逐筆 {len(cached)} 筆（到 {cached[-1][0]:%H:%M:%S}，{note}）"
 
+    def bars(msg):
+        """逐筆不完整：用分 K 查詢把線圖缺的那幾分鐘補起來（分流還是只有逐筆涵蓋的那一段）。"""
+        n = backfill_bars(api, contract, code, now)
+        return msg + (f"；線圖用分 K 補了 {n} 分鐘" if n else "；線圖缺的那段補不回來")
+
     if cached and gap is not None and gap <= CACHE_GAP_OK:
-        return use_cache(f"離現在 {gap:.0f} 秒，不花額度")
+        msg = use_cache(f"離現在 {gap:.0f} 秒，不花額度")
+        return bars(msg) if gap >= 60 else msg
     if _intraday(now) and ticks_left() <= 0:
         if cached:
-            return use_cache(f"額度用完；{cached[-1][0]:%H:%M} 到現在這段沒有逐筆")
-        return f"額度用完（{ticks_usage()}/{ticks_budget()}）又沒有本機存檔：只有現在開始的逐筆，今天的主力 / 散戶分流不完整"
+            return bars(use_cache(f"額度用完；{cached[-1][0]:%H:%M} 到現在這段沒有逐筆"))
+        return bars(f"逐筆查詢額度用完（{ticks_usage()}/{ticks_budget()}）又沒有本機存檔：逐筆只有現在開始的，今天的主力 / 散戶分流不完整")
     try:
         t = fetch_ticks(api, contract, now.date().isoformat(), "盤中啟動回補")
         with _lock:
@@ -169,8 +248,8 @@ def backfill_today(api, contract, code, now=None):
         return f"查詢回補 {n} 筆"
     except Exception as e:
         if cached:
-            return use_cache(f"查詢失敗（{str(e)[:60]}）；{cached[-1][0]:%H:%M} 到現在這段沒有逐筆")
-        return f"回補逐筆失敗：{str(e)[:100]}"
+            return bars(use_cache(f"查詢失敗（{str(e)[:60]}）；{cached[-1][0]:%H:%M} 到現在這段沒有逐筆"))
+        return bars(f"回補逐筆失敗：{str(e)[:100]}")
 
 _api = None
 _lock = threading.Lock()
@@ -469,7 +548,7 @@ def start_index_stream():
         if contract is None:
             continue
         try:
-            k = api.kbars(contract=contract, start=today, end=today)   # 1 次額度，回補開盤到現在
+            k = fetch_kbars(api, contract, today, f"指數 {key}")       # 1 次額度，回補開盤到現在
             with _lock:
                 acc = _idx.setdefault(key, {"last": None, "bars": {}})
                 for ts, c in zip(k.ts, k.Close):
@@ -685,10 +764,31 @@ def flow(code, window_min=None, price=None):
             else: ms += v
     if vol == 0:
         return None
+    # 今天稍早是用分 K 補的（逐筆補不回來）：全日成交量與 VWAP 用分 K 算，並標出逐筆實際從幾點開始，
+    # 讓畫面講清楚「分流只有這一段」。window_min 有給（只看最近 N 分鐘）時不處理。
+    partial = None
+    if not window_min:
+        with _lock:
+            a2 = _state.get(code) or {}
+            kk = set(a2.get("kbar_keys") or ())
+            bsum = [(b[4], b[5]) for b in (a2.get("bars") or {}).values()]
+        if kk:
+            bv = sum(x[0] for x in bsum); ba = sum(x[1] for x in bsum)
+            t0 = ticks[0][0]
+            partial = {"ticks_from": t0.strftime("%H:%M") if isinstance(t0, dt.datetime) else None, "kbar_minutes": len(kk),
+                       "day_volume": bv, "ticks_volume": vol}
+            if bv > vol and bv > 0:
+                amt, vol_day = ba, bv
+            else:
+                vol_day = vol
+        else:
+            vol_day = vol
+    else:
+        vol_day = vol
     big_net = (bb - bs) + (hb - hs)
     return {"big_net": big_net, "small_net": sb - ss, "mid_net": mb - ms, "hidden_net": hb - hs,
             "big_buy": bb + hb, "big_sell": bs + hs, "small_buy": sb, "small_sell": ss,
-            "buy_vol": bb + sb + mb + hb, "sell_vol": bs + ss + ms + hs, "volume": vol, "vwap": amt / vol,
+            "buy_vol": bb + sb + mb + hb, "sell_vol": bs + ss + ms + hs, "volume": vol, "vwap": amt / vol_day, "partial": partial,
             "big_net_pct": big_net / vol * 100, "small_net_pct": (sb - ss) / vol * 100,
             "hidden_net_pct": (hb - hs) / vol * 100,
             "thresholds": th, "iceberg": ice, "window_min": window_min,

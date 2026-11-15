@@ -24,7 +24,8 @@ _TYPES = {"0999": "call", "0999P": "put", "0999C": "call", "0999B": "put"}
 
 
 def _twse_table(date, typ):
-    j = http.get_json(TWSE, params={"date": date.strftime("%Y%m%d"), "type": typ, "response": "json"}, cache_ttl=TTL)
+    # 認購權證那張表有三萬多列，證交所常要 30 秒才回：逾時拉長、多試兩次
+    j = http.get_json(TWSE, params={"date": date.strftime("%Y%m%d"), "type": typ, "response": "json"}, cache_ttl=TTL, timeout=75, retries=2)
     for t in j.get("tables", []):
         if t.get("data"):
             return t.get("fields") or [], t["data"]
@@ -32,15 +33,19 @@ def _twse_table(date, typ):
 
 
 def twse_warrants_daily(date):
-    """全市場 → {target_code: {"call": [w...], "put": [w...]}}；w = {code,name,vol(張),amt,close,chg_pct,right}"""
+    """
+    全市場 → {target_code: {"call": [w...], "put": [w...]}}；w = {code,name,vol(張),amt,close,chg_pct,right}
+    四張表（認購、認售、牛證、熊證）任何一張抓不到就丟例外，認購或認售是空的也丟：
+    原本抓不到會靜靜跳過那一張，結果那一天全市場的認購金額變成 0，前 5 日平均被拉低、倍數被灌大
+    （2026-11-13 發現：本機存檔的 11/09、11/10 少了整張上市認購表，「權證昨日大量買進」名單因此跟 GitHub 上算的不一樣）。
+    """
     out = {}
     for typ, right in _TYPES.items():
-        try:
-            fields, rows = _twse_table(date, typ)
-        except http.HttpError:
-            continue
+        fields, rows = _twse_table(date, typ)              # 失敗就讓例外往外丟
         if not rows:
-            continue
+            if typ in ("0999", "0999P"):
+                raise http.HttpError(f"上市{'認購' if typ == '0999' else '認售'}權證 {date} 是空的（資料還沒出，或這天不是交易日）")
+            continue                                       # 牛證 / 熊證那天沒有任何一檔是可能的
         fi = {f: i for i, f in enumerate(fields)}
         ic, iname, ivol, iamt, iclose, isign, ichg, itgt = (fi.get("證券代號"), fi.get("證券名稱"), fi.get("成交股數"), fi.get("成交金額"),
                                                             fi.get("收盤價"), fi.get("漲跌(+/-)"), fi.get("漲跌價差"), fi.get("標的代號"))

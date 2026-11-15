@@ -37,6 +37,9 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .lim{padding:0 8px;border-radius:6px;color:#fff!important}.lim.lim-up{background:var(--up)}.lim.lim-dn{background:var(--dn);color:#06240f!important}
 .limtag{font-size:13px;font-weight:700;padding:2px 8px;border-radius:6px;align-self:center}.limtag.up{border:1px solid var(--up);color:var(--up)}.limtag.dn{border:1px solid var(--dn);color:var(--dn)}
 header .tab .cb{color:var(--warn);margin-left:4px}
+header .addbox{display:flex;gap:6px;align-items:center}
+header .addbox input{width:88px;background:var(--panel2);border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:6px 8px;font-family:var(--mono)}
+header .addbox .msg{font-size:12px;color:var(--muted);max-width:340px}header .addbox .msg.err{color:var(--up)}header .addbox .msg.ok{color:var(--dn)}
 .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px 12px;margin-top:10px}
 .kv div{color:var(--muted);font-size:12px}.kv b{display:block;color:var(--fg);font-weight:500;font-size:15px}
 .verdict{font-size:18px;font-weight:600;margin:6px 0 10px}
@@ -207,6 +210,8 @@ main#review.hidden{display:none}
 <body>
 <header>
   <div class="tabs" id="tabs"></div>
+  <form class="addbox" id="addbox" style="display:none" onsubmit="addCode();return false" title="盤中再加一檔監控：在背景抓盤前資料（約 10～30 秒）、接上即時報價與逐筆，準備好就會多一個分頁。不用重開 monitor">
+    <input id="add-code" maxlength="6" placeholder="代碼" autocomplete="off" inputmode="numeric"><button class="vbtn" type="submit">＋ 監控</button><span class="msg" id="add-msg"></span></form>
   <div class="meta">
     <span id="idx"></span>
     <span id="shioaji"></span>
@@ -292,9 +297,26 @@ setInterval(tick,1000);tick();
 async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());STATE=await r.json();autoReview();
   if(!STATE.codes.length){loadPicker();return;}            // 選股模式：還沒選標的
   showPicker(false);
+  if(ADD_WAIT&&STATE.codes.includes(ADD_WAIT)){CUR=ADD_WAIT;}renderAdd();
   if(!CUR||!STATE.codes.includes(CUR))CUR=STATE.codes[0];render();
   const h=await fetch('/api/history/'+CUR+'?_='+Date.now());HIST[CUR]=await h.json();drawChart();}
   catch(e){$('foot').innerHTML='<span class="stale">連線中斷（monitor 還在跑嗎？）：'+esc(e)+'</span>';}}
+// 盤中加入監控（POST /api/add → monitor.add_code，背景抓盤前資料、接上串流）。進度看 STATE.adding；加入中每 3 秒更新一次狀態
+let ADD_WAIT=null,ADD_TIMER=null;
+function renderAdd(){const box=$('addbox');if(!box)return;box.style.display=(STATE&&STATE.codes&&STATE.codes.length)?'':'none';
+  const ad=(STATE&&STATE.adding)||{},el=$('add-msg');const run=Object.entries(ad).filter(([c,v])=>v.status==='running').map(([c])=>c);
+  const last=ADD_WAIT;const v=last&&ad[last];      // 結果只顯示自己剛送出的那一檔（重新整理後不再顯示舊的失敗訊息）
+  if(run.length){el.className='msg';el.textContent=`加入 ${run.join('、')} 中（抓盤前資料、接上即時報價，約 10～30 秒）…`;}
+  else if(v&&v.status==='error'){el.className='msg err';el.textContent=`${last} 加入失敗：${v.error}`;ADD_WAIT=null;}
+  else if(v&&v.status==='done'&&STATE.codes.includes(last)){el.className='msg ok';el.textContent=`${last} ${v.name||''} 已加入（${v.secs} 秒）${v.note?'；'+v.note:''}`;ADD_WAIT=null;}
+  if(run.length&&!ADD_TIMER)ADD_TIMER=setInterval(loadState,3000);
+  if(!run.length&&ADD_TIMER){clearInterval(ADD_TIMER);ADD_TIMER=null;}}
+async function addCode(){const inp=$('add-code'),el=$('add-msg');const c=inp.value.trim().toUpperCase();if(!c)return;
+  el.className='msg';el.textContent='送出…';
+  try{const r=await fetch('/api/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:c})});const j=await r.json();
+    if(!r.ok){el.className='msg err';el.textContent=j.error||'加入失敗';return;}
+    ADD_WAIT=c;inp.value='';el.textContent=`加入 ${c} 中（抓盤前資料、接上即時報價，約 10～30 秒）…`;setTimeout(loadState,1500);}
+  catch(e){el.className='msg err';el.textContent='送不出去：'+e;}}
 async function loadLive(){try{const r=await fetch('/api/live?_='+Date.now());const j=await r.json();LIVE=(j&&j.quotes)?j:null;applyFast();if(STATE)renderLive();}catch(e){}}
 // 報價快速通道：成交價與五檔直接讀永豐串流的最新狀態（monitor.quote_json），每 0.5 秒拉一次；其餘資料照舊每 3 秒。
 // 沒有串流或不在盤中時後端回 on:false，就改成每 5 秒問一次。
@@ -353,13 +375,13 @@ function renderPicker(){
     const SG=res.strong||[];
     $('pk-strong').innerHTML=res.strong_rule?`<h3>🔥 強勢股<span class="off" style="color:var(--muted)">${esc(res.strong_rule)}</span></h3>
       <div class="pk-note">${esc(res.strong_note||'')}</div>`
-      +(res.warrant_error?`<div class="pk-empty">⚠ 權證資料抓不到，這一區今天不列：${esc(res.warrant_error)}</div>`
+      +(res.warrant_error||res.strong_error?`<div class="pk-empty">⚠ 這一區現在不列：${esc(res.warrant_error||res.strong_error)}</div>`
         :SG.length?`<div class="pk-wgrid">${SG.map(r=>pkCard('strong',r,res.top,true,p.selected)).join('')}</div>`:'<div class="pk-empty">沒有符合條件的標的</div>'):'';
     // 權證昨日大量買進（theme_screener.warrant_pick）：不分多空的觀察名單，預設不勾
     const W=res.warrant||[];
     $('pk-warr').innerHTML=res.warrant_rule?`<h3>⚡ 權證昨日大量買進<span class="off" style="color:var(--muted)">${esc(res.warrant_rule)}；依占現股成交值排序</span></h3>
       <div class="pk-note">${esc(res.warrant_note||'')}</div>`
-      +(res.warrant_error?`<div class="pk-empty">⚠ 權證資料抓不到，這一區今天不列：${esc(res.warrant_error)}</div>`
+      +(res.warrant_error?`<div class="pk-empty">⚠ 這一區現在不列：${esc(res.warrant_error)}</div>`
         :W.length?`<div class="pk-wgrid">${W.map(r=>pkCard('warrant',r,res.top,true,p.selected)).join('')}</div>`:'<div class="pk-empty">沒有符合條件的標的</div>'):'';
   }else{$('pk-mkt').innerHTML=p.status==='running'?'等待選股結果…':'沒有選股結果';$('pk-short').innerHTML='';$('pk-long').innerHTML='';$('pk-warr').innerHTML='';$('pk-strong').innerHTML='';}
   if(sent){const listed=new Set([...(res?.short||[]),...(res?.long||[]),...(res?.warrant||[]),...(res?.strong||[])].map(r=>r.code));$('pk-manual').value=p.selected.filter(c=>!listed.has(c)).join(', ');}
@@ -556,6 +578,7 @@ function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];c
     const th=fl.thresholds||{};
     $('flow').innerHTML=row('主力',fl.big_net,fl.big_net_pct)+row('藏單',fl.hidden_net,fl.hidden_net_pct)+row('散戶',fl.small_net,fl.small_net_pct)+row('中實戶',fl.mid_net,fl.mid_net/vol*100)
       +`<div class="small muted" style="margin-top:6px">外盤 ${fl.buy_vol} / 內盤 ${fl.sell_vol}${fl.unsided_vol?` / <span title="開盤、收盤集合競價（和盤後定價）是所有委託一次撮合成一個價，沒有誰主動買或賣；券商資料照樣會標外盤或內盤，而且一筆常常幾百張，這裡不算進任何一邊${fl.auction&&fl.auction.open?'。開盤那筆 '+fl.auction.open[1]+' 張 @'+fp(fl.auction.open[0]):''}">集合競價 ${fl.unsided_vol}</span>`:''} · VWAP ${f(fl.vwap,2)} · 門檻 大單 ≥${th.big_lots} 張（${f(th.big_amount/1e4,0)} 萬${th.p95?'，P95 '+th.p95:''}）散戶 &lt;${th.small_lots} 張</div>`
+      +(fl.partial?`<div class="alert" style="margin-top:6px" title="重啟時逐筆補不回來（查詢額度用完，或本機存檔中間有空檔），所以今天稍早的線圖改用分 K 查詢補。分 K 只有每分鐘的開高低收和量，分不出每一筆的大小和內外盤">逐筆只有 <b>${esc(fl.partial.ticks_from||'?')}</b> 之後的：今天稍早的線圖是用分 K 補的（${fl.partial.kbar_minutes} 分鐘），主力／散戶分流和下面的大戶散戶圖<b>不含那一段</b>（全日成交 ${fl.partial.day_volume} 張，逐筆涵蓋 ${fl.partial.ticks_volume} 張）</div>`:'')
       +flowDist(fl,th)
       +(fl.iceberg||[]).filter(x=>x.regular||x.share_cnt>=0.2).map(x=>`<div class="alert" style="margin-top:6px">規律小單：${x.size} 張 × ${x.count} 筆 ${x.side}，共 ${x.volume} 張${x.avg_gap_s?`，每 ${f(x.avg_gap_s,0)} 秒`:''}${x.regular?' ← 機器單':''}</div>`).join('');}
   else $('flow').innerHTML='<span class="muted">需要永豐串流（.env 填金鑰）</span>';
@@ -718,7 +741,7 @@ function renderWarr(ev){const w=(LIVE&&LIVE.warrants&&LIVE.warrants[CUR])||ev.wa
 // ---------------------------------------------------------------- 估算區（每 interval 秒）
 function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   $('tabs').innerHTML=STATE.codes.map(c=>{const lq=LIVE&&LIVE.quotes[c];const e=STATE.latest[c];const ch=lq?lq.chg_pct:e?.info?.chg_pct;
-    const hd=(STATE.daily[c]||{}).history;return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||'')} <span class="num ${cls(ch)}${limCls(c,lq?lq.ref:e?.quote?.ref)}">${pct(ch)}</span>${(e?.combos||[]).length?`<span class="cb" title="${esc(e.combos.map(x=>x.name).join('、'))}">◆</span>`:''}${hd?`<span class="days">${hd.days}天</span>`:''}</div>`}).join('');
+    const hd=(STATE.daily[c]||{}).history;return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||(STATE.daily[c]||{}).name||'')} <span class="num ${cls(ch)}${limCls(c,lq?lq.ref:e?.quote?.ref)}">${pct(ch)}</span>${(e?.combos||[]).length?`<span class="cb" title="${esc(e.combos.map(x=>x.name).join('、'))}">◆</span>`:''}${hd?`<span class="days">${hd.days}天</span>`:''}</div>`}).join('');
   renderHist();renderDT();
   if(!LIVE){const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
     $('shioaji').innerHTML=STATE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';}

@@ -76,6 +76,7 @@ class WebState:
         self.select_event = threading.Event()
         self.picks = {}                   # code -> 選股理由（選股模式選的才有）
         self.tomorrow = {"status": "off"} # 復盤畫面「明天的準備」：off / running / done / error（背景抓分點表與選股）
+        self.adding = {}                  # 盤中加入的標的：code -> {status: running / done / error, ...}（Monitor.add_code）
 
     def put_live(self, obj):
         with self.lock:
@@ -105,7 +106,7 @@ class WebState:
         with self.lock:
             return json.dumps({"codes": self.codes, "latest": self.latest, "daily": self.daily, "describe": self.describe,
                                "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji,
-                               "picks": self.picks, "in_session": sess},
+                               "picks": self.picks, "in_session": sess, "adding": self.adding, "max_codes": MAX_CODES},
                               ensure_ascii=False, default=str)
 
     def history_json(self, code):
@@ -181,6 +182,7 @@ def tomorrow_json(codes):
 
 
 MAX_PICK = 6   # 選股模式最多同時監控幾檔（每檔一條永豐串流與一次盤前資料）
+MAX_CODES = 12 # 盤中再加入標的時，總共最多幾檔（MIS 一次查詢的檔數、畫面分頁、快迴圈的負擔都有限）
 WEB = WebState()
 
 
@@ -199,7 +201,7 @@ def run_screener(top=3):
             print(f"[選股] 用預先算好的結果：資料日 {res['date']}（{res.get('generated_by')} 於 {res.get('generated_at')} 產生）")
         else:
             print("[選股] 沒有可用的預算結果，本機現在算（第一次要補抓資料會久一點）")
-            res = TS.to_dict(TS.screen(TS.default_ref(), top))
+            res = TS.to_dict(TS.screen(TS.default_ref(), top, warr_max_new=2))
         with WEB.lock:
             WEB.picker = {"status": "done", "result": res, "finished": dt.datetime.now().strftime("%H:%M:%S")}
         print(f"[選股] {res['date']} 完成：做空 {','.join(r['code'] for r in res['short'][:top]) or '無'}"
@@ -254,7 +256,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         """POST /api/position（持倉面板）、/api/select（選股模式選標的）。只綁 127.0.0.1；要求 JSON（跨站表單送不了）且 Origin 是本機。"""
         path = urllib.parse.urlparse(self.path).path
         mon = getattr(WEB, "monitor", None)
-        if not ((path == "/api/position" and mon) or path == "/api/select"):
+        if not ((path in ("/api/position", "/api/add") and mon) or path == "/api/select"):
             return self._send('{"error":"not found"}', code=404)
         origin = self.headers.get("Origin") or ""
         host = (urllib.parse.urlparse(origin).hostname or "") if origin else "127.0.0.1"
@@ -267,7 +269,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(n) or b"{}")
         except Exception:
             return self._send('{"error":"bad json"}', code=400)
-        ok, res = WEB.select(body) if path == "/api/select" else mon.position_action(body)
+        ok, res = (WEB.select(body) if path == "/api/select" else mon.add_code(body.get("code") if isinstance(body, dict) else None)
+                   if path == "/api/add" else mon.position_action(body))
         self._send(json.dumps(res, ensure_ascii=False, default=str), code=200 if ok else 400)
 
 
@@ -466,9 +469,10 @@ def explain(ev):
 
 class Monitor:
     def __init__(self, codes, peers_arg, interval, use_shioaji, big_lot, refresh, web=False):
-        self.codes = codes
+        self.codes = list(codes)
         self.interval = interval
         self.web = web
+        self._peers_arg, self._refresh = peers_arg, refresh      # 盤中加入標的（add_code）時用同一組設定抓盤前資料
         WEB.codes = list(codes); WEB.interval = interval
         print(f"[裝置] ID {DEVICE_ID}：今天的紀錄寫到 logs/*_{DEVICE_ID}.jsonl（換台電腦開就換 ID，git 不會撞檔）")
         self.daily = {}
@@ -520,37 +524,97 @@ class Monitor:
         self._load_positions()
         import src_shioaji
         for c in codes:
-            self.daily[c] = prep.build(c, peers_arg, refresh)
-            print(prep.describe(self.daily[c]))
-            dd = self.daily[c]
-            WEB.daily[c] = {k: dd.get(k) for k in ("code", "name", "market", "group", "peers", "limit_up", "limit_down", "tech", "flags", "insti_sum", "margin", "sbl")}
-            try:
-                he = history.record_launch(c, dd.get("name"), dd.get("market"), dd.get("group"))
-                dd["history"] = history.summary(c, he)
-                WEB.daily[c]["history"] = dd["history"]
-                hs = dd["history"]
-                print(f"  交戰紀錄：監控 {hs['days']} 天（首次 {hs['first']}）、建議做空 {hs['short']['win']}勝{hs['short']['loss']}敗、做多 {hs['long']['win']}勝{hs['long']['loss']}敗"
-                      + (f"；常見失誤：{'、'.join(r for r, _ in hs['loss_reasons'])}" if hs['loss_reasons'] else ""))
-            except Exception as e:
-                print(f"  [warn] 交戰紀錄: {str(e)[:80]}")
-            WEB.daily[c]["warrants"] = {k: v for k, v in (dd.get("warrants") or {}).items() if k != "list"}
-            br = dd.get("brokers") or {}
-            if br.get("daytraders"):
-                # 昨天買進的隔日沖分點（儀表板「隔日沖分點」卡）；date = 那張分點表的日期
-                WEB.daily[c]["daytraders"] = dict(br["daytraders"], date=br.get("day_date"))
-            WEB.describe[c] = prep.describe(dd)
-            pc = (self.daily[c].get("tech") or {}).get("close")
-            if pc:
-                th = src_shioaji.lot_thresholds(pc)
-                print(f"  大單門檻（以昨收 {pc} 推算）：≥{th['big_lots']} 張 ≈ {th['big_amount']/1e4:.0f} 萬；散戶 <{th['small_lots']} 張 ≈ {th['small_amount']/1e4:.0f} 萬；開盤後再以當日成交分布修正")
-        self.ex_codes = set()
+            self._setup_code(c)
+        self.ex_codes = set(src_mis.index_codes())
         for c in codes:
-            d = self.daily[c]
-            self.ex_codes.add(f"{d['market']}_{c}.tw")
-            for p, pi in d["peer_info"].items():
-                self.ex_codes.add(f"{pi['ex']}_{p}.tw")
-        self.ex_codes |= set(src_mis.index_codes())
+            self._add_ex(c)
         self.calibrate_after_close = False
+        self._init_stream(codes, use_shioaji, big_lot)
+
+    def _add_ex(self, c):
+        """這檔和它的族群成員加進 MIS 要查的代碼。用重新指定（不是原地改），另一條執行緒正在 sorted(self.ex_codes) 也不會出錯。"""
+        d = self.daily[c]
+        self.ex_codes = self.ex_codes | {f"{d['market']}_{c}.tw"} | {f"{pi['ex']}_{p}.tw" for p, pi in d["peer_info"].items()}
+
+    def _setup_code(self, c):
+        """一檔標的的盤前資料與儀表板用的精簡版（啟動時、盤中加入時都走這裡）。"""
+        import src_shioaji
+        peers_arg, refresh = self._peers_arg, self._refresh
+        self.daily[c] = prep.build(c, peers_arg, refresh)
+        print(prep.describe(self.daily[c]))
+        dd = self.daily[c]
+        WEB.daily[c] = {k: dd.get(k) for k in ("code", "name", "market", "group", "peers", "limit_up", "limit_down", "tech", "flags", "insti_sum", "margin", "sbl")}
+        try:
+            he = history.record_launch(c, dd.get("name"), dd.get("market"), dd.get("group"))
+            dd["history"] = history.summary(c, he)
+            WEB.daily[c]["history"] = dd["history"]
+            hs = dd["history"]
+            print(f"  交戰紀錄：監控 {hs['days']} 天（首次 {hs['first']}）、建議做空 {hs['short']['win']}勝{hs['short']['loss']}敗、做多 {hs['long']['win']}勝{hs['long']['loss']}敗"
+                  + (f"；常見失誤：{'、'.join(r for r, _ in hs['loss_reasons'])}" if hs['loss_reasons'] else ""))
+        except Exception as e:
+            print(f"  [warn] 交戰紀錄: {str(e)[:80]}")
+        WEB.daily[c]["warrants"] = {k: v for k, v in (dd.get("warrants") or {}).items() if k != "list"}
+        br = dd.get("brokers") or {}
+        if br.get("daytraders"):
+            # 昨天買進的隔日沖分點（儀表板「隔日沖分點」卡）；date = 那張分點表的日期
+            WEB.daily[c]["daytraders"] = dict(br["daytraders"], date=br.get("day_date"))
+        WEB.describe[c] = prep.describe(dd)
+        pc = (self.daily[c].get("tech") or {}).get("close")
+        if pc:
+            th = src_shioaji.lot_thresholds(pc)
+            print(f"  大單門檻（以昨收 {pc} 推算）：≥{th['big_lots']} 張 ≈ {th['big_amount']/1e4:.0f} 萬；散戶 <{th['small_lots']} 張 ≈ {th['small_amount']/1e4:.0f} 萬；開盤後再以當日成交分布修正")
+
+    def add_code(self, code):
+        """
+        盤中再加入一檔監控（儀表板 POST /api/add {code}）。在背景抓盤前資料（10～30 秒）、接上永豐串流並回補今天稍早的逐筆
+        （逐筆額度用完就讀本機存檔、再不行用分 K 補線圖），全部準備好才放進 self.codes，其他迴圈不會看到只做一半的標的。
+        回 (ok, {status, code} 或 {error})；進度放在 WEB.adding，儀表板從 /api/state 看。
+        """
+        code = str(code or "").strip().upper()
+        if not (4 <= len(code) <= 6 and code.isalnum()):
+            return False, {"error": "代碼格式不對（4～6 碼英數字）"}
+        with WEB.lock:
+            if code in self.codes:
+                return False, {"error": f"{code} 已經在監控了"}
+            if (WEB.adding.get(code) or {}).get("status") == "running":
+                return False, {"error": f"{code} 正在加入中"}
+            busy = sum(1 for v in WEB.adding.values() if v.get("status") == "running")
+            if len(self.codes) + busy >= MAX_CODES:
+                return False, {"error": f"最多同時監控 {MAX_CODES} 檔"}
+            WEB.adding[code] = {"status": "running", "started": dt.datetime.now().strftime("%H:%M:%S")}
+        threading.Thread(target=self._add_worker, args=(code,), daemon=True, name=f"add-{code}").start()
+        return True, {"status": "running", "code": code}
+
+    def _add_worker(self, code):
+        t0 = time.time()
+        try:
+            print(f"[加入] {code}：抓盤前資料中…")
+            for store, empty in ((self.samples, list), (self.live_alerts, list), (self.mis_bars, dict), (self.peer_hist, dict)):
+                store.setdefault(code, empty())
+            self._setup_code(code)
+            if not self.daily[code].get("name"):
+                raise RuntimeError("查不到這個代碼（不是上市櫃股票，或今天沒有交易）")
+            self._add_ex(code)
+            note = ""
+            if self.flow_src and not self._stream_off:
+                ok = self.flow_src.start_stream([code])          # 訂閱逐筆與五檔，並回補今天稍早的（backfill_today）
+                if ok:
+                    self._backfill_flow(ok)
+                else:
+                    note = "；永豐串流訂閱失敗，這檔只有公開報價"
+            self.codes = self.codes + [code]                     # 新的 list：其他執行緒手上的舊 list 不受影響
+            with WEB.lock:
+                WEB.codes = list(self.codes)
+                WEB.adding[code] = {"status": "done", "name": self.daily[code].get("name"), "secs": round(time.time() - t0), "note": note.lstrip("；")}
+            print(f"[加入] {code} {self.daily[code].get('name')} 開始監控（{time.time() - t0:.0f} 秒）{note}")
+        except BaseException as e:          # prep.build 查不到代碼時丟的是 SystemExit，不接住的話這條執行緒會無聲結束、畫面一直顯示「加入中」
+            with WEB.lock:
+                WEB.adding[code] = {"status": "error", "error": str(e)[:160] or e.__class__.__name__}
+                WEB.daily.pop(code, None); WEB.describe.pop(code, None)      # 做一半的不要留在畫面資料裡
+            self.daily.pop(code, None)
+            print(f"[加入] {code} 失敗：{str(e)[:160]}")
+
+    def _init_stream(self, codes, use_shioaji, big_lot):
         if use_shioaji:
             import src_shioaji
             if src_shioaji.available():

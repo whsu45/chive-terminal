@@ -110,8 +110,9 @@ def kbars_usage():
         return 0
 
 
-def fetch_kbars(api, contract, day, why=""):
-    """所有 api.kbars 都走這裡：盤中先記一次、用到上限就丟 TicksQuota 不送查詢；盤後不計。回 Kbars（ts 是每根的「結束」時間）。"""
+def fetch_kbars(api, contract, day, why="", end=None):
+    """所有 api.kbars 都走這裡：盤中先記一次、用到上限就丟 TicksQuota 不送查詢；盤後不計。回 Kbars（ts 是每根的「結束」時間）。
+    end 有給就查 day～end 一段（一次查詢、一次額度）。"""
     import json
     if _intraday():
         used, budget = kbars_usage(), kbars_budget()
@@ -123,7 +124,7 @@ def fetch_kbars(api, contract, day, why=""):
                 json.dump({"count": used + 1, "last": dt.datetime.now().isoformat(), "why": why}, f)
         except Exception:
             pass
-    return api.kbars(contract=contract, start=day, end=day)
+    return api.kbars(contract=contract, start=day, end=end or day)
 
 
 def backfill_bars(api, contract, code, now=None):

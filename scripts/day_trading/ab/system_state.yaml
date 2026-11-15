@@ -1,0 +1,9 @@
+# 2026-11-15 ab/ab_models.py；淨%/筆
+A: {rule: 價位反轉+30分持有, stk: -0.71, tx: -0.019}
+B:
+  rule: 收破噪音帶(開/昨收×(1±σ14))且站對VWAP，13:20平
+  stk: {rvol: 1.2, tick: 0.2, trail: vwap, net: -0.52}
+  tx: {data: TXFR1 1m 2020-26, net: -0.007, t: -0.35}
+live: 11/16起儀表板並列A/B，B單寫logs/ab_trades
+verdict: 個股皆負；台指期B無優勢；風險上限、加碼皆未過
+next: [比對ab_trades vs signal_outcomes, 個股疊A籌碼分數, 試夜盤跳空]

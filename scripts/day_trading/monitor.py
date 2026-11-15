@@ -26,6 +26,11 @@ import indicators as I
 import exhaust
 import combo
 import history
+try:
+    import ab_live                      # 模組 B（挑戰者）即時版；缺檔不影響 monitor
+except Exception as _e:                 # pragma: no cover
+    ab_live = None
+    print(f"[B] 載入 ab_live 失敗，儀表板不顯示模組 B：{str(_e)[:100]}")
 import src_mis
 import src_warrants as W
 import http_client as hc   # 別名不能叫 http：下面 import http.server 會把它蓋掉
@@ -476,6 +481,7 @@ class Monitor:
         WEB.codes = list(codes); WEB.interval = interval
         print(f"[裝置] ID {DEVICE_ID}：今天的紀錄寫到 logs/*_{DEVICE_ID}.jsonl（換台電腦開就換 ID，git 不會撞檔）")
         self.daily = {}
+        self.ab = ab_live.LiveB(use_shioaji=use_shioaji) if ab_live else None   # 模組 B（挑戰者），見 ab_live.py
         self.samples = {c: [] for c in codes}
         self.w_prev = {}
         self.flow_hist = {}   # code -> [[epoch, big_net, small_net, price], ...]，給 model._flow_dynamics 看主力淨額的變化
@@ -559,6 +565,8 @@ class Monitor:
             # 昨天買進的隔日沖分點（儀表板「隔日沖分點」卡）；date = 那張分點表的日期
             WEB.daily[c]["daytraders"] = dict(br["daytraders"], date=br.get("day_date"))
         WEB.describe[c] = prep.describe(dd)
+        if self.ab:
+            self.ab.prepare(c, dd.get("market"))                 # 背景抓模組 B 要的前 14 天 5 分 K
         pc = (self.daily[c].get("tech") or {}).get("close")
         if pc:
             th = src_shioaji.lot_thresholds(pc)
@@ -692,7 +700,14 @@ class Monitor:
             flow = self.flow_src.flow(c, price=q.get("ref")) if self.flow_src else None
             self._record_flow_hist(c, flow, q, now)
             wq = self.wq.get(c) if (self.fast_thread and c in self.wq) else self._warrant_snapshot(c, q, now, max(1, round(self.interval / 60)))
-            ev = model.evaluate(d, q, idx, peers_q, flow, self.samples[c], now, warrants=wq, ctx=self._ctx(c, now))
+            ctx = self._ctx(c, now)
+            ev = model.evaluate(d, q, idx, peers_q, flow, self.samples[c], now, warrants=wq, ctx=ctx)
+            if self.ab:
+                try:
+                    ev["model_b"] = self.ab.evaluate(c, ctx.get("bars"), now, d.get("name"))
+                except Exception as e:
+                    ev["model_b"] = {"status": "error", "label": f"模組 B 計算失敗：{str(e)[:80]}"}
+                    print(f"[{now:%H:%M:%S}] {c} 模組 B 失敗：{str(e)[:100]}")
             if wq and wq.get("alerts"):
                 ev["warnings"] = wq["alerts"] + ev["warnings"]
             try:

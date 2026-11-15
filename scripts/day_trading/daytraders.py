@@ -2,13 +2,14 @@
 隔日沖分點的動態名單：不靠寫死的名單，看每個分點實際怎麼做。
 
 做法（每個交易日收盤後補一天）：
-  1. 挑當天的強勢股：漲 ≥7%、成交 ≥3,000 張、收盤 ≥15 元，取成交值最大的 15 檔（隔日沖專挑這種）。
-  2. 「大買」＝某分點在強勢股當天買超 ≥ 成交量 1%（且 ≥30 張）。
+  1. 挑當天的「大漲股」：漲 ≥7%、成交 ≥3,000 張、收盤 ≥15 元，取成交值最大的 15 檔（隔日沖專挑這種）。
+     （2026-11-16 前這裡也叫「強勢股」，跟選股頁的名單撞名，改叫大漲股；函式名 strong_codes 沿用。）
+  2. 「大買」＝某分點在大漲股當天買超 ≥ 成交量 1%（且 ≥30 張）。
   3. 「倒回」＝隔天這個分點在同一檔賣超，賣掉前一天買超的一半以上。
   4. 近 60 個交易日大買 ≥5 次、倒回率的保守估計 ≥50% → 隔日沖分點（次數少的要更高：5 次要倒回 4 次、10 次要 7 次、
      30 次要 18 次，免得靠運氣入選）；≥8 次、倒回率 <30% → 會留倉的分點。
 
-回測（8/7–11/6 強勢股 6,384 次大買，前三分之一只用來累積統計）：照這個規則當時選出的分點，之後的大買有 66% 隔天倒回；
+回測（8/7–11/6 大漲股 6,384 次大買，前三分之一只用來累積統計）：照這個規則當時選出的分點，之後的大買有 66% 隔天倒回；
 名單外的 36%。原本寫死的 8 個分點只有凱基-台北、凱基-城中還常出現，其他 6 個 61 天合計 22 次。
 
 每天的統計存在 logs/daytraders_<裝置ID>.json（只有各分點的次數，進 git，另一台 pull 下來就能用）；
@@ -30,7 +31,7 @@ from config import LOG_DIR, CACHE_DIR, DAYTRADE_BRANCHES, dev_path, dev_files
 import tw_calendar as cal
 import src_moneydj
 
-MIN_CHG = 7.0        # 強勢股：當天漲幅 %
+MIN_CHG = 7.0        # 大漲股：當天漲幅 %
 MIN_VOL = 3000       # 張
 MIN_PX = 15.0
 TOP_N = 15           # 每天取成交值最大的幾檔
@@ -102,7 +103,7 @@ def _quotes(days):
 
 
 def strong_codes(q, q_prev):
-    """當天的強勢股（成交值大到小，最多 TOP_N 檔）。"""
+    """當天的大漲股（漲 ≥MIN_CHG%、量 ≥MIN_VOL 張、收盤 ≥MIN_PX；成交值大到小，最多 TOP_N 檔）。"""
     out = []
     for c, row in q.items():
         p = q_prev.get(c)
@@ -148,7 +149,7 @@ def update(ref=None, max_days=3, verbose=True):
     if not todo:
         return 0
     try:
-        Q = _quotes(sorted(set(todo) | {cal.prev_trading_day(e) for e in todo}))     # 挑強勢股只需要事件日與它前一天的日 K
+        Q = _quotes(sorted(set(todo) | {cal.prev_trading_day(e) for e in todo}))     # 挑大漲股只需要事件日與它前一天的日 K
     except Exception as ex:
         if verbose:
             print(f"  [warn] 隔日沖名單：全市場日 K 抓不到（{str(ex)[:80]}），這次不更新")
@@ -160,7 +161,7 @@ def update(ref=None, max_days=3, verbose=True):
             plan[e] = strong_codes(q, qp)
     pairs = [(c, d) for e, codes in plan.items() for c in codes for d in (e, nxt[e])]
     if verbose and pairs:
-        print(f"[daytraders] 補 {len(plan)} 天的隔日沖統計（強勢股分點表，最多 {len(pairs)} 頁）...", file=sys.stderr)
+        print(f"[daytraders] 補 {len(plan)} 天的隔日沖統計（大漲股分點表，最多 {len(pairs)} 頁）...", file=sys.stderr)
     src_moneydj.zco_fetch_many(pairs)
     mine = _read(PATH)
     done = 0

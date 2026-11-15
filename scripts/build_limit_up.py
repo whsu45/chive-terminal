@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
 最新漲停個股頁（limit-up.html）的資料：最新一個交易日收在漲停價的上市、上櫃普通股，附當天的分時走勢（江波圖）。
-頁面是給「當沖做空」找標的用的，所以順便標出不適合放空的強勢股（頁面預設排除）：
+頁面是給「當沖做空」找標的用的，所以順便標出不適合放空的兩種（頁面預設排除）：
   - 一字鎖：開盤就漲停，盤中最低價也沒離開過漲停價（開 = 低 = 漲停價）
-  - 強勢股：收盤在月線（20 日均線 = 布林中軌）之上，而且還在布林上軌以內（中軌 < 收盤 ≤ 上軌）
+  - 月線上多頭股（2026-11-16 前叫「強勢股」，跟 day_trading 選股頁撞名；JSON 鍵 strong 沿用）：
+    收盤在月線（20 日均線 = 布林中軌）之上，而且還在布林上軌以內（中軌 < 收盤 ≤ 上軌）
 輸出 data/limit_up.json。只用公開資料、標準函式庫，不需要任何金鑰。
 
   python scripts/build_limit_up.py
@@ -13,7 +14,7 @@
   - 上櫃：櫃買中心「上櫃股票行情」（當天行情；前一個交易日那份的「次日漲停價／次日參考價」就是當天的漲停價、參考價）
   - 日線（算月線、布林通道）與 1 分鐘分時：Yahoo Finance chart API（2330.TW、6488.TWO）
   - 隔日沖分點：當天的買賣超分點表（MoneyDJ 券商鏡站，買超、賣超各前 15 名），比對 scripts/day_trading 的動態隔日沖名單
-    （daytraders.py：近 60 個交易日在強勢股大買、隔天倒回的分點；統計存在 scripts/day_trading/logs/daytraders_*.json，本機每天更新後推上來）。
+    （daytraders.py：近 60 個交易日在大漲股（漲 ≥7%、成交 ≥3,000 張）大買、隔天倒回的分點；統計存在 scripts/day_trading/logs/daytraders_*.json，本機每天更新後推上來）。
     分點表傍晚才公布，所以 15:11 那次通常還沒有，20:11 那次才會補上。
 收盤行情大約 14:30～15:00 公布，盤中、週末跑會抓到最近一個有資料的交易日。
 抓不到新資料（假日、網站掛掉）時不覆蓋舊檔；同一天重跑時，這次沒抓到的上櫃或分時沿用上一份。
@@ -316,7 +317,7 @@ def main():
             s["intraday"] = None
         time.sleep(0.3)
         it = s["intraday"] or {}
-        print(f"{q['market']} {q['code']} {q['name']}: 量 {s['vol_lots']} 張 一字鎖={s['locked']} 強勢={s['strong']}"
+        print(f"{q['market']} {q['code']} {q['name']}: 量 {s['vol_lots']} 張 一字鎖={s['locked']} 月線上多頭={s['strong']}"
               f" 分時 {it.get('bars', 0)} 根", file=sys.stderr)
         stocks.append(s)
 

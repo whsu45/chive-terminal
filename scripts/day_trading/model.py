@@ -88,7 +88,7 @@ def daily_factors(d):
             F.append(("漲勢法人出貨", -0.4, f"前日漲 {t['chg_pct']:.1f}% 但外資+投信 {li['foreign']+li['trust']} 張"))
 
     # 隔日沖庫存（名單是 daytraders.py 動態算的：近 60 日大買後隔天倒回 ≥55% 的分點）
-    # 回測 9/04–11/06 強勢股 528 個股票日：庫存 ≥2% 量的隔天開盤到收盤平均 −0.82%（415 次，54% 收黑），
+    # 回測 9/04–11/06 大漲股（daytraders.py 的定義：漲 ≥7%、量 ≥3,000 張）隔天 528 個股票日：庫存 ≥2% 量的隔天開盤到收盤平均 −0.82%（415 次，54% 收黑），
     # 沒有庫存的 +0.02%（113 次）；差 0.84%、t 只有 −1.7，也看不出庫存越多跌越多，所以只留一級、不再寫「必倒」。
     b = (d.get("brokers") or {}).get("day") or {}
     dtp = b.get("daytrade_buy_pct") or 0
@@ -452,7 +452,7 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx=None):
     inv_scale = 0.5 if leader_strong else 1.0
     inv_note = f"；但族群 {leader[2] or leader[1]} {leader[0]:+.1f}% 接近漲停，族群資金可能接走這批貨，權重折半" if leader_strong else ""
     if dtp_inv >= 5 and chg >= 5 and not pre_open:
-        # 回測：昨天強勢、今天盤中碰到 +5% 的股票，從 +5% 到收盤平均回落 1.0～1.4%（約 36～39% 繼續漲）；有沒有隔日沖庫存差不多
+        # 回測：昨天是大漲股（漲 ≥7%）、今天盤中碰到 +5% 的股票，從 +5% 到收盤平均回落 1.0～1.4%（約 36～39% 繼續漲）；有沒有隔日沖庫存差不多
         F.append(("庫存倒貨點", -0.6 * inv_scale, f"隔日沖分點昨買 {dtp_inv:.0f}% 量，盤中已拉 {chg:+.1f}%：他們的獲利了結區，反彈不過高點就是空點（但首 10 分鐘先不追）{inv_note}"))
     elif dtp_inv >= 5 and chg >= 2.5 and not pre_open:
         F.append(("庫存逼近倒貨區", -0.3 * inv_scale, f"隔日沖庫存 {dtp_inv:.0f}% 量，盤中 {chg:+.1f}%，接近他們的出貨區{inv_note}"))

@@ -178,7 +178,8 @@ main#review.hidden{display:none}
 .pk-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:900px){.pk-cols{grid-template-columns:1fr}}
 .pk-col h3{margin:0 0 8px;font-size:15px}
-.pk-col.short h3{color:var(--dn)}.pk-col.long h3{color:var(--up)}.pk-col.warr h3{color:var(--warn)}.pk-col.strong h3{color:var(--up)}
+.pk-col.short h3{color:var(--dn)}.pk-col.long h3{color:var(--up)}.pk-col.warr h3{color:var(--warn)}
+.pk-col .pk-def{font-size:12px;color:var(--muted);margin:-4px 0 8px;line-height:1.5}.pk-col .pk-def b{color:var(--fg);font-weight:600}
 .pk-col.warr .pk-wgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}@media (max-width:900px){.pk-col.warr .pk-wgrid{grid-template-columns:1fr}}
 .pk-col.warr .pk-note{font-size:12px;color:var(--muted);margin:0 0 8px;line-height:1.5}
 .pk-col .off{font-size:12px;color:var(--warn);font-weight:400;margin-left:6px}
@@ -347,8 +348,13 @@ async function loadPicker(){
   if(key!==PICK_KEY){PICK_KEY=key;renderPicker();}
   clearTimeout(PICK_T);PICK_T=setTimeout(PICK.selected?loadState:loadPicker,2000);   // 跑選股或準備盤前資料時 2 秒輪詢
 }
+// 選股頁各區名稱（和 theme_screener 的 *_TITLE 一致）。2026-11-16 改名：「強勢股急殺」→「急跌反彈（季線上）」、「強勢股」→「權證連買＋法人買超」
+const PK_TITLE={short:'▼ 做空：弱勢股',long:'▲ 做多：急跌反彈（季線上）',strong:'👀 觀察：權證連買＋法人買超',warrant:'⚡ 觀察：權證昨日大量買進'};
+// 舊的預算結果沒有 short_rule / long_rule 時的備用定義
+const PK_RULE={short:'劣於大盤、10 日跌 >10%、收盤在季線下、股價 >100、外資投信都賣超、成交值 ≥5 億；大盤在 20 日線下才做',
+  long:'昨天跌 >7% 但收盤仍在季線上、ATR ≥2.5%、成交值 ≥5 億 → 賭隔天反彈；大盤在 20 日線上才做'};
 function pkCard(side,r,top,active,sel){
-  const wr=side==='warrant'||side==='strong';               // 強勢股、權證昨日大買這兩區：預設不勾、沒有備用
+  const wr=side==='warrant'||side==='strong';               // 兩個觀察名單（權證連買＋法人買超、權證昨日大量買進）：預設不勾、沒有備用
   const on=sel?sel.includes(r.code):(!wr&&active&&r.rank<=top);   // 送出後依實際選定的顯示
   const st=`收 ${fp(r.close)}｜昨 ${pct(r.chg1d)}｜10日 ${pct(r.r10,1)}｜20日 ${pct(r.r20,1)}｜${f(r.value_e8,0)} 億｜ATR ${f(r.atr_pct,1)}%`;
   return `<label class="pk-card ${on?'on':''} ${active?'':'dim'}"><input type="checkbox" value="${esc(r.code)}" ${on?'checked':''} onchange="pkCount()">
@@ -368,19 +374,21 @@ function renderPicker(){
     $('pk-mkt').innerHTML=`大盤：加權 <b>${f(m.idx,0)}</b>，20 日線 <b>${f(m.ma20,0)}</b>，10 日 <b class="${cls(m.r10)}">${pct(m.r10,1)}</b> → `
       +(res.short_active?'<b class="dn">偏弱：做空有效、不做多</b>':'<b class="up">不弱：做多有效、不做空</b>')
       +(th.length?`<div class="small muted" style="margin-top:4px">最強族群：${th.slice(0,3).map(t=>esc(t.name)+' '+pct(t.chg1d,1)).join('、')}｜最弱族群：${th.slice(-3).reverse().map(t=>esc(t.name)+' '+pct(t.chg1d,1)).join('、')}</div>`:'');
-    const col=(side,title,active)=>`<h3>${title}${active?'':'<span class="off">⚠ 大盤環境不符，回測此時會虧，只列參考</span>'}</h3>`
+    // 標題下面一行「定義」：名稱容易誤會（2026-11-16 前兩區都叫「強勢股」），所以每區都寫明條件。定義文字來自 theme_screener 的 *_RULE
+    const def=t=>t?`<div class="pk-def"><b>定義</b>：${esc(t)}</div>`:'';
+    const col=(side,title,active)=>`<h3>${title}${active?'':'<span class="off">⚠ 大盤環境不符，回測此時會虧，只列參考</span>'}</h3>`+def(res[side+'_rule']||PK_RULE[side])
       +((res[side]||[]).length?res[side].map(r=>pkCard(side,r,res.top,active,p.selected)).join(''):'<div class="pk-empty">沒有符合條件的標的</div>');
-    $('pk-short').innerHTML=col('short','▼ 做空：弱勢股',res.short_active);
-    $('pk-long').innerHTML=col('long','▲ 做多：強勢股急殺',res.long_active);
-    // 強勢股（theme_screener.strong_pick）：權證連續大買 × 法人買超。隔天容易開高、波動大，但回測開盤後沒有續漲，所以也是預設不勾
+    $('pk-short').innerHTML=col('short',PK_TITLE.short,res.short_active);
+    $('pk-long').innerHTML=col('long',PK_TITLE.long,res.long_active);
+    // 觀察名單「權證連買＋法人買超」（theme_screener.strong_pick，原名「強勢股」）。隔天容易開高、波動大，但回測開盤後沒有續漲，所以預設不勾、不給方向
     const SG=res.strong||[];
-    $('pk-strong').innerHTML=res.strong_rule?`<h3>🔥 強勢股<span class="off" style="color:var(--muted)">${esc(res.strong_rule)}</span></h3>
+    $('pk-strong').innerHTML=res.strong_rule?`<h3>${PK_TITLE.strong}</h3>${def(res.strong_rule)}
       <div class="pk-note">${esc(res.strong_note||'')}</div>`
       +(res.warrant_error||res.strong_error?`<div class="pk-empty">⚠ 這一區現在不列：${esc(res.warrant_error||res.strong_error)}</div>`
         :SG.length?`<div class="pk-wgrid">${SG.map(r=>pkCard('strong',r,res.top,true,p.selected)).join('')}</div>`:'<div class="pk-empty">沒有符合條件的標的</div>'):'';
     // 權證昨日大量買進（theme_screener.warrant_pick）：不分多空的觀察名單，預設不勾
     const W=res.warrant||[];
-    $('pk-warr').innerHTML=res.warrant_rule?`<h3>⚡ 權證昨日大量買進<span class="off" style="color:var(--muted)">${esc(res.warrant_rule)}；依占現股成交值排序</span></h3>
+    $('pk-warr').innerHTML=res.warrant_rule?`<h3>${PK_TITLE.warrant}</h3>${def(res.warrant_rule+'；不給方向，依占現股成交值排序')}
       <div class="pk-note">${esc(res.warrant_note||'')}</div>`
       +(res.warrant_error?`<div class="pk-empty">⚠ 這一區現在不列：${esc(res.warrant_error)}</div>`
         :W.length?`<div class="pk-wgrid">${W.map(r=>pkCard('warrant',r,res.top,true,p.selected)).join('')}</div>`:'<div class="pk-empty">沒有符合條件的標的</div>'):'';
@@ -766,7 +774,7 @@ function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   if(!LIVE){const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
     $('shioaji').innerHTML=STATE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';}
   const pk=(STATE.picks||{})[CUR];
-  $('pre').textContent=(pk?`【選股】${pk.side==='short'?'做空・弱勢股':'做多・強勢股急殺'} #${pk.rank}${pk.active?'':'（大盤環境不符）'}\n`
+  $('pre').textContent=(pk?`【選股】${pk.side==='short'?'做空・弱勢股':'做多・急跌反彈（季線上）'} #${pk.rank}${pk.active?'':'（大盤環境不符）'}\n`
     +pk.reasons.map(x=>'• '+x).join('\n')+`\n→ ${pk.plan}\n\n`:'')+(STATE.describe?.[CUR]||'');
   if(!ev){$('verdict').textContent='等待第一次估算…';if(!LIVE)$('price').textContent='等待報價…';return;}
   const i=ev.info||{};
@@ -982,7 +990,7 @@ function renderTomorrow(){const el=$('rv-tom');if(!el)return;const t=RV_TOM;
   else if(s.error)right=`<span class="stale">選股失敗：${esc(s.error)}</span>`;
   else if(s.short){const li=(r,side)=>`<tr><td>${esc(r.code)} ${esc(r.name)}</td><td class="n">${fp(r.close)}</td><td class="n">${rvPct(r.chg1d)}</td><td class="small">${(r.fit&&r.fit.tags||[]).filter(([k])=>k==='warn'||k==='no').map(([k,x])=>esc(x.split('：')[0])).join('；')||'<span class="muted">—</span>'}</td></tr>`;
     const blk=(side,title,act)=>`<div style="margin-top:6px"><b class="${side==='short'?'dn':'up'}">${title}</b>${act?'':' <span class="rv-tag">大盤環境不符，只列參考</span>'}</div>${(s[side]||[]).length?`<table class="rv">${s[side].slice(0,s.top||3).map(r=>li(r,side)).join('')}</table>`:'<div class="rv-note">沒有符合條件的標的</div>'}`;
-    right=`<div class="small muted">依 ${esc(s.date)} 收盤資料；大盤 ${s.short_active?'偏弱：做空有效':'不弱：做多有效'}</div>${blk('short','▼ 做空：弱勢股',s.short_active)}${blk('long','▲ 做多：強勢股急殺',s.long_active)}`;}
+    right=`<div class="small muted">依 ${esc(s.date)} 收盤資料；大盤 ${s.short_active?'偏弱：做空有效':'不弱：做多有效'}</div>${blk('short',PK_TITLE.short,s.short_active)}${blk('long',PK_TITLE.long,s.long_active)}`;}
   el.innerHTML=`<div class="rv-score" style="grid-template-columns:1fr 1fr"><div class="rv-box"><h4>${esc(RV_CUR||'')} ${esc((RV.names||{})[RV_CUR]||'')}：${D0}的隔日沖分點（${D1}的庫存）</h4>${left}</div><div class="rv-box"><h4>${D1}的選股名單</h4>${right}</div></div>`;}
 window.addEventListener('resize',()=>{if(VIEW==='review')drawReview();});
 </script>

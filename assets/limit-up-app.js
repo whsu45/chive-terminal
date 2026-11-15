@@ -20,7 +20,7 @@
   function reasons(s, f) {
     const r = [];
     if (f.locked && s.locked) r.push('一字鎖');
-    if (f.strong && s.strong) r.push('強勢股');
+    if (f.strong && s.strong) r.push('月線上多頭股');
     return r;
   }
 
@@ -28,7 +28,7 @@
     const t = [];
     const tag = (txt, cls, tip) => `<span class="px-1.5 py-0.5 rounded text-[11px] font-semibold ${cls}" title="${esc(tip)}">${esc(txt)}</span>`;
     if (s.locked) t.push(tag('一字鎖', 'bg-red-600 text-white', '開盤就漲停，盤中最低價也沒離開漲停價'));
-    if (s.pos === 'upper') t.push(tag('月線上＆布林上通道', 'bg-red-100 text-red-700', `收盤介於布林中軌（月線 ${px(s.ma20)}）與上軌（${px(s.bb_up)}）之間`));
+    if (s.pos === 'upper') t.push(tag('月線上多頭股', 'bg-red-100 text-red-700', `月線之上＆布林上通道：收盤介於布林中軌（月線 ${px(s.ma20)}）與上軌（${px(s.bb_up)}）之間，多頭趨勢還在，不適合放空`));
     else if (s.pos === 'above') t.push(tag('突破布林上軌', 'bg-amber-100 text-amber-800', `收盤 ${px(s.c)} 在布林上軌 ${px(s.bb_up)} 之上`));
     else if (s.pos === 'below') t.push(tag('月線之下', 'bg-emerald-100 text-emerald-800', `收盤 ${px(s.c)} 仍在月線 ${px(s.ma20)} 之下`));
     else t.push(tag('上市未滿一個月', 'bg-slate-100 text-slate-500', '日線不到 21 根，算不出月線與布林通道'));
@@ -171,7 +171,7 @@
     $('excluded').innerHTML = out.length ? `
       <details class="bg-white rounded-xl shadow-sm border border-slate-200">
         <summary class="flex items-center gap-2 px-5 py-4 hover:bg-slate-50 rounded-xl text-sm font-semibold text-slate-700">
-          <span class="chev text-slate-400 transition-transform">▶</span>被排除的強勢股 ${out.length} 檔（不適合放空）
+          <span class="chev text-slate-400 transition-transform">▶</span>被排除的 ${out.length} 檔（一字鎖、月線上多頭股，不適合放空）
         </summary>
         <div class="px-3 pb-4 overflow-x-auto">
           <table class="w-full text-sm text-left text-slate-600">
@@ -199,7 +199,7 @@
     const ok = st.filter(s => !s.locked && !s.strong).length;
     $('summary').innerHTML = box('漲停家數', st.length, `上市 ${d.counts?.twse ?? '—'}／上櫃 ${d.counts?.tpex ?? '—'}${d.tpex_ok ? '' : '（上櫃未更新）'}`, 'text-red-500')
       + box('一字鎖', locked, '開盤就鎖死、沒打開過')
-      + box('強勢股', strong, '月線之上＆布林上通道')
+      + box('月線上多頭股', strong, '月線之上＆布林上通道內')
       + box('可留意放空', ok, '排除以上兩種之後', 'text-indigo-600');
   }
 
@@ -208,9 +208,9 @@
       <h2 class="text-lg font-bold text-slate-800 mb-1">📖 說明</h2>
       <p><b>名單</b>：最新一個交易日「收盤價 = 當天漲停價」的上市、上櫃普通股（不含 ETF、權證、特別股；上市前五天沒有漲跌幅限制的新股不算），依當天成交量由大到小排序。漲停價直接用證交所公布的「股價升降幅度」與櫃買中心的「次日漲停價」，除權息的參考價調整已經算在裡面。</p>
       <p><b>一字鎖</b>：開盤價 = 最低價 = 漲停價，也就是一開盤就漲停、整天沒有打開過。賣壓完全被吃掉，隔天常常繼續開高，不適合放空。</p>
-      <p><b>強勢股（月線之上＆布林上通道）</b>：用含當天在內的最近 20 個收盤價算月線（20 日均線 = 布林中軌）與布林通道（中軌 ± 2 個標準差）。收盤介於中軌和上軌之間的，代表多頭趨勢還在、離上軌還有空間，也不適合放空。收盤已經衝出上軌的，標成「突破布林上軌」，不在排除條件裡（偏離較大，留給你自己判斷）。</p>
+      <p><b>月線上多頭股（月線之上＆布林上通道內）</b>：用含當天在內的最近 20 個收盤價算月線（20 日均線 = 布林中軌）與布林通道（中軌 ± 2 個標準差）。收盤介於中軌和上軌之間的，代表多頭趨勢還在、離上軌還有空間，也不適合放空。收盤已經衝出上軌的，標成「突破布林上軌」，不在排除條件裡（偏離較大，留給你自己判斷）。</p>
       <p><b>江波圖</b>：當天 09:00～13:30 的 1 分鐘收盤價。紅色實線＝漲停價、灰色虛線＝昨收（參考價）、橘色虛線＝月線（在畫面範圍內時才畫）、紅點＝第一次碰到漲停的時間。下方是每分鐘成交量（張），最後一根藍色的是 13:30 收盤集合競價的量（全天成交量扣掉盤中的推算值）。「漲停打開 N 分」是第一次碰到漲停之後，1 分 K 最低價跌破漲停價的分鐘數，數字越大代表漲停越不穩。滑過圖可以看每分鐘的價格。</p>
-      <p><b>隔日沖分點</b>：當天買超前 15 名分點裡，屬於隔日沖名單的分點買了多少（張、佔當天成交量 %），以及照它們過去的習慣隔天大約會倒回多少張。這些買盤通常隔天開盤就賣，對放空是加分。名單不是寫死的：近 60 個交易日在強勢股「大買（≥ 成交量 1% 且 ≥30 張）、隔天又倒回一半以上」的比例夠高的分點才算${d.dt_meta ? `（目前 ${d.dt_meta.branches} 個分點，統計 ${esc(md(d.dt_meta.first))}～${esc(md(d.dt_meta.last))} 共 ${d.dt_meta.days} 天${d.dt_meta.source === 'dynamic' ? '' : '，資料不足，暫用固定名單'}）` : ''}。滑過分點名稱可以看它的大買次數與倒回率。分點表只列前 15 名，買得少的隔日沖分點不會出現。分點表傍晚才公布，15:11 那次更新通常還沒有，20:11 會補上。</p>
+      <p><b>隔日沖分點</b>：當天買超前 15 名分點裡，屬於隔日沖名單的分點買了多少（張、佔當天成交量 %），以及照它們過去的習慣隔天大約會倒回多少張。這些買盤通常隔天開盤就賣，對放空是加分。名單不是寫死的：近 60 個交易日在大漲股（當天漲 ≥7%、成交 ≥3,000 張）「大買（≥ 成交量 1% 且 ≥30 張）、隔天又倒回一半以上」的比例夠高的分點才算${d.dt_meta ? `（目前 ${d.dt_meta.branches} 個分點，統計 ${esc(md(d.dt_meta.first))}～${esc(md(d.dt_meta.last))} 共 ${d.dt_meta.days} 天${d.dt_meta.source === 'dynamic' ? '' : '，資料不足，暫用固定名單'}）` : ''}。滑過分點名稱可以看它的大買次數與倒回率。分點表只列前 15 名，買得少的隔日沖分點不會出現。分點表傍晚才公布，15:11 那次更新通常還沒有，20:11 會補上。</p>
       <p><b>更新時間</b>：跟著本站排程（台北時間週一到週六 06:12 起，一天數次，含 15:11、20:11）。交易所收盤行情約 14:30～15:00 公布，之前跑的都是前一個交易日；抓不到新資料時保留現有那一份。上櫃行情公布得比上市晚，15:11 那次偶爾只有上市，20:11 會補齊。</p>`;
     const s = d.sources || {};
     $('sources').innerHTML = `資料來源：<a class="hover:underline" href="${esc(s.twse)}" target="_blank" rel="noopener">證交所每日收盤行情</a>、`

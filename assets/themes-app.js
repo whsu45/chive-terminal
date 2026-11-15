@@ -44,13 +44,13 @@
       : `<div class="p-6 text-center text-sm text-slate-400 bg-slate-50 rounded-xl">今日漲幅前段個股中，沒有策略判斷達「買進」以上的標的。<br>（候選 ${p.evaluated.strong} 檔皆未達門檻，寧缺勿濫）</div>`;
     $('picks').innerHTML = `
       <div class="xl:col-span-3 bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-        <h2 class="text-lg font-bold text-red-700">🔥 近日高機率強勢個股</h2>
-        <p class="text-xs text-slate-400 mt-0.5 mb-4">${esc(p.method.strongRule)}</p>
+        <h2 class="text-lg font-bold text-red-700">🔥 當日大漲・策略看多</h2>
+        <p class="text-xs text-slate-400 mt-0.5 mb-4">定義：${esc(p.method.strongRule)}</p>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">${strongHtml}</div>
       </div>
       <div class="xl:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-        <h2 class="text-lg font-bold text-green-700">🧊 前三弱勢個股</h2>
-        <p class="text-xs text-slate-400 mt-0.5 mb-4">${esc(p.method.weakRule)}</p>
+        <h2 class="text-lg font-bold text-green-700">🧊 當日大跌・策略最弱</h2>
+        <p class="text-xs text-slate-400 mt-0.5 mb-4">定義：${esc(p.method.weakRule)}</p>
         <div class="space-y-3">${p.weak.map((s, i) => pickCard(s, i + 1, 'weak')).join('')}</div>
       </div>`;
   }
@@ -161,8 +161,8 @@
       <ul class="list-disc pl-5 space-y-1">
         <li><b>族群名單</b>：每天從 <a class="text-indigo-600 hover:underline" href="${esc(themes.source)}" target="_blank" rel="noopener">FinLab 族群頁</a> 抓取一次成分股名單。抓取失敗時沿用上次的名單。</li>
         <li><b>漲跌幅</b>：取自證交所、櫃買中心 OpenAPI 的最新收盤行情，漲跌幅 = 漲跌 ÷（收盤 − 漲跌）。族群排序依成分股的平均漲跌幅。停牌或無報價的個股顯示 NA，不納入平均。</li>
-        ${picks ? `<li><b>強勢個股</b>：${esc(picks.method.strongRule)}。</li>
-        <li><b>弱勢個股</b>：${esc(picks.method.weakRule)}。</li>
+        ${picks ? `<li><b>當日大漲・策略看多</b>（以前叫「近日高機率強勢個股」）：${esc(picks.method.strongRule)}。</li>
+        <li><b>當日大跌・策略最弱</b>（以前叫「前三弱勢個股」）：${esc(picks.method.weakRule)}。</li>
         <li><b>可信度</b>：${esc(picks.method.confidenceRule)}。</li>
         <li>策略判斷沿用「個股策略分析」頁的同一套引擎（K 線、扣抵、布林、葛蘭碧、籌碼、軋空），回測近 ${picks.method.historyYears} 年。主力買賣超以三大法人合計代理。</li>` : ''}
         <li>本頁為規則化的統計呈現，<b>不構成投資建議</b>。</li>

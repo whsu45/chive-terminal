@@ -6,9 +6,10 @@ FinLab「概念股主題」只拿來標族群與看族群強弱，不參與選�
   做空「弱勢股」（只在大盤弱 = 加權 < 20 日線 時有效）：
     劣於大盤（10 日報酬 < 加權 10 日報酬）、10 日跌 >10%、收盤 < 季線、股價 >100、外資與投信都賣超（五條件出自 Threads 貼文），
     加成交值 ≥ 5 億，依 10 日跌幅最深取前 N；開盤跳空跌 >3% 不空（跳空大跌後常反彈）。
-  做多「強勢股急殺」（只在大盤不弱時有效）：
-    昨日跌 >7%、收盤仍在季線上、ATR ≥ 2.5%、成交值 ≥ 5 億，依 20 日報酬最強取前 N。
+  做多「急跌反彈（季線上）」（只在大盤不弱時有效；2026-11-16 前叫「強勢股急殺」）：
+    昨日跌 >7%、收盤仍在季線上、ATR ≥ 2.5%、成交值 ≥ 5 億，依 20 日報酬最強取前 N，賭隔天反彈。
   兩邊都排除處置股、開盤鎖漲跌停（買不到 / 空不到）。
+  另有兩個不分多空的觀察名單：「權證連買＋法人買超」（2026-11-16 前叫「強勢股」）、「權證昨日大量買進」。
 
 回測（--backtest；2026/06/01–11/05，107 天，隔天開盤進、收盤出，扣成本 0.25%）：
   做空：大盤弱 36 天 99 筆 每筆 +1.78%、勝率 70%、t 4.0；大盤不弱時照做 −0.02% → 不做。
@@ -94,7 +95,8 @@ WARR_PLAN = ("不因為這個條件預設方向。隔天開高 3% 以上的那�
              "要做等 monitor 的訊號。")
 
 
-# 強勢股（2026-11-13 加）：認購權證連續幾天大買 + 法人（外資 + 投信）買超。全市場的「大戶」只有法人資料可用，逐筆的大戶分流要盤中才有。
+# 觀察名單「權證連買＋法人買超」（2026-11-13 加，原名「強勢股」；程式裡的 strong_* 沿用舊名）：認購權證連續幾天大買 + 法人（外資 + 投信）買超。
+# 全市場的「大戶」只有法人資料可用，逐筆的大戶分流要盤中才有。
 STRONG_WARR_DAYS = 2     # 權證連續幾天都是大買日（warrant_big）
 STRONG_INST_PCT = 3.0    # 篩選日 外資 + 投信 買超占成交量 % 至少這麼多
 STRONG_LIST = 5
@@ -111,6 +113,17 @@ STRONG_NOTE = ("條件：認購權證連續 2 天以上大買（每天 ≥ 前 2
                "大盤弱時才有續強的跡象（+0.78%，只有 145 次、還不確定）。")
 STRONG_PLAN = ("這是「隔天容易開高、波動大」的名單，不是開盤追買的名單：開高不追，等拉回守住、照 monitor 的訊號再進；"
                "大盤在 20 日線下時續強的機會比較大。")
+
+# 各區的名稱與一句話定義（終端機報表與 monitor 選股頁共用；網頁的標題寫在 web/index.html，改名時兩邊一起改）。
+# 2026-11-16 改名：原本兩區都叫「強勢股」，意思卻相反（一個是買急跌、一個是籌碼觀察），容易誤會。
+SHORT_TITLE = "▼ 做空：弱勢股"
+LONG_TITLE = "▲ 做多：急跌反彈（季線上）"
+STRONG_TITLE = "👀 觀察：權證連買＋法人買超"
+SHORT_RULE = (f"劣於大盤、10 日跌 >{-SHORT_DROP10:g}%、收盤在季線下、股價 >{SHORT_PX}、外資投信都賣超、成交值 ≥{MIN_VALUE:g} 億；"
+              "大盤在 20 日線下才做")
+LONG_RULE = (f"昨天跌 >{-LONG_DROP1:g}% 但收盤仍在季線上、ATR ≥{LONG_MIN_ATR:g}%、成交值 ≥{MIN_VALUE:g} 億 → 賭隔天反彈；"
+             "大盤在 20 日線上才做")
+STRONG_RULE = f"認購權證連續 ≥{STRONG_WARR_DAYS} 天大買 且 外資＋投信買超 ≥ 成交量 {STRONG_INST_PCT:g}%；不給方向"
 
 
 # ================================================================ 條件（prep.py 也用）
@@ -141,7 +154,7 @@ def short_conditions(closes, idx_closes, foreign, trust, vol=None):
 
 
 def long_conditions(f):
-    """強勢股急殺：f 為 features() 的一筆。"""
+    """做多「急跌反彈（季線上）」：f 為 features() 的一筆。"""
     return f["chg1"] < LONG_DROP1 and f["c"] > f["ma60"] and f["atrp"] >= LONG_MIN_ATR
 
 
@@ -413,7 +426,7 @@ def warrant_pick(feats, wa, exclude=(), min_value=MIN_VALUE):
 
 
 def strong_hit(f, w):
-    """強勢股：權證連續 STRONG_WARR_DAYS 天以上大買，而且篩選日外資 + 投信買超 ≥ 成交量 STRONG_INST_PCT%。"""
+    """「權證連買＋法人買超」：權證連續 STRONG_WARR_DAYS 天以上大買，而且篩選日外資 + 投信買超 ≥ 成交量 STRONG_INST_PCT%。"""
     return bool(w and (w.get("streak") or 0) >= STRONG_WARR_DAYS and f.get("inst_pct") is not None and f["inst_pct"] >= STRONG_INST_PCT)
 
 
@@ -422,7 +435,7 @@ def _warr_of(f, w):
 
 
 def strong_pick(feats, wa, exclude=(), min_value=MIN_VALUE):
-    """強勢股名單：成交值夠大、不是處置股、符合 strong_hit；權證連續天數多的在前，同天數看法人買超占量。"""
+    """「權證連買＋法人買超」名單：成交值夠大、不是處置股、符合 strong_hit；權證連續天數多的在前，同天數看法人買超占量。"""
     out = [dict(f, warr=_warr_of(f, wa[f["code"]])) for f in feats.values()
            if f["value"] >= min_value and f["code"] not in exclude and strong_hit(f, wa.get(f["code"]))]
     return sorted(out, key=lambda f: (-f["warr"]["streak"], -f["inst_pct"]))
@@ -771,13 +784,13 @@ def _warr_text(w):
 
 
 def _extra_reasons(side, f):
-    """做空 / 做多候選剛好也有權證大買或法人買超時，多列一行（強勢股名單自己的理由已經有了）。"""
+    """做空 / 做多候選剛好也有權證大買或法人買超時，多列一行（「權證連買＋法人買超」名單自己的理由已經有了）。"""
     w, out = f.get("warr"), []
     if side in ("short", "long") and w:
         if warrant_hit(w):
             out.append(_warr_text(w) + "（權證昨日大量買進）")
         if (w.get("streak") or 0) >= STRONG_WARR_DAYS:
-            out.append(f"認購權證已經連續 {w['streak']} 天大買" + ("，而且法人買超占量 %.1f%%（符合強勢股條件）" % f["inst_pct"] if strong_hit(f, w) else ""))
+            out.append(f"認購權證已經連續 {w['streak']} 天大買" + ("，而且法人買超占量 %.1f%%（也在「權證連買＋法人買超」名單）" % f["inst_pct"] if strong_hit(f, w) else ""))
     if side == "warrant" and w and (w.get("streak") or 0) >= STRONG_WARR_DAYS:
         out.append(f"這已經是連續第 {w['streak']} 天大買（基準：前 20 日中位數的 {WARR_BIG_X:g} 倍）")
     return out
@@ -812,7 +825,7 @@ def _reasons(side, f, mkt):
         return [f"10 日 {f['r10']:+.1f}%，劣於大盤（{mkt['r10']:+.1f}%）且跌超過 10%",
                 f"收盤 {f['c']:g} 在季線 {f['ma60']:.1f} 之下", f"外資、投信同步賣超（{ins}）",
                 f"成交值 {f['value']:.0f} 億、ATR {f['atrp']:.1f}%"]
-    return [f"昨日急殺 {f['chg1']:+.1f}%，但收盤 {f['c']:g} 仍在季線 {f['ma60']:.1f} 之上（強勢股錯殺）",
+    return [f"昨日急殺 {f['chg1']:+.1f}%，但收盤 {f['c']:g} 仍在季線 {f['ma60']:.1f} 之上（中期多頭被錯殺）",
             f"20 日 {f['r20']:+.1f}%" + ("，中期仍強" if f["r20"] > 0 else "，同條件裡相對最強（排序依 20 日報酬）"), f"法人：{ins}", f"成交值 {f['value']:.0f} 億、ATR {f['atrp']:.1f}%"]
 
 
@@ -833,8 +846,9 @@ def print_report(r):
     if r["themes"]:
         fmt = lambda t: f"{t[0]} {t[1]:+.1f}%"
         print("最強族群：" + "、".join(fmt(t) for t in r["themes"][:3]) + "｜最弱族群：" + "、".join(fmt(t) for t in r["themes"][-3:][::-1]))
-    for side, title, active in (("short", "▼ 做空：弱勢股", m["weak"]), ("long", "▲ 做多：強勢股急殺", not m["weak"])):
+    for side, title, rule, active in (("short", SHORT_TITLE, SHORT_RULE, m["weak"]), ("long", LONG_TITLE, LONG_RULE, not m["weak"])):
         print(f"\n{title}" + ("" if active else "　⚠ 大盤環境不符，回測此時這組會虧，只列參考、不建議做"))
+        print(f"  定義：{rule}")
         if not r[side]:
             print("  （沒有符合條件的標的）")
         for k, f in enumerate(r[side], 1):
@@ -849,7 +863,8 @@ def print_report(r):
             if j["fit"].get("tags"):
                 print("     當沖適合度：" + "；".join(f"{mark[k]} {t}" for k, t in j["fit"]["tags"]))
             print(f"     → {j['plan']}")
-    print(f"\n🔥 強勢股：權證連續大買 × 法人買超")
+    print(f"\n{STRONG_TITLE}")
+    print(f"  定義：{STRONG_RULE}")
     print(f"  {STRONG_NOTE}")
     if r.get("warrant_error") or r.get("strong_error"):
         print(f"  ⚠ 這一區現在不列：{r.get('warrant_error') or r.get('strong_error')}")
@@ -902,7 +917,7 @@ def to_dict(r):
             "short": rows("short"), "long": rows("long"), "punished": r["punished"], "skipped_heavy": r.get("skipped_heavy") or [],
             "warrant": rows("warrant") if r.get("warrant") else [], "warrant_error": r.get("warrant_error"), "warrant_note": WARR_NOTE,
             "strong": rows("strong") if r.get("strong") else [], "strong_note": STRONG_NOTE, "strong_error": r.get("strong_error"),
-            "strong_rule": f"認購權證連續 ≥{STRONG_WARR_DAYS} 天大買 且 法人買超 ≥ 成交量 {STRONG_INST_PCT:g}%",
+            "strong_rule": STRONG_RULE, "short_rule": SHORT_RULE, "long_rule": LONG_RULE,
             "warrant_rule": f"認購成交金額 ≥ 前 5 日平均 {WARR_SURGE:g} 倍且 ≥ {WARR_MIN_AMT / 1e4:.0f} 萬",
             "themes": [{"name": n, "chg1d": round(a, 2), "chg5d": round(b, 2)} for n, a, b in r["themes"]]}
 
@@ -984,7 +999,7 @@ def load_precomputed(now=None, want=None):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="當沖盤前選股（弱勢股做空 / 強勢股急殺做多）")
+    ap = argparse.ArgumentParser(description="當沖盤前選股（做空弱勢股 / 做多急跌反彈（季線上））")
     ap.add_argument("--top", type=int, default=3, help="多、空各取幾檔（預設 3）")
     ap.add_argument("--date", default=None, help="篩選日 YYYY-MM-DD（預設：最近一個有資料的交易日）")
     ap.add_argument("--json", action="store_true", help="輸出 JSON")

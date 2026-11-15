@@ -15,7 +15,7 @@
     set(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* 無痕模式等 */ } },
   };
   let DATA = null;
-  const MIN_VOL = 1000;   // 成交量低於這個張數的漲停股：量太小，當沖放空進出不易，預設排除
+  const MIN_VOL = 1000;   // 成交量低於這個張數的漲停股：量太小，當沖放空進出不易。預設不排除，勾選篩選才過濾
 
   /** 不適合放空的原因（被排除的理由） */
   function reasons(s, f) {
@@ -201,13 +201,13 @@
     const strong = st.filter(s => s.strong).length;
     const above = st.filter(s => s.pos === 'above').length;
     const lowVol = st.filter(s => s.vol_lots < MIN_VOL).length;
-    const ok = st.filter(s => !s.locked && !s.strong && s.pos !== 'above' && s.vol_lots >= MIN_VOL).length;
+    const ok = st.filter(s => !s.locked && !s.strong && s.pos !== 'above').length;
     $('summary').innerHTML = box('漲停家數', st.length, `上市 ${d.counts?.twse ?? '—'}／上櫃 ${d.counts?.tpex ?? '—'}${d.tpex_ok ? '' : '（上櫃未更新）'}`, 'text-red-500')
       + box('一字鎖', locked, '開盤就鎖死、沒打開過')
       + box('月線上多頭股', strong, '月線之上＆布林上通道內')
       + box('突破布林上軌', above, '收盤在布林上軌之上')
-      + box(`量 < ${num(MIN_VOL)} 張`, lowVol, '量太小，進出不易')
-      + box('可留意放空', ok, '排除以上四種之後', 'text-indigo-600');
+      + box(`量 < ${num(MIN_VOL)} 張`, lowVol, '勾選下方篩選才排除')
+      + box('可留意放空', ok, '排除一字鎖、多頭、突破上軌後', 'text-indigo-600');
   }
 
   function renderMethod(d) {
@@ -217,7 +217,7 @@
       <p><b>一字鎖</b>：開盤價 = 最低價 = 漲停價，也就是一開盤就漲停、整天沒有打開過。賣壓完全被吃掉，隔天常常繼續開高，不適合放空。</p>
       <p><b>月線上多頭股（月線之上＆布林上通道內）</b>：用含當天在內的最近 20 個收盤價算月線（20 日均線 = 布林中軌）與布林通道（中軌 ± 2 個標準差）。收盤介於中軌和上軌之間的，代表多頭趨勢還在、離上軌還有空間，也不適合放空。</p>
       <p><b>突破布林上軌</b>：收盤已經衝出布林上軌（月線 + 2 個標準差）。漲勢比上通道內的更猛，追價力道還在，預設也排除；想找乖離過大、賭隔天拉回的標的，可以取消勾選。</p>
-      <p><b>成交量 &lt; ${num(MIN_VOL)} 張</b>：當天成交量太小，當沖放空掛單不容易成交、回補也可能買不到，預設排除。</p>
+      <p><b>成交量 &lt; ${num(MIN_VOL)} 張</b>：當天成交量太小，當沖放空掛單不容易成交、回補也可能買不到。預設不排除，需要時勾選「排除成交量 &lt; ${num(MIN_VOL)} 張」再過濾。</p>
       <p><b>江波圖</b>：當天 09:00～13:30 的 1 分鐘收盤價。紅色實線＝漲停價、灰色虛線＝昨收（參考價）、橘色虛線＝月線（在畫面範圍內時才畫）、紅點＝第一次碰到漲停的時間。下方是每分鐘成交量（張），最後一根藍色的是 13:30 收盤集合競價的量（全天成交量扣掉盤中的推算值）。「漲停打開 N 分」是第一次碰到漲停之後，1 分 K 最低價跌破漲停價的分鐘數，數字越大代表漲停越不穩。滑過圖可以看每分鐘的價格。</p>
       <p><b>隔日沖分點</b>：當天買超前 15 名分點裡，屬於隔日沖名單的分點買了多少（張、佔當天成交量 %），以及照它們過去的習慣隔天大約會倒回多少張。這些買盤通常隔天開盤就賣，對放空是加分。名單不是寫死的：近 60 個交易日在大漲股（當天漲 ≥7%、成交 ≥3,000 張）「大買（≥ 成交量 1% 且 ≥30 張）、隔天又倒回一半以上」的比例夠高的分點才算${d.dt_meta ? `（目前 ${d.dt_meta.branches} 個分點，統計 ${esc(md(d.dt_meta.first))}～${esc(md(d.dt_meta.last))} 共 ${d.dt_meta.days} 天${d.dt_meta.source === 'dynamic' ? '' : '，資料不足，暫用固定名單'}）` : ''}。滑過分點名稱可以看它的大買次數與倒回率。分點表只列前 15 名，買得少的隔日沖分點不會出現。分點表傍晚才公布，15:11 那次更新通常還沒有，20:11 會補上。</p>
       <p><b>更新時間</b>：跟著本站排程（台北時間週一到週六 06:12 起，一天數次，含 15:11、20:11）。交易所收盤行情約 14:30～15:00 公布，之前跑的都是前一個交易日；抓不到新資料時保留現有那一份。上櫃行情公布得比上市晚，15:11 那次偶爾只有上市，20:11 會補齊。</p>`;
@@ -240,7 +240,7 @@
         $('fLocked').checked = saved.locked !== false;
         $('fStrong').checked = saved.strong !== false;
         $('fAbove').checked = saved.above !== false;
-        $('fLowVol').checked = saved.lowVol !== false;
+        $('fLowVol').checked = saved.lowVol === true;
         $('fMarket').value = saved.market || '';
         $('fSort').value = saved.sort === 'dt' ? 'dt' : 'vol';
       }

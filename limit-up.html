@@ -20,7 +20,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-2xl font-bold text-slate-800">🔥 最新漲停個股</h1>
-                    <p class="text-slate-500 text-sm mt-1">最新一個交易日收在漲停價的上市、上櫃股票，附當天分時走勢（江波圖）和隔日沖分點買超，依成交量排序。給當沖做空找標的用：預設排除一字鎖、月線上多頭股（月線之上、布林上軌以內）、突破布林上軌，以及成交量不到 1,000 張的</p>
+                    <p class="text-slate-500 text-sm mt-1">最新一個交易日收在漲停價的上市、上櫃股票，附當天分時走勢（江波圖）和隔日沖分點買超，依成交量排序。給當沖做空找標的用：預設排除一字鎖、月線上多頭股（月線之上、布林上軌以內）和突破布林上軌；成交量不到 1,000 張的可另外勾選過濾</p>
                 </div>
                 <div id="meta" class="text-xs text-slate-500 md:text-right space-y-1"></div>
             </div>
@@ -45,7 +45,7 @@
                 <label class="inline-flex items-center gap-2 cursor-pointer"><input id="fLocked" type="checkbox" class="w-4 h-4 accent-indigo-600" checked>排除一字鎖</label>
                 <label class="inline-flex items-center gap-2 cursor-pointer"><input id="fStrong" type="checkbox" class="w-4 h-4 accent-indigo-600" checked>排除月線上多頭股（月線之上＆布林上通道內）</label>
                 <label class="inline-flex items-center gap-2 cursor-pointer"><input id="fAbove" type="checkbox" class="w-4 h-4 accent-indigo-600" checked>排除突破布林上軌</label>
-                <label class="inline-flex items-center gap-2 cursor-pointer"><input id="fLowVol" type="checkbox" class="w-4 h-4 accent-indigo-600" checked>排除成交量 &lt; 1,000 張</label>
+                <label class="inline-flex items-center gap-2 cursor-pointer"><input id="fLowVol" type="checkbox" class="w-4 h-4 accent-indigo-600">排除成交量 &lt; 1,000 張</label>
                 <label class="inline-flex items-center gap-2">市場
                     <select id="fMarket" class="border border-slate-300 rounded-md px-2 py-1 text-sm bg-white">
                         <option value="">全部</option><option value="上市">上市</option><option value="上櫃">上櫃</option>

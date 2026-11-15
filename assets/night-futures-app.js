@@ -13,11 +13,13 @@
   const md = d => { if (!d) return '—'; const t = new Date(`${d}T00:00:00`); return `${t.getMonth() + 1}/${t.getDate()}(${WD[t.getDay()]})`; };
   const KIND = { index: '大盤', etf: '台灣 50 ETF', stock: '個股' };
 
-  /** 交易日期 D 的夜盤 = D 的前一個交易日晚上 → D 清晨。前一個交易日從序列裡拿（沒有就寫「前一晚」） */
+  /** 交易日期 D 的夜盤 = D 的前一個交易日晚上 → 隔天清晨 05:00（週五晚上的夜盤記在下週一，但週六清晨就收盤了）。
+   *  前一個交易日從序列裡拿（沒有就寫「前一晚」） */
+  const nextDay = d => { const t = new Date(`${d}T00:00:00`); t.setDate(t.getDate() + 1); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; };
   function nightLabel(series, i) {
     const d = series[i]?.date;
     const prev = i > 0 ? series[i - 1].date : null;
-    return prev ? `${md(prev)} 晚 → ${md(d)} 清晨` : `${md(d)} 前一晚`;
+    return prev ? `${md(prev)} 晚 → ${md(nextDay(prev))} 清晨` : `${md(d)} 前一晚`;
   }
 
   function sparkline(values, { w = 120, h = 32 } = {}) {

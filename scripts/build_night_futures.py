@@ -36,6 +36,7 @@ TWSE_PRICES = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
 TOP_N = 50
 KEEP_DAYS = 160          # 每個商品最多留幾個交易日
 PAUSE = 2.5              # 每次查詢期交所之間停幾秒（不要打太快）
+LOOKAHEAD_DAYS = 14      # 查詢結束日往後多查幾天（夜盤記在下一個交易日，見 build_series）
 TZ = dt.timezone(dt.timedelta(hours=8))
 # 大盤參考：不是個股，但要放在頁面最上面當背景
 CONTEXT = [("TX", "TX", "台指期", "加權指數期貨（大台）")]
@@ -146,10 +147,14 @@ def build_series(commodity, months, old):
     old：之前存的那份（只增不減，保留 KEEP_DAYS 天）。
     """
     today = dt.datetime.now(TZ).date()
+    # 查詢的結束日不能停在今天：期交所把夜盤記在「下一個」交易日，週五晚上的夜盤記在下週一、連假前一晚的記在收假那天，
+    # 只查到今天的話，週末、連假期間永遠只會看到前一晚。往後多查兩週（涵蓋春節長假），還沒發生的日子期交所本來就不會有資料。
+    until = today + dt.timedelta(days=LOOKAHEAD_DAYS)
     raw = {}
-    y, m = today.year, today.month
-    for _ in range(months):
-        raw.update(month_rows(commodity, y, m, today))
+    y, m = until.year, until.month
+    n = months + (until.year - today.year) * 12 + until.month - today.month
+    for _ in range(n):
+        raw.update(month_rows(commodity, y, m, until))
         time.sleep(PAUSE)
         y, m = (y, m - 1) if m > 1 else (y - 1, 12)
     by_date = {}

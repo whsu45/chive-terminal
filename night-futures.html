@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>期貨夜盤走勢</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        details > summary { cursor: pointer; list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] .chev { transform: rotate(90deg); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
+    <div class="max-w-[1400px] mx-auto space-y-6">
+
+        <!-- Header & Nav Tabs -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">🌙 期貨夜盤走勢</h1>
+                    <p class="text-slate-500 text-sm mt-1">台灣市值前 50 名裡，有夜盤期貨的個股：每天夜盤漲跌、近期走勢，以及夜盤漲跌有沒有反映在隔天開盤</p>
+                </div>
+                <div id="meta" class="text-xs text-slate-500 md:text-right space-y-1"></div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mt-6 border-b border-slate-100 pb-2">
+                <a href="./index.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">📊 台指期夜盤預測</a>
+                <a href="./broker.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🏦 主力券商買超分析</a>
+                <a href="./stock.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🎯 個股策略分析</a>
+                <a href="./themes.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🧩 族群漲跌排行</a>
+                <a href="./us-tech.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🇺🇸 美股科技連動</a>
+                <a href="./night-futures.html" class="px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 rounded-lg border border-indigo-100">🌙 期貨走勢</a>
+            </div>
+        </div>
+
+        <div id="status" class="hidden"></div>
+
+        <!-- 最新一晚的夜盤 -->
+        <div>
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-1 mb-3 px-1">
+                <h2 class="text-lg font-bold text-slate-800">🌙 最新一晚的夜盤</h2>
+                <p id="cardsSub" class="text-xs text-slate-400"></p>
+            </div>
+            <div id="cards" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+        </div>
+
+        <!-- 走勢圖 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="mb-4">
+                <h2 class="text-lg font-bold text-slate-800">📈 夜盤漲跌 vs 當天開盤跳空（近 40 個交易日）</h2>
+                <p class="text-xs text-slate-400 mt-0.5">長條＝夜盤漲跌（對前一日盤結算價）；圓點＝同一天日盤開盤跳空（開盤對前一日盤結算價）。兩個幾乎重疊，表示夜盤的漲跌在開盤時就反映掉了</p>
+            </div>
+            <div id="charts" class="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>
+        </div>
+
+        <!-- 市值前 50 × 夜盤期貨 -->
+        <div id="top50" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200"></div>
+
+        <!-- 說明 -->
+        <div id="method" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 text-sm text-slate-600 space-y-2"></div>
+
+        <footer class="text-center text-xs text-slate-400 py-4 space-y-1">
+            <div id="sources"></div>
+            <div>以上為技術面與籌碼面推算，不構成投資建議。</div>
+        </footer>
+    </div>
+    <script src="./assets/night-futures-app.js"></script>
+</body>
+</html>

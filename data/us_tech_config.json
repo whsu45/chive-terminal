@@ -2,6 +2,7 @@
   "_comment": "美股科技族群定義與台股候選名單。族群以成分股等權平均計算；台股候選 = 下方 twUniverse ＋ data/themes.json 中標題符合 twThemeKeywords 且成交量 ≥ twMinVolume 張的成分股。",
   "windows": { "main": 120, "alt": 60, "long": 250, "history": 250, "spark": 30 },
   "benchmarks": [
+    { "key": "DJI", "symbol": "^DJI", "name": "道瓊工業指數" },
     { "key": "SOX", "symbol": "^SOX", "name": "費城半導體" },
     { "key": "IXIC", "symbol": "^IXIC", "name": "NASDAQ" },
     { "key": "TWII", "symbol": "^TWII", "name": "台股加權指數" }

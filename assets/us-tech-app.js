@@ -22,6 +22,14 @@
     return `<svg width="${w}" height="${h}" class="inline-block overflow-visible"><polyline fill="none" stroke="${color}" stroke-width="1.8" points="${pts}"/></svg>`;
   }
 
+  /** 卡片主數字：漲跌幅 + 漲跌點數，例：▼ -2.55% (-5.98) */
+  function pctWithPts(pct, chg, d = 2) {
+    if (pct == null || chg == null || !isFinite(chg)) return pctStr(pct);
+    return `${pctStr(pct)} <span class="text-lg font-bold whitespace-nowrap">(${chg > 0 ? '+' : ''}${num(chg, d)})</span>`;
+  }
+  /** 走勢線最後兩個收盤相減 = 當天漲跌點數（綜合指數是等權指數的點數） */
+  const sparkChg = spark => { const s = (spark || []).filter(v => v != null); return s.length < 2 ? null : s[s.length - 1] - s[s.length - 2]; };
+
   function badge(v) { return `<span class="px-2 py-0.5 rounded text-[11px] font-bold ${esc(v?.cls || 'bg-slate-100 text-slate-500')}">${esc(v?.label || 'NA')}</span>`; }
 
   function card(title, sub, main, mainCls, rows, sparkHtml) {
@@ -39,22 +47,38 @@
       </div>`;
   }
 
-  function renderOverview(d) {
+  /** 台指期夜盤卡片：資料來自期貨走勢頁的 data/night_futures.json（TX 大台）。
+   *  交易日期 D 的夜盤 = 前一個交易日晚上 → 隔天清晨；漲跌是對前一個日盤結算價算的 */
+  function nightCard(nf) {
+    const title = '台指期夜盤 (TX)';
+    const s = (nf?.contracts || []).find(c => c.fut === 'TX')?.series || [];
+    const i = s.length - 1, last = s[i], n = last?.night;
+    if (!n) return card(title, '資料缺漏', 'NA', 'text-slate-400', [], '');
+    const prev = i > 0 ? s[i - 1].date : null;
+    const when = prev ? `${md(prev)} 晚` : `${md(last.date)} 前一晚`;
+    return card(title, `${when} 收 ${num(n.c, 0)}`, pctWithPts(n.chg_pct, n.chg, 0), signCls(n.chg_pct),
+      [['高', num(n.h, 0)], ['低', num(n.l, 0)], ['量', num(n.vol, 0)],
+        last.day ? ['日盤開盤跳空', pctPlain(last.gap_pct), signCls(last.gap_pct)] : [`${md(last.date)} 日盤`, '還沒開', 'text-slate-400 font-normal']],
+      sparkline(s.slice(-30).map(r => r.night?.c)));
+  }
+
+  function renderOverview(d, nf) {
     const c = d.composite, b = d.benchmarks || {};
     const bench = (key, title) => {
       const x = b[key];
       if (!x) return card(title, '資料缺漏', 'NA', 'text-slate-400', [], '');
-      return card(title, `${md(x.date)} 收 ${num(x.close, 0)}`, pctStr(x.pct), signCls(x.pct),
+      return card(title, `${md(x.date)} 收 ${num(x.close, 0)}`, pctWithPts(x.pct, sparkChg(x.spark)), signCls(x.pct),
         [['5 日', pctPlain(x.pct5), signCls(x.pct5)], ['20 日', pctPlain(x.pct20), signCls(x.pct20)], x.taiex ? ['對台股 r', corrStr(x.taiex.corr120), corrCls(x.taiex.corr120)] : ['', '']],
         sparkline(x.spark));
     };
     $('overview').innerHTML = [
-      card('美股科技整體（全族群等權）', `美股 ${md(c.date)}`, pctStr(c.pct), signCls(c.pct),
+      bench('DJI', '道瓊工業指數 (DJI)'),
+      bench('IXIC', '那斯達克 (IXIC)'),
+      bench('SOX', '費城半導體 (SOX)'),
+      card('美股科技整體（全族群等權）', `美股 ${md(c.date)} 等權指數 ${num(c.spark?.[c.spark.length - 1], 2)}`, pctWithPts(c.pct, sparkChg(c.spark)), signCls(c.pct),
         [['5 日', pctPlain(c.pct5), signCls(c.pct5)], ['20 日', pctPlain(c.pct20), signCls(c.pct20)], ['60 日', pctPlain(c.pct60), signCls(c.pct60)], ['台股連動', badge(c.taiex?.verdict)]],
         sparkline(c.spark)),
-      bench('SOX', '費城半導體 (SOX)'),
-      bench('IXIC', 'NASDAQ (IXIC)'),
-      bench('TWII', '台股加權指數 (TAIEX)'),
+      nightCard(nf),
     ].join('');
   }
 
@@ -276,12 +300,13 @@
 
   async function load() {
     try {
-      const [d, h] = await Promise.all([
+      const [d, h, nf] = await Promise.all([
         fetch('./data/us_tech.json', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error(`us_tech.json ${r.status}`); return r.json(); }),
         fetch('./data/us_tech_history.json', { cache: 'no-store' }).then(r => (r.ok ? r.json() : [])).catch(() => []),
+        fetch('./data/night_futures.json', { cache: 'no-store' }).then(r => (r.ok ? r.json() : null)).catch(() => null),
       ]);
       history = Array.isArray(h) ? h : [];
-      renderMeta(d); renderOverview(d); renderGroups(d); renderTop3(d); renderBacktest(d); renderMethod(d); renderHistory(30);
+      renderMeta(d); renderOverview(d, nf); renderGroups(d); renderTop3(d); renderBacktest(d); renderMethod(d); renderHistory(30);
       $('expandAll').onclick = () => document.querySelectorAll('details.group-row').forEach(x => { x.open = true; });
       $('collapseAll').onclick = () => document.querySelectorAll('details.group-row').forEach(x => { x.open = false; });
       $('moreHistory').onclick = () => renderHistory(30);

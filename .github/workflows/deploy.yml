@@ -78,7 +78,7 @@ jobs:
         run: |
           python scripts/build_night_futures.py
 
-      # 最新漲停個股：最新一個交易日的上市櫃漲停股＋分時走勢（證交所、櫃買、Yahoo 公開資料；抓不到新資料就保留舊檔，失敗不影響其他頁面部署）
+      # 最新漲停個股：最新一個交易日的上市櫃漲停股＋分時走勢＋隔日沖分點（證交所、櫃買、Yahoo、MoneyDJ 公開資料；分點表傍晚才出，20:11 那次補上；抓不到就保留舊資料，失敗不影響其他頁面部署）
       - name: Build limit-up stocks
         continue-on-error: true
         run: |

@@ -12,6 +12,9 @@
   - 上市：證交所「每日收盤行情」（MI_INDEX）＋「股價升降幅度」（TWT84U，當天的漲停價與參考價）
   - 上櫃：櫃買中心「上櫃股票行情」（當天行情；前一個交易日那份的「次日漲停價／次日參考價」就是當天的漲停價、參考價）
   - 日線（算月線、布林通道）與 1 分鐘分時：Yahoo Finance chart API（2330.TW、6488.TWO）
+  - 隔日沖分點：當天的買賣超分點表（MoneyDJ 券商鏡站，買超、賣超各前 15 名），比對 scripts/day_trading 的動態隔日沖名單
+    （daytraders.py：近 60 個交易日在強勢股大買、隔天倒回的分點；統計存在 scripts/day_trading/logs/daytraders_*.json，本機每天更新後推上來）。
+    分點表傍晚才公布，所以 15:11 那次通常還沒有，20:11 那次才會補上。
 收盤行情大約 14:30～15:00 公布，盤中、週末跑會抓到最近一個有資料的交易日。
 抓不到新資料（假日、網站掛掉）時不覆蓋舊檔；同一天重跑時，這次沒抓到的上櫃或分時沿用上一份。
 """
@@ -183,6 +186,47 @@ def intraday(sym, day, limit, vol_lots=0):
             "first_limit": t[first] if first is not None else None, "opened_min": opened, "bars": len(rows)}
 
 
+# ---------------------------------------------------------------- 隔日沖分點
+
+def daytrade_all(stocks, day):
+    """
+    每檔漲停股當天的隔日沖分點買超 → 直接寫進 s["dt"]：
+      {"status": "ok", "buy": 張, "buy_pct": 佔量%, "expect_sell": 照過去習慣隔天約倒回幾張, "list": [{broker, net, pct, n, rate}]}
+      status = "pending"（分點表還沒公布）/ "error"（連不到）。回名單的統計資訊（給頁面說明用）。
+    """
+    sys.path.insert(0, os.path.join(ROOT, "scripts", "day_trading"))
+    os.environ.setdefault("DEVICE_ID", "ci")        # 只讀不寫：不要在 CI 上產生 .device_id
+    try:
+        import daytraders
+        import src_moneydj
+        tbl = daytraders.table(day)
+    except Exception as e:                          # noqa: BLE001 — 名單載入失敗：整段略過，頁面顯示抓不到
+        print(f"[warn] 隔日沖名單載入失敗：{str(e)[:150]}", file=sys.stderr)
+        for s in stocks:
+            s["dt"] = {"status": "error"}
+        return None
+    for s in stocks:
+        try:
+            summ = src_moneydj.broker_summary_range(s["code"], day, day, cache_ttl=0)
+        except Exception as e:                      # noqa: BLE001
+            print(f"[warn] {s['code']} 分點表：{str(e)[:120]}", file=sys.stderr)
+            s["dt"] = {"status": "error"}
+            continue
+        finally:
+            time.sleep(0.3)
+        if not (summ.get("buyers") or summ.get("sellers")):
+            s["dt"] = {"status": "pending"}
+            continue
+        d = daytraders.for_stock(summ, s["vol_lots"], tbl)
+        rows = [{"broker": r["broker"], "net": r["net"], "pct": r["pct"], "n": r["n"],
+                 "rate": r["rate"]} for r in d["list"]]
+        s["dt"] = {"status": "ok", "buy": d["buy"], "buy_pct": round(d["buy"] / s["vol_lots"] * 100, 2) if s["vol_lots"] else None,
+                   "expect_sell": d["expect_sell"], "list": rows}
+    meta = tbl["_meta"]
+    n_dt = sum(1 for k, v in tbl.items() if k != "_meta" and v.get("kind") == "dt")
+    return {"source": meta["source"], "days": meta["days"], "first": meta["first"], "last": meta["last"], "branches": n_dt}
+
+
 # ---------------------------------------------------------------- 主程式
 
 def latest_day(today):
@@ -276,7 +320,11 @@ def main():
               f" 分時 {it.get('bars', 0)} 根", file=sys.stderr)
         stocks.append(s)
 
-    # 同一天重跑時，這次沒抓到的部分（上櫃還沒公布、Yahoo 偶發失敗）沿用上一份
+    dt_meta = daytrade_all(stocks, day)
+    n_ok = sum(1 for s in stocks if (s.get("dt") or {}).get("status") == "ok")
+    print(f"隔日沖分點：{n_ok}/{len(stocks)} 檔有分點表", file=sys.stderr)
+
+    # 同一天重跑時，這次沒抓到的部分（上櫃還沒公布、Yahoo 偶發失敗、分點表連不到）沿用上一份
     if old.get("date") == day.isoformat():
         prev = {x["code"]: x for x in old.get("stocks") or []}
         for s in stocks:
@@ -288,6 +336,10 @@ def main():
             if s.get("ma20") is None and p.get("ma20") is not None:
                 for k in ("ma20", "ma20_prev", "bb_up", "bb_dn", "prev_close", "pos", "strong"):
                     s[k] = p.get(k)
+            if (s.get("dt") or {}).get("status") != "ok" and (p.get("dt") or {}).get("status") == "ok":
+                s["dt"] = p["dt"]
+        if not dt_meta and old.get("dt_meta"):
+            dt_meta = old["dt_meta"]
         if not tpex_ok and old.get("tpex_ok"):
             kept = [x for x in old.get("stocks") or [] if x.get("market") == "上櫃"]
             stocks = sorted(stocks + kept, key=lambda x: -x["vol_lots"])
@@ -296,13 +348,14 @@ def main():
     if not stocks and old.get("stocks"):
         raise SystemExit(f"{day} 一檔漲停都沒抓到，保留現有資料（{old.get('date')}）")
 
-    out = {"updated_at": now.strftime("%Y-%m-%d %H:%M"), "date": day.isoformat(), "tpex_ok": tpex_ok,
+    out = {"updated_at": now.strftime("%Y-%m-%d %H:%M"), "date": day.isoformat(), "tpex_ok": tpex_ok, "dt_meta": dt_meta,
            "counts": {"twse": sum(x["market"] == "上市" for x in stocks), "tpex": sum(x["market"] == "上櫃" for x in stocks)},
            "stocks": stocks,
            "sources": {"twse": "https://www.twse.com.tw/zh/trading/historical/mi-index.html",
                        "twse_limits": "https://www.twse.com.tw/zh/trading/variation/twt84u.html",
                        "tpex": "https://www.tpex.org.tw/zh-tw/mainboard/trading/info/pricing.html",
-                       "yahoo": "https://finance.yahoo.com/"}}
+                       "yahoo": "https://finance.yahoo.com/",
+                       "broker": "https://5850web.moneydj.com/z/zc/zco/zco.djhtm"}}
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT + ".tmp", "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))

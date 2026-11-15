@@ -83,6 +83,22 @@
     </svg>`;
   }
 
+  /** 隔日沖分點：當天買超這檔的隔日沖分點（隔天開盤的潛在賣壓） */
+  function dtBlock(s) {
+    const d = s.dt;
+    const box = inner => `<div class="mt-2 rounded-lg bg-slate-50 border border-slate-100 px-3 py-2 text-xs text-slate-600">${inner}</div>`;
+    if (!d || d.status === 'error') return box('<span class="text-slate-400">隔日沖分點：分點資料抓不到</span>');
+    if (d.status === 'pending') return box('<span class="text-slate-400">隔日沖分點：分點表還沒公布（傍晚後更新）</span>');
+    if (!d.list?.length) return box('隔日沖分點：<b class="text-slate-700">無</b><span class="text-slate-400">（買超前 15 名裡沒有隔日沖分點）</span>');
+    const heavy = (d.buy_pct ?? 0) >= 5;
+    const rows = d.list.map(r => `<span class="inline-flex items-baseline gap-1 whitespace-nowrap mr-3" title="${esc(`近 60 日大買 ${r.n} 次、隔天倒回 ${Math.round((r.rate ?? 0) * 100)}%`)}">
+        <span class="text-slate-700">${esc(r.broker)}</span><b class="text-red-600">${num(r.net)}</b><span class="text-slate-400">${r.pct == null ? '' : `${num(r.pct, 1)}%`}</span></span>`).join('');
+    return box(`<div class="flex flex-wrap items-baseline justify-between gap-x-2">
+        <span>隔日沖分點買超 <b class="${heavy ? 'text-red-600' : 'text-slate-800'}">${num(d.buy)}</b> 張（<b>${num(d.buy_pct, 1)}%</b> 量）</span>
+        <span class="text-slate-400">照習慣隔天約倒回 ${num(d.expect_sell)} 張</span></div>
+      <div class="mt-1 leading-5">${rows}</div>`);
+  }
+
   function card(s, rank) {
     const it = s.intraday;
     const slope = s.ma20 != null && s.ma20_prev != null ? (s.ma20 > s.ma20_prev ? '↑' : s.ma20 < s.ma20_prev ? '↓' : '→') : '';
@@ -108,6 +124,7 @@
           <span>開 ${px(s.o)}</span><span>低 ${px(s.l)}</span><span>昨收 ${px(s.ref)}</span>
           <span>月線 ${px(s.ma20)}${slope}</span><span>上軌 ${px(s.bb_up)}</span><span>筆數 ${num(s.trades)}</span>
         </div>
+        ${dtBlock(s)}
       </div>`;
   }
 
@@ -136,16 +153,18 @@
   }
 
   function filters() {
-    return { locked: $('fLocked').checked, strong: $('fStrong').checked, market: $('fMarket').value };
+    return { locked: $('fLocked').checked, strong: $('fStrong').checked, market: $('fMarket').value, sort: $('fSort').value };
   }
 
   function render() {
     const f = filters();
     store.set(f);
-    const all = (DATA.stocks || []).filter(s => !f.market || s.market === f.market);
+    const dtPct = s => (s.dt?.status === 'ok' ? s.dt.buy_pct ?? 0 : -1);
+    const all = (DATA.stocks || []).filter(s => !f.market || s.market === f.market)
+      .sort((a, b) => (f.sort === 'dt' ? dtPct(b) - dtPct(a) : 0) || b.vol_lots - a.vol_lots);
     const shown = all.filter(s => !reasons(s, f).length);
     const out = all.filter(s => reasons(s, f).length);
-    $('shown').textContent = `顯示 ${shown.length} ／ ${all.length} 檔，依成交量排序`;
+    $('shown').textContent = `顯示 ${shown.length} ／ ${all.length} 檔`;
     $('cards').innerHTML = shown.length ? shown.map((s, i) => card(s, i + 1)).join('')
       : '<div class="col-span-full bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400">這個條件下沒有符合的漲停股</div>';
     bindHover($('cards'));
@@ -158,11 +177,12 @@
           <table class="w-full text-sm text-left text-slate-600">
             <thead class="text-[11px] text-slate-500 bg-slate-50"><tr>
               <th class="py-2 px-2">股票</th><th class="py-2 px-2">原因</th><th class="py-2 px-2 text-right">量（張）</th>
-              <th class="py-2 px-2 text-right hidden sm:table-cell">收盤</th><th class="py-2 px-2 text-right hidden sm:table-cell">月線／上軌</th></tr></thead>
+              <th class="py-2 px-2 text-right hidden sm:table-cell">隔日沖（張）</th><th class="py-2 px-2 text-right hidden sm:table-cell">收盤</th><th class="py-2 px-2 text-right hidden sm:table-cell">月線／上軌</th></tr></thead>
             <tbody class="divide-y divide-slate-100">${out.map(s => `<tr>
               <td class="py-2 px-2 whitespace-nowrap"><b class="text-slate-800">${esc(s.code)}</b> ${esc(s.name)} <span class="text-[11px] text-slate-400">${esc(s.market)}</span></td>
               <td class="py-2 px-2 text-red-600 font-semibold whitespace-nowrap">${esc(reasons(s, f).join('、'))}</td>
               <td class="py-2 px-2 text-right">${num(s.vol_lots)}</td>
+              <td class="py-2 px-2 text-right hidden sm:table-cell">${s.dt?.status === 'ok' ? num(s.dt.buy) : '—'}</td>
               <td class="py-2 px-2 text-right hidden sm:table-cell">${px(s.c)}</td>
               <td class="py-2 px-2 text-right hidden sm:table-cell whitespace-nowrap">${px(s.ma20)}／${px(s.bb_up)}</td></tr>`).join('')}</tbody>
           </table>
@@ -190,12 +210,14 @@
       <p><b>一字鎖</b>：開盤價 = 最低價 = 漲停價，也就是一開盤就漲停、整天沒有打開過。賣壓完全被吃掉，隔天常常繼續開高，不適合放空。</p>
       <p><b>強勢股（月線之上＆布林上通道）</b>：用含當天在內的最近 20 個收盤價算月線（20 日均線 = 布林中軌）與布林通道（中軌 ± 2 個標準差）。收盤介於中軌和上軌之間的，代表多頭趨勢還在、離上軌還有空間，也不適合放空。收盤已經衝出上軌的，標成「突破布林上軌」，不在排除條件裡（偏離較大，留給你自己判斷）。</p>
       <p><b>江波圖</b>：當天 09:00～13:30 的 1 分鐘收盤價。紅色實線＝漲停價、灰色虛線＝昨收（參考價）、橘色虛線＝月線（在畫面範圍內時才畫）、紅點＝第一次碰到漲停的時間。下方是每分鐘成交量（張），最後一根藍色的是 13:30 收盤集合競價的量（全天成交量扣掉盤中的推算值）。「漲停打開 N 分」是第一次碰到漲停之後，1 分 K 最低價跌破漲停價的分鐘數，數字越大代表漲停越不穩。滑過圖可以看每分鐘的價格。</p>
+      <p><b>隔日沖分點</b>：當天買超前 15 名分點裡，屬於隔日沖名單的分點買了多少（張、佔當天成交量 %），以及照它們過去的習慣隔天大約會倒回多少張。這些買盤通常隔天開盤就賣，對放空是加分。名單不是寫死的：近 60 個交易日在強勢股「大買（≥ 成交量 1% 且 ≥30 張）、隔天又倒回一半以上」的比例夠高的分點才算${d.dt_meta ? `（目前 ${d.dt_meta.branches} 個分點，統計 ${esc(md(d.dt_meta.first))}～${esc(md(d.dt_meta.last))} 共 ${d.dt_meta.days} 天${d.dt_meta.source === 'dynamic' ? '' : '，資料不足，暫用固定名單'}）` : ''}。滑過分點名稱可以看它的大買次數與倒回率。分點表只列前 15 名，買得少的隔日沖分點不會出現。分點表傍晚才公布，15:11 那次更新通常還沒有，20:11 會補上。</p>
       <p><b>更新時間</b>：跟著本站排程（台北時間週一到週六 06:12 起，一天數次，含 15:11、20:11）。交易所收盤行情約 14:30～15:00 公布，之前跑的都是前一個交易日；抓不到新資料時保留現有那一份。上櫃行情公布得比上市晚，15:11 那次偶爾只有上市，20:11 會補齊。</p>`;
     const s = d.sources || {};
     $('sources').innerHTML = `資料來源：<a class="hover:underline" href="${esc(s.twse)}" target="_blank" rel="noopener">證交所每日收盤行情</a>、`
       + `<a class="hover:underline" href="${esc(s.twse_limits)}" target="_blank" rel="noopener">證交所股價升降幅度</a>、`
       + `<a class="hover:underline" href="${esc(s.tpex)}" target="_blank" rel="noopener">櫃買中心上櫃股票行情</a>、`
-      + `<a class="hover:underline" href="${esc(s.yahoo)}" target="_blank" rel="noopener">Yahoo Finance（日線、1 分鐘分時）</a> ｜ 自動化發布 via GitHub Actions & Pages`;
+      + `<a class="hover:underline" href="${esc(s.yahoo)}" target="_blank" rel="noopener">Yahoo Finance（日線、1 分鐘分時）</a>、`
+      + `<a class="hover:underline" href="${esc(s.broker || 'https://5850web.moneydj.com/')}" target="_blank" rel="noopener">MoneyDJ 券商分點進出</a> ｜ 自動化發布 via GitHub Actions & Pages`;
   }
 
   async function load() {
@@ -209,8 +231,9 @@
         $('fLocked').checked = saved.locked !== false;
         $('fStrong').checked = saved.strong !== false;
         $('fMarket').value = saved.market || '';
+        $('fSort').value = saved.sort === 'dt' ? 'dt' : 'vol';
       }
-      ['fLocked', 'fStrong', 'fMarket'].forEach(id => $(id).addEventListener('change', render));
+      ['fLocked', 'fStrong', 'fMarket', 'fSort'].forEach(id => $(id).addEventListener('change', render));
       summary(DATA);
       render();
       renderMethod(DATA);

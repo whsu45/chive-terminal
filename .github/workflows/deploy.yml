@@ -92,6 +92,16 @@ jobs:
           git add data/history.json data/themes.json data/theme_picks.json data/us_tech.json data/us_tech_history.json data/night_futures.json data/limit_up.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update history.json [skip ci]" && git push)
 
+      # 每個頁面的 ./assets/*.js 加上 ?v=<commit>：GitHub Pages 讓瀏覽器快取 10 分鐘，
+      # 不加的話剛部署完會出現「新 HTML + 舊 JS」（例如新加的篩選勾選框沒有作用）。只改要部署的檔案，不 commit 回 repo
+      - name: Cache-bust page scripts
+        run: |
+          v="${GITHUB_SHA::7}"
+          for f in *.html; do
+            sed -i -E "s#(src=\"\./assets/[^\"?]+\.js)\"#\1?v=${v}\"#g" "$f"
+          done
+          grep -ho 'assets/[^"]*\.js?v=[0-9a-f]*' *.html | sort -u
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

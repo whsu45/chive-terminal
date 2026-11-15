@@ -156,7 +156,10 @@
   }
 
   function filters() {
-    return { locked: $('fLocked').checked, strong: $('fStrong').checked, above: $('fAbove').checked, lowVol: $('fLowVol').checked, market: $('fMarket').value, sort: $('fSort').value };
+    // 頁面若是瀏覽器快取的舊版 HTML，新加的勾選框可能不存在：缺的就用預設值，不讓整頁壞掉
+    const chk = (id, def) => ($(id) ? $(id).checked : def);
+    return { locked: chk('fLocked', true), strong: chk('fStrong', true), above: chk('fAbove', true), lowVol: chk('fLowVol', false),
+      market: $('fMarket')?.value || '', sort: $('fSort')?.value || 'vol' };
   }
 
   function render() {
@@ -237,14 +240,15 @@
         <div>資料產生時間：<span class="font-semibold text-slate-700">${esc(DATA.updated_at)}</span> <span class="text-slate-400">(UTC+8)</span></div>`;
       const saved = store.get();
       if (saved) {
-        $('fLocked').checked = saved.locked !== false;
-        $('fStrong').checked = saved.strong !== false;
-        $('fAbove').checked = saved.above !== false;
-        $('fLowVol').checked = saved.lowVol === true;
-        $('fMarket').value = saved.market || '';
-        $('fSort').value = saved.sort === 'dt' ? 'dt' : 'vol';
+        const set = (id, prop, v) => { if ($(id)) $(id)[prop] = v; };
+        set('fLocked', 'checked', saved.locked !== false);
+        set('fStrong', 'checked', saved.strong !== false);
+        set('fAbove', 'checked', saved.above !== false);
+        set('fLowVol', 'checked', saved.lowVol === true);
+        set('fMarket', 'value', saved.market || '');
+        set('fSort', 'value', saved.sort === 'dt' ? 'dt' : 'vol');
       }
-      ['fLocked', 'fStrong', 'fAbove', 'fLowVol', 'fMarket', 'fSort'].forEach(id => $(id).addEventListener('change', render));
+      ['fLocked', 'fStrong', 'fAbove', 'fLowVol', 'fMarket', 'fSort'].forEach(id => $(id)?.addEventListener('change', render));
       summary(DATA);
       render();
       renderMethod(DATA);

@@ -78,12 +78,18 @@ jobs:
         run: |
           python scripts/build_night_futures.py
 
+      # 最新漲停個股：最新一個交易日的上市櫃漲停股＋分時走勢（證交所、櫃買、Yahoo 公開資料；抓不到新資料就保留舊檔，失敗不影響其他頁面部署）
+      - name: Build limit-up stocks
+        continue-on-error: true
+        run: |
+          python scripts/build_limit_up.py
+
       # 將更新後的 data/history.json 與族群資料推回 Git 儲存庫備份
       - name: Commit and push updated history.json
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/history.json data/themes.json data/theme_picks.json data/us_tech.json data/us_tech_history.json data/night_futures.json
+          git add data/history.json data/themes.json data/theme_picks.json data/us_tech.json data/us_tech_history.json data/night_futures.json data/limit_up.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update history.json [skip ci]" && git push)
 
       - name: Setup Pages

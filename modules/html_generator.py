@@ -182,6 +182,7 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
                 <a href="./themes.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🧩 族群漲跌排行</a>
                 <a href="./us-tech.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🇺🇸 美股科技連動</a>
                 <a href="./night-futures.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🌙 期貨走勢</a>
+                <a href="./limit-up.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🔥 最新漲停個股</a>
             </div>
         </div>
 
@@ -486,6 +487,7 @@ def generate_broker_html(broker_records):
                 <a href="./themes.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🧩 族群漲跌排行</a>
                 <a href="./us-tech.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🇺🇸 美股科技連動</a>
                 <a href="./night-futures.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🌙 期貨走勢</a>
+                <a href="./limit-up.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🔥 最新漲停個股</a>
             </div>
         </div>
 

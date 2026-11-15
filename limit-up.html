@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最新漲停個股</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        details > summary { cursor: pointer; list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] .chev { transform: rotate(90deg); }
+        .tick svg { touch-action: pan-y; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans">
+    <div class="max-w-[1400px] mx-auto space-y-6">
+
+        <!-- Header & Nav Tabs -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">🔥 最新漲停個股</h1>
+                    <p class="text-slate-500 text-sm mt-1">最新一個交易日收在漲停價的上市、上櫃股票，附當天分時走勢（江波圖），依成交量排序。給當沖做空找標的用：預設排除一字鎖和強勢股</p>
+                </div>
+                <div id="meta" class="text-xs text-slate-500 md:text-right space-y-1"></div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mt-6 border-b border-slate-100 pb-2">
+                <a href="./index.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">📊 台指期夜盤預測</a>
+                <a href="./broker.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🏦 主力券商買超分析</a>
+                <a href="./stock.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🎯 個股策略分析</a>
+                <a href="./themes.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🧩 族群漲跌排行</a>
+                <a href="./us-tech.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🇺🇸 美股科技連動</a>
+                <a href="./night-futures.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🌙 期貨走勢</a>
+                <a href="./limit-up.html" class="px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 rounded-lg border border-indigo-100">🔥 最新漲停個股</a>
+            </div>
+        </div>
+
+        <div id="status" class="hidden"></div>
+
+        <!-- 統計＋篩選 -->
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4">
+            <div id="summary" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-700">
+                <label class="inline-flex items-center gap-2 cursor-pointer"><input id="fLocked" type="checkbox" class="w-4 h-4 accent-indigo-600" checked>排除一字鎖</label>
+                <label class="inline-flex items-center gap-2 cursor-pointer"><input id="fStrong" type="checkbox" class="w-4 h-4 accent-indigo-600" checked>排除強勢股（月線之上＆布林上通道）</label>
+                <label class="inline-flex items-center gap-2">市場
+                    <select id="fMarket" class="border border-slate-300 rounded-md px-2 py-1 text-sm bg-white">
+                        <option value="">全部</option><option value="上市">上市</option><option value="上櫃">上櫃</option>
+                    </select>
+                </label>
+                <span id="shown" class="text-xs text-slate-400"></span>
+            </div>
+        </div>
+
+        <!-- 江波圖 -->
+        <div id="cards" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+
+        <!-- 被排除的 -->
+        <div id="excluded"></div>
+
+        <!-- 說明 -->
+        <div id="method" class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 text-sm text-slate-600 space-y-2"></div>
+
+        <footer class="text-center text-xs text-slate-400 py-4 space-y-1">
+            <div id="sources"></div>
+            <div>以上為技術面推算，不構成投資建議。放空有軋空、借券與平盤下不得放空等風險。</div>
+        </footer>
+    </div>
+    <script src="./assets/limit-up-app.js"></script>
+</body>
+</html>

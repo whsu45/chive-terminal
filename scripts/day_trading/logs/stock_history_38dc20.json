@@ -1877,9 +1877,10 @@
   "market": "tse",
   "group": null,
   "days": [
-   "2026-11-11"
+   "2026-11-11",
+   "2026-11-16"
   ],
-  "launches": 1,
+  "launches": 2,
   "signals": [
    {
     "date": "2026-11-11",
@@ -2115,6 +2116,89 @@
      "散戶追價",
      "外盤強",
      "量能爆增"
+    ],
+    "exh": null,
+    "exh_lit": null
+   },
+   {
+    "date": "2026-11-16",
+    "time": "12:37:01",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 134.0,
+    "stop": 135.5,
+    "t1": 131.0,
+    "t2": 128.6,
+    "zone": [
+     134.0,
+     134.0
+    ],
+    "alert_px": 132.0,
+    "filled_at_alert": false,
+    "fill_min": null,
+    "chase": 0.778,
+    "run5": 0.38,
+    "run5_tk": 1.0,
+    "rr_now": 0.29,
+    "rr_zone": 2.0,
+    "verdict": "nofill",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": null,
+    "scoring": 2,
+    "score_stop": 135.0,
+    "score_tgt": 132.0,
+    "heat_ticks": 1,
+    "tick": 0.5,
+    "exit": null,
+    "exit_px": null,
+    "net_pct": null,
+    "mae_ticks": null,
+    "mfe_ticks": null,
+    "ret_10m": -0.37878787878787845,
+    "ret_30m": -1.1363636363636354,
+    "suspects": [],
+    "why": "反彈 134.0 不過，1 分 K 收 132.0 確認（偏空強度 65）",
+    "features": {
+     "idx_trend_10m": -0.3745358625137474,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 1.3415222237386835,
+     "rs_vs_index": 0.20103376734954548,
+     "group_avg": null,
+     "chg_pct": -4.347826086956519,
+     "warrant_surge": false,
+     "small_net_pct": 1.4514378730330983,
+     "p_long": 35.480000000000004,
+     "p_short": 64.52,
+     "liq_level": "ok",
+     "liq_l1": 16.0,
+     "liq_wide_pct": 9,
+     "wall_bid": {
+      "px": 131.0,
+      "verdict": "假支撐傾向（撤單中）",
+      "last": 95
+     },
+     "wall_ask": {
+      "px": 134.0,
+      "verdict": "假壓力傾向（撤單中）",
+      "last": 92
+     },
+     "book_imb": 0.1986062717770035,
+     "big_net_10m": 0,
+     "phase": "late",
+     "range_pos": 0.1111111111111111
+    },
+    "factors": [
+     "日內低檔",
+     "跌破開盤價",
+     "VWAP之下",
+     "大盤轉弱",
+     "大單淨賣",
+     "內盤強",
+     "前日避險買盤重",
+     "前日認購爆量"
     ],
     "exh": null,
     "exh_lit": null
@@ -2624,6 +2708,214 @@
     "exh_lit": null
    }
   ],
+  "notes": []
+ },
+ "2377": {
+  "name": "微星",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-16"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2466": {
+  "name": "冠西電",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-16"
+  ],
+  "launches": 1,
+  "signals": [
+   {
+    "date": "2026-11-16",
+    "time": "12:29:48",
+    "src": "shioaji",
+    "side": "long",
+    "label": "做多",
+    "price": 400.0,
+    "stop": 393.5,
+    "t1": 410.0,
+    "t2": 413.5,
+    "zone": [
+     400.0,
+     400.0
+    ],
+    "alert_px": 409.0,
+    "filled_at_alert": false,
+    "fill_min": null,
+    "chase": 0.939,
+    "run5": -0.12,
+    "run5_tk": -1.0,
+    "rr_now": 0.06,
+    "rr_zone": 1.54,
+    "verdict": "nofill",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": null,
+    "scoring": 2,
+    "score_stop": 398.0,
+    "score_tgt": 404.0,
+    "heat_ticks": 3,
+    "tick": 0.5,
+    "exit": null,
+    "exit_px": null,
+    "net_pct": null,
+    "mae_ticks": null,
+    "mfe_ticks": null,
+    "ret_10m": -0.9779951100244544,
+    "ret_30m": -2.444987775061125,
+    "suspects": [],
+    "why": "回測 400.0 守住，1 分 K 收 410.5 確認（偏多強度 64）",
+    "features": {
+     "idx_trend_10m": 0.36268546688791314,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 2.2960801810924316,
+     "rs_vs_index": 8.282546067056574,
+     "group_avg": null,
+     "chg_pct": 4.071246819338414,
+     "warrant_surge": false,
+     "small_net_pct": 3.7246248896734335,
+     "p_long": 64.41,
+     "p_short": 35.59,
+     "liq_level": "thin",
+     "liq_l1": 2.5,
+     "liq_wide_pct": 43,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.6170212765957447,
+     "big_net_10m": -6,
+     "phase": "late",
+     "range_pos": 0.8636363636363636
+    },
+    "factors": [
+     "強於大盤",
+     "日內高檔",
+     "站上開盤價",
+     "VWAP之上",
+     "大盤轉強",
+     "量能爆增"
+    ],
+    "exh": null,
+    "exh_lit": null
+   }
+  ],
+  "notes": []
+ },
+ "3019": {
+  "name": "亞光",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-16"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "4916": {
+  "name": "事欣科",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-16"
+  ],
+  "launches": 1,
+  "signals": [
+   {
+    "date": "2026-11-16",
+    "time": "12:54:56",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 105.0,
+    "stop": 106.5,
+    "t1": 102.0,
+    "t2": 101.5,
+    "zone": [
+     105.0,
+     105.0
+    ],
+    "alert_px": 105.0,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.333,
+    "run5": 0.47,
+    "run5_tk": 1.0,
+    "rr_now": 2.0,
+    "rr_zone": 2.0,
+    "verdict": "win",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": null,
+    "scoring": 2,
+    "score_stop": 106.0,
+    "score_tgt": 103.0,
+    "heat_ticks": 1,
+    "tick": 0.5,
+    "exit": "time",
+    "exit_px": 104.0,
+    "net_pct": 0.717,
+    "mae_ticks": 1.0,
+    "mfe_ticks": 3.0,
+    "ret_10m": -0.4761904761904745,
+    "ret_30m": -0.952380952380949,
+    "suspects": [],
+    "why": "反彈 105.0 不過，1 分 K 收 104.5 確認（偏空強度 62）",
+    "features": {
+     "idx_trend_10m": -0.20700328651087618,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 3.3178786216501224,
+     "rs_vs_index": -2.093700741088089,
+     "group_avg": null,
+     "chg_pct": -7.1111111111111125,
+     "warrant_surge": false,
+     "small_net_pct": -3.899584748961872,
+     "p_long": 38.12,
+     "p_short": 61.88,
+     "liq_level": "ok",
+     "liq_l1": 36.0,
+     "liq_wide_pct": 5,
+     "wall_bid": {
+      "px": 103.0,
+      "verdict": "未測試",
+      "last": 111
+     },
+     "wall_ask": null,
+     "book_imb": 0.152317880794702,
+     "big_net_10m": 24,
+     "phase": "late",
+     "range_pos": 0.058823529411764705
+    },
+    "factors": [
+     "開高有庫存",
+     "弱於大盤",
+     "日內低檔",
+     "跌破開盤價",
+     "VWAP之下",
+     "量能爆增",
+     "前日認購爆量"
+    ],
+    "exh": null,
+    "exh_lit": null
+   }
+  ],
+  "notes": []
+ },
+ "3305": {
+  "name": "昇貿",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-16"
+  ],
+  "launches": 1,
+  "signals": [],
   "notes": []
  }
 }

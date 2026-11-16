@@ -6,7 +6,7 @@
  "date_counts": {
   "2026-11-16": 369
  },
- "members_fetched": "2026-11-16",
+ "members_fetched": "2026-11-17",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -558,6 +558,89 @@
    "flat": 0
   },
   {
+   "slug": "automotive-electronics",
+   "title": "車用電子概念股",
+   "desc": "車用電子概念股指供應汽車電子化零組件的台股，環節涵蓋 ADAS 感測與毫米波雷達、抬頭顯示器等座艙電子、車用功率元件與車用連接器。",
+   "members": [
+    {
+     "code": "2231",
+     "name": "為升",
+     "market": "上市",
+     "open": 82.5,
+     "high": 82.5,
+     "low": 76.7,
+     "close": 77.8,
+     "change": -1.0,
+     "pct": -1.27,
+     "volume": 119
+    },
+    {
+     "code": "6279",
+     "name": "胡連",
+     "market": "上櫃",
+     "open": 97.3,
+     "high": 97.3,
+     "low": 94.5,
+     "close": 94.5,
+     "change": -2.8,
+     "pct": -2.88,
+     "volume": 400
+    },
+    {
+     "code": "3552",
+     "name": "同致",
+     "market": "上櫃",
+     "open": 31.2,
+     "high": 31.45,
+     "low": 30.05,
+     "close": 30.05,
+     "change": -1.45,
+     "pct": -4.6,
+     "volume": 174
+    },
+    {
+     "code": "1533",
+     "name": "車王電",
+     "market": "上市",
+     "open": 24.4,
+     "high": 24.4,
+     "low": 22.95,
+     "close": 23.1,
+     "change": -1.35,
+     "pct": -5.52,
+     "volume": 178
+    },
+    {
+     "code": "2497",
+     "name": "怡利電",
+     "market": "上市",
+     "open": 36.7,
+     "high": 36.7,
+     "low": 34.5,
+     "close": 34.5,
+     "change": -2.2,
+     "pct": -5.99,
+     "volume": 260
+    },
+    {
+     "code": "8255",
+     "name": "朋程",
+     "market": "上櫃",
+     "open": 120.5,
+     "high": 120.5,
+     "low": 111.5,
+     "close": 112.0,
+     "change": -9.0,
+     "pct": -7.44,
+     "volume": 178
+    }
+   ],
+   "avg_pct": -4.62,
+   "up": 0,
+   "down": 6,
+   "flat": 0
+  },
+  {
    "slug": "machine-tools",
    "title": "工具機概念股",
    "desc": "工具機概念股指製造金屬加工母機與其關鍵零組件的台股：整機有 CNC 車床、立式與臥式加工中心機、龍門機、磨床與沖床，零組件有控制器與主軸。",
@@ -722,89 +805,6 @@
    "avg_pct": -4.62,
    "up": 1,
    "down": 12,
-   "flat": 0
-  },
-  {
-   "slug": "automotive-electronics",
-   "title": "車用電子概念股",
-   "desc": "車用電子概念股指供應汽車電子化零組件的台股，環節涵蓋 ADAS 感測與毫米波雷達、抬頭顯示器等座艙電子、車用功率元件與車用連接器。",
-   "members": [
-    {
-     "code": "2231",
-     "name": "為升",
-     "market": "上市",
-     "open": 82.5,
-     "high": 82.5,
-     "low": 76.7,
-     "close": 77.8,
-     "change": -1.0,
-     "pct": -1.27,
-     "volume": 119
-    },
-    {
-     "code": "6279",
-     "name": "胡連",
-     "market": "上櫃",
-     "open": 97.3,
-     "high": 97.3,
-     "low": 94.5,
-     "close": 94.5,
-     "change": -2.8,
-     "pct": -2.88,
-     "volume": 400
-    },
-    {
-     "code": "3552",
-     "name": "同致",
-     "market": "上櫃",
-     "open": 31.2,
-     "high": 31.45,
-     "low": 30.05,
-     "close": 30.05,
-     "change": -1.45,
-     "pct": -4.6,
-     "volume": 174
-    },
-    {
-     "code": "1533",
-     "name": "車王電",
-     "market": "上市",
-     "open": 24.4,
-     "high": 24.4,
-     "low": 22.95,
-     "close": 23.1,
-     "change": -1.35,
-     "pct": -5.52,
-     "volume": 178
-    },
-    {
-     "code": "2497",
-     "name": "怡利電",
-     "market": "上市",
-     "open": 36.7,
-     "high": 36.7,
-     "low": 34.5,
-     "close": 34.5,
-     "change": -2.2,
-     "pct": -5.99,
-     "volume": 260
-    },
-    {
-     "code": "8255",
-     "name": "朋程",
-     "market": "上櫃",
-     "open": 120.5,
-     "high": 120.5,
-     "low": 111.5,
-     "close": 112.0,
-     "change": -9.0,
-     "pct": -7.44,
-     "volume": 178
-    }
-   ],
-   "avg_pct": -4.62,
-   "up": 0,
-   "down": 6,
    "flat": 0
   },
   {
@@ -989,8 +989,7 @@
      "close": 118.0,
      "change": -2.5,
      "pct": -2.07,
-     "volume": 7,
-     "no_trade": true
+     "volume": 7
     },
     {
      "code": "2208",
@@ -1204,8 +1203,7 @@
      "close": 18.95,
      "change": -0.25,
      "pct": -1.3,
-     "volume": 208,
-     "no_trade": true
+     "volume": 208
     },
     {
      "code": "6126",
@@ -3507,18 +3505,6 @@
      "volume": 19574
     },
     {
-     "code": "6197",
-     "name": "佳必琪",
-     "market": "上市",
-     "open": 238.0,
-     "high": 238.0,
-     "low": 214.5,
-     "close": 214.5,
-     "change": -23.5,
-     "pct": -9.87,
-     "volume": 1279
-    },
-    {
      "code": "3017",
      "name": "奇鋐",
      "market": "上市",
@@ -3529,6 +3515,18 @@
      "change": -300.0,
      "pct": -9.87,
      "volume": 2959
+    },
+    {
+     "code": "6197",
+     "name": "佳必琪",
+     "market": "上市",
+     "open": 238.0,
+     "high": 238.0,
+     "low": 214.5,
+     "close": 214.5,
+     "change": -23.5,
+     "pct": -9.87,
+     "volume": 1279
     }
    ],
    "avg_pct": -7.46,
@@ -4293,18 +4291,6 @@
      "volume": 5636
     },
     {
-     "code": "6239",
-     "name": "力成",
-     "market": "上市",
-     "open": 245.0,
-     "high": 245.0,
-     "low": 226.5,
-     "close": 226.5,
-     "change": -25.0,
-     "pct": -9.94,
-     "volume": 9566
-    },
-    {
      "code": "3037",
      "name": "欣興",
      "market": "上市",
@@ -4315,6 +4301,18 @@
      "change": -78.0,
      "pct": -9.94,
      "volume": 17106
+    },
+    {
+     "code": "6239",
+     "name": "力成",
+     "market": "上市",
+     "open": 245.0,
+     "high": 245.0,
+     "low": 226.5,
+     "close": 226.5,
+     "change": -25.0,
+     "pct": -9.94,
+     "volume": 9566
     }
    ],
    "avg_pct": -8.17,
@@ -4864,18 +4862,6 @@
      "volume": 2204
     },
     {
-     "code": "3264",
-     "name": "欣銓",
-     "market": "上櫃",
-     "open": 190.0,
-     "high": 190.0,
-     "low": 174.0,
-     "close": 174.0,
-     "change": -19.0,
-     "pct": -9.84,
-     "volume": 8615
-    },
-    {
      "code": "2449",
      "name": "京元電子",
      "market": "上市",
@@ -4886,6 +4872,18 @@
      "change": -21.0,
      "pct": -9.84,
      "volume": 19495
+    },
+    {
+     "code": "3264",
+     "name": "欣銓",
+     "market": "上櫃",
+     "open": 190.0,
+     "high": 190.0,
+     "low": 174.0,
+     "close": 174.0,
+     "change": -19.0,
+     "pct": -9.84,
+     "volume": 8615
     },
     {
      "code": "6147",
@@ -5174,18 +5172,6 @@
      "volume": 1184
     },
     {
-     "code": "3583",
-     "name": "辛耘",
-     "market": "上市",
-     "open": 502.0,
-     "high": 502.0,
-     "low": 453.0,
-     "close": 453.0,
-     "change": -50.0,
-     "pct": -9.94,
-     "volume": 452
-    },
-    {
      "code": "6239",
      "name": "力成",
      "market": "上市",
@@ -5196,6 +5182,18 @@
      "change": -25.0,
      "pct": -9.94,
      "volume": 9566
+    },
+    {
+     "code": "3583",
+     "name": "辛耘",
+     "market": "上市",
+     "open": 502.0,
+     "high": 502.0,
+     "low": 453.0,
+     "close": 453.0,
+     "change": -50.0,
+     "pct": -9.94,
+     "volume": 452
     },
     {
      "code": "6187",
@@ -5507,18 +5505,6 @@
      "volume": 36357
     },
     {
-     "code": "4971",
-     "name": "IET-KY",
-     "market": "上櫃",
-     "open": 393.0,
-     "high": 398.0,
-     "low": 364.5,
-     "close": 364.5,
-     "change": -40.0,
-     "pct": -9.89,
-     "volume": 637
-    },
-    {
      "code": "4991",
      "name": "環宇-KY",
      "market": "上櫃",
@@ -5531,16 +5517,16 @@
      "volume": 2106
     },
     {
-     "code": "2455",
-     "name": "全新",
-     "market": "上市",
-     "open": 380.0,
-     "high": 380.0,
-     "low": 353.0,
-     "close": 353.0,
-     "change": -39.0,
-     "pct": -9.95,
-     "volume": 2151
+     "code": "4971",
+     "name": "IET-KY",
+     "market": "上櫃",
+     "open": 393.0,
+     "high": 398.0,
+     "low": 364.5,
+     "close": 364.5,
+     "change": -40.0,
+     "pct": -9.89,
+     "volume": 637
     },
     {
      "code": "3081",
@@ -5553,6 +5539,18 @@
      "change": -210.0,
      "pct": -9.95,
      "volume": 1577
+    },
+    {
+     "code": "2455",
+     "name": "全新",
+     "market": "上市",
+     "open": 380.0,
+     "high": 380.0,
+     "low": 353.0,
+     "close": 353.0,
+     "change": -39.0,
+     "pct": -9.95,
+     "volume": 2151
     }
    ],
    "avg_pct": -9.13,
@@ -6268,18 +6266,6 @@
      "volume": 5636
     },
     {
-     "code": "6213",
-     "name": "聯茂",
-     "market": "上市",
-     "open": 518.0,
-     "high": 519.0,
-     "low": 480.0,
-     "close": 480.0,
-     "change": -53.0,
-     "pct": -9.94,
-     "volume": 10643
-    },
-    {
      "code": "3037",
      "name": "欣興",
      "market": "上市",
@@ -6290,6 +6276,18 @@
      "change": -78.0,
      "pct": -9.94,
      "volume": 17106
+    },
+    {
+     "code": "6213",
+     "name": "聯茂",
+     "market": "上市",
+     "open": 518.0,
+     "high": 519.0,
+     "low": 480.0,
+     "close": 480.0,
+     "change": -53.0,
+     "pct": -9.94,
+     "volume": 10643
     },
     {
      "code": "2383",
@@ -6316,18 +6314,6 @@
      "volume": 5492
     },
     {
-     "code": "4958",
-     "name": "臻鼎-KY",
-     "market": "上市",
-     "open": 436.0,
-     "high": 436.0,
-     "low": 396.0,
-     "close": 396.0,
-     "change": -44.0,
-     "pct": -10.0,
-     "volume": 20083
-    },
-    {
      "code": "2368",
      "name": "金像電",
      "market": "上市",
@@ -6338,6 +6324,18 @@
      "change": -103.0,
      "pct": -10.0,
      "volume": 6155
+    },
+    {
+     "code": "4958",
+     "name": "臻鼎-KY",
+     "market": "上市",
+     "open": 436.0,
+     "high": 436.0,
+     "low": 396.0,
+     "close": 396.0,
+     "change": -44.0,
+     "pct": -10.0,
+     "volume": 20083
     }
    ],
    "avg_pct": -9.52,
@@ -6483,18 +6481,6 @@
      "volume": 2227
     },
     {
-     "code": "3236",
-     "name": "千如",
-     "market": "上櫃",
-     "open": 39.6,
-     "high": 39.6,
-     "low": 35.7,
-     "close": 35.7,
-     "change": -3.95,
-     "pct": -9.96,
-     "volume": 1372
-    },
-    {
      "code": "3026",
      "name": "禾伸堂",
      "market": "上市",
@@ -6505,6 +6491,18 @@
      "change": -51.0,
      "pct": -9.96,
      "volume": 5269
+    },
+    {
+     "code": "3236",
+     "name": "千如",
+     "market": "上櫃",
+     "open": 39.6,
+     "high": 39.6,
+     "low": 35.7,
+     "close": 35.7,
+     "change": -3.95,
+     "pct": -9.96,
+     "volume": 1372
     },
     {
      "code": "2492",
@@ -6721,18 +6719,6 @@
      "volume": 10643
     },
     {
-     "code": "8358",
-     "name": "金居",
-     "market": "上櫃",
-     "open": 366.0,
-     "high": 370.0,
-     "low": 339.0,
-     "close": 339.0,
-     "change": -37.5,
-     "pct": -9.96,
-     "volume": 9747
-    },
-    {
      "code": "2383",
      "name": "台光電",
      "market": "上市",
@@ -6755,6 +6741,18 @@
      "change": -97.0,
      "pct": -9.96,
      "volume": 5492
+    },
+    {
+     "code": "8358",
+     "name": "金居",
+     "market": "上櫃",
+     "open": 366.0,
+     "high": 370.0,
+     "low": 339.0,
+     "close": 339.0,
+     "change": -37.5,
+     "pct": -9.96,
+     "volume": 9747
     },
     {
      "code": "5340",

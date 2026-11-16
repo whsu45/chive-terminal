@@ -41,6 +41,8 @@ async function fetchDaily(symbol, range = '2y') {
         const c = closes[i];
         if (c == null || !isFinite(c)) continue;
         const date = fmt.format(new Date(r.timestamp[i] * 1000));
+        const wd = new Date(`${date}T00:00:00Z`).getUTCDay();
+        if (wd === 0 || wd === 6) continue;   // 外匯週末會有一根盤後報價（例如 TWD=X 週日），不算交易日
         if (bars.length && bars[bars.length - 1].date === date) bars[bars.length - 1].close = c; // 同日重複 bar 取最後
         else bars.push({ date, close: c });
       }
@@ -195,7 +197,8 @@ async function main() {
 
   const benchOut = {};
   for (const [k, b] of Object.entries(bench)) {
-    benchOut[k] = { name: b.name, symbol: b.symbol, date: b.bars[b.bars.length - 1].date, close: round(b.bars[b.bars.length - 1].close), pct: round(E.horizonPct(b.bars, 1)), pct5: round(E.horizonPct(b.bars, 5)), pct20: round(E.horizonPct(b.bars, 20)), spark: spark(b.bars, W.spark) };
+    const dec = b.dec ?? 2;   // 匯率要 3 位小數，點數才不會被四捨五入吃掉
+    benchOut[k] = { name: b.name, symbol: b.symbol, dec, date: b.bars[b.bars.length - 1].date, close: round(b.bars[b.bars.length - 1].close, dec), pct: round(E.horizonPct(b.bars, 1)), pct5: round(E.horizonPct(b.bars, 5)), pct20: round(E.horizonPct(b.bars, 20)), spark: b.bars.slice(-W.spark).map(x => round(x.close, dec)) };
     if (k !== 'TWII') benchOut[k].taiex = linkage(E.dailyReturns(b.bars), twiiSeries);
   }
 

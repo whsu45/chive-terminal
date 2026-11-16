@@ -68,12 +68,13 @@
 
   function renderOverview(d, nf) {
     const c = d.composite, b = d.benchmarks || {};
-    const bench = (key, title) => {
+    // closeDec：右上角收盤價的小數位（指數 0 位；原油、匯率要看小數）；note：多一行說明
+    const bench = (key, title, { closeDec = 0, note = null } = {}) => {
       const x = b[key];
       if (!x) return card(title, '資料缺漏', 'NA', 'text-slate-400', [], '');
-      return card(title, `${md(x.date)} 收 ${num(x.close, 0)}`, pctWithPts(x.pct, sparkChg(x.spark)), signCls(x.pct),
-        [['5 日', pctPlain(x.pct5), signCls(x.pct5)], ['20 日', pctPlain(x.pct20), signCls(x.pct20)], x.taiex ? ['對台股 r', corrStr(x.taiex.corr120), corrCls(x.taiex.corr120)] : ['', '']],
-        sparkline(x.spark));
+      const rows = [['5 日', pctPlain(x.pct5), signCls(x.pct5)], ['20 日', pctPlain(x.pct20), signCls(x.pct20)], x.taiex ? ['對台股 r', corrStr(x.taiex.corr120), corrCls(x.taiex.corr120)] : ['', '']];
+      if (note) rows.push(note);
+      return card(title, `${md(x.date)} 收 ${num(x.close, closeDec)}`, pctWithPts(x.pct, sparkChg(x.spark), x.dec ?? 2), signCls(x.pct), rows, sparkline(x.spark));
     };
     $('overview').innerHTML = [
       bench('DJI', '道瓊工業指數 (DJI)'),
@@ -83,6 +84,8 @@
         [['5 日', pctPlain(c.pct5), signCls(c.pct5)], ['20 日', pctPlain(c.pct20), signCls(c.pct20)], ['60 日', pctPlain(c.pct60), signCls(c.pct60)], ['台股連動', badge(c.taiex?.verdict)]],
         sparkline(c.spark)),
       nightCard(nf),
+      bench('BRENT', '布蘭特原油 (Brent)', { closeDec: 2 }),
+      bench('USDTWD', '美元兌台幣 (USD/TWD)', { closeDec: 3, note: ['', '數字上升＝台幣貶值', 'text-slate-400 font-normal'] }),
     ].join('');
   }
 

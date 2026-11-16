@@ -536,6 +536,8 @@ class Monitor:
             self._add_ex(c)
         self.calibrate_after_close = False
         self._init_stream(codes, use_shioaji, big_lot)
+        for c in codes:
+            self._prepare_b(c)                                   # 串流開好才抓模組 B 的歷史，慢的 kbars 查詢不拖到串流
 
     def _add_ex(self, c):
         """這檔和它的族群成員加進 MIS 要查的代碼。用重新指定（不是原地改），另一條執行緒正在 sorted(self.ex_codes) 也不會出錯。"""
@@ -565,12 +567,16 @@ class Monitor:
             # 昨天買進的隔日沖分點（儀表板「隔日沖分點」卡）；date = 那張分點表的日期
             WEB.daily[c]["daytraders"] = dict(br["daytraders"], date=br.get("day_date"))
         WEB.describe[c] = prep.describe(dd)
-        if self.ab:
-            self.ab.prepare(c, dd.get("market"))                 # 背景抓模組 B 要的前 14 天 5 分 K
         pc = (self.daily[c].get("tech") or {}).get("close")
         if pc:
             th = src_shioaji.lot_thresholds(pc)
             print(f"  大單門檻（以昨收 {pc} 推算）：≥{th['big_lots']} 張 ≈ {th['big_amount']/1e4:.0f} 萬；散戶 <{th['small_lots']} 張 ≈ {th['small_amount']/1e4:.0f} 萬；開盤後再以當日成交分布修正")
+
+    def _prepare_b(self, c):
+        """背景抓模組 B 要的前 14 天 5 分 K。啟動時與盤中加入時都等永豐串流開好之後才叫：
+        它的 kbars 查詢最久等 30 秒，跟串流搶永豐 api 的話串流會晚開（同時用還會讓 monitor 當掉，見 src_shioaji._api_lock）。"""
+        if self.ab and c in self.daily:
+            self.ab.prepare(c, self.daily[c].get("market"))
 
     def add_code(self, code):
         """
@@ -610,6 +616,7 @@ class Monitor:
                     self._backfill_flow(ok)
                 else:
                     note = "；永豐串流訂閱失敗，這檔只有公開報價"
+            self._prepare_b(code)
             self.codes = self.codes + [code]                     # 新的 list：其他執行緒手上的舊 list 不受影響
             with WEB.lock:
                 WEB.codes = list(self.codes)

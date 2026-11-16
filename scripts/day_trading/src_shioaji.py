@@ -69,7 +69,8 @@ def fetch_ticks(api, contract, date, why=""):
     code = getattr(contract, "code", "?")
     if not _intraday():
         print(f"[shioaji] ticks 歷史查詢 {code} {date}（{why or '回補'}，盤後，不計入盤中額度）")
-        return api.ticks(contract=contract, date=date)
+        with _api_lock:
+            return api.ticks(contract=contract, date=date)
     used, budget = ticks_usage(), ticks_budget()
     if used >= budget:
         raise TicksQuota(f"今天盤中 ticks 查詢已用 {used}/{budget}，不再送出（官方上限 {TICKS_DAILY_LIMIT} 次，超過會被暫停）")
@@ -82,7 +83,8 @@ def fetch_ticks(api, contract, date, why=""):
         pass
     flag = "  ⚠ 快到上限" if n >= budget - 2 else ""
     print(f"[shioaji] ticks 歷史查詢 {code} {date}（{why or '回補'}）→ 今日盤中 ticks 已用 {n}/{budget}{flag}")
-    return api.ticks(contract=contract, date=date)
+    with _api_lock:
+        return api.ticks(contract=contract, date=date)
 
 
 KBARS_DAILY_LIMIT = 270  # 官方：盤中查詢 kbars 次數不得超過 270 次
@@ -124,7 +126,8 @@ def fetch_kbars(api, contract, day, why="", end=None):
                 json.dump({"count": used + 1, "last": dt.datetime.now().isoformat(), "why": why}, f)
         except Exception:
             pass
-    return api.kbars(contract=contract, start=day, end=end or day)
+    with _api_lock:
+        return api.kbars(contract=contract, start=day, end=end or day)
 
 
 def backfill_bars(api, contract, code, now=None):
@@ -254,6 +257,11 @@ def backfill_today(api, contract, code, now=None):
 
 _api = None
 _lock = threading.Lock()
+# 永豐 api 物件（Rust 核心）不能兩條執行緒同時用：一條在 kbars/ticks 等回應（最久 30 秒）時，另一條去註冊 callback 或訂閱，
+# 會丟「RuntimeError: Already borrowed」（2026-11-16 模組 B 背景抓歷史分 K、主程式同時開串流，monitor 因此當掉）。
+# 所以所有碰 api 的呼叫都排隊走這把鎖；可重入，fetch_ticks 包在 start_stream 裡也不會自己卡住。
+# callback（_on_tick 等）不碰 api，不要在 callback 裡拿這把鎖。
+_api_lock = threading.RLock()
 _state = {}  # code -> accumulator
 
 
@@ -293,13 +301,14 @@ def ns_to_dt(ts):
 
 
 def get_contract(api, code):
-    try:
-        c = api.contracts.get(code)
-        if c is not None:
-            return c
-    except Exception:
-        pass
-    return api.Contracts.Stocks[code]
+    with _api_lock:
+        try:
+            c = api.contracts.get(code)
+            if c is not None:
+                return c
+        except Exception:
+            pass
+        return api.Contracts.Stocks[code]
 
 
 OPEN_AUCTION_END = 9 * 3600 + 5 * 60      # 當天第一筆、而且在 09:05 前 → 開盤集合競價（延緩開盤也涵蓋；歷史 339 個股票日最晚 09:02）
@@ -412,31 +421,35 @@ def login():
     global _api
     if _api is not None:
         return _api
-    if not available():
-        return None
-    import shioaji as sj
-    sim = os.environ.get("SHIOAJI_SIMULATION", "1") != "0"
-    try:
-        api = sj.Shioaji(simulation=sim)
-        api.login(api_key=os.environ["SHIOAJI_API_KEY"], secret_key=os.environ["SHIOAJI_SECRET_KEY"], subscribe_trade=False)
-        # 1.7 版合約在背景下載，等它完成
-        for _ in range(60):
-            try:
-                if get_contract(api, "2330") is not None:
-                    break
-            except Exception:
-                pass
-            time.sleep(0.5)
-        _api = api
-        return api
-    except Exception as e:  # 登入失敗不應影響主流程
-        print(f"[shioaji] 登入失敗，退回公開資料源：{e}")
-        return None
+    with _api_lock:          # 好幾條執行緒同時叫 login 時只登入一次（以前會各自建一個連線）
+        if _api is not None:
+            return _api
+        if not available():
+            return None
+        import shioaji as sj
+        sim = os.environ.get("SHIOAJI_SIMULATION", "1") != "0"
+        try:
+            api = sj.Shioaji(simulation=sim)
+            api.login(api_key=os.environ["SHIOAJI_API_KEY"], secret_key=os.environ["SHIOAJI_SECRET_KEY"], subscribe_trade=False)
+            # 1.7 版合約在背景下載，等它完成
+            for _ in range(60):
+                try:
+                    if get_contract(api, "2330") is not None:
+                        break
+                except Exception:
+                    pass
+                time.sleep(0.5)
+            _api = api
+            return api
+        except Exception as e:  # 登入失敗不應影響主流程
+            print(f"[shioaji] 登入失敗，退回公開資料源：{e}")
+            return None
 
 
 def usage():
     try:
-        u = _api.usage()
+        with _api_lock:
+            u = _api.usage()
         return {"used_mb": u.bytes / 1048576, "limit_mb": u.limit_bytes / 1048576, "remaining_mb": u.remaining_bytes / 1048576}
     except Exception:
         return None
@@ -450,7 +463,6 @@ def start_stream(codes, big_lot=None):
     import shioaji as sj
     ok = []
 
-    @api.on_tick_stk_v1()
     def _on_tick(exchange, tick):
         try:
             if getattr(tick, "simtrade", 0):  # 試撮不計
@@ -471,7 +483,6 @@ def start_stream(codes, big_lot=None):
         except Exception:
             pass
 
-    @api.on_bidask_stk_v1()
     def _on_bidask(exchange, ba):
         try:
             if getattr(ba, "simtrade", 0):
@@ -485,7 +496,10 @@ def start_stream(codes, big_lot=None):
         except Exception:
             pass
 
-    today = dt.date.today().isoformat()
+    with _api_lock:          # 等於 @api.on_tick_stk_v1() 裝飾；包在鎖裡，背景執行緒在用 api 時不會撞上
+        api.on_tick_stk_v1()(_on_tick)
+        api.on_bidask_stk_v1()(_on_bidask)
+
     for code in codes:
         try:
             contract = get_contract(api, code)
@@ -493,9 +507,11 @@ def start_stream(codes, big_lot=None):
                 continue
             # 回補今日逐筆：先用本機存的，不夠才花 1 次額度，額度用完就不查（backfill_today）
             print(f"[shioaji] {code} {backfill_today(api, contract, code)}")
-            api.quote.subscribe(contract, quote_type=sj.constant.QuoteType.Tick, version=sj.constant.QuoteVersion.v1)
+            with _api_lock:
+                api.quote.subscribe(contract, quote_type=sj.constant.QuoteType.Tick, version=sj.constant.QuoteVersion.v1)
             try:
-                api.quote.subscribe(contract, quote_type=sj.constant.QuoteType.BidAsk, version=sj.constant.QuoteVersion.v1)
+                with _api_lock:
+                    api.quote.subscribe(contract, quote_type=sj.constant.QuoteType.BidAsk, version=sj.constant.QuoteVersion.v1)
             except Exception as e:
                 print(f"[shioaji] {code} 五檔訂閱失敗（改用 MIS 五檔）：{str(e)[:80]}")
             ok.append(code)
@@ -511,7 +527,8 @@ _IDX_CONTRACTS = {"t00": ("TSE", "IX0001"), "o00": ("OTC", "IX0043")}   # 加權
 def _idx_contract(api, key):
     ex, code = _IDX_CONTRACTS[key]
     try:
-        return getattr(api.Contracts.Indexs, ex)[code]
+        with _api_lock:
+            return getattr(api.Contracts.Indexs, ex)[code]
     except Exception:
         return None
 
@@ -524,7 +541,6 @@ def start_index_stream():
     import shioaji as sj
     ok = []
 
-    @api.on_quote_idx_v1()
     def _on_idx(*args):
         try:
             quote = args[-1]
@@ -543,6 +559,9 @@ def start_index_stream():
         except Exception:
             pass
 
+    with _api_lock:
+        api.on_quote_idx_v1()(_on_idx)
+
     today = dt.date.today().isoformat()
     for key in _IDX_CONTRACTS:
         contract = _idx_contract(api, key)
@@ -560,7 +579,8 @@ def start_index_stream():
         except Exception as e:
             print(f"[shioaji] 指數 {key} 回補分K失敗：{str(e)[:80]}")
         try:
-            api.quote.subscribe(contract, quote_type=sj.QuoteType.Tick, version=sj.QuoteVersion.v1)
+            with _api_lock:
+                api.quote.subscribe(contract, quote_type=sj.QuoteType.Tick, version=sj.QuoteVersion.v1)
             ok.append(key)
         except Exception as e:
             print(f"[shioaji] 指數 {key} 訂閱失敗：{str(e)[:80]}")
@@ -799,9 +819,10 @@ def flow(code, window_min=None, price=None):
 
 def logout():
     global _api
-    if _api is not None:
-        try:
-            _api.logout()
-        except Exception:
-            pass
-        _api = None
+    with _api_lock:
+        if _api is not None:
+            try:
+                _api.logout()
+            except Exception:
+                pass
+            _api = None

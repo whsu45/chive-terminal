@@ -77,6 +77,7 @@ class WebState:
         self.picks = {}                   # code -> 選股理由（選股模式選的才有）
         self.tomorrow = {"status": "off"} # 復盤畫面「明天的準備」：off / running / done / error（背景抓分點表與選股）
         self.adding = {}                  # 盤中加入的標的：code -> {status: running / done / error, ...}（Monitor.add_code）
+        self.winding = {}                 # 盤中移除、還在收尾的標的：code -> {name, since, open}（Monitor.remove_code）
 
     def put_live(self, obj):
         with self.lock:
@@ -88,6 +89,8 @@ class WebState:
 
     def put(self, ev, quotes):
         with self.lock:
+            if ev["code"] not in self.codes:
+                return          # 盤中剛移除的：主執行緒那一輪估算手上還是舊清單，不要把它放回畫面
             rec = {k: v for k, v in ev.items() if k != "quote"}
             rec["quote"] = {k: ev["quote"].get(k) for k in ("ref", "o", "h", "l", "v", "y", "bids", "asks")}
             self.latest[ev["code"]] = rec
@@ -106,7 +109,7 @@ class WebState:
         with self.lock:
             return json.dumps({"codes": self.codes, "latest": self.latest, "daily": self.daily, "describe": self.describe,
                                "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji,
-                               "picks": self.picks, "in_session": sess, "adding": self.adding, "max_codes": MAX_CODES},
+                               "picks": self.picks, "in_session": sess, "adding": self.adding, "winding": self.winding, "max_codes": MAX_CODES},
                               ensure_ascii=False, default=str)
 
     def history_json(self, code):
@@ -258,7 +261,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         """POST /api/position（持倉面板）、/api/select（選股模式選標的）。只綁 127.0.0.1；要求 JSON（跨站表單送不了）且 Origin 是本機。"""
         path = urllib.parse.urlparse(self.path).path
         mon = getattr(WEB, "monitor", None)
-        if not ((path in ("/api/position", "/api/add") and mon) or path == "/api/select"):
+        if not ((path in ("/api/position", "/api/add", "/api/remove") and mon) or path == "/api/select"):
             return self._send('{"error":"not found"}', code=404)
         origin = self.headers.get("Origin") or ""
         host = (urllib.parse.urlparse(origin).hostname or "") if origin else "127.0.0.1"
@@ -271,8 +274,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(n) or b"{}")
         except Exception:
             return self._send('{"error":"bad json"}', code=400)
-        ok, res = (WEB.select(body) if path == "/api/select" else mon.add_code(body.get("code") if isinstance(body, dict) else None)
-                   if path == "/api/add" else mon.position_action(body))
+        code = body.get("code") if isinstance(body, dict) else None
+        ok, res = (WEB.select(body) if path == "/api/select" else mon.add_code(code) if path == "/api/add"
+                   else mon.remove_code(code) if path == "/api/remove" else mon.position_action(body))
         self._send(json.dumps(res, ensure_ascii=False, default=str), code=200 if ok else 400)
 
 
@@ -522,6 +526,8 @@ class Monitor:
         self.user_trades = {}                        # (code, 訊號時間) -> 使用者這筆的結果，訊號結案時附上
         self.pos_alerts = {}                         # code -> 持倉提醒（只顯示，不寫 log）
         self.pos_lock = threading.Lock()
+        self.winding = {}                            # 盤中移除、但還有訊號 / 警示在追蹤結果的標的：code -> {ts, since, open}（remove_code、_wind_down）
+        self.code_lock = threading.Lock()            # 改 self.codes / self.winding 時拿（加入、移除、收尾在不同執行緒）；不要跟 WEB.lock 巢狀拿
         WEB.monitor = self
         self._load_positions()
         import src_shioaji
@@ -584,10 +590,15 @@ class Monitor:
             if len(self.codes) + busy >= MAX_CODES:
                 return False, {"error": f"最多同時監控 {MAX_CODES} 檔"}
             WEB.adding[code] = {"status": "running", "started": dt.datetime.now().strftime("%H:%M:%S")}
-        threading.Thread(target=self._add_worker, args=(code,), daemon=True, name=f"add-{code}").start()
+        with self.code_lock:
+            was_winding = self.winding.pop(code, None) is not None     # 剛移除、還在收尾：報價和永豐訂閱都還在，直接接回去
+        if was_winding:
+            with WEB.lock:
+                WEB.winding.pop(code, None)
+        threading.Thread(target=self._add_worker, args=(code, was_winding), daemon=True, name=f"add-{code}").start()
         return True, {"status": "running", "code": code}
 
-    def _add_worker(self, code):
+    def _add_worker(self, code, was_winding=False):
         t0 = time.time()
         try:
             print(f"[加入] {code}：抓盤前資料中…")
@@ -597,14 +608,15 @@ class Monitor:
             if not self.daily[code].get("name"):
                 raise RuntimeError("查不到這個代碼（不是上市櫃股票，或今天沒有交易）")
             self._add_ex(code)
-            note = ""
-            if self.flow_src and not self._stream_off:
+            note = "；剛移除還在收尾，報價直接接回" if was_winding else ""
+            if self.flow_src and not self._stream_off and not was_winding:
                 ok = self.flow_src.start_stream([code])          # 訂閱逐筆與五檔，並回補今天稍早的（backfill_today）
                 if ok:
                     self._backfill_flow(ok)
                 else:
                     note = "；永豐串流訂閱失敗，這檔只有公開報價"
-            self.codes = self.codes + [code]                     # 新的 list：其他執行緒手上的舊 list 不受影響
+            with self.code_lock:
+                self.codes = self.codes + [code]                 # 新的 list：其他執行緒手上的舊 list 不受影響
             with WEB.lock:
                 WEB.codes = list(self.codes)
                 WEB.adding[code] = {"status": "done", "name": self.daily[code].get("name"), "secs": round(time.time() - t0), "note": note.lstrip("；")}
@@ -614,7 +626,120 @@ class Monitor:
                 WEB.adding[code] = {"status": "error", "error": str(e)[:160] or e.__class__.__name__}
                 WEB.daily.pop(code, None); WEB.describe.pop(code, None)      # 做一半的不要留在畫面資料裡
             self.daily.pop(code, None)
+            if was_winding:
+                self._drop_feed(code)                            # 收尾中的報價已經接手過來了，加入失敗就照原本的移除把它停掉
             print(f"[加入] {code} 失敗：{str(e)[:160]}")
+
+    def remove_code(self, code):
+        """
+        盤中移除一檔監控（儀表板 POST /api/remove {code}）。回 (ok, {status: removed / winding, ...} 或 {error})。
+        馬上從分頁、多空估算、權證快照、掛單牆 / 竭盡 / 流動性判斷、新訊號拿掉（省 MIS 查詢、權證查詢、永豐流量和這台的計算）。
+        還有訊號或警示在追蹤結果時先「收尾」（_wind_down）：那些紀錄要用之後的價格才能結案、寫進 signal_outcomes /
+        alert_outcomes / 交戰紀錄，直接停掉報價就永遠不會寫（盤後統計會少掉）。收尾只推進既有的追蹤、不發新訊號，
+        做完（最晚 13:31 收盤結案）才停它的報價與永豐訂閱；沒有東西要追蹤就立刻停（_drop_feed）。
+        持倉面板還有排隊中 / 持有中的單不能移除（停損停利提醒要報價）；至少留一檔。
+        """
+        code = str(code or "").strip().upper()
+        now = dt.datetime.now()
+        with self.code_lock:
+            if code not in self.codes:
+                return False, {"error": f"{code} 不在監控中"}
+            if len(self.codes) <= 1:
+                return False, {"error": "至少要留一檔；要整批換掉請重開 monitor"}
+            pos = self.positions.get(code)
+            if pos and pos.get("state") in ("queued", "holding"):
+                return False, {"error": f"{code} 持倉面板還有{'排隊中' if pos['state'] == 'queued' else '持有中'}的單，先在持倉面板結束或取消再移除"}
+            self.codes = [c for c in self.codes if c != code]        # 新的 list：其他執行緒手上的舊 list 不受影響
+            n = self._open_tracking(code)
+            if n:
+                self.winding[code] = {"ts": now.timestamp(), "since": now.strftime("%H:%M:%S"), "open": n}
+        name = (self.daily.get(code) or {}).get("name") or ""
+        with WEB.lock:
+            WEB.codes = list(self.codes)
+            for store in (WEB.latest, WEB.daily, WEB.describe):
+                store.pop(code, None)                                # 強度走勢（WEB.history）留著：再加回來時圖接得上
+            if n:
+                WEB.winding[code] = {"name": name, "since": now.strftime("%H:%M:%S"), "open": n}
+        if n:
+            print(f"[移除] {code} {name}：不再估算與顯示；還有 {n} 個訊號 / 警示在追蹤結果，追蹤完（最晚 {self.CLOSE_SNAP}）才停它的報價")
+        else:
+            self._drop_feed(code)
+            print(f"[移除] {code} {name}：停止監控" + ("，永豐已取消訂閱" if self.flow_src and not self._stream_off else ""))
+        return True, {"status": "winding" if n else "removed", "code": code, "name": name, "open": n}
+
+    def _open_tracking(self, c):
+        """這檔還有幾個要用之後價格結案的紀錄：追蹤中的警示 / 訊號（self.pending）＋還沒結果的建議訊號。"""
+        n = sum(1 for r in list(self.pending) if r.get("code") == c)
+        sg = self.signals.get(c)
+        return n + (1 if sg and not sg.get("status") else 0)
+
+    def _rebuild_ex(self):
+        """MIS 要查的代碼重新算：指數 + 監控中與收尾中的標的和它們的族群成員（移除的那檔若是別檔的族群成員就留著）。"""
+        with self.code_lock:
+            keep = list(self.codes) + list(self.winding)
+        ex = set(src_mis.index_codes())
+        for c in keep:
+            d = self.daily.get(c)
+            if d:
+                ex |= {f"{d['market']}_{c}.tw"} | {f"{pi['ex']}_{p}.tw" for p, pi in d["peer_info"].items()}
+        self.ex_codes = ex
+
+    def _drop_feed(self, c):
+        """移除的最後一步：MIS 不再查它、永豐取消訂閱（逐筆先存本機，再加回來時回補用）。又被加回來了就不動。"""
+        with self.code_lock:
+            back = c in self.codes or c in self.winding
+        with WEB.lock:
+            back = back or (WEB.adding.get(c) or {}).get("status") == "running"
+            if not back:
+                WEB.winding.pop(c, None)
+        if back:
+            return
+        self._rebuild_ex()
+        if self.flow_src and not self._stream_off:
+            try:
+                self.flow_src.stop_stream([c])
+            except Exception as e:
+                print(f"[移除] {c} 取消永豐訂閱失敗：{str(e)[:100]}")
+
+    def _wind_down(self, quotes, now):
+        """
+        收尾中的標的（盤中移除、還有追蹤沒結案）：每輪快迴圈只推進既有的追蹤——建議訊號照原規則結案（_signal 不給 ev 就不會開新的）、
+        警示 / 訊號紀錄到時間就結案寫檔（_track_alerts，只追蹤移除前發的警示，收尾時的「✔ / ✘」結果不再追 30 分鐘）。
+        不估算、不抓權證、不判斷掛單牆 / 竭盡。都結案了（或 13:31 收盤那一輪之後）就停報價。
+        """
+        with self.code_lock:
+            items = list(self.winding.items())
+        closed = now.strftime("%H:%M") >= self.CLOSE_SNAP
+        for c, w in items:
+            q = dict(quotes.get(c) or {})
+            if self.flow_src:
+                self._overlay_shioaji(c, q)
+            if q.get("ref"):
+                try:
+                    if self.flow_src:
+                        bars = self.flow_src.series(c)
+                    else:
+                        self._mis_bar(self.mis_bars.setdefault(c, {}), now, q["ref"], q.get("v"))
+                        bars = [[kk] + v for kk, v in sorted(self.mis_bars[c].items()) if kk != "_v"]
+                    flow = self.flow_src.flow(c, price=q["ref"]) if self.flow_src else None
+                    self._signal(c, None, bars, q, now)
+                    self._track_alerts(c, q, flow, bars, now, track_until=w["ts"])
+                except Exception as e:
+                    print(f"[移除] {c} 收尾追蹤失敗：{str(e)[:100]}")
+            left = self._open_tracking(c)
+            if left and not closed:
+                if left != w.get("open"):
+                    w["open"] = left
+                    with WEB.lock:
+                        if c in WEB.winding:
+                            WEB.winding[c]["open"] = left
+                continue
+            with self.code_lock:
+                if self.winding.pop(c, None) is None:
+                    continue                                     # 收尾時又被加回來了
+            self._drop_feed(c)
+            print(f"[{now:%H:%M:%S}] [移除] {c} " + ("追蹤的訊號 / 警示都結案了" if not left else f"收盤了，{left} 筆沒有報價可結案")
+                  + "，停止它的報價" + ("與永豐訂閱" if self.flow_src and not self._stream_off else ""))
 
     def _init_stream(self, codes, use_shioaji, big_lot):
         if use_shioaji:
@@ -1631,7 +1756,7 @@ class Monitor:
                 return name
         return "其他"
 
-    def _track_alerts(self, c, q, flow, bars, now):
+    def _track_alerts(self, c, q, flow, bars, now, track_until=None):
         """
         警示結果追蹤（校準用）：每則新警示記下當時價格、日內位置、主力淨額與 10 分鐘變化、五檔不平衡；
         之後用分 K 補上 10 / 30 分鐘後的價格與期間最高最低，寫到 logs/alert_outcomes.jsonl。
@@ -1661,6 +1786,8 @@ class Monitor:
                 continue
             if (now - ts).total_seconds() > 120:
                 continue   # 啟動時補發的歷史警示沒有當時狀態，不追蹤
+            if track_until is not None and ts.timestamp() > track_until + 1:
+                continue   # 已移除、收尾中：移除後才出現的（例如訊號結案的 ✔ / ✘）不再追蹤
             typ = self._alert_type(txt)
             extra = {}
             if typ in ("建議做空", "建議做多") + self.BLOCK_TYPES:
@@ -2354,6 +2481,8 @@ class Monitor:
             except Exception as e:
                 print(f"[fast] 警示追蹤失敗：{str(e)[:100]}")
             live["alerts"][c] = sorted(list(self.live_alerts.get(c, []))[-12:] + list(self.pos_alerts.get(c, []))[-6:], key=lambda a: a[0])
+        if self.winding and self._trading_today():
+            self._wind_down(quotes, now)
         if do_wq:
             self._last_wq_t = time.time()
         WEB.put_live(live)

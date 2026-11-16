@@ -38,6 +38,7 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .limtag{font-size:13px;font-weight:700;padding:2px 8px;border-radius:6px;align-self:center}.limtag.up{border:1px solid var(--up);color:var(--up)}.limtag.dn{border:1px solid var(--dn);color:var(--dn)}
 header .tab .cb{color:var(--warn);margin-left:4px}
 header .addbox{display:flex;gap:6px;align-items:center}
+header .tab .rm{margin-left:6px;padding:0 3px;border-radius:4px;color:var(--muted);cursor:pointer;font-size:12px}header .tab .rm:hover{color:var(--up);background:var(--panel)}
 header .addbox input{width:88px;background:var(--panel2);border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:6px 8px;font-family:var(--mono)}
 header .addbox .msg{font-size:12px;color:var(--muted);max-width:340px}header .addbox .msg.err{color:var(--up)}header .addbox .msg.ok{color:var(--dn)}
 .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px 12px;margin-top:10px}
@@ -303,13 +304,17 @@ async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());S
   const h=await fetch('/api/history/'+CUR+'?_='+Date.now());HIST[CUR]=await h.json();drawChart();}
   catch(e){$('foot').innerHTML='<span class="stale">連線中斷（monitor 還在跑嗎？）：'+esc(e)+'</span>';}}
 // 盤中加入監控（POST /api/add → monitor.add_code，背景抓盤前資料、接上串流）。進度看 STATE.adding；加入中每 3 秒更新一次狀態
-let ADD_WAIT=null,ADD_TIMER=null;
+let ADD_WAIT=null,ADD_TIMER=null,WD_SHOWN=false;
 function renderAdd(){const box=$('addbox');if(!box)return;box.style.display=(STATE&&STATE.codes&&STATE.codes.length)?'':'none';
   const ad=(STATE&&STATE.adding)||{},el=$('add-msg');const run=Object.entries(ad).filter(([c,v])=>v.status==='running').map(([c])=>c);
   const last=ADD_WAIT;const v=last&&ad[last];      // 結果只顯示自己剛送出的那一檔（重新整理後不再顯示舊的失敗訊息）
   if(run.length){el.className='msg';el.textContent=`加入 ${run.join('、')} 中（抓盤前資料、接上即時報價，約 10～30 秒）…`;}
   else if(v&&v.status==='error'){el.className='msg err';el.textContent=`${last} 加入失敗：${v.error}`;ADD_WAIT=null;}
   else if(v&&v.status==='done'&&STATE.codes.includes(last)){el.className='msg ok';el.textContent=`${last} ${v.name||''} 已加入（${v.secs} 秒）${v.note?'；'+v.note:''}`;ADD_WAIT=null;}
+  // 盤中移除、還在收尾的（還有訊號 / 警示在追蹤結果）：沒有其他訊息要顯示時列出來，收尾完就清掉
+  const wd=Object.entries((STATE&&STATE.winding)||{});
+  if(!run.length&&!ADD_WAIT){if(wd.length){el.className='msg';el.textContent=`收尾中：${wd.map(([c,v])=>`${c} ${v.name||''}（${v.open} 筆追蹤中）`).join('、')}，結案後停報價`;WD_SHOWN=true;}
+    else if(WD_SHOWN){el.textContent='';WD_SHOWN=false;}}
   if(run.length&&!ADD_TIMER)ADD_TIMER=setInterval(loadState,3000);
   if(!run.length&&ADD_TIMER){clearInterval(ADD_TIMER);ADD_TIMER=null;}}
 async function addCode(){const inp=$('add-code'),el=$('add-msg');const c=inp.value.trim().toUpperCase();if(!c)return;
@@ -317,6 +322,15 @@ async function addCode(){const inp=$('add-code'),el=$('add-msg');const c=inp.val
   try{const r=await fetch('/api/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:c})});const j=await r.json();
     if(!r.ok){el.className='msg err';el.textContent=j.error||'加入失敗';return;}
     ADD_WAIT=c;inp.value='';el.textContent=`加入 ${c} 中（抓盤前資料、接上即時報價，約 10～30 秒）…`;setTimeout(loadState,1500);}
+  catch(e){el.className='msg err';el.textContent='送不出去：'+e;}}
+// 盤中移除監控（POST /api/remove → monitor.remove_code）：停止估算、訊號、權證快照；還有訊號 / 警示在追蹤結果的先收尾，結案才停報價
+async function removeCode(c){const el=$('add-msg');const nm=(STATE.daily[c]||{}).name||'';
+  if(!confirm(`移除 ${c} ${nm} 的監控？\n\n會停止它的估算、訊號、權證快照和報價。還有訊號 / 警示在追蹤結果的話，會等它們結案（最晚收盤）才停報價，盤後統計不會少。\n之後可以用「＋ 監控」再加回來。`))return;
+  el.className='msg';el.textContent=`移除 ${c} 中…`;
+  try{const r=await fetch('/api/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:c})});const j=await r.json();
+    if(!r.ok){el.className='msg err';el.textContent=j.error||'移除失敗';return;}
+    el.className='msg ok';el.textContent=j.status==='winding'?`${c} ${j.name||''} 已移除；還有 ${j.open} 筆訊號 / 警示在追蹤結果，結案後才停它的報價`:`${c} ${j.name||''} 已移除，報價${STATE.shioaji?'與永豐訂閱':''}已停`;
+    if(CUR===c)CUR=null;setTimeout(loadState,300);}
   catch(e){el.className='msg err';el.textContent='送不出去：'+e;}}
 async function loadLive(){try{const r=await fetch('/api/live?_='+Date.now());const j=await r.json();LIVE=(j&&j.quotes)?j:null;applyFast();if(STATE)renderLive();}catch(e){}}
 // 報價快速通道：成交價與五檔直接讀永豐串流的最新狀態（monitor.quote_json），每 0.5 秒拉一次；其餘資料照舊每 3 秒。
@@ -757,7 +771,7 @@ function renderWarr(ev){const w=(LIVE&&LIVE.warrants&&LIVE.warrants[CUR])||ev.wa
 // ---------------------------------------------------------------- 估算區（每 interval 秒）
 function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   $('tabs').innerHTML=STATE.codes.map(c=>{const lq=LIVE&&LIVE.quotes[c];const e=STATE.latest[c];const ch=lq?lq.chg_pct:e?.info?.chg_pct;
-    const hd=(STATE.daily[c]||{}).history;return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||(STATE.daily[c]||{}).name||'')} <span class="num ${cls(ch)}${limCls(c,lq?lq.ref:e?.quote?.ref)}">${pct(ch)}</span>${(e?.combos||[]).length?`<span class="cb" title="${esc(e.combos.map(x=>x.name).join('、'))}">◆</span>`:''}${hd?`<span class="days">${hd.days}天</span>`:''}</div>`}).join('');
+    const hd=(STATE.daily[c]||{}).history;return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||(STATE.daily[c]||{}).name||'')} <span class="num ${cls(ch)}${limCls(c,lq?lq.ref:e?.quote?.ref)}">${pct(ch)}</span>${(e?.combos||[]).length?`<span class="cb" title="${esc(e.combos.map(x=>x.name).join('、'))}">◆</span>`:''}${hd?`<span class="days">${hd.days}天</span>`:''}${STATE.codes.length>1?`<span class="rm" title="移除這檔監控（盤中省資源）" onclick="event.stopPropagation();removeCode('${c}')">✕</span>`:''}</div>`}).join('');
   renderHist();renderDT();
   if(!LIVE){const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
     $('shioaji').innerHTML=STATE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';}

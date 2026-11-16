@@ -264,6 +264,9 @@ _lock = threading.Lock()
 # callback（_on_tick 等）不碰 api，不要在 callback 裡拿這把鎖。
 _api_lock = threading.RLock()
 _state = {}  # code -> accumulator
+# 盤中移除監控（stop_stream）的代碼：取消訂閱後永豐可能還會送來幾筆，callback 看到就丟掉。
+# 不擋的話 _state 會被那幾筆重新建出來，下一次 save_ticks_cache 就用「只有尾巴幾筆」蓋掉本機逐筆存檔（重啟/再加入時回補用）。
+_muted = set()
 
 
 def available():
@@ -469,6 +472,8 @@ def start_stream(codes, big_lot=None):
             if getattr(tick, "simtrade", 0):  # 試撮不計
                 return
             with _lock:
+                if tick.code in _muted:           # 已移除監控（stop_stream）：取消訂閱前後漏進來的不收
+                    return
                 _ingest(tick.code, tick.datetime, float(tick.close), int(tick.volume), int(tick.tick_type))
                 acc = _state[tick.code]
                 acc["last_t"] = tick.datetime
@@ -491,6 +496,8 @@ def start_stream(codes, big_lot=None):
             bids = [[float(p), int(v)] for p, v in zip(ba.bid_price, ba.bid_volume) if p]
             asks = [[float(p), int(v)] for p, v in zip(ba.ask_price, ba.ask_volume) if p]
             with _lock:
+                if ba.code in _muted:
+                    return
                 acc = _state.setdefault(ba.code, _new_acc())
                 acc["bids"], acc["asks"], acc["book_t"] = bids, asks, getattr(ba, "datetime", None)
                 acc["book_recv_t"] = time.time()
@@ -506,6 +513,8 @@ def start_stream(codes, big_lot=None):
             contract = get_contract(api, code)
             if contract is None:
                 continue
+            with _lock:
+                _muted.discard(code)                 # 之前移除過、現在又加回來
             # 回補今日逐筆：先用本機存的，不夠才花 1 次額度，額度用完就不查（backfill_today）
             print(f"[shioaji] {code} {backfill_today(api, contract, code)}")
             with _api_lock:
@@ -518,6 +527,45 @@ def start_stream(codes, big_lot=None):
             ok.append(code)
         except Exception as e:
             print(f"[shioaji] {code} 訂閱失敗：{e}")
+    return ok
+
+
+def stop_stream(codes):
+    """
+    盤中移除監控：這幾檔的逐筆、五檔取消訂閱（省永豐流量與這台的處理）。回成功取消的代碼。
+    順序：先標成 muted（之後漏進來的不收）→ 存一次本機逐筆（這檔到現在為止的完整逐筆，再加回來時回補用）→ 從記憶體拿掉 → 取消訂閱。
+    指數串流與其他股票不受影響。
+    """
+    api = _api
+    with _lock:
+        for code in codes:
+            _muted.add(code)
+    try:
+        save_ticks_cache()
+    except Exception as e:
+        print(f"[shioaji] 逐筆存檔失敗：{str(e)[:80]}")
+    with _lock:
+        for code in codes:
+            _state.pop(code, None)
+    if api is None:
+        return []
+    import shioaji as sj
+    ok = []
+    for code in codes:
+        try:
+            contract = get_contract(api, code)
+            if contract is None:
+                continue
+            with _api_lock:
+                api.quote.unsubscribe(contract, quote_type=sj.constant.QuoteType.Tick, version=sj.constant.QuoteVersion.v1)
+            try:
+                with _api_lock:
+                    api.quote.unsubscribe(contract, quote_type=sj.constant.QuoteType.BidAsk, version=sj.constant.QuoteVersion.v1)
+            except Exception as e:
+                print(f"[shioaji] {code} 五檔取消訂閱失敗：{str(e)[:80]}")
+            ok.append(code)
+        except Exception as e:
+            print(f"[shioaji] {code} 取消訂閱失敗：{str(e)[:80]}")
     return ok
 
 

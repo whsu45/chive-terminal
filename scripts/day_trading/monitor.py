@@ -26,11 +26,6 @@ import indicators as I
 import exhaust
 import combo
 import history
-try:
-    import ab_live                      # 模組 B（挑戰者）即時版；缺檔不影響 monitor
-except Exception as _e:                 # pragma: no cover
-    ab_live = None
-    print(f"[B] 載入 ab_live 失敗，儀表板不顯示模組 B：{str(_e)[:100]}")
 import src_mis
 import src_warrants as W
 import http_client as hc   # 別名不能叫 http：下面 import http.server 會把它蓋掉
@@ -481,7 +476,6 @@ class Monitor:
         WEB.codes = list(codes); WEB.interval = interval
         print(f"[裝置] ID {DEVICE_ID}：今天的紀錄寫到 logs/*_{DEVICE_ID}.jsonl（換台電腦開就換 ID，git 不會撞檔）")
         self.daily = {}
-        self.ab = ab_live.LiveB(use_shioaji=use_shioaji) if ab_live else None   # 模組 B（挑戰者），見 ab_live.py
         self.samples = {c: [] for c in codes}
         self.w_prev = {}
         self.flow_hist = {}   # code -> [[epoch, big_net, small_net, price], ...]，給 model._flow_dynamics 看主力淨額的變化
@@ -536,8 +530,6 @@ class Monitor:
             self._add_ex(c)
         self.calibrate_after_close = False
         self._init_stream(codes, use_shioaji, big_lot)
-        for c in codes:
-            self._prepare_b(c)                                   # 串流開好才抓模組 B 的歷史，慢的 kbars 查詢不拖到串流
 
     def _add_ex(self, c):
         """這檔和它的族群成員加進 MIS 要查的代碼。用重新指定（不是原地改），另一條執行緒正在 sorted(self.ex_codes) 也不會出錯。"""
@@ -571,12 +563,6 @@ class Monitor:
         if pc:
             th = src_shioaji.lot_thresholds(pc)
             print(f"  大單門檻（以昨收 {pc} 推算）：≥{th['big_lots']} 張 ≈ {th['big_amount']/1e4:.0f} 萬；散戶 <{th['small_lots']} 張 ≈ {th['small_amount']/1e4:.0f} 萬；開盤後再以當日成交分布修正")
-
-    def _prepare_b(self, c):
-        """背景抓模組 B 要的前 14 天 5 分 K。啟動時與盤中加入時都等永豐串流開好之後才叫：
-        它的 kbars 查詢最久等 30 秒，跟串流搶永豐 api 的話串流會晚開（同時用還會讓 monitor 當掉，見 src_shioaji._api_lock）。"""
-        if self.ab and c in self.daily:
-            self.ab.prepare(c, self.daily[c].get("market"))
 
     def add_code(self, code):
         """
@@ -616,7 +602,6 @@ class Monitor:
                     self._backfill_flow(ok)
                 else:
                     note = "；永豐串流訂閱失敗，這檔只有公開報價"
-            self._prepare_b(code)
             self.codes = self.codes + [code]                     # 新的 list：其他執行緒手上的舊 list 不受影響
             with WEB.lock:
                 WEB.codes = list(self.codes)
@@ -709,12 +694,6 @@ class Monitor:
             wq = self.wq.get(c) if (self.fast_thread and c in self.wq) else self._warrant_snapshot(c, q, now, max(1, round(self.interval / 60)))
             ctx = self._ctx(c, now)
             ev = model.evaluate(d, q, idx, peers_q, flow, self.samples[c], now, warrants=wq, ctx=ctx)
-            if self.ab:
-                try:
-                    ev["model_b"] = self.ab.evaluate(c, ctx.get("bars"), now, d.get("name"))
-                except Exception as e:
-                    ev["model_b"] = {"status": "error", "label": f"模組 B 計算失敗：{str(e)[:80]}"}
-                    print(f"[{now:%H:%M:%S}] {c} 模組 B 失敗：{str(e)[:100]}")
             if wq and wq.get("alerts"):
                 ev["warnings"] = wq["alerts"] + ev["warnings"]
             try:

@@ -561,18 +561,26 @@ monitor 啟動時會印出 `[裝置] ID xxxxxx`。每台寫自己的檔，所以
 多空勝率、警示、支撐壓力、空單與多單的進場/停損/目標。
 每輪結果都 append 到 `logs/monitor_YYYYMMDD.jsonl`，`review.py` 讀它做復盤。
 
-### A/B 對決：模組 A（現有）vs 模組 B（挑戰者）
+### A/B 對決：模組 A（現有）vs 模組 B（挑戰者）— 收盤後手動跑
 
-儀表板「模組 A（現有）進出場計畫」旁邊多一張「模組 B（挑戰者）噪音區突破」卡（`ab_live.py`，規則在 `ab/ab_models.py`）：
+模組 B（噪音區突破，規則在 `ab/ab_models.py`）**不在 monitor 裡即時跑**（2026-11-16 移出：它在背景抓歷史分 K，曾讓 monitor 啟動時當機，盤中也不看它）。
+每天收盤後（13:35 以後）自己跑 `ab_compare.py`，把 B 重跑當天的結果跟 monitor 記下的模組 A 訊號並排比：
+
+```bash
+python3 ab_compare.py                     # 今天 monitor 監控過的股票（交戰紀錄裡的監控日）
+python3 ab_compare.py --date 2026-11-13   # 指定日期
+python3 ab_compare.py 2344 6213           # 指定股票
+python3 ab_compare.py --no-log            # 只看，不寫 logs/ab_trades_*.jsonl
+```
 
 - **B 的規則**：噪音帶 = max/min(今開, 昨收) × (1 ± σ(t))，σ(t) 是前 14 天「同一時刻離開盤價多遠」的平均。09:30 起每 15 分鐘看一次 5 分 K 收盤：
   收在帶外、而且在 VWAP 對的那一邊，相對量 ≥ 1.2、一檔 ≤ 股價 0.2%、前 14 天平均振幅 ≥ 2.5%、離漲跌停 ≥ 1.5%，才進場；12:30 後不進。
   停損跟著 VWAP 移動，13:20 前出場；目標價只是參考（2 倍噪音帶），不在目標出場。
-- **卡片內容**：狀態（噪音區內・觀望 / 突破但被濾網擋下 / 持有中 / 今天不再進場）、強度（離開盤價幾倍噪音，≥1 才算出帶）、
-  觸發價或進場價、移動停損、參考目標、浮動損益、噪音帶、VWAP、相對量，以及今天 B 已經平倉的單（扣成本）。
-- **資料**：前 14 天 5 分 K 開盤前抓一次（有永豐用一次 kbars，盤中算 1 次額度；沒有就用 Yahoo），存 `.cache/ab_hist/`；
-  今天用 monitor 的 1 分 K 合成 5 分 K，每完成一根才重算。盤中才啟動、MIS 模式又缺開盤那段分 K 時，B 當天暫停（噪音帶與 VWAP 算不準）。
-- **紀錄**：B 自己模擬進出，平倉的單寫 `logs/ab_trades_<裝置ID>.jsonl`（A 的訊號結果在 `signal_outcomes_<裝置ID>.jsonl`），下週拿來對照。
+- **輸出**：每檔列 A 的每次訊號（時間、多空、價格、贏/輸/平/沒成交、扣成本淨損益），和 B 當天的每筆單（進出時間與價格、出場原因、扣成本淨損益）；
+  B 沒進場時說原因（不交易的濾網、突破但被相對量/滑價濾網擋下、整天在噪音帶內）。最後是 A、B 各自的合計。
+- **資料**：B 用永豐 kbars（1 分 K 合成 5 分 K，收盤後查詢不算盤中額度），每檔一次查詢含當天與前 30 天；沒有永豐就用 Yahoo 5 分 K（常被 429 限流）。
+  A 讀 `logs/signal_outcomes_<裝置ID>.jsonl`（monitor 寫的；兩台同一天都開時只留一台）。
+- **紀錄**：B 平倉的單 append 到 `logs/ab_trades_<裝置ID>.jsonl`（各台已記過的不重寫），隨每日紀錄一起同步，下週拿來跟 A 對照。
 - **B 不改 A 的多空強度、不發進場警示**。回測（`python3 ab/backtest_ab.py stocker|local|index|futures|taifex`）：
 
 | 資料 | 模組 A 淨 / 筆 | 模組 B 淨 / 筆 |
@@ -747,6 +755,7 @@ monitor 每輪記住每檔權證的價量，跟上一輪比（成交量加權、
 | `src_warrants.py` | 權證清單、日統計（上市用證交所的標的代號、上櫃用櫃買中心發行資料對應標的）、全市場彙總、發行商避險、盤中彙總 |
 | `replay.py` | 盤後重播（永豐逐筆重建當日每 N 分鐘的判斷與主力/散戶分流） |
 | `calibrate_warrants.py` | 驗證權證訊號與標的漲跌的關係 |
+| `ab_compare.py` | 收盤後的 A/B 對照：模組 B（`ab/ab_models.py`）重跑當天，跟 monitor 的模組 A 訊號並排比，B 的單寫 `logs/ab_trades_*.jsonl` |
 | `calibrate.py` | 用永豐歷史逐筆校準大單/散戶金額門檻（需金鑰） |
 | `indicators.py` | MA/BB/ATR/RSI、tick 規則、漲跌停 |
 | `src_mis.py` `src_twse.py` `src_tpex.py` `src_moneydj.py` `src_taifex.py` `src_yahoo.py` `src_shioaji.py` | 各資料源 |

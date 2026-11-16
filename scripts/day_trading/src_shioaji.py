@@ -258,7 +258,8 @@ def backfill_today(api, contract, code, now=None):
 _api = None
 _lock = threading.Lock()
 # 永豐 api 物件（Rust 核心）不能兩條執行緒同時用：一條在 kbars/ticks 等回應（最久 30 秒）時，另一條去註冊 callback 或訂閱，
-# 會丟「RuntimeError: Already borrowed」（2026-11-16 模組 B 背景抓歷史分 K、主程式同時開串流，monitor 因此當掉）。
+# 會丟「RuntimeError: Already borrowed」（2026-11-16 當時 monitor 裡的模組 B 背景抓歷史分 K、主程式同時開串流，monitor 因此當掉；
+# 模組 B 之後移出 monitor，改成收盤後跑 ab_compare.py。盤中加入股票、指數串流等還是會有兩條執行緒碰 api）。
 # 所以所有碰 api 的呼叫都排隊走這把鎖；可重入，fetch_ticks 包在 start_stream 裡也不會自己卡住。
 # callback（_on_tick 等）不碰 api，不要在 callback 裡拿這把鎖。
 _api_lock = threading.RLock()

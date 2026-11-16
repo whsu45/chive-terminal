@@ -356,7 +356,7 @@ function pkCard(side,r,top,active,sel){
   const wr=side==='warrant'||side==='strong';               // 兩個觀察名單（權證連買＋法人買超、權證昨日大量買進）：預設不勾、沒有備用
   const on=sel?sel.includes(r.code):(!wr&&active&&r.rank<=top);   // 送出後依實際選定的顯示
   const st=`收 ${fp(r.close)}｜昨 ${pct(r.chg1d)}｜10日 ${pct(r.r10,1)}｜20日 ${pct(r.r20,1)}｜${f(r.value_e8,0)} 億｜ATR ${f(r.atr_pct,1)}%`;
-  return `<label class="pk-card ${on?'on':''} ${active?'':'dim'}"><input type="checkbox" value="${esc(r.code)}" ${on?'checked':''} onchange="pkCount()">
+  return `<label class="pk-card ${on?'on':''} ${active?'':'dim'}"><input type="checkbox" value="${esc(r.code)}" ${on?'checked':''} onchange="pkCount(this)">
     <div class="t"><span class="rk">#${r.rank}</span>${esc(r.code)} ${esc(r.name)}${r.themes&&r.themes.length?`<span class="th">${esc(r.themes.slice(0,3).join('、'))}</span>`:''}${!wr&&r.rank>top?'<span class="bk">備用</span>':''}</div>
     <div class="st">${st}</div>
     <ul>${r.reasons.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
@@ -398,11 +398,19 @@ function renderPicker(){
   pkCount();}
 function pkCodes(){const s=[...document.querySelectorAll('#picker input[type=checkbox]:checked')].map(x=>x.value);
   const m=$('pk-manual').value.split(/[\s,，、]+/).map(x=>x.trim().toUpperCase()).filter(Boolean);return [...new Set([...s,...m])];}
-function pkCount(){document.querySelectorAll('#picker .pk-card').forEach(c=>c.classList.toggle('on',c.querySelector('input').checked));
-  const n=pkCodes().length;$('pk-count').textContent=n?`已選 ${n} 檔：${pkCodes().join('、')}`:'尚未選擇';}
+// 最多選幾檔（monitor 的 MAX_PICK）。做空/做多前幾名預設就勾好，再勾觀察名單很容易超過，所以一直顯示「已選 n / 最多 6」，超過就擋住開始鍵並說要取消幾檔
+const pkMax=()=>(PICK&&PICK.max_pick)||6;
+function pkCount(el){
+  // 同一檔可能同時出現在兩區（例如做空和觀察名單），勾/取消一個時另一個跟著變，數字才不會「取消了卻還算在裡面」
+  if(el)document.querySelectorAll('#picker input[type=checkbox]').forEach(x=>{if(x!==el&&x.value===el.value)x.checked=el.checked;});
+  document.querySelectorAll('#picker .pk-card').forEach(c=>c.classList.toggle('on',c.querySelector('input').checked));
+  const cs=pkCodes(),n=cs.length,mx=pkMax(),over=n>mx,sent=!!(PICK&&PICK.selected);
+  $('pk-count').innerHTML=n?`已選 <b class="${over?'up':''}">${n}</b> / 最多 ${mx} 檔：${esc(cs.join('、'))}`:`尚未選擇（最多 ${mx} 檔）`;
+  if(!sent){$('pk-err').textContent=over?`多選了 ${n-mx} 檔，請取消 ${n-mx} 檔再開始監控`:'';$('pk-go').disabled=over||PICK_SENT;}}
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='pk-manual')pkCount();});
 async function pickGo(){const codes=pkCodes();$('pk-err').textContent='';
   if(!codes.length){$('pk-err').textContent='請至少選一檔';return;}
+  if(codes.length>pkMax()){$('pk-err').textContent=`最多選 ${pkMax()} 檔，現在選了 ${codes.length} 檔，請取消 ${codes.length-pkMax()} 檔`;return;}
   PICK_SENT=true;$('pk-go').disabled=true;
   try{const r=await fetch('/api/select',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({codes})});
     const j=await r.json();if(!r.ok){PICK_SENT=false;$('pk-go').disabled=false;$('pk-err').textContent=j.error||'選擇失敗';return;}

@@ -115,7 +115,7 @@ class WebState:
 
     def picker_json(self):
         with self.lock:
-            return json.dumps({**self.picker, "selected": self.selected}, ensure_ascii=False, default=str)
+            return json.dumps({**self.picker, "selected": self.selected, "max_pick": MAX_PICK}, ensure_ascii=False, default=str)
 
     def select(self, body):
         """POST /api/select {codes: [...]}：選股模式下選定監控標的（只能選一次；要換標的請重開 monitor）。"""
@@ -126,8 +126,10 @@ class WebState:
         bad = [c for c in codes if not (4 <= len(c) <= 6 and c.isalnum())]
         if bad:
             return False, {"error": f"代碼格式不對：{'、'.join(bad)}"}
-        if not 1 <= len(codes) <= MAX_PICK:
-            return False, {"error": f"請選 1～{MAX_PICK} 檔"}
+        if not codes:
+            return False, {"error": "請至少選一檔"}
+        if len(codes) > MAX_PICK:
+            return False, {"error": f"最多選 {MAX_PICK} 檔，現在選了 {len(codes)} 檔（{'、'.join(codes)}），請取消 {len(codes) - MAX_PICK} 檔"}
         with self.lock:
             if self.selected is not None:
                 return False, {"error": "已經選過了；要換標的請重開 monitor"}

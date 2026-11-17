@@ -203,9 +203,10 @@
   "market": "tse",
   "group": null,
   "days": [
-   "2026-11-09"
+   "2026-11-09",
+   "2026-11-17"
   ],
-  "launches": 1,
+  "launches": 2,
   "signals": [],
   "notes": []
  },
@@ -369,9 +370,10 @@
   "market": "tse",
   "group": "DRAM原廠",
   "days": [
-   "2026-11-13"
+   "2026-11-13",
+   "2026-11-16"
   ],
-  "launches": 2,
+  "launches": 4,
   "signals": [],
   "notes": []
  },
@@ -483,9 +485,10 @@
   "market": "tse",
   "group": null,
   "days": [
-   "2026-11-13"
+   "2026-11-13",
+   "2026-11-17"
   ],
-  "launches": 1,
+  "launches": 2,
   "signals": [
    {
     "date": "2026-11-13",
@@ -572,9 +575,10 @@
   "market": "tse",
   "group": null,
   "days": [
-   "2026-11-13"
+   "2026-11-13",
+   "2026-11-16"
   ],
-  "launches": 4,
+  "launches": 6,
   "signals": [],
   "notes": []
  },
@@ -583,9 +587,10 @@
   "market": "tse",
   "group": null,
   "days": [
-   "2026-11-13"
+   "2026-11-13",
+   "2026-11-16"
   ],
-  "launches": 3,
+  "launches": 5,
   "signals": [],
   "notes": []
  },
@@ -641,7 +646,83 @@
    "2026-11-13"
   ],
   "launches": 1,
-  "signals": [],
+  "signals": [
+   {
+    "date": "2026-11-13",
+    "time": "12:32:59",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 1010.0,
+    "stop": 1020.0,
+    "t1": 990.0,
+    "t2": 970.0,
+    "zone": [
+     1010.0,
+     1010.0
+    ],
+    "alert_px": 1005.0,
+    "filled_at_alert": false,
+    "fill_min": null,
+    "chase": 0.5,
+    "run5": -0.9,
+    "run5_tk": -1.8,
+    "rr_now": 1.0,
+    "rr_zone": 2.0,
+    "verdict": "nofill",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": null,
+    "scoring": 2,
+    "score_stop": 1020.0,
+    "score_tgt": 998.0,
+    "heat_ticks": 1,
+    "tick": 5.0,
+    "exit": null,
+    "exit_px": null,
+    "net_pct": null,
+    "mae_ticks": null,
+    "mfe_ticks": null,
+    "ret_10m": -1.1940298507462699,
+    "ret_30m": -0.6965174129353269,
+    "suspects": [],
+    "why": "反彈 1010.0 不過，1 分 K 收 1005.0 確認（偏空強度 66）",
+    "features": {
+     "idx_trend_10m": 0.2257642005156768,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 0.8917342757522709,
+     "rs_vs_index": 1.2239855161140234,
+     "group_avg": 2.188395928489024,
+     "chg_pct": 3.092783505154628,
+     "warrant_surge": false,
+     "small_net_pct": 33.33333333333333,
+     "p_long": 34.379999999999995,
+     "p_short": 65.62,
+     "liq_level": "soft",
+     "liq_l1": 6.5,
+     "liq_wide_pct": 30,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": -0.5208333333333334,
+     "big_net_10m": null,
+     "phase": "late",
+     "range_pos": 0.25
+    },
+    "factors": [
+     "跳空開高",
+     "衝高回落",
+     "略強於大盤",
+     "日內低檔",
+     "委賣厚",
+     "大單淨買",
+     "散戶瘋搶",
+     "外盤強"
+    ],
+    "exh": null,
+    "exh_lit": null
+   }
+  ],
   "notes": []
  },
  "3035": {
@@ -650,6 +731,94 @@
   "group": "矽智財IC設計",
   "days": [
    "2026-11-13"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "6213": {
+  "name": "聯茂",
+  "market": "tse",
+  "group": "CCL基板",
+  "days": [
+   "2026-11-16"
+  ],
+  "launches": 2,
+  "signals": [],
+  "notes": []
+ },
+ "6285": {
+  "name": "啟碁",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-16"
+  ],
+  "launches": 2,
+  "signals": [],
+  "notes": []
+ },
+ "2468": {
+  "name": "華經",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-16"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3711": {
+  "name": "日月光投控",
+  "market": "tse",
+  "group": "台積電供應鏈",
+  "days": [
+   "2026-11-16"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3037": {
+  "name": "欣興",
+  "market": "tse",
+  "group": "PCB",
+  "days": [
+   "2026-11-17"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2449": {
+  "name": "京元電子",
+  "market": "tse",
+  "group": "台積電供應鏈",
+  "days": [
+   "2026-11-17"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "4526": {
+  "name": "東台",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-17"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3707": {
+  "name": "漢磊",
+  "market": "otc",
+  "group": "化合物半導體",
+  "days": [
+   "2026-11-17"
   ],
   "launches": 1,
   "signals": [],

@@ -71,3 +71,18 @@ def foreign_tx_oi(date: dt.date):
             if len(nums) >= 11:
                 return {"net_oi": nums[10], "raw": nums}
     return None
+
+
+AH = "https://www.taifex.com.tw/cht/3/futContractsDateAh"
+
+
+def ah_published(trade_date: dt.date):
+    """
+    期交所「盤後交易時段三大法人」（夜盤三大法人）公布了 trade_date 這個交易日的資料沒（夜盤歸到下一個交易日：
+    11/16 晚上的夜盤查 11/17）。約 06:00 後才公布；還沒公布、或那天沒有夜盤時，頁面上沒有「日期YYYY/MM/DD」那格。
+    """
+    payload = {"queryType": "1", "goDay": "", "doQuery": "1", "dateaddcnt": "", "queryDate": trade_date.strftime("%Y/%m/%d"),
+               "commodityId": "TXF", "button": "送出查詢"}
+    html = http.post(AH, payload, referer=AH, cache_ttl=0).decode("utf-8", errors="ignore")
+    m = re.search(r">\s*日期\s*(\d{4})/(\d{1,2})/(\d{1,2})\s*<", html)
+    return bool(m) and dt.date(int(m.group(1)), int(m.group(2)), int(m.group(3))) == trade_date

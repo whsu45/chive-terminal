@@ -118,6 +118,8 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .signal .h{font-size:16px;font-weight:700}.signal .px{font-size:22px;font-weight:800;font-family:var(--mono)}
 .signal .d{font-size:12px;color:var(--fg)}.signal .d b{font-family:var(--mono)}.signal .why{font-size:12px;color:var(--muted);flex-basis:100%}
 .signal .space{flex-basis:100%;color:#f0b429}
+.sitebar{margin:10px 16px 0;padding:8px 12px;border:1px solid #f0b429;border-radius:10px;background:rgba(240,180,41,.08);color:#f0b429;font-size:13px;line-height:1.6}
+.sitebar.hidden{display:none}.sitebar a{color:#ffd166;font-weight:700;margin:0 4px}.sitebar .muted{color:var(--muted);font-size:12px}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 12px 1px currentColor}}
 .hint{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
 .pos{margin:-2px 0 10px;padding:8px 10px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
@@ -223,6 +225,7 @@ main#review.hidden{display:none}
     <span class="clock num" id="clock"></span>
   </div>
 </header>
+<div class="sitebar hidden" id="sitebar"></div>
 <section class="picker hidden" id="picker">
   <div class="pk-head"><h2>今日當沖標的</h2><span class="small muted" id="pk-status"></span></div>
   <div class="pk-mkt" id="pk-mkt"></div>
@@ -297,10 +300,18 @@ function tick(){const n=new Date();$('clock').textContent=n.toLocaleTimeString('
   const ph=(LIVE&&LIVE.phase)||phaseNow();const el=$('phase');el.className='phase '+ph.key;el.textContent=ph.label+(ph.range?' '+ph.range:'');el.title=ph.hint||'';}
 setInterval(tick,1000);tick();
 
+// 網站（GitHub Pages）的夜盤三大法人沒更新：期交所已公布、GitHub 排程沒跑 → 提醒手動觸發（monitor.site_watch，每 5～10 分鐘看一次）
+function renderSite(){const el=$('sitebar');if(!el)return;const s=STATE&&STATE.site;
+  if(!s){el.classList.add('hidden');el.innerHTML='';return;}
+  el.classList.remove('hidden');
+  el.innerHTML=`⚠ 網站的「三大法人淨額（夜盤）」還沒更新：期交所已公布 ${esc(s.date)} 的資料，但 GitHub 排程還沒跑`
+    +`（網站上${s.site_has_row?`今天那筆的夜盤法人是 NA`:`最新只到 ${esc(s.site_date||'?')}`}）。`
+    +`<a href="${esc(s.url)}" target="_blank" rel="noopener">到 GitHub 手動觸發 ↗</a>`
+    +`<span class="muted">按右邊的「Run workflow」→ 綠色「Run workflow」，大約 8 分鐘網站就會更新 · ${esc(s.checked)} 檢查，更新後這條會自己消失</span>`;}
 let BOOT=null;   // 這次 monitor 程序的 ID：開著過夜時 monitor 會在新交易日 08:25 自動重開，ID 變了就整頁重新載入，畫面上不留前一天的分時、大盤、漲跌停
 async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());const s=await r.json();
   if(s.boot&&BOOT&&s.boot!==BOOT){location.reload();return;}if(s.boot)BOOT=s.boot;
-  STATE=s;autoReview();
+  STATE=s;autoReview();renderSite();
   if(!STATE.codes.length){loadPicker();return;}            // 選股模式：還沒選標的
   showPicker(false);
   if(ADD_WAIT&&STATE.codes.includes(ADD_WAIT)){CUR=ADD_WAIT;}renderAdd();

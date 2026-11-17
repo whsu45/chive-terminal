@@ -107,9 +107,10 @@ chive-terminal/
 - `workflow_dispatch`
 
 ### 開盤前一定要有「三大法人淨額（夜盤）」
-GitHub 的排程常延後好幾個小時、甚至被丟掉（10/01～11/17 排了約 280 次只跑了 100 次，早上 6～9 點準時跑的幾乎沒有）。期交所的夜盤三大法人又要約 **06:00 後**才公布，所以網站常到 10 點後才有。現在有兩層補救：
+GitHub 的排程常延後好幾個小時、甚至被丟掉（10/01～11/17 排了約 280 次只跑了 100 次，早上 6～9 點準時跑的幾乎沒有）。期交所的夜盤三大法人又要約 **06:00 後**才公布，所以網站常到 10 點後才有。現在的補救：
 - **Actions 內等待**：`scripts/wait_taifex_ah.py` 在抓資料前執行，這次剛好在 04:30～06:45 跑時，就等到期交所公布（或確定休市、或到 06:45）再往下抓；其他時段直接略過。
-- **本機準時補觸發**：`scripts/kick_deploy.py` 由 Mac 的 launchd 在每天 06:15、06:45、07:20、08:00、08:30 執行。網站還缺當天夜盤法人、期交所已公布、而且沒有 deploy 在跑時，才用 `gh workflow run deploy.yml` 觸發一次（手動觸發會馬上跑，不受排程延後影響）。安裝：`bash scripts/launchd/install_kick_deploy.sh`，移除時加 `--uninstall`。Mac 睡眠時錯過的時間，醒來後會補跑一次；關機就不會跑。
+- **當沖儀表板提醒、手動觸發**：`scripts/day_trading/monitor.py --web` 開著時，交易日 06:00–13:30 每 10 分鐘看一次網站的 `data/history.json`。期交所已公布、網站還沒有當天的夜盤法人，儀表板頂端就出現黃色提醒，附 GitHub Actions 的連結：按「Run workflow」手動觸發，大約 8 分鐘網站更新，提醒自己消失。只讀公開網頁，不用 `gh`、不碰帳號。
+- （選用，只裝在自己的電腦，**不要裝在公用電腦**）`scripts/kick_deploy.py` + `scripts/launchd/install_kick_deploy.sh`：macOS launchd 在 06:15～08:30 自動檢查，缺了就用已登入的 `gh` 觸發 deploy；移除時加 `--uninstall`。
 
 ---
 

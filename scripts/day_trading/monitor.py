@@ -80,6 +80,79 @@ def restart_due(boot, now=None):
     return stale_day(boot, now) and now.strftime("%H:%M") >= RESTART_AT
 
 
+# 網站（GitHub Pages）的「三大法人淨額（夜盤）」靠 GitHub 排程更新，但排程常延後或被丟掉（10/01～11/17 排約 280 次只跑 100 次，
+# 早上 6～9 點幾乎沒有準時跑過），期交所又約 06:00 後才公布，網站常到 10 點後才有。這台是公用電腦，不裝自動觸發的排程；
+# 改成 monitor 開著時順便看：期交所已公布、網站還沒有 → 儀表板頂端提醒，附 GitHub 手動觸發（Run workflow）的連結。
+# 只讀公開網頁（GitHub Pages 的 history.json、期交所），不用 gh、不碰任何帳號。
+SITE_WINDOW = ("06:00", "13:30")
+_SITE_STOP = threading.Event()
+
+
+def _site_repo():
+    """從 git remote 取 (owner, repo)；只取名稱，網址裡就算有帳密也不留下、不印出。"""
+    try:
+        url = subprocess.run(["git", "remote", "get-url", "origin"], cwd=HERE, capture_output=True, text=True, timeout=5).stdout.strip()
+    except Exception:
+        return None
+    m = re.search(r"github\.com[:/]+([\w.-]+)/([\w.-]+?)(?:\.git)?/?$", url)
+    return (m.group(1), m.group(2)) if m else None
+
+
+def site_night_status(now=None, repo=None):
+    """
+    網站的夜盤三大法人是不是今天的。回 None（非交易日或不在 06:00–13:30）或 {state, date, checked, ...}：
+      ok      網站已經有今天的夜盤法人
+      waiting 網站還沒有，但期交所也還沒公布（約 06:00 後），或昨晚沒有夜盤（休市後第一天）→ 不提醒
+      stale   期交所已公布、網站還沒更新 → 提醒到 GitHub 手動觸發（附 url）
+    """
+    now = now or dt.datetime.now()
+    d = now.date()
+    if not _is_trading(d) or not (SITE_WINDOW[0] <= now.strftime("%H:%M") < SITE_WINDOW[1]):
+        return None
+    repo = repo or _site_repo()
+    if not repo:
+        return None
+    owner, name = repo
+    target = d.strftime("%Y/%m/%d")
+    hist = hc.get_json(f"https://{owner}.github.io/{name}/data/history.json", params={"_": int(time.time())})
+    rows = [r for r in hist if isinstance(r, dict)] if isinstance(hist, list) else []
+    rec = next((r for r in rows if r.get("date") == target), None)
+    base = {"date": target, "checked": now.strftime("%H:%M")}
+    if rec and isinstance(rec.get("foreign_net_ah"), int):
+        return dict(base, state="ok")
+    import src_taifex
+    if not src_taifex.ah_published(d):
+        return dict(base, state="waiting")
+    return dict(base, state="stale", site_date=max((r.get("date") or "" for r in rows), default=None), site_has_row=rec is not None,
+                url=f"https://github.com/{owner}/{name}/actions/workflows/deploy.yml")
+
+
+def site_watch():
+    """背景執行緒：交易日 06:00–13:30 每 10 分鐘看一次網站的夜盤三大法人（提醒中每 5 分鐘），網站有了就停到隔天。結果放 WEB.site。"""
+    repo = _site_repo()
+    if not repo:
+        print("[網站] 找不到 GitHub repo（git remote），不檢查網站的夜盤三大法人")
+        return
+    ok_day = None
+    while not _SITE_STOP.is_set():
+        now = dt.datetime.now()
+        prev = WEB.site
+        try:
+            st = None if ok_day == now.date() else site_night_status(now, repo)
+            if st and st["state"] == "ok":
+                ok_day = now.date()
+            with WEB.lock:
+                WEB.site = st if (st and st["state"] == "stale") else None
+            if WEB.site and not prev:
+                print(f"[網站] 期交所已公布 {st['date']} 夜盤三大法人，網站還沒更新（GitHub 排程沒跑）：儀表板已提醒到 GitHub 手動觸發")
+            elif prev and not WEB.site and st and st["state"] == "ok":
+                print(f"[網站] 網站的夜盤三大法人已更新（{st['date']}）")
+        except Exception as e:
+            print(f"[網站] 檢查夜盤三大法人失敗，下次再試：{str(e)[:100]}")    # 網路錯誤：提醒維持原狀，不閃來閃去
+        sys.stdout.flush()
+        _SITE_STOP.wait(300 if WEB.site else 600)
+
+
 class WebState:
     """monitor 與網頁共用的狀態。"""
     def __init__(self):
@@ -101,6 +174,7 @@ class WebState:
         self.tomorrow = {"status": "off"} # 復盤畫面「明天的準備」：off / running / done / error（背景抓分點表與選股）
         self.adding = {}                  # 盤中加入的標的：code -> {status: running / done / error, ...}（Monitor.add_code）
         self.winding = {}                 # 盤中移除、還在收尾的標的：code -> {name, since, open}（Monitor.remove_code）
+        self.site = None                  # 網站的夜盤三大法人沒更新時的提醒（site_watch）：{date, site_date, url, checked}；沒事 = None
 
     def put_live(self, obj):
         with self.lock:
@@ -133,7 +207,7 @@ class WebState:
             return json.dumps({"codes": self.codes, "latest": self.latest, "daily": self.daily, "describe": self.describe,
                                "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji,
                                "picks": self.picks, "in_session": sess, "adding": self.adding, "winding": self.winding, "max_codes": MAX_CODES,
-                               "boot": BOOT_ID},
+                               "boot": BOOT_ID, "site": self.site},
                               ensure_ascii=False, default=str)
 
     def history_json(self, code):
@@ -2766,6 +2840,8 @@ def main():
     srv = None
     if a.web:
         srv, a.web = start_web(a.web)
+        if not a.once:
+            threading.Thread(target=site_watch, daemon=True, name="site-watch").start()
         if not a.no_open:
             try:
                 webbrowser.open(f"http://127.0.0.1:{a.web}/")  # macOS / Windows / Linux 都用系統預設瀏覽器
@@ -2809,6 +2885,7 @@ def _restart_self(srv):
     Windows 沒有真正的 exec，改成開子程序跑新的，這個程序等它結束（Ctrl+C 會同時送到子程序，由它收尾）。
     """
     print(f"[{dt.datetime.now():%H:%M:%S}] [換日] 今天 {dt.date.today():%m/%d} 是交易日，自動重開 monitor（等於重跑同一個指令），換成今天的資料")
+    _SITE_STOP.set()                      # Windows 上這個程序還會活著等子程序：網站檢查交給新的
     if srv is not None:
         try:
             srv.shutdown()                # 放掉 port，新的程式才綁得到同一個

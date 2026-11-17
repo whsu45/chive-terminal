@@ -95,21 +95,21 @@ chive-terminal/
 1. checkout repository
 2. 設定 Python 3.10
 3. 安裝 `requirements.txt` 中的依賴套件
-4. 執行 `fetch_and_build.py`
+4. 執行 `scripts/wait_taifex_ah.py`（清晨跑時等期交所公布夜盤三大法人，見下方說明），再執行 `fetch_and_build.py`
 5. 將更新後的 `data/history.json` commit 回 repository
 6. 上傳靜態頁面內容並部署到 GitHub Pages
 
 ### 排程時間
-目前 workflow 設定了多組平日排程作為更新與備援機制：
-- 台灣時間 **07:30**
-- 台灣時間 **08:30**
-- 台灣時間 **09:30**
-- 台灣時間 **11:30**
-- 台灣時間 **15:00**
-- 台灣時間 **20:00**
+目前 workflow 設定了多組排程作為更新與備援機制（週一到週六，台灣時間）：
+- **06:12**、**07:13**、**08:12**、**10:12**、**12:12**、**15:11**、**20:11**
 
 另外也支援手動觸發：
 - `workflow_dispatch`
+
+### 開盤前一定要有「三大法人淨額（夜盤）」
+GitHub 的排程常延後好幾個小時、甚至被丟掉（10/01～11/17 排了約 280 次只跑了 100 次，早上 6～9 點準時跑的幾乎沒有）。期交所的夜盤三大法人又要約 **06:00 後**才公布，所以網站常到 10 點後才有。現在有兩層補救：
+- **Actions 內等待**：`scripts/wait_taifex_ah.py` 在抓資料前執行，這次剛好在 04:30～06:45 跑時，就等到期交所公布（或確定休市、或到 06:45）再往下抓；其他時段直接略過。
+- **本機準時補觸發**：`scripts/kick_deploy.py` 由 Mac 的 launchd 在每天 06:15、06:45、07:20、08:00、08:30 執行。網站還缺當天夜盤法人、期交所已公布、而且沒有 deploy 在跑時，才用 `gh workflow run deploy.yml` 觸發一次（手動觸發會馬上跑，不受排程延後影響）。安裝：`bash scripts/launchd/install_kick_deploy.sh`，移除時加 `--uninstall`。Mac 睡眠時錯過的時間，醒來後會補跑一次；關機就不會跑。
 
 ---
 

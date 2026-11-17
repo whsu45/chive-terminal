@@ -49,6 +49,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # 期交所夜盤三大法人約 06:00 後才公布。這次剛好在 04:30～06:45 跑時，先等到公布再抓
+      # （GitHub 排程常延後、早上那幾次常被丟掉，錯過這次下一次可能 10 點後才來）；其他時段直接略過
+      - name: Wait for TAIFEX after-hours institutional data
+        continue-on-error: true
+        timeout-minutes: 140
+        run: |
+          python scripts/wait_taifex_ah.py
+
       - name: Fetch Market Data and Build
         run: |
           python fetch_and_build.py

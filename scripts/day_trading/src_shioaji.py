@@ -694,11 +694,20 @@ def quote_snapshot(code):
                 "bids": list(acc["bids"]), "asks": list(acc["asks"]), "book_recv": acc.get("book_recv_t")}
 
 
+# 籌碼K線（CMoney）盤中大戶散戶的口徑：單筆金額 ≥ 門檻算大戶、其餘算散戶，只分兩級，門檻依個股歷史動態調整、沒有公布。
+# 2026-11-17 事欣科（當天 96～107.5 元）用同一份逐筆對出來：門檻要在 32.25 萬（107.5 元 3 張）到 38.4 萬（96 元 4 張）之間，
+# ≥35 萬算出大 9,857 / 散 4,696，它是 9,874 / 4,672（40 萬會把 100 元以下的 4 張單算成散戶，大 9,709 / 散 4,844，比較差）。
+# 只有一檔的資料點，門檻是推估；儀表板大戶散戶卡附這個口徑只供對照（回測它的大戶淨額對未來走勢沒有比 300 萬主力好，見 README）。
+CHIPK_AMOUNT = float(os.environ.get("CHIPK_LOT_AMOUNT", "350000") or 350000)
+
+
 def flow_history(code, step_sec=60):
     """
-    用回補的逐筆重建「每分鐘的主力/散戶淨額」：[[epoch, big_net, small_net, price, cum_vol], ...]。
-    盤中才打開 monitor 時，model._flow_dynamics 需要的歷史與 09:00 起的警示就靠這份重放，不會因為 09:30 才啟動就看不到 09:05 的主力急出。
-    分類門檻用當下全日分布（與 flow() 一致），規律小單不另外歸類（回補用途夠了）。
+    用回補的逐筆重建「每分鐘的主力/散戶淨額」：
+      [[epoch, big_net, small_net, price, cum_vol, ck_big_net, ck_small_net, ck_big_vol, ck_small_vol], ...]
+    前 5 欄是主力 / 散戶（lot_thresholds，與 flow() 一致）；後 4 欄是籌碼K線口徑（單筆 ≥ CHIPK_AMOUNT 算大戶、其餘散戶）的累積淨額與累積成交量。
+    盤中才打開 monitor 時，model._flow_dynamics 需要的歷史與 09:00 起的警示就靠這份重放，不會因為 09:30 才啟動就看不到 09:05 的主力急出
+    （它只用前幾欄，後面加欄位不影響）。規律小單不另外歸類（回補用途夠了）。集合競價那筆內外盤是 0，兩種口徑都不算。
     """
     with _lock:
         acc = _state.get(code)
@@ -709,13 +718,14 @@ def flow_history(code, step_sec=60):
     big, small = th["big_lots"], th["small_lots"]
     out = []
     bn = sn = vol = 0
+    cbn = csn = cbv = csv = 0
     bucket = None
     for ts, p, v, tt in ticks:
         t = ts if isinstance(ts, dt.datetime) else ns_to_dt(ts)
         e = t.timestamp()
         b = int(e // step_sec)
         if bucket is not None and b != bucket:
-            out.append([bucket * step_sec + step_sec, bn, sn, last_p, vol])
+            out.append([bucket * step_sec + step_sec, bn, sn, last_p, vol, cbn, csn, cbv, csv])
         bucket = b
         vol += v
         if tt in (1, 2):
@@ -724,9 +734,13 @@ def flow_history(code, step_sec=60):
                 bn += sgn * v
             elif v < small or v == 1:
                 sn += sgn * v
+            if p * v * 1000 >= CHIPK_AMOUNT:
+                cbn += sgn * v; cbv += v
+            else:
+                csn += sgn * v; csv += v
         last_p = p
     if bucket is not None:
-        out.append([bucket * step_sec + step_sec, bn, sn, last_p, vol])
+        out.append([bucket * step_sec + step_sec, bn, sn, last_p, vol, cbn, csn, cbv, csv])
     return out
 
 

@@ -72,12 +72,9 @@ header .addbox .msg{font-size:12px;color:var(--muted);max-width:340px}header .ad
 .plan .box .entry{font-size:13px;color:var(--fg);margin-bottom:6px}
 .plan table{width:100%;font-size:13px;border-collapse:collapse}.plan td{padding:2px 0}.plan td:last-child{text-align:right}
 .fs{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
-.fs canvas{width:100%;height:88px;display:block;margin:2px 0 8px}
+.fs canvas{width:100%;height:120px;display:block;margin:2px 0 10px}
 .fs .small{font-size:12px;color:var(--muted)}.fs .small b{font-family:var(--mono);font-weight:600}
-.ctl{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:6px}
-.ctl .tag{padding:2px 8px;border-radius:6px;font-weight:700;color:#0f1115;background:#f5a623}.ctl .tag.retail{background:#8b93a3}
-.ctl .track{flex:1;height:8px;border-radius:4px;background:#3a4150;overflow:hidden;display:flex}.ctl .track i{display:block;height:100%;background:#f5a623}
-.ctl b{font-family:var(--mono)}
+.fs .hl{font-size:13px;line-height:1.5}.fs .hl b{font-family:var(--mono);font-weight:700}.fs .hl .def{color:var(--muted);font-size:12px}
 .wall{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--panel2);font-size:12px;border-left:4px solid var(--line)}
 .wall.bid{border-left-color:var(--up)}.wall.ask{border-left-color:var(--dn)}.wall.ended{opacity:.6}
 .wall b{font-family:var(--mono)}.wall .v{font-weight:700}.wall .v.real{color:var(--up)}.wall .v.fake{color:var(--warn)}
@@ -262,7 +259,7 @@ main#review.hidden{display:none}
   <section class="card" id="c-verdict"><h3>多空強度 <span class="small muted" id="eval-t"></span></h3><div id="signal" class="signal hidden"></div><div id="pos" class="pos hidden"></div><div id="verdict"></div></section>
   <section class="card" id="c-alerts"><h3>警示 <span class="small muted" id="alerts-n"></span></h3><div class="alerts" id="alerts"></div></section>
   <section class="card" id="c-flow"><h3>主力 / 散戶 分流</h3><div class="flow" id="flow"></div>
-    <div class="fs" id="fs"><div class="ctl" id="ctl"></div><div class="small" id="fs-big-t"></div><canvas id="fs-big"></canvas><div class="small" id="fs-small-t"></div><canvas id="fs-small"></canvas></div></section>
+    <div class="fs" id="fs"><div class="hl" id="fs-big-t"></div><canvas id="fs-big"></canvas><div class="hl" id="fs-small-t"></div><canvas id="fs-small"></canvas><div class="small muted" id="fs-ck"></div></div></section>
   <section class="card" id="c-plan"><h3>模組 A（現有）進出場計畫（已畫在個股江波圖）</h3><div class="plan" id="plan"></div></section>
   <section class="card" id="c-ladder"><h3>壓力 / 支撐</h3><div class="ladder" id="ladder"></div></section>
   <section class="card" id="c-factors"><h3>因子（滑鼠停留看理由）</h3><div id="factors"></div></section>
@@ -564,7 +561,7 @@ function flowDist(fl,th){const D=fl.dist||[];if(!D.length)return '';
   const sg=n=>`<td class="n num ${cls(n)}">${n>0?'+':''}${n}</td>`;
   return `<table class="rv" style="margin-top:8px"><tr><th title="單筆成交的張數（括號是大約的金額）">單筆</th><th class="n">買</th><th class="n">賣</th><th class="n">淨</th><th class="n" title="把這一級和比它大的全部加起來的買賣淨額——等於「把大戶門檻設在這一級」會看到的大戶買賣超">這級以上淨額</th><th class="n" title="這一級以上的成交量占全部（有分買賣的）成交量的比例">占量</th></tr>
     ${D.map((d,i)=>`<tr><td title="約 ${f(d.lo*px*1000/1e4,0)} 萬以上">${lab(d)} <span class="rv-tag">${d.lo>=(th.big_lots||1e9)?'主力':d.lo>=(th.small_lots||1e9)?'中實戶':'散戶'}</span></td><td class="n num">${d.buy}</td><td class="n num">${d.sell}</td>${sg(d.buy-d.sell)}${sg(cum[i][0])}<td class="n num">${f(cum[i][1]/tv*100,0)}%</td></tr>`).join('')}</table>
-    <div class="small muted" style="margin-top:4px" title="這裡的主力 = 單筆 ≥${th.big_lots} 張（約 300 萬以上，且不低於當日單筆的 95 分位），中間還有一級中實戶。籌碼K線的盤中大戶散戶只分兩級，門檻依個股歷史動態調整、通常低很多，所以它的大戶成交量和買賣超都會比這裡的主力大">「大戶」的門檻各家不同：這裡主力是 ≥${th.big_lots} 張，籌碼K線只分兩級而且門檻低很多。要對照就看「這級以上淨額」哪一列跟它接近（滑過來看說明）</div>`;}
+    <div class="small muted" style="margin-top:4px" title="這裡的主力 = 單筆 ≥${th.big_lots} 張（約 300 萬以上，且不低於當日單筆的 95 分位），中間還有一級中實戶。籌碼K線的盤中大戶散戶只分兩級，門檻依個股歷史動態調整、通常低很多，所以它的大戶成交量和買賣超都會比這裡的主力大">「大戶」的門檻各家不同：這裡主力是 ≥${th.big_lots} 張，籌碼K線只分兩級而且門檻低很多（11/17 事欣科對出約 35 萬）。它的數字直接列在下面大戶散戶卡最後一行（滑過來看說明）</div>`;}
 function renderPrice(){if(!LIVE||!LIVE.quotes||!STATE)return;const q=LIVE.quotes[CUR];const ev=STATE.latest[CUR]||{};const i=ev.info||{};const d=STATE.daily[CUR]||{};
   const idx=LIVE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>{const mv=v.move;   // move：剛發過大盤急漲 / 急跌通知（monitor._index_alerts），反白 5 分鐘
     return `${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}${mv?' lim lim-'+(mv.dir>0?'up':'dn'):''}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`
@@ -663,25 +660,50 @@ function renderDT(){const el=$('dt');if(!el)return;const d=(STATE.daily[CUR]||{}
     <table class="grid" style="margin-top:6px"><tr><th>分點</th><th style="text-align:right">買超</th><th style="text-align:right">佔量</th><th>過去習慣</th></tr>${d.list.map(r=>`<tr><td>${esc(r.broker)}</td><td class="n">${r.net}</td><td class="n">${r.pct!=null?f(r.pct,1)+'%':'-'}</td><td class="small">${r.rate!=null?`大買 ${r.n} 次，隔天倒回 <b>${Math.round(r.rate*100)}%</b>`:'固定名單'}${r.here_n?`<span class="muted">；這檔 ${r.here_n} 次倒回 ${r.here_flip} 次</span>`:''}</td></tr>`).join('')}</table>${pos}
     <div class="small muted" style="margin-top:4px">分點資料只有盤後才有，盤中看不到他們賣了沒；倒回量是照過去習慣估的。</div>`;}
 
-// 大戶散戶累積買賣超（籌碼K線同款）：上=大戶（主力）累積淨額、下=散戶累積淨額；紅=買超、綠=賣超；頂端大戶/散戶成交量比
+// 大戶散戶卡（2026-11-17 改版）：大戶、散戶各三層——一句話現況、累積線（線在 0 下面 = 開盤至今賣超，往上走 = 在買）、
+// 每 5 分鐘買賣柱（紅往上 = 買、綠往下 = 賣，跟成交量柱一樣讀）。不再用柱子深淺表示這一分鐘的方向
+// （籌碼K線的畫法：深 = 同向加碼、淺 = 反向回補，一根柱子塞兩件事，很難讀）。最下面附籌碼K線口徑（單筆 ≥35 萬、兩級，src_shioaji.CHIPK_AMOUNT）只供對照。
+// flow_series 每列：[HH:MM, 主力累積, 散戶累積, 累積量, 籌碼K線大戶累積, 籌碼K線散戶累積, 籌碼K線大戶量, 籌碼K線散戶量, 價]
+const FS_WIN=15;
+function fsMins(t){const [h,m]=t.split(':').map(Number);return Math.min(270,Math.max(0,(h-9)*60+m));}
+function fsAt(fs,idx,m){let v=0;for(const r of fs){if(fsMins(r[0])<=m)v=r[idx];else break;}return v;}
 function drawFlowSeries(fl){const fs=(LIVE&&LIVE.flow_series&&LIVE.flow_series[CUR])||[];const box=$('fs');if(!fl||!fs.length){box.style.display='none';return;}box.style.display='';
-  const bigV=(fl.big_buy||0)+(fl.big_sell||0),smV=(fl.small_buy||0)+(fl.small_sell||0),tot=bigV+smV||1;const bigCtl=bigV>=smV;
-  $('ctl').innerHTML=`<span class="tag ${bigCtl?'':'retail'}">${bigCtl?'大戶控盤':'散戶控盤'}</span><span>大 <b>${bigV}</b></span><div class="track"><i style="width:${bigV/tot*100}%"></i></div><span><b>${smV}</b> 散</span>`;
-  const last=fs[fs.length-1],prev=fs.length>1?fs[fs.length-2]:last;
-  const lab=(nm,cum,d)=>`${nm}累積<span class="${cum>=0?'up':'dn'}">${cum>=0?'買超':'賣超'} <b>${Math.abs(cum)}</b></span> 張 · 本分鐘 ${nm}<span class="${d>=0?'up':'dn'}">${d>=0?'買進':'賣出'} <b>${Math.abs(d)}</b></span> 張`;
-  $('fs-big-t').innerHTML=lab('大戶',last[1],last[1]-prev[1]);$('fs-small-t').innerHTML=lab('散戶',last[2],last[2]-prev[2]);
-  const draw=(cv,idx)=>{const dpr=window.devicePixelRatio||1;const W=cv.width=cv.clientWidth*dpr,H=cv.height=cv.clientHeight*dpr;const g=cv.getContext('2d');g.clearRect(0,0,W,H);const F=px=>px*dpr;g.font=`${F(10)}px ${getComputedStyle(document.body).fontFamily}`;
-    const padL=F(4),padR=F(40),padT=F(4),padB=F(4);const x0=padL,x1=W-padR,y0=padT,y1=H-padB;
-    const mins=t=>{const [h,m]=t.split(':').map(Number);return Math.min(270,Math.max(0,(h-9)*60+m));};const X=m=>x0+(x1-x0)*m/270;
-    const vals=fs.map(r=>r[idx]);let hi=Math.max(0,...vals),lo=Math.min(0,...vals);if(hi===lo){hi=1;lo=-1;}const pad=(hi-lo)*0.08;hi+=pad;lo-=pad;
-    const Y=v=>y0+(y1-y0)*(1-(v-lo)/(hi-lo));const Y0=Y(0);
-    // 時段格線
-    g.strokeStyle='#232833';g.lineWidth=F(1);[60,90,120,180,240].forEach(m=>{g.setLineDash(m===90||m===180?[F(2),F(3)]:[]);g.beginPath();g.moveTo(X(m),y0);g.lineTo(X(m),y1);g.stroke();});g.setLineDash([]);
-    g.strokeStyle='#3a4150';g.beginPath();g.moveTo(x0,Y0);g.lineTo(x1,Y0);g.stroke();
-    // 柱狀面積：每分鐘一根，紅買超綠賣超
-    const bw=Math.max(F(1),(x1-x0)/270);
-    fs.forEach(r=>{const v=r[idx];if(!v)return;const x=X(mins(r[0]));g.fillStyle=v>0?'#ff4d4f':'#2ecc71';const y=Y(v);g.fillRect(x,Math.min(y,Y0),bw,Math.abs(Y0-y));});
-    g.fillStyle='#8b93a3';g.fillText(String(Math.round(hi-pad)),x1+F(4),y0+F(9));g.fillText(String(Math.round(lo+pad)),x1+F(4),y1-F(1));g.fillText('0',x1+F(4),Y0+F(3));};
+  const th=fl.thresholds||{},last=fs[fs.length-1],lm=fsMins(last[0]),px=last[8]||0;
+  const wan=n=>px?`，約 ${Math.round(n*px*1000/1e4)} 萬`:'';
+  const say=(nm,def,idx)=>{const cum=last[idx],d=cum-fsAt(fs,idx,lm-FS_WIN);
+    const c=cum===0?'開盤至今買賣打平':`開盤至今<span class="${cum>0?'up':'dn'}">${cum>0?'買超':'賣超'} <b>${Math.abs(cum)}</b> 張</span>`;
+    const shrink=cum&&d&&Math.sign(d)!==Math.sign(cum)?`（${cum<0?'賣超':'買超'}在縮小）`:'';
+    const r=d===0?`最近 ${FS_WIN} 分鐘沒有淨買賣`:`最近 ${FS_WIN} 分鐘<span class="${d>0?'up':'dn'}">${d>0?'買進':'賣出'} <b>${Math.abs(d)}</b> 張</span>${shrink}`;
+    return `<b>${nm}</b><span class="def">（${def}）</span>：${c}｜${r}`;};
+  $('fs-big-t').innerHTML=say('大戶',th.big_lots?`單筆 ≥${th.big_lots} 張${wan(th.big_lots)}`:'大單',1);
+  $('fs-small-t').innerHTML=say('散戶',th.small_lots?`單筆 <${th.small_lots} 張${wan(th.small_lots)}`:'小單',2);
+  if(last.length>=8){const cb=last[4],cs=last[5],bv=last[6],sv=last[7];
+    const ckW=Math.round(((LIVE&&LIVE.chipk_amount)||350000)/1e4);
+    $('fs-ck').innerHTML=`籌碼K線口徑（單筆 ≥${ckW} 萬算大戶、只分兩級，門檻是推估的，只供對照）：大戶<span class="${cb>=0?'up':'dn'}">${cb>=0?'買超':'賣超'} <b>${Math.abs(cb)}</b></span> · 散戶<span class="${cs>=0?'up':'dn'}">${cs>=0?'買超':'賣超'} <b>${Math.abs(cs)}</b></span> · 它會顯示「${bv>=sv?'大戶控盤':'散戶控盤'}」（大 <b>${bv}</b> / 散 <b>${sv}</b>）`;}
+  else $('fs-ck').innerHTML='';
+  const draw=(cv,idx)=>{const dpr=window.devicePixelRatio||1;const W=cv.width=cv.clientWidth*dpr,H=cv.height=cv.clientHeight*dpr;const g=cv.getContext('2d');g.clearRect(0,0,W,H);const F=p=>p*dpr;g.font=`${F(10)}px ${getComputedStyle(document.body).fontFamily}`;
+    const padL=F(4),padR=F(44),padT=F(6),padB=F(14),gap=F(8);const x0=padL,x1=W-padR;
+    const hA=Math.round((H-padT-padB-gap)*0.6),ya0=padT,ya1=padT+hA,yb0=ya1+gap,yb1=H-padB;const X=m=>x0+(x1-x0)*m/270;
+    g.strokeStyle='#232833';g.lineWidth=F(1);[60,120,180,240].forEach(m=>{g.beginPath();g.moveTo(X(m),ya0);g.lineTo(X(m),yb1);g.stroke();});
+    // ① 累積線：0 線上方紅（買超）、下方綠（賣超）
+    const pts=[[0,0]].concat(fs.map(r=>[fsMins(r[0]),r[idx]]));
+    let hi=Math.max(0,...pts.map(p=>p[1])),lo=Math.min(0,...pts.map(p=>p[1]));if(hi===lo){hi=1;lo=-1;}const pd=(hi-lo)*0.1;hi+=pd;lo-=pd;
+    const YA=v=>ya0+(ya1-ya0)*(1-(v-lo)/(hi-lo)),Z=YA(0);
+    const path=()=>{g.beginPath();g.moveTo(X(pts[0][0]),YA(pts[0][1]));for(const p of pts)g.lineTo(X(p[0]),YA(p[1]));};
+    [[ya0,Z,'#ff4d4f'],[Z,ya1,'#2ecc71']].forEach(([a,b,col])=>{if(b-a<1)return;g.save();g.beginPath();g.rect(x0,a,x1-x0,b-a);g.clip();
+      path();g.lineTo(X(pts[pts.length-1][0]),Z);g.lineTo(X(pts[0][0]),Z);g.closePath();g.globalAlpha=0.18;g.fillStyle=col;g.fill();g.globalAlpha=1;
+      path();g.strokeStyle=col;g.lineWidth=F(1.6);g.stroke();g.restore();});
+    g.strokeStyle='#3a4150';g.lineWidth=F(1);g.beginPath();g.moveTo(x0,Z);g.lineTo(x1,Z);g.stroke();
+    const cur=pts[pts.length-1][1],yc=Math.min(ya1,Math.max(ya0+F(8),YA(cur)+F(3)));
+    g.fillStyle=cur>=0?'#ff4d4f':'#2ecc71';g.fillText((cur>0?'+':'')+cur,x1+F(4),yc);
+    if(Math.abs(yc-Z-F(3))>F(10)){g.fillStyle='#8b93a3';g.fillText('0',x1+F(4),Z+F(3));}
+    // ② 每 5 分鐘淨買賣：紅往上 = 買、綠往下 = 賣（最後一根是進行中的 5 分鐘）
+    const nets=[];let prev=0;for(let k=0;5*k<lm;k++){const e=fsAt(fs,idx,Math.min(5*(k+1),lm));nets.push(e-prev);prev=e;}
+    const mx=Math.max(1,...nets.map(Math.abs)),Zb=(yb0+yb1)/2,hB=(yb1-yb0)/2,bw=Math.max(F(1.5),(x1-x0)/54*0.7);
+    nets.forEach((v,k)=>{if(!v)return;const h=Math.max(F(1),hB*Math.abs(v)/mx);g.fillStyle=v>0?'#ff4d4f':'#2ecc71';g.fillRect(X(5*k+2.5)-bw/2,v>0?Zb-h:Zb,bw,h);});
+    g.strokeStyle='#3a4150';g.beginPath();g.moveTo(x0,Zb);g.lineTo(x1,Zb);g.stroke();
+    g.fillStyle='#8b93a3';g.fillText('每5分',x1+F(4),Zb+F(3));
+    [[0,'9'],[60,'10'],[120,'11'],[180,'12'],[240,'13']].forEach(([m,t])=>g.fillText(t,Math.min(X(m)+F(2),x1-F(12)),H-F(3)));};
   draw($('fs-big'),1);draw($('fs-small'),2);}
 
 // 建議做空/做多橫幅：快迴圈確認進場條件成立才出現，會一直閃到到目標/過停損/逾時

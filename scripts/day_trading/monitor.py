@@ -2526,7 +2526,8 @@ class Monitor:
                 for w in fW:
                     self._add_alert(c, now, w)
                 live["flow"][c] = {k: v for k, v in flow.items() if k != "hist"}
-                # 大戶/散戶累積買賣超分鐘序列（籌碼K線「大戶散戶」那張圖）：全日逐筆重算一次 O(n)，10 秒一次就夠
+                # 大戶散戶卡的分鐘序列：全日逐筆重算一次 O(n)，10 秒一次就夠。
+                # 每列 [HH:MM, 主力累積, 散戶累積, 累積量, 籌碼K線口徑大戶累積, 籌碼K線口徑散戶累積, 籌碼K線口徑大戶量, 籌碼K線口徑散戶量, 價]
                 t_fs, fs = self._fs_cache.get(c, (0, None))
                 if time.time() - t_fs >= 10 or fs is None:
                     try:
@@ -2534,7 +2535,8 @@ class Monitor:
                     except Exception:
                         fs = fs or []
                     self._fs_cache[c] = (time.time(), fs)
-                live["flow_series"][c] = [[dt.datetime.fromtimestamp(r[0]).strftime("%H:%M"), r[1], r[2], r[4]] for r in fs]
+                live["flow_series"][c] = [[dt.datetime.fromtimestamp(r[0]).strftime("%H:%M"), r[1], r[2], r[4]] + list(r[5:9]) + [r[3]] for r in fs]
+                live["chipk_amount"] = getattr(self.flow_src, "CHIPK_AMOUNT", None)
             wq = self._warrant_snapshot(c, q, now, 1) if do_wq else ready.get(c)
             if wq:
                 self.wq[c] = wq

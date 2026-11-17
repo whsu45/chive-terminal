@@ -43,18 +43,41 @@ WEB_DIR = os.path.join(HERE, "web")
 
 
 _TRADING = {}
+BOOT_ID = f"{os.getpid()}-{time.time():.0f}"   # 這次程序的 ID（/api/state 回傳）：自動重開後換新，儀表板看到就整頁重新載入
 
 
-def in_session(now=None):
-    """現在是不是盤中（交易日 08:25–13:35）。儀表板用它決定預設畫面：盤中看即時，其餘時間（收盤後、開盤前、休市日）看最新的復盤。"""
-    now = now or dt.datetime.now()
-    d = now.date()
+def _is_trading(d):
     if d not in _TRADING:
         try:
             _TRADING[d] = bool(cal.is_trading_day(d))
         except Exception:
             _TRADING[d] = d.weekday() < 5
-    return _TRADING[d] and "08:25" <= now.strftime("%H:%M") < "13:35"
+    return _TRADING[d]
+
+
+def in_session(now=None):
+    """現在是不是盤中（交易日 08:25–13:35）。儀表板用它決定預設畫面：盤中看即時，其餘時間（收盤後、開盤前、休市日）看最新的復盤。"""
+    now = now or dt.datetime.now()
+    return _is_trading(now.date()) and "08:25" <= now.strftime("%H:%M") < "13:35"
+
+
+# 開著過夜：漲跌停、技術面、法人、族群這些盤前資料只在啟動（或選定標的）時算一次，大盤與個股分時、訊號、警示也都是那天的。
+# 2026-11-17 monitor 從 11/16 開到隔天：畫面一直顯示前一天的漲停 126.5 / 跌停 103.5（今天應是 113.5 / 93.2），
+# 98.9 被當成已經跌停；08:25 串流自動接回後，大盤分時把兩天的點混在一起，訊號也用錯的漲跌停去擋（例如「跌停空不到」）。
+# 現在：換到新的交易日後，舊程序不再截取、不發訊號，畫面保留前一天的資料給你參考；到 RESTART_AT（試撮 08:30 前）自動重開，
+# 等於幫你重跑同一個指令（選股模式回到選股畫面，給代碼的照樣監控那幾檔），所有資料換成今天的。
+RESTART_AT = "08:25"
+
+
+def stale_day(boot, now=None):
+    """boot 那天啟動的程序，現在是不是已經跨到之後的交易日（休市日不算：週五開到週末不用重開，週一再重開）。"""
+    now = now or dt.datetime.now()
+    return now.date() > boot and _is_trading(now.date())
+
+
+def restart_due(boot, now=None):
+    now = now or dt.datetime.now()
+    return stale_day(boot, now) and now.strftime("%H:%M") >= RESTART_AT
 
 
 class WebState:
@@ -109,7 +132,8 @@ class WebState:
         with self.lock:
             return json.dumps({"codes": self.codes, "latest": self.latest, "daily": self.daily, "describe": self.describe,
                                "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji,
-                               "picks": self.picks, "in_session": sess, "adding": self.adding, "winding": self.winding, "max_codes": MAX_CODES},
+                               "picks": self.picks, "in_session": sess, "adding": self.adding, "winding": self.winding, "max_codes": MAX_CODES,
+                               "boot": BOOT_ID},
                               ensure_ascii=False, default=str)
 
     def history_json(self, code):
@@ -528,6 +552,8 @@ class Monitor:
         self.pos_lock = threading.Lock()
         self.winding = {}                            # 盤中移除、但還有訊號 / 警示在追蹤結果的標的：code -> {ts, since, open}（remove_code、_wind_down）
         self.code_lock = threading.Lock()            # 改 self.codes / self.winding 時拿（加入、移除、收尾在不同執行緒）；不要跟 WEB.lock 巢狀拿
+        self.boot_date = dt.date.today()             # 盤前資料是這天抓的；跨到之後的交易日就自動重開（stale_day / restart_due）
+        self._halt = False                           # 自動重開前停掉快迴圈
         WEB.monitor = self
         self._load_positions()
         import src_shioaji
@@ -1263,7 +1289,14 @@ class Monitor:
         return {"level": level, "l1": round(l1, 1), "l1_value": round(value), "wide_pct": round(wide), "n": len(h),
                 "depth5": round(statistics.median((r[4] + r[5]) / 2 for r in h), 1), "max_lots": max(1, int(l1))}
 
-    RR_MIN = 1.5            # 報酬（到前方第一個支撐 / 壓力）÷ 風險（到模型停損）至少要這麼多才發訊號
+    RR_MIN = 1.5            # 報酬（到前方第一個支撐 / 壓力）÷ 風險（到模型停損）低於這個值 → 「空間不夠」
+    # 空間不夠時擋不擋（2026-11-17 改成不擋、只當參考）。11/10 志聖復盤後加的「空間過濾」，驗證下來沒有效：
+    #   實盤 11/10–11/16：擋掉的 24 筆成交照做每筆 +0.06%（勝 11 輸 13），發出去的 23 筆每筆 −0.39%（勝 7 輸 16）。
+    #   tw_stocker 5 分 K 回測（120 檔、2024/02–2026/04、515 天、69.9 萬個通用支撐壓力訊號、現行評分扣成本）：
+    #   會被擋的 21% 每筆 −0.269%、沒被擋的 −0.283%，被擋的反而好 0.014%（以交易日重抽 95% 區間 +0.010～+0.017）；
+    #   大盤平靜 / 中等 / 劇烈、2024 / 2025 上半 / 2025 下半～2026 各段都一樣，只有逆勢單擋了好 0.015%，都遠小於成本 0.235%。
+    # 所以只在訊號上標「📏 空間參考」（儀表板、警示、signal_outcomes 的 space 欄位），訊號照發；改回 True 就恢復擋。
+    SPACE_BLOCK = False
     REPEAT_TICKS = 3        # 進場區相差這麼多 tick 以內算「同一個價位」
 
     def _repeat_block(self, c, side, lo, hi, q, tick):
@@ -1634,15 +1667,20 @@ class Monitor:
             short = side == "short"
             z = self._entry_zone(side, base, stop, t1)
             room = None
+            space = None
             if not z:
-                # 到前方第一個支撐 / 壓力的空間不夠（進場區內湊不到報酬風險比 1.5）：不發，但照樣追蹤假設進場的結果（⏸ 空間過濾），
-                # 累積夠多筆才知道這條擋得對不對（11/10 前 12 筆有輸贏的訊號，這條會擋 4 贏 3 輸、留 1 贏 2 輸，樣本太少看不出來）
+                # 到前方第一個支撐 / 壓力的空間不夠（進場區內湊不到報酬風險比 1.5）。SPACE_BLOCK 決定擋不擋（見該常數說明），
+                # 不擋時只在訊號上註明「空間參考」，照樣記進 signal_outcomes（space 欄位），之後還能分組比
                 z = self._entry_zone(side, base, stop, t1, rr_min=0)
                 risk0 = abs(stop - base)
                 if not z or not risk0:
                     return None
-                room = (f"到前方第一個{'支撐' if short else '壓力'} {t1}{f'（{t1_name}）' if t1_name else ''}只有 {abs(base - t1) / tick:.0f} tick，"
-                        f"報酬風險比 {abs(base - t1) / risk0:.1f} 不到 {self.RR_MIN}")
+                txt = (f"到前方第一個{'支撐' if short else '壓力'} {t1}{f'（{t1_name}）' if t1_name else ''}只有 {abs(base - t1) / tick:.0f} tick，"
+                       f"報酬風險比 {abs(base - t1) / risk0:.1f} 不到 {self.RR_MIN}")
+                space = {"text": txt, "t1": t1, "t1_name": t1_name, "ticks": round(abs(base - t1) / tick),
+                         "rr": round(abs(base - t1) / risk0, 2), "rr_min": self.RR_MIN}
+                if self.SPACE_BLOCK:
+                    room = txt
             lo, hi = z
             key = (c, side, lo, hi)
             if now.timestamp() - self._sig_seen.get(key, 0) < 900:
@@ -1657,7 +1695,8 @@ class Monitor:
                    "since": now.strftime("%H:%M:%S"), "since_ts": now.timestamp(), "now": p,
                    "p": ps if short else pl, "zone": [lo, hi], "filled": inzone, "filled_at_alert": inzone,
                    "fill_px": p if inzone else None, "fill_ts": now.timestamp() if inzone else None,
-                   "alert_px": p, "chase": round(chase, 3), "rr_now": rr_now and round(rr_now, 2), "rr_zone": rr_zone and round(rr_zone, 2)}
+                   "alert_px": p, "chase": round(chase, 3), "rr_now": rr_now and round(rr_now, 2), "rr_zone": rr_zone and round(rr_zone, 2),
+                   "space": space}
             lim_why = self._limit_block(c, side, p, t1, q)
             if lim_why:
                 # 漲停鎖死買不到、跌停鎖死空不到、目標超過漲跌停：不發，也不追蹤假設結果（根本成交不了）
@@ -1692,6 +1731,8 @@ class Monitor:
             sc = self.score_levels(sig["side"], p if inzone else (lo if short else hi))
             sig["score"] = sc
             score_txt = f"｜評分：逆向超過 {sc['heat_ticks']} tick（{sc['stop']}）算輸、到 {sc['tgt']} 算贏，60 分鐘內都沒到看扣成本損益"
+            if space:
+                score_txt += f"｜📏 空間參考：{space['text']}（只提醒、不擋訊號）"
             ex = self._exh_bonus(c, side, now)
             if ex:
                 sig["exh"] = {k: ex.get(k) for k in ("side", "time", "n", "vol", "vr", "push_tk", "push_pct", "ext", "pre", "over", "kind")}
@@ -1795,7 +1836,7 @@ class Monitor:
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -2008,7 +2049,8 @@ class Monitor:
                "verdict": verdict, "fast_adverse": fast_adverse, "first_stop_min": first_stop, "first_t1_min": first_t1,
                **score,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
-               "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors"), "exh": sg.get("exh"), "exh_lit": sg.get("exh_lit")}
+               "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors"), "exh": sg.get("exh"), "exh_lit": sg.get("exh_lit"),
+               "space": sg.get("space")}
         if sg.get("blocked"):
             out.update(blocked=True, block_reason=sg.get("block_reason"), block_kind=sg.get("block_kind"))
         if sg.get("cancelled"):
@@ -2528,28 +2570,20 @@ class Monitor:
             except Exception as e:
                 print(f"[shioaji] 登出失敗：{str(e)[:80]}")
 
-    def _resume_stream(self):
-        """monitor 開著過夜時，隔天 08:25 把收盤後登出的串流接回來。盤前資料還是前一天的，最好還是重啟。"""
-        self._stream_off = False
-        try:
-            ok = self.flow_src.start_stream(self.codes)
-            self.index_stream = bool(self.flow_src.start_index_stream()) if ok else False
-            print(f"[shioaji] 新的交易日，串流重新訂閱 {ok or '失敗'}；盤前資料是前一次啟動時的，建議重啟 monitor")
-        except Exception as e:
-            print(f"[shioaji] 串流重新訂閱失敗：{str(e)[:80]}")
-
     def _fast_step(self, now, every):
         """快迴圈的一步，回傳下一步前要等幾秒。live 以外的時段只抓一次（失敗最多試 3 次），之後只看時鐘、不對外取資料。"""
+        if stale_day(self.boot_date, now):
+            # 開著過夜到新的交易日：不截取（原本 08:25 會把串流接回來，大盤分時混進兩天的點、訊號用前一天的漲跌停），
+            # 畫面保留前一天的資料給你參考；RESTART_AT 主迴圈自動重開（Monitor.run 回 "restart"）
+            return 15
         mode = self._capture_mode(now)
         key = (now.date(), mode)
-        if mode == "live":
-            if self._stream_off:
-                self._resume_stream()
-        elif key in self._cap_done:
-            return 15
-        elif self._last_quotes is not None and (mode == "pre" or not self._trading_today()):
-            self._cap_done.add(key)      # 開著過夜／跨到休市日：畫面上已經有資料，不用再抓
-            return 15
+        if mode != "live":
+            if key in self._cap_done:
+                return 15
+            if self._last_quotes is not None and (mode == "pre" or not self._trading_today()):
+                self._cap_done.add(key)      # 開盤前已經有資料／跨到休市日：畫面上已經有資料，不用再抓
+                return 15
         err = http = None
         try:
             self.fast_tick(mode)
@@ -2586,7 +2620,7 @@ class Monitor:
         return 15
 
     def fast_loop(self, every=10):
-        while True:
+        while not self._halt:
             t0 = time.time()
             wait = self._fast_step(dt.datetime.now(), every)
             time.sleep(max(1, wait - (time.time() - t0)))
@@ -2646,8 +2680,11 @@ class Monitor:
         idle_note = None
         while True:
             t0 = time.time()
+            if self.web and not once and restart_due(self.boot_date):
+                return "restart"          # 開著過夜到新的交易日：main() 重跑同一個指令（_restart_self）
+            stale = self.web and not once and stale_day(self.boot_date)
             hhmm = dt.datetime.now().strftime("%H:%M")
-            in_hours = self.EVAL_START <= hhmm < self.EVAL_END
+            in_hours = self.EVAL_START <= hhmm < self.EVAL_END and not stale
             # 13:25 一到就停止模型估算（原本收盤後每 5 分鐘還在算、印「偏空，勝率 85%」這種沒有意義的 log，也會寫進 monitor_*.jsonl）。
             # 盤後才啟動的話只算一次，讓儀表板有東西看（抓不到最多試 3 次）。校準與資料同步照常；
             # 快迴圈也在 13:25 停止截取，13:31 抓一次收盤價後全部停（見 _capture_mode）。
@@ -2679,11 +2716,17 @@ class Monitor:
             if once:
                 break
             if not in_hours:
-                note = (dt.date.today(), hhmm >= self.EVAL_END)
+                note = (dt.date.today(), hhmm >= self.EVAL_END, stale)
                 if idle_note != note:
                     idle_note = note
-                    print(f"[{dt.datetime.now():%H:%M:%S}] " + (f"{self.EVAL_END} 起（收盤試撮）模型停止估算、報價停止截取，儀表板保留最後一次估算；{self.CLOSE_SNAP} 抓一次收盤價結案，資料同步照常"
-                                                               if note[1] else f"還沒開盤，{self.EVAL_START} 開始估算"))
+                    if stale:
+                        msg = (f"今天 {dt.date.today():%m/%d} 是交易日，這個 monitor 是 {self.boot_date:%m/%d} 啟動的：先保留前一天的資料給你參考，"
+                               f"{RESTART_AT}（試撮前）自動重開，換成今天的盤前資料、漲跌停、大盤與分時")
+                    elif note[1]:
+                        msg = f"{self.EVAL_END} 起（收盤試撮）模型停止估算、報價停止截取，儀表板保留最後一次估算；{self.CLOSE_SNAP} 抓一次收盤價結案，資料同步照常"
+                    else:
+                        msg = f"還沒開盤，{self.EVAL_START} 開始估算"
+                    print(f"[{dt.datetime.now():%H:%M:%S}] {msg}")
                     sys.stdout.flush()
             if hhmm >= "13:35" or hhmm < self.EVAL_START:
                 if self.calibrate_after_close:
@@ -2693,7 +2736,7 @@ class Monitor:
                 if not self.web:
                     print("已收盤，監控結束。")
                     break
-                time.sleep(300)     # 網頁模式：收盤後維持服務（不再估算）
+                time.sleep(60 if stale else 300)     # 網頁模式：收盤後維持服務（不再估算）；跨日後每分鐘看一次，RESTART_AT 準時重開
                 continue
             time.sleep(max(5, self.interval - (time.time() - t0)))
 
@@ -2719,8 +2762,10 @@ def main():
         ap.error("請給股票代碼，或用 --web 進入選股模式（網頁上選標的）")
     if a.big_amount:
         os.environ["BIG_LOT_AMOUNT"] = str(int(a.big_amount))
+    boot = dt.date.today()
+    srv = None
     if a.web:
-        _, a.web = start_web(a.web)
+        srv, a.web = start_web(a.web)
         if not a.no_open:
             try:
                 webbrowser.open(f"http://127.0.0.1:{a.web}/")  # macOS / Windows / Linux 都用系統預設瀏覽器
@@ -2733,20 +2778,55 @@ def main():
         print("[選股] 執行 theme_screener 中；請在網頁勾選今天要監控的標的（Ctrl+C 結束）")
         try:
             while not WEB.select_event.wait(1):
-                pass
+                if restart_due(boot):           # 選股畫面開著過夜：候選股是前一天的，重開重跑選股
+                    _restart_self(srv)
         except KeyboardInterrupt:
             print("\n使用者中止。")
             return
         codes = WEB.selected
         print(f"[選股] 選定 {','.join(codes)}，開始準備盤前資料與監控")
     m = Monitor(codes, a.peers, a.interval, not a.no_shioaji, a.big_lot, a.refresh, web=bool(a.web))
+    restart = False
     try:
-        m.run(a.once, a.json, a.verbose, a.brief)
+        restart = m.run(a.once, a.json, a.verbose, a.brief) == "restart"
+        if restart:
+            m._halt = True               # 先停快迴圈
+            m._stop_stream()             # 存今天的逐筆、登出永豐（收盤後已經登出就不會重複）
     except KeyboardInterrupt:
         print("\n使用者中止。")
     finally:
         if m.flow_src:
             m.flow_src.logout()
+    if restart:
+        _restart_self(srv)
+
+
+def _restart_self(srv):
+    """
+    開著過夜到新的交易日，RESTART_AT（試撮 08:30 前）自動重開：等於幫你重跑同一個指令。選股模式回到選股畫面（重跑選股），
+    給代碼的照樣監控那幾檔；盤前資料、漲跌停、大盤與分時、訊號與警示全部換成今天的。儀表板分頁會自己重新載入（BOOT_ID 變了）。
+    macOS / Linux 用 exec 原地換成新程式（同一個 PID、同一個終端機視窗，Ctrl+C 照常）；
+    Windows 沒有真正的 exec，改成開子程序跑新的，這個程序等它結束（Ctrl+C 會同時送到子程序，由它收尾）。
+    """
+    print(f"[{dt.datetime.now():%H:%M:%S}] [換日] 今天 {dt.date.today():%m/%d} 是交易日，自動重開 monitor（等於重跑同一個指令），換成今天的資料")
+    if srv is not None:
+        try:
+            srv.shutdown()                # 放掉 port，新的程式才綁得到同一個
+            srv.server_close()
+        except Exception:
+            pass
+    args = [x for x in sys.argv[1:] if x != "--no-open"] + ["--no-open"]   # 瀏覽器分頁已經開著，不要再開一個
+    cmd = [sys.executable, os.path.abspath(__file__)] + args
+    sys.stdout.flush()
+    sys.stderr.flush()
+    if os.name == "nt":
+        p = subprocess.Popen(cmd)
+        while True:
+            try:
+                sys.exit(p.wait())
+            except KeyboardInterrupt:
+                continue
+    os.execv(sys.executable, cmd)
 
 
 if __name__ == "__main__":

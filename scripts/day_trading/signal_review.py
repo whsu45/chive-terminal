@@ -119,6 +119,11 @@ def main():
         rs = [r for r in rows if r["side"] == side]
         if rs:
             line("  建議做空" if side == "short" else "  建議做多", rs)
+    sp = [r for r in rows if r.get("space")]
+    if sp:
+        # 2026-11-17 起空間過濾只提醒、不擋（monitor.SPACE_BLOCK）：有標「📏 空間參考」的訊號單獨看，之後可以再驗證一次
+        line("  有空間參考", sp)
+        line("  沒有空間參考", [r for r in rows if not r.get("space")])
     srcs = sorted({r.get("src") or "unknown" for r in rows})
     if len(srcs) > 1:
         for sv in srcs:

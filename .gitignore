@@ -235,6 +235,9 @@ scripts/day_trading/logs/*.log
 scripts/day_trading/logs/*.tmp
 # 持倉面板記的實際交易（排隊價、成交價、出場價）：個人交易紀錄，repo 是公開的，只留本機
 scripts/day_trading/logs/trades.jsonl
+# 隔離的紀錄（例如 monitor 開著過夜、用過期盤前資料寫的）：不進統計、不推上 GitHub，只留本機備查
+scripts/day_trading/logs/quarantine/
+scripts/day_trading/logs/*.qtmp
 *.swp
 *.swo
 scripts/day_trading/model_params.candidate.json

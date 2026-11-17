@@ -117,6 +117,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .signal.wait{animation:none;background:transparent;border-style:dashed}.signal .zone{font-size:20px;font-weight:800;font-family:var(--mono)}
 .signal .h{font-size:16px;font-weight:700}.signal .px{font-size:22px;font-weight:800;font-family:var(--mono)}
 .signal .d{font-size:12px;color:var(--fg)}.signal .d b{font-family:var(--mono)}.signal .why{font-size:12px;color:var(--muted);flex-basis:100%}
+.signal .space{flex-basis:100%;color:#f0b429}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 12px 1px currentColor}}
 .hint{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
 .pos{margin:-2px 0 10px;padding:8px 10px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
@@ -296,7 +297,10 @@ function tick(){const n=new Date();$('clock').textContent=n.toLocaleTimeString('
   const ph=(LIVE&&LIVE.phase)||phaseNow();const el=$('phase');el.className='phase '+ph.key;el.textContent=ph.label+(ph.range?' '+ph.range:'');el.title=ph.hint||'';}
 setInterval(tick,1000);tick();
 
-async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());STATE=await r.json();autoReview();
+let BOOT=null;   // 這次 monitor 程序的 ID：開著過夜時 monitor 會在新交易日 08:25 自動重開，ID 變了就整頁重新載入，畫面上不留前一天的分時、大盤、漲跌停
+async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());const s=await r.json();
+  if(s.boot&&BOOT&&s.boot!==BOOT){location.reload();return;}if(s.boot)BOOT=s.boot;
+  STATE=s;autoReview();
   if(!STATE.codes.length){loadPicker();return;}            // 選股模式：還沒選標的
   showPicker(false);
   if(ADD_WAIT&&STATE.codes.includes(ADD_WAIT)){CUR=ADD_WAIT;}renderAdd();
@@ -676,7 +680,8 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
     const t=LIVE.time||'';if(t>='13:05'&&t<'13:30'){el.className='signal ended';el.style.animation='none';el.innerHTML='<span class="d">尾盤 13:05 後不發新進場訊號：當沖平倉主導，只處理出場或順回補方向小部位</span>';}
     else{const b=LIVE&&LIVE.sig_block&&LIVE.sig_block[CUR];
       if(b){el.className=`signal ${b.side} ended`;el.style.animation='none';
-        el.innerHTML=`<span class="h">⏸ ${esc(b.block_kind||(/軋空|停損賣不掉/.test(b.block_reason||"")?"急漲過濾":"逆勢過濾"))}</span><span class="d">${esc(b.since)} 原本要建議${esc(b.label)} <b>${fp(b.alert_px)}</b>，但${esc(b.block_reason)}，不發（照樣追蹤假設進場的結果）</span><span class="why">${esc(b.why||'')}</span>`;}
+        el.innerHTML=`<span class="h">⏸ ${esc(b.block_kind||(/軋空|停損賣不掉/.test(b.block_reason||"")?"急漲過濾":"逆勢過濾"))}</span><span class="d">${esc(b.since)} 原本要建議${esc(b.label)} <b>${fp(b.alert_px)}</b>，但${esc(b.block_reason)}，不發（照樣追蹤假設進場的結果）</span><span class="why">${esc(b.why||'')}</span>`
+          +(b.space?`<span class="d space">📏 空間參考：${esc(b.space.text)}</span>`:'');}
       else{el.className='signal hidden';el.innerHTML='';}}return;}
   el.style.animation='';
   const ended=!!sg.status;el.className=`signal ${sg.side} ${ended?'ended':''}`;
@@ -685,13 +690,15 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
   const zs=sg.zone?`${fp(sg.zone[0])}–${fp(sg.zone[1])}`:'';
   const key=sg.side+sg.price+sg.since+(waiting?'w':'');if(key!==SIG_KEY){SIG_KEY=key;document.title=`▶${sg.side==='short'?'空':'多'}${waiting?'掛':''}${fp(sg.price)} `+document.title.replace(/^▶[^ ]* /,'');}
   const rr=waiting?`報酬風險比 現價 <b>${f(sg.rr_now,1)}</b> → 掛價 <b>${f(sg.rr_zone,1)}</b>`:(sg.zone?`進場區 <b>${zs}</b>${sg.rr_zone!=null?` · 掛價報酬風險比 <b>${f(sg.rr_zone,1)}</b>`:''}`:'');
-  el.innerHTML=waiting
+  // 空間參考：前方第一個支撐 / 壓力很近（報酬風險比不到 1.5）。以前會擋掉這種訊號（空間過濾），驗證沒效後改成只提醒
+  const sp=sg.space?`<span class="d space" title="以前的「空間過濾」：實盤和 69.9 萬個回測訊號都顯示擋掉的並沒有比較差，所以只提醒、不擋">📏 空間參考：${esc(sg.space.text)}（只提醒，不擋訊號）</span>`:'';
+  el.innerHTML=(waiting
     ?`<span class="h">▶ 建議${esc(sg.label)}：掛</span><span class="zone">${zs}</span>
     <span class="d">現價 <b>${fp(sg.now)}</b> 已${sg.side==='short'?'殺低':'追高'}，等回進場區再進（20 分鐘沒回就取消）· 停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · ${rr} · ${esc(sg.since)} 起</span>
     <span class="why">${esc(sg.why)}</span>`
     :`<span class="h">▶ 建議${esc(sg.label)}</span><span class="px">${fp(sg.price)}</span>
     <span class="d">停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · ${sg.side==='short'?'偏空':'偏多'}強度 <b>${f(sg.p,0)}</b>${measuredShort(sg.side)} · ${esc(sg.since)} 起 · 現價 <b>${fp(sg.now)}</b>${rr?' · '+rr:''}</span>
-    <span class="why">${ended?'<b>'+esc(sg.status)+'</b> — ':''}${esc(sg.why)}</span>`;}
+    <span class="why">${ended?'<b>'+esc(sg.status)+'</b> — ':''}${esc(sg.why)}</span>`)+sp;}
 
 // 持倉面板：輸入「排在哪個價 → 成交價 → 出場價」，模型就改盯你的排隊價與成交價。沒點 = 不假設你有單，結果都標「模型假設」
 let POS_ERR='';
@@ -890,7 +897,7 @@ function renderReview(){if(!RV)return;const sc=RV.scorecard;
   else{$('rv-chart-t').textContent=`${RV_CUR} ${d.name||''}`;drawReview();
     $('rv-sigs').innerHTML=d.signals.length?`<table class="rv"><tr><th>#</th><th>時間</th><th>方向</th><th class="n">提示時價位</th><th class="n">進場價</th><th>結果</th><th class="n">損益</th><th class="n" title="成交後最大逆向 / 最大順向，單位是檔">逆向/順向</th><th>說明</th></tr>
       ${d.signals.map((g,i)=>`<tr class="${g.blocked?'blk':''}"><td class="n">${i+1}</td><td class="n">${esc(g.time.slice(0,5))}</td><td class="${g.side==='short'?'dn':'up'}">${esc(g.label||g.side)}</td><td class="n">${fp(g.alert_px)}</td><td class="n">${fp(g.price)}</td>
-        <td><span class="rv-res ${esc(g.verdict||'')}">${RES[g.verdict]||esc(g.verdict||'?')}</span>${g.blocked?` <span class="rv-tag">擋：${esc(g.block_kind||'過濾')}</span>`:''}</td>
+        <td><span class="rv-res ${esc(g.verdict||'')}">${RES[g.verdict]||esc(g.verdict||'?')}</span>${g.blocked?` <span class="rv-tag">擋：${esc(g.block_kind||'過濾')}</span>`:''}${g.space?` <span class="rv-tag" title="${esc(g.space.text||'')}">📏 空間參考</span>`:''}</td>
         <td class="n">${g.net_pct!=null?rvPct(g.net_pct):''}</td><td class="n">${g.mae_ticks!=null?`${f(g.mae_ticks,0)} / ${f(g.mfe_ticks,0)}`:''}</td>
         <td class="small">${esc(g.blocked?(g.block_reason||''):(g.why||''))}</td></tr>`).join('')}</table>`:'<span class="muted">這一檔這一天沒有進場訊號</span>';}
   // 3. 被擋掉的

@@ -2492,8 +2492,9 @@ class Monitor:
                 self._index_alerts(live, now)
             except Exception as e:
                 print(f"[fast] 大盤急漲急跌判斷失敗：{str(e)[:100]}")
-        if mode == "live" and self.flow_src and time.time() - getattr(self, "_ticks_saved_at", 0) >= 60:
-            self._ticks_saved_at = time.time()             # 逐筆每分鐘存本機一次：重啟時不用再花 ticks 查詢額度
+        if mode == "live" and self.flow_src and time.time() - getattr(self, "_ticks_saved_at", 0) >= 15:
+            # 逐筆每 15 秒存本機一次（原本 60 秒）：重開時存檔越新，越不用花 ticks 查詢額度補中間那段（backfill_today 20 秒內直接用）
+            self._ticks_saved_at = time.time()
             try:
                 self.flow_src.save_ticks_cache()
             except Exception as e:
@@ -2834,6 +2835,10 @@ def main():
                     help="啟動本機網頁儀表板（預設 port 8770，只綁 127.0.0.1）")
     ap.add_argument("--no-open", action="store_true", help="--web 時不要自動開瀏覽器")
     a = ap.parse_args()
+    import signal
+    if hasattr(signal, "SIGTERM"):
+        # 被新開的 monitor 接管 port 時（start_web → _kill 先送 TERM、3 秒後才強制結束），照樣走 finally：存最後一次逐筆、登出永豐
+        signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))
     if not a.codes and not a.web:
         ap.error("請給股票代碼，或用 --web 進入選股模式（網頁上選標的）")
     if a.big_amount:
@@ -2874,6 +2879,11 @@ def main():
         print("\n使用者中止。")
     finally:
         if m.flow_src:
+            if not m._stream_off:
+                try:
+                    m.flow_src.save_ticks_cache()   # 結束前把逐筆存最後一次：下次重開時存檔是新的，少一段空檔、少花查詢額度
+                except Exception:
+                    pass
             m.flow_src.logout()
     if restart:
         _restart_self(srv)

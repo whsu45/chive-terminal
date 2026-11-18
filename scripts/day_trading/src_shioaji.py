@@ -20,7 +20,10 @@ from config import load_env, CACHE_DIR
 # 超過 → 暫停服務一分鐘，當日連續多次超過 → 暫停該 IP 及 ID 使用權。限制是算在同一個身分證字號（person_id）上，不是每台電腦各 10 次。
 TICKS_DAILY_LIMIT = 10
 LIVE_DIR = os.path.join(CACHE_DIR, "ticks_live")     # 盤中收到的逐筆，每分鐘存一次；重啟時先讀這裡，不重複查（不進 git）
-CACHE_GAP_OK = 300       # 本機存的逐筆離現在不到這麼多秒就直接用，不花額度補中間那一小段
+# 本機存的逐筆離現在不到這麼多秒就直接用、不花查詢額度。原本是 300 秒：2026-11-17 盤中重開 monitor，事欣科的存檔停在 11:14:42、
+# 新程式 11:18 才接上串流，差 3 分多鐘照樣直接用，中間約 140 張逐筆就這樣沒了（大戶散戶跟籌碼K線對不上的原因之一）。
+# 現在超過 20 秒、而且還有額度就重查全日逐筆（一次額度）；額度用完才用存檔，空檔標在儀表板上（flow()["partial"]["gaps"]）。
+CACHE_GAP_OK = 20
 
 
 class TicksQuota(Exception):
@@ -209,9 +212,10 @@ def backfill_today(api, contract, code, now=None):
     """
     盤中啟動時把今天已經成交的逐筆補回來，回一句說明（給啟動訊息印）。順序：
       1. 還沒開盤（09:00 前）：沒有東西要補，不查。
-      2. 本機有存而且離現在不到 5 分鐘：直接用，不花額度（中間那一小段沒有逐筆）。
-      3. 還有額度：查一次 api.ticks（完整的全日逐筆）；查失敗而本機有存就退回用本機的。
-      4. 額度用完：本機有存就用（中間空一段），沒有就只有啟動之後的逐筆。
+      2. 本機有存而且離現在不到 CACHE_GAP_OK（20 秒）：直接用，不花額度。
+      3. 還有額度：查一次 api.ticks（完整的全日逐筆，連存檔之後那段一起補齊）；查失敗而本機有存就退回用本機的。
+      4. 額度用完：本機有存就用（存檔到現在那段沒有逐筆，線圖用分 K 補、儀表板標出空檔），沒有就只有啟動之後的逐筆。
+    start_stream 會先處理沒有存檔的代碼（不查就什麼都沒有），再處理有存檔、只差一段的，額度不夠時先犧牲後者。
     """
     now = now or dt.datetime.now()
     if now.strftime("%H:%M") < "09:00":
@@ -228,6 +232,9 @@ def backfill_today(api, contract, code, now=None):
                 _ingest(code, ts, p, v, tt)
             if auction:
                 _state[code]["auction"] = {k: list(v) for k, v in auction.items()}
+            if gap is not None and gap > CACHE_GAP_OK:
+                # 存檔最後一筆到現在（接上串流）這段沒有逐筆：記下來，flow()["partial"]["gaps"] 讓儀表板標出來
+                _state[code]["tick_gaps"] = [[cached[-1][0].strftime("%H:%M:%S"), now.strftime("%H:%M:%S")]]
         return f"用本機存的逐筆 {len(cached)} 筆（到 {cached[-1][0]:%H:%M:%S}，{note}）"
 
     def bars(msg):
@@ -236,8 +243,7 @@ def backfill_today(api, contract, code, now=None):
         return msg + (f"；線圖用分 K 補了 {n} 分鐘" if n else "；線圖缺的那段補不回來")
 
     if cached and gap is not None and gap <= CACHE_GAP_OK:
-        msg = use_cache(f"離現在 {gap:.0f} 秒，不花額度")
-        return bars(msg) if gap >= 60 else msg
+        return use_cache(f"離現在 {gap:.0f} 秒，不花額度")
     if _intraday(now) and ticks_left() <= 0:
         if cached:
             return bars(use_cache(f"額度用完；{cached[-1][0]:%H:%M} 到現在這段沒有逐筆"))
@@ -508,14 +514,19 @@ def start_stream(codes, big_lot=None):
         api.on_tick_stk_v1()(_on_tick)
         api.on_bidask_stk_v1()(_on_bidask)
 
-    for code in codes:
+    def _has_cache(code):
+        cached, _ = _load_ticks_cache(code)
+        return bool(cached)
+
+    # 沒有本機存檔的先回補（不查就整段都沒有），有存檔、只差一段的排後面：查詢額度不夠時先犧牲後者（它至少有存檔）
+    for code in sorted(codes, key=_has_cache):
         try:
             contract = get_contract(api, code)
             if contract is None:
                 continue
             with _lock:
                 _muted.discard(code)                 # 之前移除過、現在又加回來
-            # 回補今日逐筆：先用本機存的，不夠才花 1 次額度，額度用完就不查（backfill_today）
+            # 回補今日逐筆：本機存檔夠新（20 秒內）就用，否則花 1 次額度查全日；額度用完才用存檔、標出空檔（backfill_today）
             print(f"[shioaji] {code} {backfill_today(api, contract, code)}")
             with _api_lock:
                 api.quote.subscribe(contract, quote_type=sj.constant.QuoteType.Tick, version=sj.constant.QuoteVersion.v1)
@@ -848,19 +859,23 @@ def flow(code, window_min=None, price=None):
             else: ms += v
     if vol == 0:
         return None
-    # 今天稍早是用分 K 補的（逐筆補不回來）：全日成交量與 VWAP 用分 K 算，並標出逐筆實際從幾點開始，
-    # 讓畫面講清楚「分流只有這一段」。window_min 有給（只看最近 N 分鐘）時不處理。
+    # 逐筆不完整：今天稍早、或重開時存檔到串流之間那段，是用分 K 補的（或補不到）。全日成交量與 VWAP 用分 K 算，
+    # 並標出逐筆從幾點開始（head）、中間哪幾段沒有逐筆（gaps），讓畫面講清楚「分流不含這幾段」。window_min 有給（只看最近 N 分鐘）時不處理。
     partial = None
     if not window_min:
         with _lock:
             a2 = _state.get(code) or {}
             kk = set(a2.get("kbar_keys") or ())
-            bsum = [(b[4], b[5]) for b in (a2.get("bars") or {}).values()]
-        if kk:
-            bv = sum(x[0] for x in bsum); ba = sum(x[1] for x in bsum)
+            bars_all = {k: (b[4], b[5]) for k, b in (a2.get("bars") or {}).items()}
+            gaps = [list(g) for g in (a2.get("tick_gaps") or [])]
+        if kk or gaps:
+            bv = sum(x[0] for x in bars_all.values()); ba = sum(x[1] for x in bars_all.values())
             t0 = ticks[0][0]
-            partial = {"ticks_from": t0.strftime("%H:%M") if isinstance(t0, dt.datetime) else None, "kbar_minutes": len(kk),
-                       "day_volume": bv, "ticks_volume": vol}
+            t0k = t0.strftime("%H:%M") if isinstance(t0, dt.datetime) else None
+            partial = {"ticks_from": t0k, "kbar_minutes": len(kk), "day_volume": bv, "ticks_volume": vol,
+                       "head": bool(t0k and any(k < t0k for k in kk)),     # 分 K 補的是開頭（逐筆從 ticks_from 才開始）
+                       "gaps": [{"from": g[0], "to": g[1],                   # 中間的空檔：那幾分鐘分 K 補到的量（補不到就是 0）
+                                 "kbar_vol": sum(bars_all[k][0] for k in kk if g[0][:5] <= k <= g[1][:5])} for g in gaps]}
             if bv > vol and bv > 0:
                 amt, vol_day = ba, bv
             else:

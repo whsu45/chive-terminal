@@ -116,6 +116,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .signal .h{font-size:16px;font-weight:700}.signal .px{font-size:22px;font-weight:800;font-family:var(--mono)}
 .signal .d{font-size:12px;color:var(--fg)}.signal .d b{font-family:var(--mono)}.signal .why{font-size:12px;color:var(--muted);flex-basis:100%}
 .signal .space{flex-basis:100%;color:#f0b429}
+.signal .env{flex-basis:100%;color:#7fd18b}
 .sitebar{margin:10px 16px 0;padding:8px 12px;border:1px solid #f0b429;border-radius:10px;background:rgba(240,180,41,.08);color:#f0b429;font-size:13px;line-height:1.6}
 .sitebar.hidden{display:none}.sitebar a{color:#ffd166;font-weight:700;margin:0 4px}.sitebar .muted{color:var(--muted);font-size:12px}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 12px 1px currentColor}}
@@ -172,6 +173,10 @@ table.rv tr.blk td{color:var(--muted)}table.rv tr.sum td{border-top:1px solid va
 .rv-res{font-weight:700}.rv-res.win{color:#f5c542}.rv-res.loss{color:#c678dd}.rv-res.nofill{color:var(--muted);font-weight:400}
 .rv-note{font-size:12px;color:var(--muted);margin-top:6px}
 .rv-tag{font-size:11px;padding:1px 6px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.gap-st{font-size:13px;margin:2px 0 6px}.gap-cum{font-size:13px;margin:4px 0 8px}.gap-cum b{font-family:var(--mono)}
+table.rv tr.watch td{background:rgba(76,141,255,.08)}.rv-tag.watch{border-color:#4c8dff;color:#4c8dff}.rv-tag.lim{border-color:#ff5c5c;color:#ff5c5c}
+.rv-tag.top{border-color:#f5c542;color:#f5c542}.gap-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.gap-tab{font-size:12px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;cursor:pointer;color:var(--muted)}.gap-tab.on{border-color:#4c8dff;color:#e6e8ee;background:rgba(76,141,255,.15)}
 main#review.hidden{display:none}
 .pk-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
 .pk-head h2{margin:0;font-size:20px}
@@ -228,6 +233,7 @@ main#review.hidden{display:none}
   <div class="pk-head"><h2>今日當沖標的</h2><span class="small muted" id="pk-status"></span></div>
   <div class="pk-mkt" id="pk-mkt"></div>
   <div class="pk-cols"><div class="pk-col short" id="pk-short"></div><div class="pk-col long" id="pk-long"></div></div>
+  <div class="pk-col short" id="pk-nds" style="margin-top:14px"></div>
   <div class="pk-col warr strong" id="pk-strong" style="margin-top:14px"></div>
   <div class="pk-col warr" id="pk-warr" style="margin-top:14px"></div>
   <div class="pk-foot">
@@ -249,6 +255,7 @@ main#review.hidden{display:none}
   <section class="card"><h3>4. 模型方向準不準</h3><div id="rv-dir"></div></section>
   <section class="card span2"><h3>5. 警示回顧 <span class="small muted">（發出後 30 分鐘）</span></h3><div id="rv-alerts"></div></section>
   <section class="card rv-full"><h3>6. <span id="rv-tom-h">明天的準備</span> <span class="small muted" id="rv-tom-t"></span></h3><div id="rv-tom"></div></section>
+  <section class="card rv-full"><h3>7. 開高放空觀察 <span class="small muted">（全市場、只記錄假設放空的結果，不建議下單）</span></h3><div id="rv-gap"></div></section>
 </main>
 <main id="main">
   <section class="charts">
@@ -270,6 +277,7 @@ main#review.hidden{display:none}
   <section class="card" id="c-group"><h3>族群</h3><div id="group"></div></section>
   <section class="card" id="c-hist"><h3>交戰紀錄 <span class="small muted">（做熟悉的股票）</span></h3><div id="hist"></div></section>
   <section class="card" id="c-warr"><h3>權證</h3><div id="warr"></div></section>
+  <section class="card span2" id="c-gap"><h3>👁 開高放空 / 恐慌開低做多（觀察：只記錄、不建議下單） <span class="small muted" id="gap-t"></span></h3><div id="gap"></div></section>
   <section class="card span2" id="c-chart"><h3>多空強度曲線（每次估算）</h3><canvas id="chart" height="220"></canvas></section>
   <section class="card" id="c-pre"><h3>盤前摘要</h3><pre id="pre" class="small" style="white-space:pre-wrap;margin:0;color:var(--muted)"></pre></section>
 </main>
@@ -307,10 +315,68 @@ function renderSite(){const el=$('sitebar');if(!el)return;const s=STATE&&STATE.s
     +`（網站上${s.site_has_row?`今天那筆的夜盤法人是 NA`:`最新只到 ${esc(s.site_date||'?')}`}）。`
     +`<a href="${esc(s.url)}" target="_blank" rel="noopener">到 GitHub 手動觸發 ↗</a>`
     +`<span class="muted">按右邊的「Run workflow」→ 綠色「Run workflow」，大約 8 分鐘網站就會更新 · ${esc(s.checked)} 檢查，更新後這條會自己消失</span>`;}
+// 開高放空觀察（monitor.gapfade_watch → gapfade.py）：全市場 150 元以內，A 開高 2～7%、B 隔日沖倒貨（昨漲 ≥3%、開高、離漲停 ≥3%），
+// 09:05 假設放空、13:25 前最後一筆回補。只記錄，不發訊號。GAP_G = 卡片 / 復盤目前看哪一組
+const GAP_ST={tracking:'追蹤中',closed:'13:25 結案',nodata:'沒查到報價'};
+let GAP_G='all';
+const GAP_GROUPS=[['all','全部'],['A','A 開高 2～7%'],['B','B 隔日沖倒貨'],['top10','前 10%'],['C','C 恐慌開低做多']];
+const gapIn=(x,g)=>g==='all'||(g==='top10'?!!x.top10:(x.tags||['A']).includes(g));
+function gapPick(g){GAP_G=g;renderGap();if(RV&&VIEW==='review')renderGapReview();}
+function gapTabs(counts){return `<div class="gap-tabs">${GAP_GROUPS.map(([k,n])=>`<span class="gap-tab ${k===GAP_G?'on':''}" onclick="gapPick('${k}')">${n}${counts&&counts[k]!=null?` <b>${counts[k]}</b>`:''}</span>`).join('')}</div>`;}
+function gapRule(r){r=r||{};
+  return `共同條件：上市櫃 4 位數普通股、可現股當沖先賣、不是處置股、昨日成交值前 ${Math.round((r.top||0.4)*100)}%、09:05 價格 ≤${r.px_max||150} 元；09:05 假設放空，13:25 前最後一筆回補，不設停損。`
+    +`A：開盤跳空漲 ${r.gap_min||2}%～${r.gap_max||7}%。B 隔日沖倒貨：昨漲 ≥${r.b_ret1||3}%、今天開高 ${(r.b_gap||[0,9])[0]}～${(r.b_gap||[0,9])[1]}%、開盤價離漲停 ≥${r.b_room||3}%。`
+    +`前 10%：B 組裡開高 ≥${r.top_gap||3.5}% 且離漲停 ≥${r.top_room||3}%。`
+    +`C 恐慌開低做多（這組是做多）：09:05 全市場開盤跳空中位數 ≤${r.c_mkt_gap!=null?r.c_mkt_gap:-2}% 的日子，開低 ≥${r.c_gap!=null?-r.c_gap:2}% 的假設買進、13:25 前賣出；其他日子不做多。`
+    +`「開盤進」是同一筆改用開盤價進場的損益（研究裡 09:00 進場）。`;}
+function gapCum(c,label,oneDay){if(!c||!c.n)return `<div class="gap-cum muted">${label}：還沒有紀錄（每天 09:05 有開 monitor 才會記）</div>`;
+  return `<div class="gap-cum">${label}${oneDay?'':` ${c.days} 天`} ${c.n} 筆：勝率 <b>${f(c.win_rate,0)}%</b>（${c.win} 賺 ${c.loss} 賠）、均賺 ${rvPct(c.avg_win)} 均賠 ${rvPct(c.avg_loss)}、賠率 <b>${c.payoff!=null?f(c.payoff,2):'-'}</b>、每筆 ${rvPct(c.avg,3)}`
+    +`${c.avg_open!=null?`（開盤進 ${rvPct(c.avg_open,3)}）`:''}、1 張合計 ${rvAmt(c.pnl_sum)}${c.hit_up?`、碰漲停 ${c.hit_up}`:''}${c.close_up?`、收漲停 ${c.close_up}`:''}</div>`;}
+function gapGroupTable(gs,title){if(!gs)return '';const rows=GAP_GROUPS.filter(([k])=>gs[k]&&gs[k].n);if(!rows.length)return '';
+  return `<table class="rv" style="margin-top:6px"><tr><th>${title}</th><th class="n">筆數</th><th class="n">勝率</th><th class="n">賠率</th><th class="n">每筆</th><th class="n" title="同一筆改用開盤價放空">開盤進</th><th class="n">1 張合計</th><th class="n">收漲停</th></tr>`
+    +rows.map(([k,n])=>{const c=gs[k];return `<tr class="${k===GAP_G?'sum':''}"><td>${n}</td><td class="n">${c.n}</td><td class="n">${f(c.win_rate,0)}%</td><td class="n">${c.payoff!=null?f(c.payoff,2):'-'}</td><td class="n">${rvPct(c.avg,3)}</td><td class="n">${rvPct(c.avg_open,3)}</td><td class="n">${rvAmt(c.pnl_sum)}</td><td class="n">${c.close_up||0}</td></tr>`;}).join('')+'</table>';}
+function gapTable(rows,live){rows=(rows||[]).filter(x=>gapIn(x,GAP_G));if(!rows.length)return '<div class="small muted" style="margin:6px 0">這一組沒有股票</div>';const W=(STATE&&STATE.codes)||[];
+  return `<table class="rv"><tr><th>代碼</th><th>組</th><th class="n">開高</th><th class="n" title="昨天的漲跌 %">昨漲</th><th class="n" title="開盤價離漲停幾 %">離漲停</th><th class="n">09:05 價</th><th class="n">${live?'現價':'13:25 價'}</th><th class="n">假設損益</th><th class="n" title="1 張、扣成本後幾元">1 張</th><th class="n" title="同一筆改用開盤價放空的損益">開盤進</th><th class="n" title="進場後往不利方向最多走多遠（放空看最高、做多看最低）；每分鐘取樣，分鐘內的尖點可能漏掉">最大逆向</th><th>狀態</th></tr>`
+    +rows.map(x=>{const done=x.net_pct!=null;const net=done?x.net_pct:x.net_now,amt=done?x.pnl:x.pnl_now;const w=W.includes(x.code);
+      const st=x.status?(GAP_ST[x.status]||x.status):'13:25 結案';const late=x.exit_kind==='1330';const hit=x.hit_up||x.hit_limit_up;
+      return `<tr class="${w?'watch':''}"><td>${esc(x.code)} ${esc(x.name||'')}${w?' <span class="rv-tag watch">監控中</span>':''}</td>`
+        +`<td>${(x.tags||['A']).map(t=>`<span class="rv-tag">${t}</span>`).join(' ')}${x.top10?' <span class="rv-tag top">前 10%</span>':''}${x.side==='long'?' <span class="rv-tag watch">做多</span>':''}</td>`
+        +`<td class="n">${pct(x.gap,1)}</td><td class="n">${x.ret1!=null?pct(x.ret1,1):'-'}${x.lim_prev?' <span class="rv-tag lim" title="昨天收漲停">停</span>':''}</td><td class="n">${x.room!=null?f(x.room,1)+'%':'-'}</td>`
+        +`<td class="n">${fp(x.entry)}${x.entry_ts?` <span class="small muted">${esc(x.entry_ts.slice(0,5))}</span>`:''}</td>`
+        +`<td class="n">${fp(done?x.exit:x.last)}</td><td class="n">${rvPct(net)}${!done&&net!=null?' <span class="small muted">目前</span>':''}</td><td class="n">${rvAmt(amt)}</td>`
+        +`<td class="n">${x.net_open_pct!=null?rvPct(x.net_open_pct):'-'}</td><td class="n">${x.mae_pct!=null?pct(x.mae_pct,1):'-'}</td>`
+        +`<td>${esc(late?'13:30 收盤價結算':st)}${hit?' <span class="rv-tag lim">碰漲停</span>':''}${x.close_up?' <span class="rv-tag lim">收漲停</span>':''}</td></tr>`;}).join('')+'</table>';}
+function gapBasis(b){return (b&&b.length)?`<div class="rv-note">依據：${b.map(esc).join('；')}。損益已扣來回成本 ${STATE&&STATE.gap?STATE.gap.cost:0.235}%；最大逆向、碰漲停是每分鐘取樣，出場價是 13:25 前最後一筆（不是 13:30 收盤價）。</div>`:'';}
+function renderGap(){const el=$('gap');if(!el)return;const g=STATE&&STATE.gap;
+  if(!g){el.innerHTML='<span class="muted">開高放空觀察還沒啟動（monitor 用 --web 開才會跑）</span>';$('gap-t').textContent='';return;}
+  const cands=g.cands||[];
+  $('gap-t').textContent=g.last_poll?`${g.last_poll} 更新`:(g.scan_time?`${g.scan_time} 掃描`:'');
+  const live=g.status==='tracking';
+  const sel=cands.filter(x=>gapIn(x,GAP_G));
+  const day=sel.filter(x=>x.net_pct!=null),dn=day.length,dw=day.filter(x=>x.net_pct>0).length,dsum=day.reduce((a,x)=>a+(x.pnl||0),0);
+  const nowL=sel.filter(x=>x.pnl_now!=null),nowSum=nowL.reduce((a,x)=>a+x.pnl_now,0);
+  const counts={all:cands.length};GAP_GROUPS.slice(1).forEach(([k])=>counts[k]=cands.filter(x=>gapIn(x,k)).length);
+  const gname=(GAP_GROUPS.find(([k])=>k===GAP_G)||[])[1]||'';
+  el.innerHTML=`<div class="gap-st">${esc(g.note||'')}${g.universe?` <span class="small muted">（可當沖先賣 ${g.universe} 檔、有報價 ${g.quoted||0} 檔）</span>`:''}</div>`
+    +(g.daily_note?`<div class="small" style="color:var(--warn);margin-bottom:6px">⚠ ${esc(g.daily_note)}</div>`:'')
+    +(cands.length?gapTabs(counts):'')
+    +(dn?`<div class="gap-cum">今天 ${GAP_G==='all'?'':gname+' '}${dn} 檔：${dw} 賺 ${dn-dw} 賠，1 張合計 ${rvAmt(dsum)}</div>`:'')
+    +(live&&nowL.length?`<div class="gap-cum">追蹤中 ${nowL.length} 檔，現在平倉的話 1 張合計 ${rvAmt(nowSum)}</div>`:'')
+    +(cands.length?gapTable(cands,live):'')+gapCum((g.cum||{})[GAP_G],`實盤累計（${gname}）`)+gapGroupTable(g.cum,'實盤累計')
+    +`<div class="rv-note">${gapRule(g.rule)}</div>`+gapBasis(g.basis);}
+function renderGapReview(){const el=$('rv-gap');if(!el)return;const G=RV&&RV.gapfade;
+  if(!G){el.innerHTML='<span class="muted">沒有資料</span>';return;}
+  const counts={all:G.day.length};GAP_GROUPS.slice(1).forEach(([k])=>counts[k]=G.day.filter(x=>gapIn(x,k)).length);
+  const gname=(GAP_GROUPS.find(([k])=>k===GAP_G)||[])[1]||'';
+  el.innerHTML=`<div class="small muted">${esc(RV.date)}</div>`
+    +(G.day.length?gapTabs(counts)+gapCum((G.day_stats||{})[GAP_G],`這一天（${gname}）`,true)+gapTable(G.day,false):'<div class="gap-cum muted">這一天沒有紀錄（09:05 那時 monitor 沒開，或沒有符合的股票）</div>')
+    +gapGroupTable(G.day_stats,'這一天')+gapGroupTable(G.cum,'累計')
+    +(G.by_day&&G.by_day.length>1?`<table class="rv" style="margin-top:6px"><tr><th>日期</th><th class="n">筆數</th><th class="n">勝率</th><th class="n">每筆</th><th class="n">1 張合計</th><th class="n">前 10% 筆數</th><th class="n">前 10% 每筆</th></tr>${G.by_day.map(d=>`<tr><td>${esc(d.date)}</td><td class="n">${d.n}</td><td class="n">${d.win_rate!=null?f(d.win_rate,0)+'%':'-'}</td><td class="n">${rvPct(d.avg,3)}</td><td class="n">${rvAmt(d.pnl_sum)}</td><td class="n">${(d.top10||{}).n||0}</td><td class="n">${rvPct((d.top10||{}).avg,3)}</td></tr>`).join('')}</table>`:'')
+    +`<div class="rv-note">${gapRule(G.rule)}</div>`+gapBasis(G.basis);}
 let BOOT=null;   // 這次 monitor 程序的 ID：開著過夜時 monitor 會在新交易日 08:25 自動重開，ID 變了就整頁重新載入，畫面上不留前一天的分時、大盤、漲跌停
 async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());const s=await r.json();
   if(s.boot&&BOOT&&s.boot!==BOOT){location.reload();return;}if(s.boot)BOOT=s.boot;
-  STATE=s;autoReview();renderSite();
+  STATE=s;autoReview();renderSite();renderGap();
   if(!STATE.codes.length){loadPicker();return;}            // 選股模式：還沒選標的
   showPicker(false);
   if(ADD_WAIT&&STATE.codes.includes(ADD_WAIT)){CUR=ADD_WAIT;}renderAdd();
@@ -381,7 +447,7 @@ const PK_TITLE={short:'▼ 做空：弱勢股',long:'▲ 做多：急跌反彈�
 const PK_RULE={short:'劣於大盤、10 日跌 >10%、收盤在季線下、股價 >100、外資投信都賣超、成交值 ≥5 億；大盤在 20 日線下才做',
   long:'昨天跌 >7% 但收盤仍在季線上、ATR ≥2.5%、成交值 ≥5 億 → 賭隔天反彈；大盤在 20 日線上才做'};
 function pkCard(side,r,top,active,sel){
-  const wr=side==='warrant'||side==='strong';               // 兩個觀察名單（權證連買＋法人買超、權證昨日大量買進）：預設不勾、沒有備用
+  const wr=side==='warrant'||side==='strong'||side==='nds'; // 觀察名單、開盤才成立的隔日沖倒貨：預設不勾、沒有備用
   const on=sel?sel.includes(r.code):(!wr&&active&&r.rank<=top);   // 送出後依實際選定的顯示
   const st=`收 ${fp(r.close)}｜昨 ${pct(r.chg1d)}｜10日 ${pct(r.r10,1)}｜20日 ${pct(r.r20,1)}｜${f(r.value_e8,0)} 億｜ATR ${f(r.atr_pct,1)}%`;
   return `<label class="pk-card ${on?'on':''} ${active?'':'dim'}"><input type="checkbox" value="${esc(r.code)}" ${on?'checked':''} onchange="pkCount(this)">
@@ -399,14 +465,23 @@ function renderPicker(){
   if(res){const m=res.market;
     const th=(res.themes||[]);
     $('pk-mkt').innerHTML=`大盤：加權 <b>${f(m.idx,0)}</b>，20 日線 <b>${f(m.ma20,0)}</b>，10 日 <b class="${cls(m.r10)}">${pct(m.r10,1)}</b> → `
-      +(res.short_active?'<b class="dn">偏弱：做空有效、不做多</b>':'<b class="up">不弱：做多有效、不做空</b>')
+      +(res.short_active?'<b class="dn">偏弱：弱勢股做空有效</b>':'<b class="up">不弱：弱勢股做空無效</b>')
+      +(res.long_panic_rule?`<div class="small" style="margin-top:4px">做多：${esc(res.long_panic_rule)}</div>`:'')
+      // 沒有適合的就不做（2026-11-18）：盤前就成立的名單一檔都沒有時，畫面直接寫不做，也不預設勾選任何一檔
+      +(res.no_trade?'<div class="pk-err" style="margin-top:6px;font-size:14px">今天沒有適合的個股：不做（只看開盤才成立的隔日沖倒貨，和大盤恐慌開低時的做多）</div>':'')
       +(th.length?`<div class="small muted" style="margin-top:4px">最強族群：${th.slice(0,3).map(t=>esc(t.name)+' '+pct(t.chg1d,1)).join('、')}｜最弱族群：${th.slice(-3).reverse().map(t=>esc(t.name)+' '+pct(t.chg1d,1)).join('、')}</div>`:'');
     // 標題下面一行「定義」：名稱容易誤會（2026-11-16 前兩區都叫「強勢股」），所以每區都寫明條件。定義文字來自 theme_screener 的 *_RULE
     const def=t=>t?`<div class="pk-def"><b>定義</b>：${esc(t)}</div>`:'';
-    const col=(side,title,active)=>`<h3>${title}${active?'':'<span class="off">⚠ 大盤環境不符，回測此時會虧，只列參考</span>'}</h3>`+def(res[side+'_rule']||PK_RULE[side])
+    const col=(side,title,active)=>`<h3>${title}${active?'':`<span class="off">${side==='long'&&res.long_note?'⚠ 證據薄弱，只列參考、不預設勾選':'⚠ 大盤環境不符，回測此時會虧，只列參考'}</span>`}</h3>`+def(res[side+'_rule']||PK_RULE[side])
+      +(side==='long'&&res.long_note?`<div class="pk-note">${esc(res.long_note)}</div>`:'')
       +((res[side]||[]).length?res[side].map(r=>pkCard(side,r,res.top,active,p.selected)).join(''):'<div class="pk-empty">沒有符合條件的標的</div>');
     $('pk-short').innerHTML=col('short',PK_TITLE.short,res.short_active);
     $('pk-long').innerHTML=col('long',PK_TITLE.long,res.long_active);
+    // 隔日沖倒貨（theme_screener.nds_pick）：昨漲 ≥3%、開盤開高 0～9% 且離漲停 ≥3% 才成立的做空；開盤條件 9:00 才知道，預設不勾
+    const ND=res.nds||[];
+    $('pk-nds').innerHTML=res.nds_rule?`<h3>${esc(res.nds_title||'▼ 做空（開盤才成立）：隔日沖倒貨')} <span class="small muted">符合 ${res.nds_total||ND.length} 檔，列成交值前 ${ND.length}</span></h3>${def(res.nds_rule)}
+      <div class="pk-note">${esc(res.nds_note||'')}</div>`
+      +(ND.length?`<div class="pk-wgrid">${ND.map(r=>pkCard('nds',r,res.top,true,p.selected)).join('')}</div>`:'<div class="pk-empty">沒有符合條件的標的</div>'):'';
     // 觀察名單「權證連買＋法人買超」（theme_screener.strong_pick，原名「強勢股」）。隔天容易開高、波動大，但回測開盤後沒有續漲，所以預設不勾、不給方向
     const SG=res.strong||[];
     $('pk-strong').innerHTML=res.strong_rule?`<h3>${PK_TITLE.strong}</h3>${def(res.strong_rule)}
@@ -419,8 +494,8 @@ function renderPicker(){
       <div class="pk-note">${esc(res.warrant_note||'')}</div>`
       +(res.warrant_error?`<div class="pk-empty">⚠ 這一區現在不列：${esc(res.warrant_error)}</div>`
         :W.length?`<div class="pk-wgrid">${W.map(r=>pkCard('warrant',r,res.top,true,p.selected)).join('')}</div>`:'<div class="pk-empty">沒有符合條件的標的</div>'):'';
-  }else{$('pk-mkt').innerHTML=p.status==='running'?'等待選股結果…':'沒有選股結果';$('pk-short').innerHTML='';$('pk-long').innerHTML='';$('pk-warr').innerHTML='';$('pk-strong').innerHTML='';}
-  if(sent){const listed=new Set([...(res?.short||[]),...(res?.long||[]),...(res?.warrant||[]),...(res?.strong||[])].map(r=>r.code));$('pk-manual').value=p.selected.filter(c=>!listed.has(c)).join(', ');}
+  }else{$('pk-mkt').innerHTML=p.status==='running'?'等待選股結果…':'沒有選股結果';$('pk-short').innerHTML='';$('pk-long').innerHTML='';$('pk-warr').innerHTML='';$('pk-strong').innerHTML='';$('pk-nds').innerHTML='';}
+  if(sent){const listed=new Set([...(res?.short||[]),...(res?.long||[]),...(res?.warrant||[]),...(res?.strong||[]),...(res?.nds||[])].map(r=>r.code));$('pk-manual').value=p.selected.filter(c=>!listed.has(c)).join(', ');}
   $('pk-go').disabled=sent||PICK_SENT;$('pk-manual').disabled=sent;
   document.querySelectorAll('#picker input[type=checkbox]').forEach(x=>x.disabled=sent);
   pkCount();}
@@ -720,7 +795,8 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
     else{const b=LIVE&&LIVE.sig_block&&LIVE.sig_block[CUR];
       if(b){el.className=`signal ${b.side} ended`;el.style.animation='none';
         el.innerHTML=`<span class="h">⏸ ${esc(b.block_kind||(/軋空|停損賣不掉/.test(b.block_reason||"")?"急漲過濾":"逆勢過濾"))}</span><span class="d">${esc(b.since)} 原本要建議${esc(b.label)} <b>${fp(b.alert_px)}</b>，但${esc(b.block_reason)}，不發（照樣追蹤假設進場的結果）</span><span class="why">${esc(b.why||'')}</span>`
-          +(b.space?`<span class="d space">📏 空間參考：${esc(b.space.text)}</span>`:'');}
+          +(b.space?`<span class="d space">📏 空間參考：${esc(b.space.text)}</span>`:'')
+          +(b.block_kind==='環境過濾'?`<span class="d space" title="env_combos.py：只在符合實盤 11/10–11/18 贏過的前 10 種環境組合時才發；大樣本沒有重現，這層是使用者「沒有適合就不做」的規則，被擋的照樣追蹤">沒有適合的進場點就不做（盤中只做實盤贏過的前 10 種環境組合）</span>`:'');}
       else{el.className='signal hidden';el.innerHTML='';}}return;}
   el.style.animation='';
   const ended=!!sg.status;el.className=`signal ${sg.side} ${ended?'ended':''}`;
@@ -730,7 +806,10 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
   const key=sg.side+sg.price+sg.since+(waiting?'w':'');if(key!==SIG_KEY){SIG_KEY=key;document.title=`▶${sg.side==='short'?'空':'多'}${waiting?'掛':''}${fp(sg.price)} `+document.title.replace(/^▶[^ ]* /,'');}
   const rr=waiting?`報酬風險比 現價 <b>${f(sg.rr_now,1)}</b> → 掛價 <b>${f(sg.rr_zone,1)}</b>`:(sg.zone?`進場區 <b>${zs}</b>${sg.rr_zone!=null?` · 掛價報酬風險比 <b>${f(sg.rr_zone,1)}</b>`:''}`:'');
   // 空間參考：前方第一個支撐 / 壓力很近（報酬風險比不到 1.5）。以前會擋掉這種訊號（空間過濾），驗證沒效後改成只提醒
-  const sp=sg.space?`<span class="d space" title="以前的「空間過濾」：實盤和 69.9 萬個回測訊號都顯示擋掉的並沒有比較差，所以只提醒、不擋">📏 空間參考：${esc(sg.space.text)}（只提醒，不擋訊號）</span>`:'';
+  const sp=(sg.space?`<span class="d space" title="以前的「空間過濾」：實盤和 69.9 萬個回測訊號都顯示擋掉的並沒有比較差，所以只提醒、不擋">📏 空間參考：${esc(sg.space.text)}（只提醒，不擋訊號）</span>`:'')
+    // 環境組合：這筆符合哪幾種實盤贏過的環境（env_combos.py）；以前會擋的重複 / 追價 / 逆勢過濾改成只提醒
+    +(sg.env_txt&&sg.env_txt.length?`<span class="d env" title="實盤 11/10–11/18 的 90 筆裡贏最多的環境組合；大樣本沒有重現，抽樣誤差大">✅ 環境符合：${sg.env_txt.map(esc).join('；')}</span>`:'')
+    +(sg.refs||[]).map(r=>`<span class="d space" title="以前會擋掉這種訊號，但從沒證明有效；環境組合成立時只提醒">ⓘ ${esc(r.kind)}參考：${esc(r.text)}</span>`).join('');
   el.innerHTML=(waiting
     ?`<span class="h">▶ 建議${esc(sg.label)}：掛</span><span class="zone">${zs}</span>
     <span class="d">現價 <b>${fp(sg.now)}</b> 已${sg.side==='short'?'殺低':'追高'}，等回進場區再進（20 分鐘沒回就取消）· 停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · ${rr} · ${esc(sg.since)} 起</span>
@@ -967,6 +1046,8 @@ function renderReview(){if(!RV)return;const sc=RV.scorecard;
     ${Object.entries(C.by_side||{}).map(([k,v])=>`<tr class="blk"><td>　偏${esc(k)}時</td>${dr(v)}</tr>`).join('')}</table>
     <div class="rv-note">算法：多空強度差 ≥${RV.edge} 時，看 ${RV.horizon} 分鐘後價格有沒有往那邊走。每檔取一個樣本後隔 ${RV.horizon} 分鐘才取下一個，樣本之間不重疊；價格完全沒動（鎖漲跌停）的不算${D.flat?`，這一天有 ${D.flat} 個`:''}。
       「方向對」要比「一律猜漲」高才代表模型有看對東西：那天一路漲的話，偏多的模型怎麼猜都對。順向平均還沒扣成本 ${RV.cost}%。</div>`;
+  // 7. 開高放空觀察（全市場；當天清單＋累計，分組看）
+  renderGapReview();
   // 5. 警示
   const cum={};RV.alerts.cum.forEach(a=>cum[a.kind]=a);
   const rows=RV.alerts.day.length?RV.alerts.day:RV.alerts.cum;
@@ -1040,7 +1121,10 @@ function renderTomorrow(){const el=$('rv-tom');if(!el)return;const t=RV_TOM;
   else if(s.error)right=`<span class="stale">選股失敗：${esc(s.error)}</span>`;
   else if(s.short){const li=(r,side)=>`<tr><td>${esc(r.code)} ${esc(r.name)}</td><td class="n">${fp(r.close)}</td><td class="n">${rvPct(r.chg1d)}</td><td class="small">${(r.fit&&r.fit.tags||[]).filter(([k])=>k==='warn'||k==='no').map(([k,x])=>esc(x.split('：')[0])).join('；')||'<span class="muted">—</span>'}</td></tr>`;
     const blk=(side,title,act)=>`<div style="margin-top:6px"><b class="${side==='short'?'dn':'up'}">${title}</b>${act?'':' <span class="rv-tag">大盤環境不符，只列參考</span>'}</div>${(s[side]||[]).length?`<table class="rv">${s[side].slice(0,s.top||3).map(r=>li(r,side)).join('')}</table>`:'<div class="rv-note">沒有符合條件的標的</div>'}`;
-    right=`<div class="small muted">依 ${esc(s.date)} 收盤資料；大盤 ${s.short_active?'偏弱：做空有效':'不弱：做多有效'}</div>${blk('short',PK_TITLE.short,s.short_active)}${blk('long',PK_TITLE.long,s.long_active)}`;}
+    right=`<div class="small muted">依 ${esc(s.date)} 收盤資料；大盤 ${s.short_active?'偏弱：弱勢股做空有效':'不弱：弱勢股做空無效'}；做多只在大盤恐慌開低時做</div>`
+      +(s.no_trade?'<div class="rv-note" style="color:var(--warn)">盤前成立的名單一檔都沒有：不做（只看開盤才成立的隔日沖倒貨）</div>':'')
+      +`${blk('short',PK_TITLE.short,s.short_active)}${blk('long',PK_TITLE.long,s.long_active)}`
+      +((s.nds||[]).length?`<div style="margin-top:6px"><b class="dn">${esc(s.nds_title||'隔日沖倒貨')}</b> <span class="rv-tag">開盤開高 0～9%、離漲停 ≥3% 才成立</span></div><table class="rv">${s.nds.slice(0,5).map(r=>li(r,'short')).join('')}</table>`:'');}
   el.innerHTML=`<div class="rv-score" style="grid-template-columns:1fr 1fr"><div class="rv-box"><h4>${esc(RV_CUR||'')} ${esc((RV.names||{})[RV_CUR]||'')}：${D0}的隔日沖分點（${D1}的庫存）</h4>${left}</div><div class="rv-box"><h4>${D1}的選股名單</h4>${right}</div></div>`;}
 window.addEventListener('resize',()=>{if(VIEW==='review')drawReview();});
 </script>

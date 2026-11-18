@@ -25,6 +25,7 @@ import model
 import indicators as I
 import exhaust
 import combo
+import env_combos
 import history
 import src_mis
 import src_warrants as W
@@ -153,6 +154,42 @@ def site_watch():
         _SITE_STOP.wait(300 if WEB.site else 600)
 
 
+def gapfade_watch(use_shioaji):
+    """
+    背景執行緒：開高放空觀察（gapfade.py）。交易日 09:05 用永豐 snapshots 掃全市場一次（150 元以內、開高 2～7%、昨日成交值前 40%），
+    之後每分鐘追蹤、13:25 前最後一筆結算，寫 logs/gapfade_<裝置ID>.jsonl。只記錄假設放空的結果，不發訊號、不建議下單。結果放 WEB.gap。
+    沒有永豐（或 --no-shioaji）就只在卡片上寫原因。
+    """
+    import gapfade
+    lock = None
+    if use_shioaji:
+        try:
+            import src_shioaji as S
+            lock = S._api_lock
+        except Exception:
+            use_shioaji = False
+
+    def api_fn():
+        if not use_shioaji:
+            return None
+        try:
+            import src_shioaji as S
+            return S.login() if S.available() else None
+        except Exception:
+            return None
+
+    def say(msg):
+        print(msg)
+        sys.stdout.flush()
+
+    def put(view):
+        with WEB.lock:
+            WEB.gap = view
+
+    g = gapfade.GapFade(api_fn, cost=Monitor.COST_PCT, is_trading=_is_trading, lock=lock, log=say)
+    g.run(_SITE_STOP, put)
+
+
 class WebState:
     """monitor 與網頁共用的狀態。"""
     def __init__(self):
@@ -175,6 +212,7 @@ class WebState:
         self.adding = {}                  # 盤中加入的標的：code -> {status: running / done / error, ...}（Monitor.add_code）
         self.winding = {}                 # 盤中移除、還在收尾的標的：code -> {name, since, open}（Monitor.remove_code）
         self.site = None                  # 網站的夜盤三大法人沒更新時的提醒（site_watch）：{date, site_date, url, checked}；沒事 = None
+        self.gap = None                   # 開高放空觀察（gapfade_watch，全市場、只記錄不建議下單）：GapFade.view()
 
     def put_live(self, obj):
         with self.lock:
@@ -207,7 +245,7 @@ class WebState:
             return json.dumps({"codes": self.codes, "latest": self.latest, "daily": self.daily, "describe": self.describe,
                                "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji,
                                "picks": self.picks, "in_session": sess, "adding": self.adding, "winding": self.winding, "max_codes": MAX_CODES,
-                               "boot": BOOT_ID, "site": self.site},
+                               "boot": BOOT_ID, "site": self.site, "gap": self.gap},
                               ensure_ascii=False, default=str)
 
     def history_json(self, code):
@@ -308,7 +346,9 @@ def run_screener(top=3):
         with WEB.lock:
             WEB.picker = {"status": "done", "result": res, "finished": dt.datetime.now().strftime("%H:%M:%S")}
         print(f"[選股] {res['date']} 完成：做空 {','.join(r['code'] for r in res['short'][:top]) or '無'}"
-              f"｜做多 {','.join(r['code'] for r in res['long'][:top]) or '無'}（{'大盤弱，做空有效' if res['short_active'] else '大盤不弱，做多有效'}）")
+              f"｜做多 {','.join(r['code'] for r in res['long'][:top]) or '無'}（{'大盤弱，弱勢股做空有效' if res['short_active'] else '大盤不弱，弱勢股做空無效'}；做多只在恐慌開低時做）"
+              f"｜隔日沖倒貨候選 {','.join(r['code'] for r in (res.get('nds') or [])[:5]) or '無'}"
+              + ("｜今天沒有適合的個股：不做" if res.get("no_trade") else ""))
     except BaseException as e:      # screen() 資料不足時會 SystemExit
         with WEB.lock:
             WEB.picker = {"status": "error", "error": str(e)[:300] or e.__class__.__name__}
@@ -583,6 +623,7 @@ class Monitor:
         self.samples = {c: [] for c in codes}
         self.w_prev = {}
         self.flow_hist = {}   # code -> [[epoch, big_net, small_net, price], ...]，給 model._flow_dynamics 看主力淨額的變化
+        self._flow_now = {}   # code -> 這一輪快迴圈的最新分流（訊號判斷的環境組合要用「現在」的主力淨額）
         self.flow_src = None
         self.index_stream = False
         self.live_alerts = {c: [] for c in codes}   # code -> [[HH:MM:SS, text], ...]（分流劇變、權證異動，10 秒迴圈產生）
@@ -1371,6 +1412,32 @@ class Monitor:
     #   大盤平靜 / 中等 / 劇烈、2024 / 2025 上半 / 2025 下半～2026 各段都一樣，只有逆勢單擋了好 0.015%，都遠小於成本 0.235%。
     # 所以只在訊號上標「📏 空間參考」（儀表板、警示、signal_outcomes 的 space 欄位），訊號照發；改回 True 就恢復擋。
     SPACE_BLOCK = False
+    # 環境組合門檻（2026-11-18，使用者：「沒有適合的進場點就不做」）：訊號要符合 env_combos.COMBOS 的 10 種實盤贏過的環境之一才發，
+    # 不符合的記成 ⏸ 環境過濾、照樣追蹤假設結果。這 10 組只在實盤 90 筆裡贏過，大樣本（tw_stocker、歷史逐筆）沒有重現，
+    # 細節與限制見 env_combos.py；改 False 就回到不看環境。
+    ENV_GATE = True
+
+    def _env_ctx(self, c, ev, q, now, inzone, run5):
+        """訊號當下的環境（給 env_combos 判斷）：欄位跟 signal_outcomes 的 features 同一套算法（_track_alerts），研究和即時才對得上。"""
+        ev = ev or {}
+        inf = ev.get("info") or {}
+        p = q.get("ref")
+        hist = self.flow_hist.get(c) or []
+        fl = self._flow_now.get(c)
+        big_now = fl["big_net"] if fl else (hist[-1][1] if hist else None)
+        big_10 = None
+        if big_now is not None and hist:
+            past = [r for r in hist if now.timestamp() - r[0] >= 540]
+            if past:
+                big_10 = big_now - past[-1][1]
+        bids, asks = q.get("bids") or [], q.get("asks") or []
+        bv = sum((v or 0) for _, v in bids); av = sum((v or 0) for _, v in asks)
+        return {"time": now.strftime("%H:%M"), "factors": [f[0] for f in (ev.get("intraday_factors") or [])],
+                "idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"), "rs_vs_index": inf.get("rs_vs_index"),
+                "chg_pct": inf.get("chg_pct"),
+                "range_pos": ((p - q["l"]) / (q["h"] - q["l"])) if (p and q.get("h") and q.get("l") and q["h"] != q["l"]) else None,
+                "big_net_10m": big_10, "small_net_pct": inf.get("small_net_pct"), "book_imb": (bv - av) / (bv + av) if bv + av else None,
+                "vol_pace": inf.get("vol_pace"), "inzone": inzone, "run5": run5}
     REPEAT_TICKS = 3        # 進場區相差這麼多 tick 以內算「同一個價位」
 
     def _repeat_block(self, c, side, lo, hi, q, tick):
@@ -1792,18 +1859,39 @@ class Monitor:
                     self._sig_seen[lkey] = now.timestamp()
                     self._add_alert(c, now, f"⏸ 漲跌停過濾：原本要建議{label} @{p}，但{lim_why}，不發")
                 return None
-            repeat = None if room else self._repeat_block(c, side, lo, hi, q, tick)
-            surge = None if (room or repeat) else self._surge_block(c, side, p, q)
             sig["run5"], sig["run5_tk"] = self._run_before(bars, p, side, now)
-            chase_blk = None if (room or repeat or surge) else self._chase_block(side, sig["run5"], sig["run5_tk"])
-            blk = room or repeat or surge or chase_blk or self._against_trend(side, info)
+            # 環境組合（2026-11-18）：當下環境要符合實盤贏過的前 10 種組合之一才發，沒有適合的進場點就不做（env_combos.py）
+            env_ctx = self._env_ctx(c, ev, q, now, inzone, sig.get("run5"))
+            env = env_combos.match(side, env_ctx)
+            sig["env"] = [cb["id"] for cb in env]
+            sig["env_conds"] = sorted(env_combos.conditions(side, env_ctx))
+            sig["env_txt"] = [env_combos.label(cb) for cb in env]
+            env_blk = None
+            if self.ENV_GATE:
+                # 環境組合決定做不做；急漲過濾（漲停鎖住時空單買不回來、跌停賣不掉）是安全問題，照樣擋。
+                # 重複 / 追價 / 逆勢過濾從沒證明有效（實盤符合組合的 34 筆裡 9 筆被它們擋掉，6 贏），改成只寫在訊號上當參考。
+                repeat = chase_blk = None
+                surge = None if room else self._surge_block(c, side, p, q)
+                refs = [(k, why_) for k, why_ in (("重複", self._repeat_block(c, side, lo, hi, q, tick)),
+                                                  ("追價", self._chase_block(side, sig["run5"], sig["run5_tk"])),
+                                                  ("逆勢", self._against_trend(side, info))) if why_]
+                sig["refs"] = [{"kind": k, "text": why_} for k, why_ in refs]
+                if not (room or surge) and not env:
+                    env_blk = (f"當下環境不符合實盤贏過的前 10 種組合（成立的條件：{'、'.join(sig['env_conds']) or '無'}），"
+                               f"沒有適合的進場點就不做")
+                blk = room or surge or env_blk
+            else:
+                repeat = None if room else self._repeat_block(c, side, lo, hi, q, tick)
+                surge = None if (room or repeat) else self._surge_block(c, side, p, q)
+                chase_blk = None if (room or repeat or surge) else self._chase_block(side, sig["run5"], sig["run5_tk"])
+                blk = room or repeat or surge or chase_blk or self._against_trend(side, info)
             if blk:
-                kind = "空間過濾" if room else "重複過濾" if repeat else "急漲過濾" if surge else "追價過濾" if chase_blk else "逆勢過濾"
+                kind = "空間過濾" if room else "重複過濾" if repeat else "急漲過濾" if surge else "追價過濾" if chase_blk else "環境過濾" if env_blk else "逆勢過濾"
                 bkey = ("block",) + key            # 被擋的另外去重：趨勢轉回來後同一個進場區還能正常發
                 if now.timestamp() - self._sig_seen.get(bkey, 0) < 900:
                     return None
-                if room or repeat:
-                    # 這兩種常常連續成立（VWAP 每分鐘在動，進場區跟著變）：同一檔同一邊 10 分鐘只記一次，免得洗版
+                if room or repeat or env_blk:
+                    # 這幾種常常連續成立（VWAP 每分鐘在動，進場區跟著變）：同一檔同一邊 10 分鐘只記一次，免得洗版
                     tkey = ("blockkind", c, side, kind)
                     if now.timestamp() - self._sig_seen.get(tkey, 0) < 600:
                         return None
@@ -1820,6 +1908,10 @@ class Monitor:
             score_txt = f"｜評分：逆向超過 {sc['heat_ticks']} tick（{sc['stop']}）算輸、到 {sc['tgt']} 算贏，60 分鐘內都沒到看扣成本損益"
             if space:
                 score_txt += f"｜📏 空間參考：{space['text']}（只提醒、不擋訊號）"
+            if env:
+                score_txt += f"｜✅ 環境符合 {env_combos.label(env[0])}" + (f" 等 {len(env)} 組" if len(env) > 1 else "")
+            for rf in sig.get("refs") or []:
+                score_txt += f"｜ⓘ {rf['kind']}參考（以前會擋，現在只提醒）：{rf['text']}"
             ex = self._exh_bonus(c, side, now)
             if ex:
                 sig["exh"] = {k: ex.get(k) for k in ("side", "time", "n", "vol", "vr", "push_tk", "push_pct", "ext", "pre", "over", "kind")}
@@ -1867,13 +1959,13 @@ class Monitor:
                 return make("long", bo, "做多（突破追）", l["bo_stop"], l["bo_target"], l["bo_target"], f"5 分 K 帶量收過 {bo}（量 {f5[-1][5]} 張，偏多強度 {pl:.0f}）", l.get("bo_target_name"))
         return None
 
-    BLOCK_TYPES = ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾", "追價過濾")     # 被擋掉、但照樣追蹤假設進場結果的訊號
+    BLOCK_TYPES = ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾", "追價過濾", "環境過濾")     # 被擋掉、但照樣追蹤假設進場結果的訊號
     ALERT_TYPES = exhaust.alert_types() + combo.alert_types() + [("大盤急漲", r"^⚠ 大盤急漲"), ("大盤急跌", r"^⚠ 大盤急跌"),
                    ("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
-                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("追價過濾", r"⏸ 追價過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
+                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("追價過濾", r"⏸ 追價過濾"), ("環境過濾", r"⏸ 環境過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
                    ("掛單薄", r"^⚠ 掛單薄"), ("買盤竭盡", r"^➕ 買盤竭盡"), ("賣盤竭盡", r"^➕ 賣盤竭盡")]
 
     @classmethod
@@ -1923,7 +2015,7 @@ class Monitor:
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -2137,7 +2229,7 @@ class Monitor:
                **score,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors"), "exh": sg.get("exh"), "exh_lit": sg.get("exh_lit"),
-               "space": sg.get("space")}
+               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs")}
         if sg.get("blocked"):
             out.update(blocked=True, block_reason=sg.get("block_reason"), block_kind=sg.get("block_kind"))
         if sg.get("cancelled"):
@@ -2534,6 +2626,7 @@ class Monitor:
                 self._mis_bar(self.mis_bars[c], now, q["ref"], q.get("v"))
                 live["series"][c] = [[kk] + v for kk, v in sorted(self.mis_bars[c].items()) if kk != "_v"]
             flow = self.flow_src.flow(c, price=q["ref"]) if self.flow_src else None
+            self._flow_now[c] = flow
             if flow:
                 self._record_flow_hist(c, flow, q, now)
                 fF, fW = model._flow_dynamics(flow, now)
@@ -2599,7 +2692,7 @@ class Monitor:
                     live["signal"][c] = sig
                 blk = self.sig_block.get(c)
                 if blk and now.timestamp() - blk["since_ts"] < 300:
-                    live["sig_block"][c] = {k: blk.get(k) for k in ("side", "label", "alert_px", "since", "block_reason", "block_kind", "why")}
+                    live["sig_block"][c] = {k: blk.get(k) for k in ("side", "label", "alert_px", "since", "block_reason", "block_kind", "why", "env_conds")}
             except Exception as e:
                 print(f"[fast] 訊號判斷失敗：{str(e)[:100]}")
             try:
@@ -2862,6 +2955,7 @@ def main():
         srv, a.web = start_web(a.web)
         if not a.once:
             threading.Thread(target=site_watch, daemon=True, name="site-watch").start()
+            threading.Thread(target=gapfade_watch, args=(not a.no_shioaji,), daemon=True, name="gapfade").start()
         if not a.no_open:
             try:
                 webbrowser.open(f"http://127.0.0.1:{a.web}/")  # macOS / Windows / Linux 都用系統預設瀏覽器

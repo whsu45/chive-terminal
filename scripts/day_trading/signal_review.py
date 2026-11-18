@@ -63,6 +63,27 @@ def load_trades(code=None):
     return out
 
 
+def env_report(recs):
+    """環境組合（env_combos.py）的樣本外驗證：只算有 env 欄位的紀錄（2026-11-19 起），研究時用的 11/10–11/18 不算。
+    符合任一組 vs 不符合（⏸ 環境過濾擋掉、照樣追蹤）的實際結果，以及每一組各自的成績。"""
+    import env_combos
+    rs = [r for r in recs if "env" in r and r.get("verdict") in ("win", "loss") and r.get("net_pct") is not None]
+    if not rs:
+        print("\n環境組合驗證：還沒有 11/19 之後的紀錄（研究用的 11/10–11/18 不拿來驗證自己）")
+        return
+    def line(name, grp):
+        if not grp:
+            return f"  {name:<34} —"
+        w = sum(1 for r in grp if r["net_pct"] > 0)
+        return f"  {name:<34} {len(grp):>3} 筆 贏 {w:>3}（{w / len(grp):.0%}） 每筆 {sum(r['net_pct'] for r in grp) / len(grp):+.2f}%"
+    print("\n環境組合驗證（樣本外，11/19 起；扣成本後賺 = 贏）")
+    print(line("符合任一組", [r for r in rs if r.get("env")]))
+    print(line("不符合（環境過濾擋掉的）", [r for r in rs if not r.get("env")]))
+    for cb in env_combos.COMBOS:
+        w, n = cb["live"]
+        print(line(f"#{cb['id']} {'＋'.join(cb['conds'])}（研究 {w}/{n}）", [r for r in rs if cb["id"] in (r.get("env") or [])]))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--code", default=None)
@@ -152,14 +173,16 @@ def main():
             print(f"{s:<18}{pb:>9.0f}%{pg:>9.0f}%{lift:>8.1f}")
     is_surge = lambda r: any(k in (r.get("block_reason") or "") for k in ("軋空", "停損賣不掉"))
     kind_of = lambda r: r.get("block_kind") or ("急漲過濾" if is_surge(r) else "逆勢過濾")     # 舊紀錄沒有 block_kind，照理由判斷
-    notes = {"急漲過濾": "（漲跌 7% / 離漲跌停 3%）", "空間過濾": "（到前方第一個支撐 / 壓力的報酬風險比不到 1.5）", "重複過濾": "（同價位發過、之後沒破新低 / 過新高）"}
-    for kind, grp in ((k + notes.get(k, ""), [r for r in blocked if kind_of(r) == k]) for k in ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾", "追價過濾")):
+    notes = {"急漲過濾": "（漲跌 7% / 離漲跌停 3%）", "空間過濾": "（到前方第一個支撐 / 壓力的報酬風險比不到 1.5）", "重複過濾": "（同價位發過、之後沒破新低 / 過新高）",
+             "環境過濾": "（不符合實盤贏過的前 10 種環境組合，env_combos.py）"}
+    for kind, grp in ((k + notes.get(k, ""), [r for r in blocked if kind_of(r) == k]) for k in ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾", "追價過濾", "環境過濾")):
         if not grp:
             continue
         w = sum(1 for r in grp if r["verdict"] == "win"); l = sum(1 for r in grp if r["verdict"] == "loss")
         print(f"\n{kind}驗證：擋掉 {len(grp)} 筆，若照做會 贏 {w}（擋錯）、輸 {l}（擋對）、其餘平或未成交")
         for r in sorted(grp, key=lambda r: (r["date"], r["time"])):
             print(f"  {r['date']} {r['time']} {r['code']} {r.get('label')} @{r.get('alert_px', r['price'])} → {r['verdict']}  理由：{r.get('block_reason')}")
+    env_report(rows + blocked)
     if cancelled:
         w = sum(1 for r in cancelled if r["verdict"] == "win"); l = sum(1 for r in cancelled if r["verdict"] == "loss")
         print(f"\n撤單驗證（掛單被大單砸穿）：撤掉 {len(cancelled)} 筆，若沒撤會 贏 {w}（撤錯）、輸 {l}（撤對）、其餘平或未成交")

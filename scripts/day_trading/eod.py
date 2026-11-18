@@ -140,7 +140,7 @@ def series(rows):
 
 _SIG_KEYS = ("code", "name", "time", "side", "label", "alert_px", "zone", "price", "stop", "t1", "score_stop", "score_tgt", "verdict", "exit",
              "exit_px", "net_pct", "mae_ticks", "mfe_ticks", "fill_min", "first_stop_min", "first_t1_min", "ret_30m", "why", "blocked",
-             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src", "run5", "run5_tk", "space")
+             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src", "run5", "run5_tk", "space", "env", "refs")
 
 CHASE_PCT, CHASE_TICKS = 0.5, 2        # 跟 monitor.CHASE_* 一致：確認前 5 分鐘已順向走這麼多算「追價」
 # 追價的訊號再依「當時離漲跌停多遠」分三段（順向漲跌幅：做多看漲幅、做空看跌幅；漲跌停是 10%）。
@@ -566,7 +566,22 @@ def build(date=None):
                   "limit": limit_table(all_sigs), "near_pct": NEAR_LIMIT_PCT, "strong_pct": STRONG_PCT},
         "direction": {"day": direction(rows), "cum": cum_dir},
         "alerts": {"day": alerts(al_day), "cum": alerts(_alerts_all()), "cum_days": len({r.get("date") for r in _alerts_all()})},
+        "gapfade": gapfade_review(iso),
     }
+
+
+# ------------------------------------------------------------------ 7. 開高放空觀察（gapfade.py；只記錄、不建議下單）
+
+def gapfade_review(iso):
+    """當天的開高放空觀察清單＋累計與每日統計（各台合併、同一天同一檔只算一台）。"""
+    import gapfade
+    rows = gapfade.load_rows(LOG_DIR)
+    day = [r for r in rows if r["date"] == iso]
+    days = sorted({r["date"] for r in rows}, reverse=True)
+    return {"day": day, "day_stats": gapfade.group_stats(day), "cum": gapfade.group_stats(rows),
+            "by_day": [{"date": d, **gapfade.stats([r for r in rows if r["date"] == d]),
+                        "top10": gapfade.stats([r for r in rows if r["date"] == d and r.get("top10")])} for d in days[:30]],
+            "basis": gapfade.BASIS, "rule": gapfade.rule(), "groups": [list(g) for g in gapfade.GROUPS]}
 
 
 # ------------------------------------------------------------------ 6. 明天的準備（要連線）
@@ -660,6 +675,22 @@ def describe(r):
         cu = (f"順向 {c['with_dir']}%（基準 {c.get('base')}%，差 {c.get('edge', 0):+d} 點）" if c.get("dir") and c.get("with_dir") is not None
               else f"漲的佔 {c.get('up_rate')}%") if c else "-"
         L.append(f"   {a['kind']:<14} 當天 {a['n']:>3} 則：{day}｜累計 {c.get('n', 0)} 則：{cu}")
+    g = r.get("gapfade") or {}
+    L.append("\n7. 開高放空觀察（150 元以內；A 開高 2～7%、B 隔日沖倒貨（昨漲 ≥3%、開高、離漲停 ≥3%）；09:05 假設放空、13:25 回補；只記錄、不建議下單）")
+    names = dict(g.get("groups") or [])
+    for title, gs in (("當天", g.get("day_stats") or {}), ("累計", g.get("cum") or {})):
+        for key, s in gs.items():
+            if s.get("n"):
+                L.append(f"   {title} {names.get(key, key):<10} {s['n']:>3} 筆：勝率 {s['win_rate']}%（賠率 {s['payoff']}），每筆 {f(s['avg'], 3)}"
+                         + (f"（開盤價進 {f(s['avg_open'], 3)}）" if s.get("avg_open") is not None else "")
+                         + f"，1 張合計 {s['pnl_sum']:+,} 元" + (f"，收漲停 {s['close_up']}" if s.get("close_up") else ""))
+    for x in g.get("day") or []:
+        L.append(f"     {x['code']} {x['name']} [{'/'.join(x.get('tags') or ['A'])}{' 前10%' if x.get('top10') else ''}] 開高 {x['gap']:+.1f}%"
+                 + (f" 昨漲 {x['ret1']:+.1f}%" if x.get("ret1") is not None else "")
+                 + f"  {x['entry']} → {x['exit']}  {f(x['net_pct'])}  {x['pnl']:+,} 元  最大逆向 {x['mae_pct']:+.1f}%"
+                 + ("  碰漲停" if (x.get("hit_up") or x.get("hit_limit_up")) else "") + ("  收漲停" if x.get("close_up") else ""))
+    if not (g.get("day") or []):
+        L.append("   當天沒有紀錄")
     return "\n".join(L)
 
 

@@ -9,6 +9,8 @@ FinLab「概念股主題」只拿來標族群與看族群強弱，不參與選�
   做多「急跌反彈（季線上）」（只在大盤不弱時有效；2026-11-16 前叫「強勢股急殺」）：
     昨日跌 >7%、收盤仍在季線上、ATR ≥ 2.5%、成交值 ≥ 5 億，依 20 日報酬最強取前 N，賭隔天反彈。
   兩邊都排除處置股、開盤鎖漲跌停（買不到 / 空不到）。
+  2026-11-18 起：做多只在 09:00 大盤恐慌開低時做（LONG_PANIC_RULE；網路常見的做多選股條件測下來都賠），盤前不再預設勾選「急跌反彈」；
+  另列「做空（開盤才成立）：隔日沖倒貨」（昨漲 ≥3%、≤150 元、開盤開高 0～9% 且離漲停 ≥3%，nds_pick）；盤前成立的名單一檔都沒有時 no_trade = True（選股頁寫「今天不做」）。
   另有兩個不分多空的觀察名單：「權證連買＋法人買超」（2026-11-16 前叫「強勢股」）、「權證昨日大量買進」。
 
 回測（--backtest；2026/06/01–11/05，107 天，隔天開盤進、收盤出，扣成本 0.25%）：
@@ -124,6 +126,33 @@ SHORT_RULE = (f"劣於大盤、10 日跌 >{-SHORT_DROP10:g}%、收盤在季線�
 LONG_RULE = (f"昨天跌 >{-LONG_DROP1:g}% 但收盤仍在季線上、ATR ≥{LONG_MIN_ATR:g}%、成交值 ≥{MIN_VALUE:g} 億 → 賭隔天反彈；"
              "大盤在 20 日線上才做")
 STRONG_RULE = f"認購權證連續 ≥{STRONG_WARR_DAYS} 天大買 且 外資＋投信買超 ≥ 成交量 {STRONG_INST_PCT:g}%；不給方向"
+
+# 做多只在大盤恐慌開低時做（2026-11-18）。網路常見的做多選股條件（投信 / 法人連買、昨天收高或漲停、整理突破、多頭排列、爆量長紅）
+# 用 2026/04–11 全市場日 K + 法人資料測（150 元以內、成交值前 40%、開盤買收盤賣、2.8 折成本），前後兩段全部是賠的（每筆 −0.2～−1.1%、勝率 36～45%）。
+# 個股自己開低、大盤沒開低時做多也賠（勝率 30～44%）。唯一站得住的是大盤恐慌開低：全市場開盤跳空中位數 ≤ −2% 的日子買開低 ≥2% 的，
+# 2026 年 2 天（6/8、11/6）每筆約 +4%、勝率 89%；tw_stocker 2024/03–2026/04 共 15～20 天，每天平均 +0.3～0.5%、賺的天 50～67%（勝率只有五成左右）。
+# 原本的「急跌反彈（季線上）」自己的回測是每筆 +0.59%、t 1.6（不顯著），全市場日 K 前段 −0.38%、後段 +0.64%，所以只列參考、不再預設勾選。
+LONG_PANIC_GAP = -2.0    # 全市場（或加權）開盤跳空 ≤ 這個 % 才做多
+LONG_PANIC_STOCK = -2.0  # 個股開低 ≤ 這個 % 才買
+LONG_PANIC_RULE = (f"做多只在 09:00 大盤恐慌開低（全市場開盤跳空中位數 ≤{LONG_PANIC_GAP:g}%）時做：買開低 ≥{-LONG_PANIC_STOCK:g}% 的股票、收盤前賣；"
+                   "其他日子不做多（網路常見的做多選股條件測下來都是賠的）")
+LONG_NOTE = ("下面「急跌反彈」名單證據薄弱（自己的回測每筆 +0.59%、t 1.6；2026 全市場日 K 前段 −0.38%、後段 +0.64%），只列參考、不預設勾選。"
+             "測過的網路做多條件（投信連買、法人買超、昨天收高 / 漲停、整理突破、多頭排列、爆量長紅）在 2026/04–11 全市場都是賠的。")
+
+# 做空（開盤才成立）：隔日沖倒貨（2026-11-18 加）。昨天漲 ≥3% 的股票，今天開高後常被隔日沖倒貨。
+# 回測（開盤空、收盤補、2.8 折成本、150 元以內）：tw_stocker 2024/03–2026/04 勝率 60%、每筆 +0.34%（1,808 筆，每半年都是正的）；
+# 2026/04–11 全市場日 K 勝率 58%、每筆 +0.56%（8,350 筆，區間 +0.26～+0.85）。09:05 進 +0.32%、09:15 進只剩 +0.18%。
+# 風險：約 12% 收在漲停、平均 −5.9%，鎖死時可能買不回來；設 3～5% 停損勝率掉到 45～53%、期望值大減。
+NDS_RET1 = 3.0           # 昨天至少漲這麼多 %
+NDS_PX = 150             # 只驗證過 150 元以內
+NDS_ROOM = 3.0           # 開盤價離漲停至少這麼多 %
+NDS_LIST = 8
+NDS_TITLE = "▼ 做空（開盤才成立）：隔日沖倒貨"
+NDS_RULE = (f"昨天漲 ≥{NDS_RET1:g}%、股價 ≤{NDS_PX}、昨日成交值前 40%；今天開盤開高 0～9% 且離漲停 ≥{NDS_ROOM:g}% 才成立 → "
+            "開盤（最晚 09:05）放空、收盤前回補；沒開高、或開太高離漲停不到 3% 就不做")
+NDS_NOTE = ("回測：tw_stocker 2024/03–2026/04 勝率 60%、每筆 +0.34%（1,808 筆）；2026/04–11 全市場勝率 58%、每筆 +0.56%（8,350 筆）。"
+            "09:15 以後才進只剩 +0.18%。約 12% 收在漲停（平均 −5.9%），鎖住時可能買不回來；設 3～5% 停損勝率會掉到 45～53%。"
+            "開盤後由「開高放空觀察」卡（B 組）記錄實際結果。")
 
 
 # ================================================================ 條件（prep.py 也用）
@@ -301,6 +330,15 @@ def pick(feats, exclude=(), min_value=MIN_VALUE):
     shorts = sorted((f for f in pool if f["weak5"]), key=lambda f: f["r10"])
     longs = sorted((f for f in pool if long_conditions(f)), key=lambda f: -f["r20"])
     return shorts, longs
+
+
+def nds_pick(feats, exclude=()):
+    """隔日沖倒貨候選（開盤條件 9:00 才知道）：昨漲 ≥ NDS_RET1、價 ≤ NDS_PX、昨日成交值在普通股的前 40%，依成交值排序。"""
+    com = [f for f in feats.values() if len(f["code"]) == 4 and f["code"].isdigit() and f["code"][0] != "0"]
+    vals = sorted(f["value"] for f in com)
+    cut = vals[int(len(vals) * 0.6)] if vals else 0
+    pool = [f for f in com if f["code"] not in exclude and f["value"] >= cut and f["c"] <= NDS_PX and f["chg1"] >= NDS_RET1]
+    return sorted(pool, key=lambda f: -f["value"])
 
 
 WARR_STORE = os.path.join(CACHE_DIR, "warrant_daily.json")
@@ -734,6 +772,8 @@ def screen(ref, top=3, skip_heavy=False, warr_max_new=60):
     ranks = mcap_ranks(store[dates[-1]]["q"], caps) if caps else {}
     heavy = {c for c, k in ranks.items() if k <= HEAVY_RANK}
     shorts, longs = pick(feats, exclude=set(punish) | (heavy if skip_heavy else set()))
+    nds_all = nds_pick(feats, exclude=set(punish))
+    nds = nds_all[:NDS_LIST]
     member, tstats = load_themes()
     # 權證昨日大量買進：全市場算一次（六天的權證日成交 + 避險），抓不到就不列、把原因帶出去
     wa, warr, strong, warr_err, strong_err = {}, [], [], None, None
@@ -752,7 +792,7 @@ def screen(ref, top=3, skip_heavy=False, warr_max_new=60):
         if warrant_hit(w) or (w and (w.get("streak") or 0) >= STRONG_WARR_DAYS):
             f["warr"] = _warr_of(f, w)
     # 當沖適合度：只算會列出來的那幾檔（權證與分點要連線）
-    shown = shorts[: top + 3] + longs[: top + 3] + warr + strong
+    shown = shorts[: top + 3] + longs[: top + 3] + warr + strong + nds
     twse_w = None
     if any((caps.get(f["code"]) or [0, 0, ""])[2] == "tse" for f in shown):
         try:
@@ -760,7 +800,7 @@ def screen(ref, top=3, skip_heavy=False, warr_max_new=60):
             twse_w = W.twse_warrants_daily(d)
         except Exception as e:
             print(f"  [warn] 上市權證: {str(e)[:80]}", file=sys.stderr)
-    for side, lst in (("short", shorts[: top + 3]), ("long", longs[: top + 3]), ("warrant", warr), ("strong", strong)):
+    for side, lst in (("short", shorts[: top + 3]), ("long", longs[: top + 3]), ("warrant", warr), ("strong", strong), ("nds", nds)):
         for f in lst:
             win = [store[x]["q"].get(f["code"]) for x in dates[-6:]]
             f["fit"] = fit_info(f["code"], [(w[1], w[2], w[3]) if w else None for w in win], caps, ranks)
@@ -768,7 +808,7 @@ def screen(ref, top=3, skip_heavy=False, warr_max_new=60):
             f["fit"]["tags"] = fit_tags(f["fit"], side)
     # 多留幾檔備用：開盤跳空不符時往下遞補
     return {"date": dates[-1], "mkt": mkt, "short": shorts[: top + 3], "long": longs[: top + 3], "top": top,
-            "warrant": warr, "strong": strong, "warrant_error": warr_err, "strong_error": strong_err,
+            "warrant": warr, "strong": strong, "warrant_error": warr_err, "strong_error": strong_err, "nds": nds, "nds_total": len(nds_all),
             "member": member, "themes": tstats, "punished": [c for c in punish if c in feats],
             "skipped_heavy": sorted(c for c in heavy if c in feats and (feats[c]["weak5"] or long_conditions(feats[c]))) if skip_heavy else []}
 
@@ -803,6 +843,11 @@ def _plan(side, f):
         return WARR_PLAN
     if side == "strong":
         return STRONG_PLAN
+    if side == "nds":
+        up = I.limits(f["c"])[0]
+        hi_ok = I.round_tick(up / (1 + NDS_ROOM / 100), "down")
+        return (f"今天開盤開高（高於 {f['c']:g}）而且不超過 {hi_ok:g}（離漲停 {up:g} 至少 {NDS_ROOM:g}%）才做：開盤或最晚 09:05 放空、收盤前回補；"
+                "沒開高或開太高就不做。回測不設停損勝率最高，但約 12% 會收在漲停（平均 −5.9%），部位要小")
     if side == "short":
         return (f"開盤跳空跌超過 {-SHORT_SKIP_GAP:.0f}%（低於 {I.round_tick(f['c'] * (1 + SHORT_SKIP_GAP / 100), 'down'):g}）或開盤鎖跌停不空；"
                 f"開盤後反彈站不回均價線、跌破開盤價再空，停損設進場價上方約 {half:g} 元（半個 ATR）")
@@ -821,6 +866,9 @@ def _reasons(side, f, mkt):
         w = f["warr"]
         put = f"認售 {w['put_amt'] / 1e4:,.0f} 萬" if w["put_amt"] else "認售沒有成交"
         return [_warr_text(w), f"昨天 {f['chg1']:+.1f}%，{put}；法人：{ins}", f"成交值 {f['value']:.0f} 億、ATR {f['atrp']:.1f}%"]
+    if side == "nds":
+        return [f"昨天漲 {f['chg1']:+.1f}%，收盤 {f['c']:g}（隔日沖買盤今天常開高倒貨）", f"法人：{ins}",
+                f"成交值 {f['value']:.0f} 億、ATR {f['atrp']:.1f}%、20 日 {f['r20']:+.1f}%"]
     if side == "short":
         return [f"10 日 {f['r10']:+.1f}%，劣於大盤（{mkt['r10']:+.1f}%）且跌超過 10%",
                 f"收盤 {f['c']:g} 在季線 {f['ma60']:.1f} 之下", f"外資、投信同步賣超（{ins}）",
@@ -842,18 +890,28 @@ def _row(side, f, r):
 def print_report(r):
     m, top = r["mkt"], r["top"]
     print(f"\n══ 當沖盤前選股 {r['date']}（隔天的候選）")
-    print(f"大盤：加權 {m['idx']:.0f}，20 日線 {m['ma20']:.0f} → {'偏弱：做空有效、不做多' if m['weak'] else '不弱：做多有效、不做空'}；10 日 {m['r10']:+.1f}%")
+    print(f"大盤：加權 {m['idx']:.0f}，20 日線 {m['ma20']:.0f} → {'偏弱：弱勢股做空有效' if m['weak'] else '不弱：弱勢股做空無效'}；10 日 {m['r10']:+.1f}%")
+    print(f"做多：{LONG_PANIC_RULE}")
+    if not (m["weak"] and r["short"]):
+        print("→ 盤前成立的名單一檔都沒有：今天不做（只看開盤才成立的隔日沖倒貨，和大盤恐慌開低時的做多）")
     if r["themes"]:
         fmt = lambda t: f"{t[0]} {t[1]:+.1f}%"
         print("最強族群：" + "、".join(fmt(t) for t in r["themes"][:3]) + "｜最弱族群：" + "、".join(fmt(t) for t in r["themes"][-3:][::-1]))
-    for side, title, rule, active in (("short", SHORT_TITLE, SHORT_RULE, m["weak"]), ("long", LONG_TITLE, LONG_RULE, not m["weak"])):
-        print(f"\n{title}" + ("" if active else "　⚠ 大盤環境不符，回測此時這組會虧，只列參考、不建議做"))
+    for side, title, rule, active in (("short", SHORT_TITLE, SHORT_RULE, m["weak"]), ("long", LONG_TITLE, LONG_RULE, False), ("nds", NDS_TITLE, NDS_RULE, True)):
+        if side == "nds":
+            print(f"\n{title}（符合 {r.get('nds_total', 0)} 檔，列成交值前 {NDS_LIST}）")
+            print(f"  {NDS_NOTE}")
+        elif side == "long":
+            print(f"\n{title}　⚠ 證據薄弱，只列參考、不建議做")
+            print(f"  {LONG_NOTE}")
+        else:
+            print(f"\n{title}" + ("" if active else "　⚠ 大盤環境不符，回測此時這組會虧，只列參考、不建議做"))
         print(f"  定義：{rule}")
         if not r[side]:
             print("  （沒有符合條件的標的）")
         for k, f in enumerate(r[side], 1):
             j = _row(side, f, r)
-            tag = "" if k <= top else "（備用：前面開盤條件不符時遞補）"
+            tag = "" if (k <= top or side == "nds") else "（備用：前面開盤條件不符時遞補）"
             th = f"[{'、'.join(j['themes'][:3])}]" if j["themes"] else ""
             print(f"\n  {k}. {j['code']} {j['name']} {th}{tag}")
             print(f"     收 {j['close']:g}｜昨 {j['chg1d']:+.2f}%｜10日 {j['r10']:+.1f}%｜20日 {j['r20']:+.1f}%｜成交值 {j['value_e8']:.0f} 億｜ATR {j['atr_pct']:.1f}%")
@@ -913,7 +971,10 @@ def to_dict(r):
         return [{**_row(side, f, r), "rank": k} for k, f in enumerate(r[side], 1)]
     return {"date": r["date"], "top": r["top"],
             "market": {k: (round(v, 2) if isinstance(v, float) else v) for k, v in r["mkt"].items()},
-            "short_active": r["mkt"]["weak"], "long_active": not r["mkt"]["weak"],
+            "short_active": r["mkt"]["weak"], "long_active": False,          # 做多只在開盤恐慌開低時做（LONG_PANIC_RULE），盤前不預設
+            "long_panic_rule": LONG_PANIC_RULE, "long_note": LONG_NOTE,
+            "nds": rows("nds") if r.get("nds") else [], "nds_total": r.get("nds_total", 0), "nds_rule": NDS_RULE, "nds_note": NDS_NOTE, "nds_title": NDS_TITLE,
+            "no_trade": not (r["mkt"]["weak"] and r["short"]),                # 盤前就成立的名單一檔都沒有：今天不做（開盤條件型的另看）
             "short": rows("short"), "long": rows("long"), "punished": r["punished"], "skipped_heavy": r.get("skipped_heavy") or [],
             "warrant": rows("warrant") if r.get("warrant") else [], "warrant_error": r.get("warrant_error"), "warrant_note": WARR_NOTE,
             "strong": rows("strong") if r.get("strong") else [], "strong_note": STRONG_NOTE, "strong_error": r.get("strong_error"),

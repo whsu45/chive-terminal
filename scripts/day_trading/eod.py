@@ -27,6 +27,16 @@ from config import LOG_DIR, dev_files, read_jsonl_devices, one_device
 import tw_calendar as cal
 
 COST = 0.235          # 當沖來回成本 %
+# 賺賠用金額算、不用百分比加總：空台積電賠 1 張、買富喬賺 1 張，百分比加起來可能是正的，實際上還是賠。
+# 模型訊號沒有張數，每筆當 REVIEW_LOTS 張（預設 1）；你的單用持倉面板記的張數（舊紀錄沒有就當 1 張）。金額都已扣成本。
+REVIEW_LOTS = int(os.environ.get("REVIEW_LOTS", "1") or 1)
+
+
+def _amount(net_pct, price, lots):
+    """扣成本後的百分比 → 元（張數 × 1000 股 × 進場價 × 百分比）。"""
+    if net_pct is None or not price:
+        return None
+    return round(net_pct / 100 * price * 1000 * (lots or 1))
 HORIZON = 30          # 方向檢驗看幾分鐘後
 EDGE = 8              # 多空強度差多少以上才算「模型有方向」
 PHASES = (("早盤", "09:00", "10:30"), ("中盤", "10:30", "12:00"), ("尾盤", "12:00", "13:30"))
@@ -270,6 +280,8 @@ def signals(iso):
         ex = r.get("first_stop_min") if r.get("verdict") == "loss" else r.get("first_t1_min") if r.get("verdict") == "win" else None
         s["fill_at"] = _mins(r["time"]) + fm if fm is not None else None            # 進場在開盤後第幾分鐘
         s["exit_at"] = s["fill_at"] + ex if (s["fill_at"] is not None and ex is not None) else None
+        s["lots"] = REVIEW_LOTS
+        s["pnl"] = _amount(s.get("net_pct"), s.get("price"), REVIEW_LOTS)
         out.append(s)
     return sorted(out, key=lambda s: (s["time"], s["code"]))
 
@@ -296,7 +308,10 @@ def _tally(sigs):
     bn = [s["base_net"] for s in filled if s.get("base_net") is not None]
     net_avg = round(sum(nets) / len(nets), 2) if nets else None
     base_net = round(sum(bn) / len(bn), 2) if bn else None
-    return {"n": len(sigs), "filled": len(filled), "dup": dup, "win": sum(1 for s in filled if s["verdict"] == "win"),
+    amts = [s["pnl"] for s in filled if s.get("pnl") is not None]
+    return {"pnl_sum": sum(amts) if amts else None, "pnl_n": len(amts),
+            "pnl_win": sum(1 for x in amts if x > 0), "pnl_loss": sum(1 for x in amts if x < 0),
+            "n": len(sigs), "filled": len(filled), "dup": dup, "win": sum(1 for s in filled if s["verdict"] == "win"),
             "loss": sum(1 for s in filled if s["verdict"] == "loss"), "nofill": sum(1 for s in sigs if s.get("verdict") == "nofill"),
             "net_sum": round(sum(nets), 2) if nets else None, "net_avg": net_avg, "net_n": len(nets),
             "base_win": round(sum(bw) / len(bw)) if bw else None, "base_net": base_net,
@@ -314,6 +329,9 @@ def trades(iso):
         rows = []
     out = [{k: t.get(k) for k in ("code", "name", "time", "side", "label", "entry_px", "price", "stop", "t1", "ret_pct", "net_pct", "ticks", "model_px", "sig_since")}
            for t in rows]
+    for t, r in zip(out, rows):
+        t["lots"] = r.get("lots") or 1                                     # 11/18 前的紀錄沒有張數，當 1 張
+        t["pnl"] = r.get("pnl") if r.get("pnl") is not None else _amount(t.get("net_pct"), t.get("entry_px"), t["lots"])
     # 成交時間：出場紀錄裡沒有，從同一筆（日期、代碼、訊號時間）的「成交」事件找，畫圖用
     fills = {}
     try:
@@ -336,7 +354,9 @@ def trades(iso):
         near = lambda a: bool(a and px and tick and abs(px - a) <= tick * 1.01)
         t["how"] = "停損出場" if near(t.get("stop")) else "到目標出場" if near(t.get("t1")) else "自己決定出場"
     nets = [t["net_pct"] for t in out if t.get("net_pct") is not None]
-    return {"list": out, "n": len(out), "win": sum(1 for x in nets if x > 0), "loss": sum(1 for x in nets if x <= 0),
+    amts = [t["pnl"] for t in out if t.get("pnl") is not None]
+    return {"list": out, "n": len(out), "win": sum(1 for x in amts if x > 0), "loss": sum(1 for x in amts if x <= 0),   # 賺賠按金額
+            "pnl_sum": sum(amts) if amts else None,
             "net_sum": round(sum(nets), 2) if nets else None, "net_avg": round(sum(nets) / len(nets), 2) if nets else None}
 
 
@@ -532,6 +552,7 @@ def build(date=None):
         by_code[c] = {"name": names[c], "y": (ser.get(c) or {}).get("y"), "pts": (ser.get(c) or {}).get("pts") or [], "src": (ser.get(c) or {}).get("src"),
                       "signals": cs, "issued": _tally([s for s in cs if not s["blocked"]]), "blocked": _tally([s for s in cs if s["blocked"]]),
                       "trades": [t for t in tr["list"] if t["code"] == c],
+                      "pnl_mine": sum(t["pnl"] for t in tr["list"] if t["code"] == c and t.get("pnl") is not None),
                       "direction": direction([r for r in rows if r["code"] == c]),
                       "alerts": alerts([r for r in al_day if r.get("code") == c])}
     first = min((r["time"] for r in rows), default=None)

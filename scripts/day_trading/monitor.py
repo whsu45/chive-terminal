@@ -1482,7 +1482,7 @@ class Monitor:
                 return False, "已經有一筆排隊或持倉"
             new = {"state": "queued", "side": ev["side"], "label": ev.get("label"), "q_px": ev["price"], "stop": ev["stop"],
                    "t1": ev["t1"], "t2": ev.get("t2"), "sig_since": ev.get("sig_since"), "model_px": ev.get("model_px"),
-                   "queued_at": ev["time"], "flags": {}}
+                   "queued_at": ev["time"], "lots": ev.get("lots") or 1, "flags": {}}
         elif act == "skip":
             new = {"state": "skipped", "sig_since": ev.get("sig_since"), "side": ev.get("side"), "closed_ts": ev["ts"], "flags": {}}
         elif act in ("fill", "cancel"):
@@ -1498,16 +1498,18 @@ class Monitor:
                 return False, "沒有持倉"
             sgn = 1 if cur["side"] == "long" else -1
             ret = sgn * (ev["price"] / cur["fill_px"] - 1) * 100
+            lots = cur.get("lots") or 1
             new = dict(cur, flags={}, state="closed", exit_px=ev["price"], closed_at=ev["time"], closed_ts=ev["ts"],
                        ret_pct=round(ret, 3), net_pct=round(ret - self.COST_PCT, 3),
-                       ticks=round(sgn * (ev["price"] - cur["fill_px"]) / I.tick_size(cur["fill_px"]), 1))
+                       ticks=round(sgn * (ev["price"] - cur["fill_px"]) / I.tick_size(cur["fill_px"]), 1),
+                       pnl=round((ret - self.COST_PCT) / 100 * cur["fill_px"] * 1000 * lots))      # 扣成本後賺賠幾元（張數 × 1000 股）
         else:
             return False, "不認得的動作"
         stack.append(cur)
         del stack[:-20]
         self.positions[c] = new
         if new["state"] in ("closed", "cancelled", "skipped") and new.get("sig_since"):
-            self.user_trades[(c, new["sig_since"])] = {k: new.get(k) for k in ("state", "side", "q_px", "fill_px", "exit_px", "ret_pct", "net_pct", "ticks")}
+            self.user_trades[(c, new["sig_since"])] = {k: new.get(k) for k in ("state", "side", "q_px", "fill_px", "exit_px", "ret_pct", "net_pct", "ticks", "lots", "pnl")}
         return True, None
 
     def _load_positions(self):
@@ -1546,6 +1548,16 @@ class Monitor:
                 if px <= 0:
                     return False, {"error": "價格錯誤"}
                 ev["price"] = px
+            if act == "queue":
+                # 張數：復盤用金額算賺賠（空台積電賠 1 張、買富喬賺 1 張，加起來還是賠），沒給就當 1 張
+                try:
+                    raw = body.get("lots")
+                    lots = 1 if raw in (None, "") else int(raw)
+                except (TypeError, ValueError):
+                    return False, {"error": "張數錯誤"}
+                if not 1 <= lots <= 999:
+                    return False, {"error": "張數要在 1～999 之間"}
+                ev["lots"] = lots
             if act in ("queue", "skip"):
                 sg = self.signals.get(c)
                 if not sg:
@@ -1553,7 +1565,7 @@ class Monitor:
                 ev.update(side=sg["side"], label=sg["label"], stop=sg["stop"], t1=sg["t1"], t2=sg.get("t2"), sig_since=sg["since"],
                           model_px=sg["price"], zone=sg.get("zone"))
             elif cur:
-                ev.update(side=cur.get("side"), label=cur.get("label"), sig_since=cur.get("sig_since"))
+                ev.update(side=cur.get("side"), label=cur.get("label"), sig_since=cur.get("sig_since"), lots=cur.get("lots") or 1)
                 if act == "exit":
                     ev.update(entry_px=cur.get("fill_px"), stop=cur.get("stop"), t1=cur.get("t1"))
             ok, err = self._pos_apply(c, ev)
@@ -1561,7 +1573,7 @@ class Monitor:
                 return False, {"error": err}
             p = self.positions.get(c)
             if act == "exit" and p:
-                ev.update(ret_pct=p["ret_pct"], net_pct=p["net_pct"], ticks=p["ticks"])
+                ev.update(ret_pct=p["ret_pct"], net_pct=p["net_pct"], ticks=p["ticks"], pnl=p.get("pnl"))
             try:
                 with open(os.path.join(LOG_DIR, "trades.jsonl"), "a", encoding="utf-8") as f:
                     f.write(json.dumps(ev, ensure_ascii=False) + "\n")
@@ -1591,6 +1603,7 @@ class Monitor:
             tk = I.tick_size(pos["fill_px"])
             ret = sgn * (p / pos["fill_px"] - 1) * 100
             v.update(pnl_ticks=round(sgn * (p - pos["fill_px"]) / tk, 1), pnl_pct=round(ret, 2), net_pct=round(ret - self.COST_PCT, 2),
+                     pnl=round((ret - self.COST_PCT) / 100 * pos["fill_px"] * 1000 * (pos.get("lots") or 1)),
                      to_stop=round(sgn * (p - pos["stop"]) / tk, 1), to_t1=round(sgn * (pos["t1"] - p) / tk, 1))
             sm = (self.sign_sum.get(c) or {}).get("buy" if pos["side"] == "long" else "sell") or {}
             if sm.get("n", 0) >= 2:

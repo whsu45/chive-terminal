@@ -204,9 +204,10 @@
   "group": null,
   "days": [
    "2026-11-09",
-   "2026-11-17"
+   "2026-11-17",
+   "2026-11-18"
   ],
-  "launches": 2,
+  "launches": 3,
   "signals": [],
   "notes": []
  },
@@ -237,9 +238,10 @@
   "market": "otc",
   "group": "玻纖紗布",
   "days": [
-   "2026-11-11"
+   "2026-11-11",
+   "2026-11-18"
   ],
-  "launches": 1,
+  "launches": 3,
   "signals": [],
   "notes": []
  },
@@ -248,9 +250,10 @@
   "market": "tse",
   "group": null,
   "days": [
-   "2026-11-11"
+   "2026-11-11",
+   "2026-11-18"
   ],
-  "launches": 2,
+  "launches": 3,
   "signals": [],
   "notes": []
  },
@@ -610,9 +613,10 @@
   "market": "tse",
   "group": null,
   "days": [
-   "2026-11-13"
+   "2026-11-13",
+   "2026-11-18"
   ],
-  "launches": 4,
+  "launches": 5,
   "signals": [],
   "notes": []
  },
@@ -807,9 +811,10 @@
   "market": "tse",
   "group": null,
   "days": [
-   "2026-11-17"
+   "2026-11-17",
+   "2026-11-18"
   ],
-  "launches": 1,
+  "launches": 2,
   "signals": [],
   "notes": []
  },
@@ -819,6 +824,28 @@
   "group": "化合物半導體",
   "days": [
    "2026-11-17"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "6121": {
+  "name": "新普",
+  "market": "otc",
+  "group": null,
+  "days": [
+   "2026-11-18"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2455": {
+  "name": "全新",
+  "market": "tse",
+  "group": "化合物半導體",
+  "days": [
+   "2026-11-18"
   ],
   "launches": 1,
   "signals": [],

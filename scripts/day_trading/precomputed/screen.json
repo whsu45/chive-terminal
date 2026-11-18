@@ -54,7 +54,7 @@
     "dt": {
      "buy": 5903,
      "buy_pct": 8.97,
-     "expect_sell": 3247,
+     "expect_sell": 3259,
      "list": [
       {
        "broker": "凱基-台北",
@@ -62,9 +62,9 @@
        "buy": 10259,
        "sell": 4493,
        "pct": 8.76,
-       "n": 405,
-       "rate": 0.556,
-       "mean_f": 0.548
+       "n": 408,
+       "rate": 0.559,
+       "mean_f": 0.55
       },
       {
        "broker": "台新-台北",
@@ -162,9 +162,9 @@
        "buy": 246,
        "sell": 183,
        "pct": 3.12,
-       "n": 405,
-       "rate": 0.556,
-       "mean_f": 0.548
+       "n": 408,
+       "rate": 0.559,
+       "mean_f": 0.55
       },
       {
        "broker": "元大-新莊",
@@ -251,7 +251,7 @@
     "dt": {
      "buy": 631,
      "buy_pct": 2.47,
-     "expect_sell": 347,
+     "expect_sell": 348,
      "list": [
       {
        "broker": "凱基-台北",
@@ -259,9 +259,9 @@
        "buy": 2911,
        "sell": 2333,
        "pct": 2.26,
-       "n": 405,
-       "rate": 0.556,
-       "mean_f": 0.548
+       "n": 408,
+       "rate": 0.559,
+       "mean_f": 0.55
       },
       {
        "broker": "凱基-信義",
@@ -360,9 +360,9 @@
        "buy": 435,
        "sell": 306,
        "pct": 2.66,
-       "n": 405,
-       "rate": 0.556,
-       "mean_f": 0.548
+       "n": 408,
+       "rate": 0.559,
+       "mean_f": 0.55
       }
      ],
      "source": "dynamic"
@@ -444,7 +444,7 @@
     "dt": {
      "buy": 277,
      "buy_pct": 1.56,
-     "expect_sell": 176,
+     "expect_sell": 172,
      "list": [
       {
        "broker": "富邦證券",
@@ -452,9 +452,9 @@
        "buy": 108,
        "sell": 6,
        "pct": 0.57,
-       "n": 309,
+       "n": 311,
        "rate": 0.605,
-       "mean_f": 0.576
+       "mean_f": 0.575
       },
       {
        "broker": "群益金鼎-館前",
@@ -462,9 +462,9 @@
        "buy": 118,
        "sell": 26,
        "pct": 0.52,
-       "n": 19,
-       "rate": 0.842,
-       "mean_f": 0.807
+       "n": 20,
+       "rate": 0.8,
+       "mean_f": 0.767
       },
       {
        "broker": "台新",
@@ -644,9 +644,9 @@
        "buy": 1323,
        "sell": 945,
        "pct": 2.77,
-       "n": 405,
-       "rate": 0.556,
-       "mean_f": 0.548
+       "n": 408,
+       "rate": 0.559,
+       "mean_f": 0.55
       },
       {
        "broker": "國票-敦北法人",
@@ -732,7 +732,7 @@
     "dt": {
      "buy": 718,
      "buy_pct": 5.02,
-     "expect_sell": 393,
+     "expect_sell": 395,
      "list": [
       {
        "broker": "凱基-台北",
@@ -740,9 +740,9 @@
        "buy": 1794,
        "sell": 1076,
        "pct": 5.02,
-       "n": 405,
-       "rate": 0.556,
-       "mean_f": 0.548
+       "n": 408,
+       "rate": 0.559,
+       "mean_f": 0.55
       }
      ],
      "source": "dynamic"
@@ -816,7 +816,7 @@
     "dt": {
      "buy": 612,
      "buy_pct": 2.85,
-     "expect_sell": 335,
+     "expect_sell": 337,
      "list": [
       {
        "broker": "凱基-台北",
@@ -824,9 +824,9 @@
        "buy": 2481,
        "sell": 1869,
        "pct": 2.85,
-       "n": 405,
-       "rate": 0.556,
-       "mean_f": 0.548
+       "n": 408,
+       "rate": 0.559,
+       "mean_f": 0.55
       }
      ],
      "source": "dynamic"
@@ -903,7 +903,7 @@
     "dt": {
      "buy": 1442,
      "buy_pct": 0.94,
-     "expect_sell": 831,
+     "expect_sell": 829,
      "list": [
       {
        "broker": "富邦證券",
@@ -911,9 +911,9 @@
        "buy": 2686,
        "sell": 1244,
        "pct": 0.94,
-       "n": 309,
+       "n": 311,
        "rate": 0.605,
-       "mean_f": 0.576
+       "mean_f": 0.575
       }
      ],
      "source": "dynamic"
@@ -1002,7 +1002,7 @@
     "dt": {
      "buy": 342,
      "buy_pct": 4.98,
-     "expect_sell": 187,
+     "expect_sell": 188,
      "list": [
       {
        "broker": "凱基-台北",
@@ -1010,9 +1010,9 @@
        "buy": 781,
        "sell": 439,
        "pct": 4.98,
-       "n": 405,
-       "rate": 0.556,
-       "mean_f": 0.548
+       "n": 408,
+       "rate": 0.559,
+       "mean_f": 0.55
       }
      ],
      "source": "dynamic"
@@ -1169,6 +1169,11 @@
    "chg5d": -7.66
   },
   {
+   "name": "連接器",
+   "chg1d": -2.71,
+   "chg5d": -6.89
+  },
+  {
    "name": "蘋概股",
    "chg1d": -2.9,
    "chg5d": -8.36
@@ -1212,6 +1217,11 @@
    "name": "輝達",
    "chg1d": -3.97,
    "chg5d": -10.17
+  },
+  {
+   "name": "光學鏡頭",
+   "chg1d": -4.14,
+   "chg5d": -8.72
   },
   {
    "name": "特化",
@@ -1325,6 +1335,6 @@
   }
  ],
  "schema": 2,
- "generated_at": "2026-11-18 05:02",
+ "generated_at": "2026-11-18 11:52",
  "generated_by": "GitHub Actions"
 }

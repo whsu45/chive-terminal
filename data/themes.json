@@ -6,7 +6,7 @@
  "date_counts": {
   "2026-11-19": 369
  },
- "members_fetched": "2026-11-19",
+ "members_fetched": "2026-11-20",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -1219,18 +1219,6 @@
      "volume": 6537
     },
     {
-     "code": "6462",
-     "name": "神盾",
-     "market": "上櫃",
-     "open": 83.2,
-     "high": 83.2,
-     "low": 76.5,
-     "close": 76.5,
-     "change": -8.5,
-     "pct": -10.0,
-     "volume": 713
-    },
-    {
      "code": "5274",
      "name": "信驊",
      "market": "上櫃",
@@ -1241,6 +1229,18 @@
      "change": -970.0,
      "pct": -10.0,
      "volume": 281
+    },
+    {
+     "code": "6462",
+     "name": "神盾",
+     "market": "上櫃",
+     "open": 83.2,
+     "high": 83.2,
+     "low": 76.5,
+     "close": 76.5,
+     "change": -8.5,
+     "pct": -10.0,
+     "volume": 713
     }
    ],
    "avg_pct": -5.76,
@@ -2684,18 +2684,6 @@
      "volume": 1489
     },
     {
-     "code": "6584",
-     "name": "南俊國際",
-     "market": "上櫃",
-     "open": 276.5,
-     "high": 276.5,
-     "low": 250.0,
-     "close": 250.0,
-     "change": -27.5,
-     "pct": -9.91,
-     "volume": 402
-    },
-    {
      "code": "3324",
      "name": "雙鴻",
      "market": "上櫃",
@@ -2706,6 +2694,18 @@
      "change": -97.0,
      "pct": -9.91,
      "volume": 2876
+    },
+    {
+     "code": "6584",
+     "name": "南俊國際",
+     "market": "上櫃",
+     "open": 276.5,
+     "high": 276.5,
+     "low": 250.0,
+     "close": 250.0,
+     "change": -27.5,
+     "pct": -9.91,
+     "volume": 402
     },
     {
      "code": "2465",
@@ -2764,8 +2764,7 @@
      "close": 45.95,
      "change": -0.7,
      "pct": -1.5,
-     "volume": 11,
-     "no_trade": true
+     "volume": 11
     },
     {
      "code": "1530",
@@ -3531,18 +3530,6 @@
      "volume": 6792
     },
     {
-     "code": "6435",
-     "name": "大中",
-     "market": "上櫃",
-     "open": 182.0,
-     "high": 182.0,
-     "low": 164.0,
-     "close": 164.5,
-     "change": -17.5,
-     "pct": -9.62,
-     "volume": 423
-    },
-    {
      "code": "2481",
      "name": "強茂",
      "market": "上市",
@@ -3553,6 +3540,18 @@
      "change": -10.1,
      "pct": -9.62,
      "volume": 10637
+    },
+    {
+     "code": "6435",
+     "name": "大中",
+     "market": "上櫃",
+     "open": 182.0,
+     "high": 182.0,
+     "low": 164.0,
+     "close": 164.5,
+     "change": -17.5,
+     "pct": -9.62,
+     "volume": 423
     },
     {
      "code": "3675",
@@ -4953,101 +4952,6 @@
    "flat": 0
   },
   {
-   "slug": "gaas",
-   "title": "砷化鎵概念股",
-   "desc": "砷化鎵概念股指以三五族化合物半導體為主業的台股：上游在砷化鎵（GaAs）或磷化銦（InP）基板上長磊晶片，中游做晶圓代工，下游做射頻功率放大器與微波元件。",
-   "members": [
-    {
-     "code": "5222",
-     "name": "全訊",
-     "market": "上市",
-     "open": 78.0,
-     "high": 79.9,
-     "low": 74.1,
-     "close": 74.8,
-     "change": -5.1,
-     "pct": -6.38,
-     "volume": 368
-    },
-    {
-     "code": "8086",
-     "name": "宏捷科",
-     "market": "上櫃",
-     "open": 91.8,
-     "high": 92.1,
-     "low": 82.3,
-     "close": 83.5,
-     "change": -7.5,
-     "pct": -8.24,
-     "volume": 4607
-    },
-    {
-     "code": "3081",
-     "name": "聯亞",
-     "market": "上櫃",
-     "open": 1685.0,
-     "high": 1685.0,
-     "low": 1515.0,
-     "close": 1515.0,
-     "change": -165.0,
-     "pct": -9.82,
-     "volume": 1577
-    },
-    {
-     "code": "4971",
-     "name": "IET-KY",
-     "market": "上櫃",
-     "open": 346.5,
-     "high": 349.5,
-     "low": 318.0,
-     "close": 318.0,
-     "change": -35.0,
-     "pct": -9.92,
-     "volume": 781
-    },
-    {
-     "code": "4991",
-     "name": "環宇-KY",
-     "market": "上櫃",
-     "open": 302.5,
-     "high": 302.5,
-     "low": 272.5,
-     "close": 272.5,
-     "change": -30.0,
-     "pct": -9.92,
-     "volume": 1662
-    },
-    {
-     "code": "2455",
-     "name": "全新",
-     "market": "上市",
-     "open": 325.0,
-     "high": 326.5,
-     "low": 294.0,
-     "close": 294.0,
-     "change": -32.5,
-     "pct": -9.95,
-     "volume": 3244
-    },
-    {
-     "code": "3105",
-     "name": "穩懋",
-     "market": "上櫃",
-     "open": 466.5,
-     "high": 473.0,
-     "low": 423.0,
-     "close": 423.0,
-     "change": -47.0,
-     "pct": -10.0,
-     "volume": 27480
-    }
-   ],
-   "avg_pct": -9.18,
-   "up": 0,
-   "down": 7,
-   "flat": 0
-  },
-  {
    "slug": "cpo",
    "title": "CPO 概念股",
    "desc": "CPO 概念股指切入共同封裝光學（Co-Packaged Optics）供應鏈的台股：把光引擎與交換晶片封裝在一起，取代傳統可插拔光模組，是 AI 資料中心頻寬升級的關鍵技術路線。",
@@ -5167,6 +5071,101 @@
    "flat": 0
   },
   {
+   "slug": "gaas",
+   "title": "砷化鎵概念股",
+   "desc": "砷化鎵概念股指以三五族化合物半導體為主業的台股：上游在砷化鎵（GaAs）或磷化銦（InP）基板上長磊晶片，中游做晶圓代工，下游做射頻功率放大器與微波元件。",
+   "members": [
+    {
+     "code": "5222",
+     "name": "全訊",
+     "market": "上市",
+     "open": 78.0,
+     "high": 79.9,
+     "low": 74.1,
+     "close": 74.8,
+     "change": -5.1,
+     "pct": -6.38,
+     "volume": 368
+    },
+    {
+     "code": "8086",
+     "name": "宏捷科",
+     "market": "上櫃",
+     "open": 91.8,
+     "high": 92.1,
+     "low": 82.3,
+     "close": 83.5,
+     "change": -7.5,
+     "pct": -8.24,
+     "volume": 4607
+    },
+    {
+     "code": "3081",
+     "name": "聯亞",
+     "market": "上櫃",
+     "open": 1685.0,
+     "high": 1685.0,
+     "low": 1515.0,
+     "close": 1515.0,
+     "change": -165.0,
+     "pct": -9.82,
+     "volume": 1577
+    },
+    {
+     "code": "4991",
+     "name": "環宇-KY",
+     "market": "上櫃",
+     "open": 302.5,
+     "high": 302.5,
+     "low": 272.5,
+     "close": 272.5,
+     "change": -30.0,
+     "pct": -9.92,
+     "volume": 1662
+    },
+    {
+     "code": "4971",
+     "name": "IET-KY",
+     "market": "上櫃",
+     "open": 346.5,
+     "high": 349.5,
+     "low": 318.0,
+     "close": 318.0,
+     "change": -35.0,
+     "pct": -9.92,
+     "volume": 781
+    },
+    {
+     "code": "2455",
+     "name": "全新",
+     "market": "上市",
+     "open": 325.0,
+     "high": 326.5,
+     "low": 294.0,
+     "close": 294.0,
+     "change": -32.5,
+     "pct": -9.95,
+     "volume": 3244
+    },
+    {
+     "code": "3105",
+     "name": "穩懋",
+     "market": "上櫃",
+     "open": 466.5,
+     "high": 473.0,
+     "low": 423.0,
+     "close": 423.0,
+     "change": -47.0,
+     "pct": -10.0,
+     "volume": 27480
+    }
+   ],
+   "avg_pct": -9.18,
+   "up": 0,
+   "down": 7,
+   "flat": 0
+  },
+  {
    "slug": "server-chassis",
    "title": "伺服器機殼概念股",
    "desc": "伺服器機殼概念股指供應伺服器機構件的台股，產品包括伺服器機殼與機箱、機櫃級機構件，以及讓伺服器抽拉維修的導軌與滑軌。",
@@ -5196,18 +5195,6 @@
      "volume": 318
     },
     {
-     "code": "5465",
-     "name": "富驊",
-     "market": "上櫃",
-     "open": 30.35,
-     "high": 30.95,
-     "low": 27.65,
-     "close": 27.65,
-     "change": -2.7,
-     "pct": -8.9,
-     "volume": 555
-    },
-    {
      "code": "2059",
      "name": "川湖",
      "market": "上市",
@@ -5218,6 +5205,18 @@
      "change": -580.0,
      "pct": -8.9,
      "volume": 1018
+    },
+    {
+     "code": "5465",
+     "name": "富驊",
+     "market": "上櫃",
+     "open": 30.35,
+     "high": 30.95,
+     "low": 27.65,
+     "close": 27.65,
+     "change": -2.7,
+     "pct": -8.9,
+     "volume": 555
     },
     {
      "code": "8210",
@@ -5453,6 +5452,125 @@
    "flat": 0
   },
   {
+   "slug": "hbm",
+   "title": "HBM 概念股",
+   "desc": "HBM 概念股指參與高頻寬記憶體（High Bandwidth Memory）供應鏈的台股：HBM 把多層 DRAM 晶粒垂直堆疊、與 AI 晶片近距離封裝在一起，台廠主要從 DRAM 製造、記憶體 IP 與客製化記憶體、晶圓測試到堆疊封裝設備切入。",
+   "members": [
+    {
+     "code": "6770",
+     "name": "力積電",
+     "market": "上市",
+     "open": 52.0,
+     "high": 52.0,
+     "low": 48.7,
+     "close": 48.9,
+     "change": -3.0,
+     "pct": -5.78,
+     "volume": 111421
+    },
+    {
+     "code": "2344",
+     "name": "華邦電",
+     "market": "上市",
+     "open": 107.5,
+     "high": 108.0,
+     "low": 97.3,
+     "close": 98.0,
+     "change": -10.0,
+     "pct": -9.26,
+     "volume": 75510
+    },
+    {
+     "code": "2408",
+     "name": "南亞科",
+     "market": "上市",
+     "open": 323.0,
+     "high": 325.0,
+     "low": 292.5,
+     "close": 293.5,
+     "change": -31.5,
+     "pct": -9.69,
+     "volume": 61275
+    },
+    {
+     "code": "2449",
+     "name": "京元電子",
+     "market": "上市",
+     "open": 190.0,
+     "high": 190.0,
+     "low": 175.0,
+     "close": 175.0,
+     "change": -19.0,
+     "pct": -9.79,
+     "volume": 21127
+    },
+    {
+     "code": "3131",
+     "name": "弘塑",
+     "market": "上櫃",
+     "open": 1600.0,
+     "high": 1600.0,
+     "low": 1460.0,
+     "close": 1460.0,
+     "change": -160.0,
+     "pct": -9.88,
+     "volume": 356
+    },
+    {
+     "code": "6640",
+     "name": "均華",
+     "market": "上櫃",
+     "open": 695.0,
+     "high": 697.0,
+     "low": 638.0,
+     "close": 638.0,
+     "change": -70.0,
+     "pct": -9.89,
+     "volume": 167
+    },
+    {
+     "code": "6531",
+     "name": "愛普*",
+     "market": "上市",
+     "open": 593.0,
+     "high": 595.0,
+     "low": 536.0,
+     "close": 536.0,
+     "change": -59.0,
+     "pct": -9.92,
+     "volume": 3426
+    },
+    {
+     "code": "3583",
+     "name": "辛耘",
+     "market": "上市",
+     "open": 438.0,
+     "high": 438.0,
+     "low": 394.5,
+     "close": 394.5,
+     "change": -43.5,
+     "pct": -9.93,
+     "volume": 599
+    },
+    {
+     "code": "6187",
+     "name": "萬潤",
+     "market": "上櫃",
+     "open": 762.0,
+     "high": 769.0,
+     "low": 694.0,
+     "close": 694.0,
+     "change": -77.0,
+     "pct": -9.99,
+     "volume": 2560
+    }
+   ],
+   "avg_pct": -9.35,
+   "up": 0,
+   "down": 9,
+   "flat": 0
+  },
+  {
    "slug": "passive-components",
    "title": "被動元件概念股",
    "desc": "被動元件概念股指以電容、電阻、電感等被動元件為主要營收的台股，產品從積層陶瓷電容（MLCC）、晶片電阻、鋁質電解與固態電容，到功率電感與磁珠，另含上游電極鋁箔材料與代理通路。",
@@ -5644,125 +5762,6 @@
    "flat": 0
   },
   {
-   "slug": "hbm",
-   "title": "HBM 概念股",
-   "desc": "HBM 概念股指參與高頻寬記憶體（High Bandwidth Memory）供應鏈的台股：HBM 把多層 DRAM 晶粒垂直堆疊、與 AI 晶片近距離封裝在一起，台廠主要從 DRAM 製造、記憶體 IP 與客製化記憶體、晶圓測試到堆疊封裝設備切入。",
-   "members": [
-    {
-     "code": "6770",
-     "name": "力積電",
-     "market": "上市",
-     "open": 52.0,
-     "high": 52.0,
-     "low": 48.7,
-     "close": 48.9,
-     "change": -3.0,
-     "pct": -5.78,
-     "volume": 111421
-    },
-    {
-     "code": "2344",
-     "name": "華邦電",
-     "market": "上市",
-     "open": 107.5,
-     "high": 108.0,
-     "low": 97.3,
-     "close": 98.0,
-     "change": -10.0,
-     "pct": -9.26,
-     "volume": 75510
-    },
-    {
-     "code": "2408",
-     "name": "南亞科",
-     "market": "上市",
-     "open": 323.0,
-     "high": 325.0,
-     "low": 292.5,
-     "close": 293.5,
-     "change": -31.5,
-     "pct": -9.69,
-     "volume": 61275
-    },
-    {
-     "code": "2449",
-     "name": "京元電子",
-     "market": "上市",
-     "open": 190.0,
-     "high": 190.0,
-     "low": 175.0,
-     "close": 175.0,
-     "change": -19.0,
-     "pct": -9.79,
-     "volume": 21127
-    },
-    {
-     "code": "3131",
-     "name": "弘塑",
-     "market": "上櫃",
-     "open": 1600.0,
-     "high": 1600.0,
-     "low": 1460.0,
-     "close": 1460.0,
-     "change": -160.0,
-     "pct": -9.88,
-     "volume": 356
-    },
-    {
-     "code": "6640",
-     "name": "均華",
-     "market": "上櫃",
-     "open": 695.0,
-     "high": 697.0,
-     "low": 638.0,
-     "close": 638.0,
-     "change": -70.0,
-     "pct": -9.89,
-     "volume": 167
-    },
-    {
-     "code": "6531",
-     "name": "愛普*",
-     "market": "上市",
-     "open": 593.0,
-     "high": 595.0,
-     "low": 536.0,
-     "close": 536.0,
-     "change": -59.0,
-     "pct": -9.92,
-     "volume": 3426
-    },
-    {
-     "code": "3583",
-     "name": "辛耘",
-     "market": "上市",
-     "open": 438.0,
-     "high": 438.0,
-     "low": 394.5,
-     "close": 394.5,
-     "change": -43.5,
-     "pct": -9.93,
-     "volume": 599
-    },
-    {
-     "code": "6187",
-     "name": "萬潤",
-     "market": "上櫃",
-     "open": 762.0,
-     "high": 769.0,
-     "low": 694.0,
-     "close": 694.0,
-     "change": -77.0,
-     "pct": -9.99,
-     "volume": 2560
-    }
-   ],
-   "avg_pct": -9.35,
-   "up": 0,
-   "down": 9,
-   "flat": 0
-  },
-  {
    "slug": "silicon-wafer",
    "title": "矽晶圓概念股",
    "desc": "矽晶圓概念股指以半導體矽晶圓材料為主要營收的台股，環節從長晶、切片、拋光到磊晶，另含把測試用晶圓回收研磨後再供應晶圓廠的再生晶圓業者。",
@@ -5923,18 +5922,6 @@
      "volume": 1412
     },
     {
-     "code": "3455",
-     "name": "由田",
-     "market": "上櫃",
-     "open": 150.5,
-     "high": 150.5,
-     "low": 135.5,
-     "close": 135.5,
-     "change": -15.0,
-     "pct": -9.97,
-     "volume": 1086
-    },
-    {
      "code": "1802",
      "name": "台玻",
      "market": "上市",
@@ -5945,6 +5932,18 @@
      "change": -6.5,
      "pct": -9.97,
      "volume": 120171
+    },
+    {
+     "code": "3455",
+     "name": "由田",
+     "market": "上櫃",
+     "open": 150.5,
+     "high": 150.5,
+     "low": 135.5,
+     "close": 135.5,
+     "change": -15.0,
+     "pct": -9.97,
+     "volume": 1086
     },
     {
      "code": "6187",
@@ -6494,18 +6493,6 @@
      "volume": 3636
     },
     {
-     "code": "5340",
-     "name": "建榮",
-     "market": "上櫃",
-     "open": 76.6,
-     "high": 76.6,
-     "low": 69.2,
-     "close": 69.2,
-     "change": -7.6,
-     "pct": -9.9,
-     "volume": 2978
-    },
-    {
      "code": "6274",
      "name": "台燿",
      "market": "上櫃",
@@ -6516,6 +6503,18 @@
      "change": -76.0,
      "pct": -9.9,
      "volume": 9146
+    },
+    {
+     "code": "5340",
+     "name": "建榮",
+     "market": "上櫃",
+     "open": 76.6,
+     "high": 76.6,
+     "low": 69.2,
+     "close": 69.2,
+     "change": -7.6,
+     "pct": -9.9,
+     "volume": 2978
     },
     {
      "code": "6213",
@@ -6554,18 +6553,6 @@
      "volume": 120171
     },
     {
-     "code": "4989",
-     "name": "榮科",
-     "market": "上市",
-     "open": 49.55,
-     "high": 50.3,
-     "low": 45.45,
-     "close": 45.45,
-     "change": -5.05,
-     "pct": -10.0,
-     "volume": 4263
-    },
-    {
      "code": "6672",
      "name": "騰輝電子-KY",
      "market": "上市",
@@ -6576,6 +6563,18 @@
      "change": -40.5,
      "pct": -10.0,
      "volume": 2861
+    },
+    {
+     "code": "4989",
+     "name": "榮科",
+     "market": "上市",
+     "open": 49.55,
+     "high": 50.3,
+     "low": 45.45,
+     "close": 45.45,
+     "change": -5.05,
+     "pct": -10.0,
+     "volume": 4263
     }
    ],
    "avg_pct": -9.9,
@@ -6744,18 +6743,6 @@
      "volume": 564
     },
     {
-     "code": "8155",
-     "name": "博智",
-     "market": "上櫃",
-     "open": 221.0,
-     "high": 221.0,
-     "low": 199.0,
-     "close": 199.0,
-     "change": -22.0,
-     "pct": -9.95,
-     "volume": 1056
-    },
-    {
      "code": "6510",
      "name": "精測",
      "market": "上櫃",
@@ -6766,6 +6753,18 @@
      "change": -290.0,
      "pct": -9.95,
      "volume": 294
+    },
+    {
+     "code": "8155",
+     "name": "博智",
+     "market": "上櫃",
+     "open": 221.0,
+     "high": 221.0,
+     "low": 199.0,
+     "close": 199.0,
+     "change": -22.0,
+     "pct": -9.95,
+     "volume": 1056
     },
     {
      "code": "6683",

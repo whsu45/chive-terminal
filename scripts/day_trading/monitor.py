@@ -26,6 +26,7 @@ import indicators as I
 import exhaust
 import combo
 import env_combos
+import notify
 import history
 import src_mis
 import src_warrants as W
@@ -1695,8 +1696,12 @@ class Monitor:
                             fl["burst"] = b
                             self._pos_alert(c, now, f"⚠ 撤單 你排的{pos['label']} {qp}：{self.BURST_SEC} 秒內從 {b['from']} 被大單{b['verb']}到 {p}"
                                                     f"（{b['side_txt']} {b['big_vol']} 張），還沒成交就先撤；已經成交的照停損 {pos['stop']} 走")
+                            self._notify("exit", c, f"⚠ 撤單：你排的{pos['label']} {qp} 被大單{b['verb']}過來", "還沒成交就先撤")
                     if (p >= qp) if short else (p <= qp):
                         fl["hint"] = f"價格到了 {qp}，成交了就按「成交」"
+                        if not fl.get("reach"):
+                            fl["reach"] = True
+                            self._notify("entry", c, f"價格到了你排的{pos['label']} {qp}", "成交了就在持倉面板按「成交」")
                     elif (p <= pos["t1"]) if short else (p >= pos["t1"]):
                         fl["hint"] = f"沒回到 {qp} 就到目標 {pos['t1']}，建議撤單不追"
                     elif now.strftime("%H:%M") >= "13:05":
@@ -1707,12 +1712,15 @@ class Monitor:
                     if not fl.get("stop") and ((p >= pos["stop"]) if short else (p <= pos["stop"])):
                         fl["stop"] = True; fl["hint"] = f"⛔ 停損 {pos['stop']} 到了，照紀律出場"
                         self._pos_alert(c, now, f"⛔ 你的{pos['label']} {pos['fill_px']} 到停損 {pos['stop']}（現價 {p}）：照紀律出場，不要凹單、不要攤平")
+                        self._notify("exit", c, f"⛔ 你的{pos['label']} 到停損 {pos['stop']}（現價 {p}）", "照紀律出場，不要凹單、不要攤平")
                     elif not fl.get("t1") and ((p <= pos["t1"]) if short else (p >= pos["t1"])):
                         fl["t1"] = True; fl["hint"] = f"✔ 目標 1 {pos['t1']} 到了，照計畫出場"
                         self._pos_alert(c, now, f"✔ 你的{pos['label']} {pos['fill_px']} 到目標 1 {pos['t1']}（現價 {p}）：照計畫出場")
+                        self._notify("exit", c, f"✔ 你的{pos['label']} 到目標 1 {pos['t1']}（現價 {p}）", "照計畫出場")
                     if not fl.get("late") and now.strftime("%H:%M") >= "13:20":
                         fl["late"] = True; fl["hint"] = "⏰ 13:25 前一定要平倉"
                         self._pos_alert(c, now, f"⏰ 你的{pos['label']} {pos['fill_px']} 還沒平倉：13:25 前一定要出")
+                        self._notify("exit", c, f"⏰ 你的{pos['label']} 還沒平倉", "13:25 前一定要出")
             return self._pos_view(c, p, now)
 
     def _signal(self, c, ev, bars, q, now):
@@ -1746,6 +1754,7 @@ class Monitor:
                     elif (p >= lo) if short else (p <= hi):
                         cur.update(filled=True, fill_px=p, fill_ts=now.timestamp(), price=p)
                         self._add_alert(c, now, f"▶ 掛單成交 {cur['label']} @{p}（進場區 {lo}–{hi}）：停損 {cur['stop']}，目標 {cur['t1']} / {cur['t2']}")
+                        self._notify("entry", c, f"▶ 掛單成交 {cur['label']} @{p}", f"停損 {cur['stop']}，目標 {cur['t1']} / {cur['t2']}")
                     elif (p <= cur["t1"]) if short else (p >= cur["t1"]):
                         cur["status"] = f"○ 未成交：沒回到 {lo}–{hi} 就到目標 1，放棄"
                     elif now.timestamp() - cur["since_ts"] > 1200:
@@ -1772,6 +1781,9 @@ class Monitor:
                     self._sig_done.setdefault(c, []).append({"side": cur["side"], "lo": cur["zone"][0], "hi": cur["zone"][1], "since": cur["since"],
                                                              "label": cur["label"], "res": res, "ext": (min(ext) if sh else max(ext)) if ext else None})
                     self._add_alert(c, now, f"{cur['status']}：{cur['label']} @{cur['price']}" if not cur.get("cancelled") else cur["cancelled"]["alert"])
+                    if res != "未成交":
+                        self._notify("exit", c, (cur["cancelled"]["alert"] if cur.get("cancelled") else f"{cur['status'].split('，')[0]}：{cur['label']} @{cur['price']}")[:70],
+                                     "模型的訊號結案（你自己的單照持倉面板的停損 / 目標）")
             if cur.get("status") and now.timestamp() - cur["end_ts"] > 120:
                 del self.signals[c]
                 cur = None
@@ -1926,6 +1938,11 @@ class Monitor:
             if lq and lq["level"] == "thin":
                 sig["liq"] = lq
                 score_txt += f"｜⚠ 掛單薄（最佳一檔約 {lq['l1']:.0f} 張）：單筆 ≤{lq['max_lots']} 張、用限價"
+            env_note = f"｜{sig['env_txt'][0]}" if sig.get("env_txt") else ""
+            if inzone:
+                self._notify("entry", c, f"▶ 建議{label} @{p}", f"停損 {stop}，目標 {t1} / {t2}{env_note}")
+            else:
+                self._notify("entry", c, f"▶ 建議{label} 掛 {lo}–{hi}（現價 {p}，等回再進）", f"停損 {stop}，目標 {t1} / {t2}{env_note}")
             if inzone:
                 self._add_alert(c, now, f"▶ 建議{label} @{p}：{why}；停損 {stop}，目標 {t1}{f'（{t1_name}）' if t1_name else ''} / {t2}（報酬風險比 {rr_now:.1f}）{score_txt}")
             else:
@@ -2406,6 +2423,15 @@ class Monitor:
         except Exception as e:
             print(f"  [warn] 權證盤中: {str(e)[:80]}")
             return None
+
+    def _notify(self, kind, c, title, msg=""):
+        """出現建議進出場點時發聲（進場「叮」、出場「叮咚」）＋ Mac 系統通知橫幅，不用開儀表板網頁（notify.py）。
+        被過濾擋掉的、只記錄的觀察不叫。失敗只印一行，不影響盤中流程。"""
+        try:
+            name = (self.daily.get(c) or {}).get("name", "")
+            notify.notify(kind, f"{c} {name}｜{title}", msg)
+        except Exception as e:
+            print(f"[通知] 失敗：{str(e)[:80]}")
 
     def _pos_alert(self, c, now, text):
         """持倉面板的提醒（你的單到停損、撤單…）：只顯示在儀表板，不進 live_alerts，
@@ -2934,6 +2960,7 @@ def main():
     ap.add_argument("--verbose", action="store_true", help="印出每個因子的說明")
     ap.add_argument("--brief", action="store_true", help="精簡輸出")
     ap.add_argument("--no-shioaji", action="store_true", help="不使用永豐 API")
+    ap.add_argument("--no-sound", action="store_true", help="出現建議進出場點時不要發聲、不跳系統通知（也可設 DAYTRADE_SOUND=0）")
     ap.add_argument("--big-lot", type=int, default=0, help="固定大單門檻（張）；預設 0 = 依金額與當日分布自動推算")
     ap.add_argument("--big-amount", type=float, default=None, help="大單金額門檻（元），預設 .env 的 BIG_LOT_AMOUNT 或 500 萬")
     ap.add_argument("--refresh", action="store_true", help="重抓盤前資料（忽略今日快取）")
@@ -2941,6 +2968,10 @@ def main():
                     help="啟動本機網頁儀表板（預設 port 8770，只綁 127.0.0.1）")
     ap.add_argument("--no-open", action="store_true", help="--web 時不要自動開瀏覽器")
     a = ap.parse_args()
+    if a.no_sound:
+        notify.ENABLED = notify.BANNER = False
+    elif a.web or not a.once:
+        print("[通知] 出現建議進出場點會發聲：進場「叮」、出場「叮咚」" + ("，並跳系統通知橫幅" if sys.platform == "darwin" else "") + "（--no-sound 關掉）")
     import signal
     if hasattr(signal, "SIGTERM"):
         # 被新開的 monitor 接管 port 時（start_web → _kill 先送 TERM、3 秒後才強制結束），照樣走 finally：存最後一次逐筆、登出永豐

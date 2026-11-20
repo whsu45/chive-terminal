@@ -290,10 +290,15 @@ const f=(x,d=2)=>x==null?'-':Number(x).toFixed(d);
 const pct=(x,d=2)=>x==null?'-':(x>0?'+':'')+Number(x).toFixed(d)+'%';
 const cls=x=>x>0?'up':x<0?'dn':'flat';
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const dec=p=>p==null?2:p>=500?0:p>=100?1:p>=50?1:2;
+// ETF（代碼 00 開頭，例如 0050、00878）的跳動單位跟股票不一樣：50 元以下 0.01、50 元以上 0.05（股票 50～100 元是 0.1）。
+// 照股票規則只顯示一位小數的話，0050 的 84.85 / 84.80 / 84.75 會被四捨五入成重複的價位（2026-11-20 五檔顯示錯誤）。
+// 沒給代碼時看目前的分頁（復盤畫面看復盤的那一檔）。
+const isETF=c=>/^00/.test(String(c==null?'':c));
+const etfNow=c=>isETF(c!==undefined?c:(VIEW==='review'&&typeof RV_CUR!=='undefined'?RV_CUR:CUR));
+const dec=(p,c)=>p==null?2:etfNow(c)?2:p>=500?0:p>=100?1:p>=50?1:2;
 const sgn=(x,d=2)=>x==null?'-':(x>0?'+':'')+Number(x).toFixed(d);
 const chgTxt=(ref,y,d)=>(ref==null||!y)?'-':`${sgn(ref-y,d)} (${pct((ref/y-1)*100)})`;
-const fp=p=>f(p,dec(p));
+const fp=(p,c)=>f(p,dec(p,c));
 
 // 時段（與 model.PHASES 一致；後端沒回時前端自己算）
 const PHASES=[['pre','00:00','08:30','盤前','','看夜盤、美股與盤前籌碼，定今天的主劇本'],['trial','08:30','09:00','試撮','08:30–09:00','掛單可撤，價量可能是假的；只看方向不下結論'],
@@ -342,8 +347,8 @@ function gapTable(rows,live){rows=(rows||[]).filter(x=>gapIn(x,GAP_G));if(!rows.
       return `<tr class="${w?'watch':''}"><td>${esc(x.code)} ${esc(x.name||'')}${w?' <span class="rv-tag watch">監控中</span>':''}</td>`
         +`<td>${(x.tags||['A']).map(t=>`<span class="rv-tag">${t}</span>`).join(' ')}${x.top10?' <span class="rv-tag top">前 10%</span>':''}${x.side==='long'?' <span class="rv-tag watch">做多</span>':''}</td>`
         +`<td class="n">${pct(x.gap,1)}</td><td class="n">${x.ret1!=null?pct(x.ret1,1):'-'}${x.lim_prev?' <span class="rv-tag lim" title="昨天收漲停">停</span>':''}</td><td class="n">${x.room!=null?f(x.room,1)+'%':'-'}</td>`
-        +`<td class="n">${fp(x.entry)}${x.entry_ts?` <span class="small muted">${esc(x.entry_ts.slice(0,5))}</span>`:''}</td>`
-        +`<td class="n">${fp(done?x.exit:x.last)}</td><td class="n">${rvPct(net)}${!done&&net!=null?' <span class="small muted">目前</span>':''}</td><td class="n">${rvAmt(amt)}</td>`
+        +`<td class="n">${fp(x.entry,x.code)}${x.entry_ts?` <span class="small muted">${esc(x.entry_ts.slice(0,5))}</span>`:''}</td>`
+        +`<td class="n">${fp(done?x.exit:x.last,x.code)}</td><td class="n">${rvPct(net)}${!done&&net!=null?' <span class="small muted">目前</span>':''}</td><td class="n">${rvAmt(amt)}</td>`
         +`<td class="n">${x.net_open_pct!=null?rvPct(x.net_open_pct):'-'}</td><td class="n">${x.mae_pct!=null?pct(x.mae_pct,1):'-'}</td>`
         +`<td>${esc(late?'13:30 收盤價結算':st)}${hit?' <span class="rv-tag lim">碰漲停</span>':''}${x.close_up?' <span class="rv-tag lim">收漲停</span>':''}</td></tr>`;}).join('')+'</table>';}
 function gapBasis(b){return (b&&b.length)?`<div class="rv-note">依據：${b.map(esc).join('；')}。損益已扣來回成本 ${STATE&&STATE.gap?STATE.gap.cost:0.235}%；最大逆向、碰漲停是每分鐘取樣，出場價是 13:25 前最後一筆（不是 13:30 收盤價）。</div>`:'';}
@@ -449,7 +454,7 @@ const PK_RULE={short:'劣於大盤、10 日跌 >10%、收盤在季線下、股�
 function pkCard(side,r,top,active,sel){
   const wr=side==='warrant'||side==='strong'||side==='nds'; // 觀察名單、開盤才成立的隔日沖倒貨：預設不勾、沒有備用
   const on=sel?sel.includes(r.code):(!wr&&active&&r.rank<=top);   // 送出後依實際選定的顯示
-  const st=`收 ${fp(r.close)}｜昨 ${pct(r.chg1d)}｜10日 ${pct(r.r10,1)}｜20日 ${pct(r.r20,1)}｜${f(r.value_e8,0)} 億｜ATR ${f(r.atr_pct,1)}%`;
+  const st=`收 ${fp(r.close,r.code)}｜昨 ${pct(r.chg1d)}｜10日 ${pct(r.r10,1)}｜20日 ${pct(r.r20,1)}｜${f(r.value_e8,0)} 億｜ATR ${f(r.atr_pct,1)}%`;
   return `<label class="pk-card ${on?'on':''} ${active?'':'dim'}"><input type="checkbox" value="${esc(r.code)}" ${on?'checked':''} onchange="pkCount(this)">
     <div class="t"><span class="rk">#${r.rank}</span>${esc(r.code)} ${esc(r.name)}${r.themes&&r.themes.length?`<span class="th">${esc(r.themes.slice(0,3).join('、'))}</span>`:''}${!wr&&r.rank>top?'<span class="bk">備用</span>':''}</div>
     <div class="st">${st}</div>
@@ -826,7 +831,7 @@ async function posAct(action,price){POS_ERR='';
   catch(e){POS_ERR='連不到 monitor';}renderPos();}
 // 價格一律用打的（原本點價位按鈕容易點歪）：輸入框內容存在 POS_IN，畫面每秒重畫也不會洗掉；↑↓ 一次跳 1 tick，Enter 送出
 let POS_IN={k:'',v:''},POS_HOLD=0,POS_LOTS=1;   // POS_LOTS：排隊時填的張數（復盤用金額算賺賠），沿用上一次填的
-function tickOf(p){return p>=1000?5:p>=500?1:p>=100?0.5:p>=50?0.1:p>=10?0.05:0.01;}
+function tickOf(p,c){if(etfNow(c))return p<50?0.01:0.05;return p>=1000?5:p>=500?1:p>=100?0.5:p>=50?0.1:p>=10?0.05:0.01;}
 function posCur(){return LIVE&&LIVE.position&&LIVE.position[CUR];}
 function posRef(v){return v?(v.now||v.fill_px||v.q_px||(v.choices||[])[0]||null):null;}
 function posIn(act,v,def,ph){const k=[CUR,act,v.sig_since||''].join('|');if(POS_IN.k!==k)POS_IN={k,v:def==null?'':String(def)};
@@ -1008,7 +1013,7 @@ function renderReview(){if(!RV)return;const sc=RV.scorecard;
   const box=(title,big,sub,extra)=>`<div class="rv-box"><h4>${title}</h4><div class="big">${big}</div><div class="sub">${sub}</div>${extra||''}</div>`;
   $('rv-score').innerHTML=
     box('你的單（持倉面板記的）',m.n?rvAmt(m.pnl_sum):'沒有記錄',m.n?`${m.n} 筆：${m.win} 賺 ${m.loss} 賠（按金額）${m.net_sum!=null?`；百分比直接相加 ${(m.net_sum>0?'+':'')+f(m.net_sum,2)}%，只供參考`:''}`:'這一天沒有在持倉面板按「排隊／成交／出場」，所以看不到你實際的成績。',
-      m.n?`<table class="rv" style="margin-top:6px">${m.list.map(t=>`<tr><td class="n">${esc(t.time.slice(0,5))}</td><td>${esc(t.code)} ${esc(t.label)}</td><td class="n">${t.lots||1} 張</td><td class="n">${fp(t.entry_px)} → ${fp(t.price)}</td><td class="n">${rvAmt(t.pnl)} <span class="small muted">${t.net_pct!=null?(t.net_pct>0?'+':'')+f(t.net_pct,2)+'%':''}</span></td><td class="small muted" style="white-space:nowrap">${esc(t.how)}</td></tr>`).join('')}</table>`:'')
+      m.n?`<table class="rv" style="margin-top:6px">${m.list.map(t=>`<tr><td class="n">${esc(t.time.slice(0,5))}</td><td>${esc(t.code)} ${esc(t.label)}</td><td class="n">${t.lots||1} 張</td><td class="n">${fp(t.entry_px,t.code)} → ${fp(t.price,t.code)}</td><td class="n">${rvAmt(t.pnl)} <span class="small muted">${t.net_pct!=null?(t.net_pct>0?'+':'')+f(t.net_pct,2)+'%':''}</span></td><td class="small muted" style="white-space:nowrap">${esc(t.how)}</td></tr>`).join('')}</table>`:'')
    +box('模型發出的訊號（全部照做、每筆 1 張）',sc.issued.pnl_n?rvAmt(sc.issued.pnl_sum):'-',`${sc.issued.n} 個：${rvTally(sc.issued)}${rvAmtTally(sc.issued)}`,rvBase(sc.issued))
    +box('被過濾擋掉的訊號（如果照做、每筆 1 張）',sc.blocked.pnl_n?rvAmt(sc.blocked.pnl_sum):'-',`${sc.blocked.n} 個：${rvTally(sc.blocked)}${rvAmtTally(sc.blocked)}`,rvBase(sc.blocked));
   $('rv-score-note').textContent='賺賠看金額：每一筆是「張數 × 1000 股 × 進場價 × 扣成本後漲跌幅」，已扣手續費和當沖證交稅（來回 0.235%）。你的單用持倉面板記的張數（11/18 前的紀錄沒有張數，當 1 張）；模型訊號沒有張數，每筆當 1 張——所以台積電 1 張賠的錢會蓋過富喬 1 張賺的。「贏 / 輸」是訊號評分規則（逆向 3 tick 輸、順向 2 倍風險贏），「賺 / 賠」看金額正負。「對照」是同一檔、同一天、同方向，09:10–12:25 每一分鐘都進場一次的平均，用百分比比較。一天只有十幾筆，單日結果不能下結論，請看第 3 塊的累計（第 3 塊比較的是過濾規則好不好，用每筆平均百分比，不讓高價股主導）。';
@@ -1119,7 +1124,7 @@ function renderTomorrow(){const el=$('rv-tom');if(!el)return;const t=RV_TOM;
   const s=res.screener||{};let right='';
   if(s.pending)right=`<span class="muted">${D0}的全市場行情與法人資料還沒出（目前最新是 ${esc(s.have||'-')}），通常下午 3～4 點後才有。</span>`;
   else if(s.error)right=`<span class="stale">選股失敗：${esc(s.error)}</span>`;
-  else if(s.short){const li=(r,side)=>`<tr><td>${esc(r.code)} ${esc(r.name)}</td><td class="n">${fp(r.close)}</td><td class="n">${rvPct(r.chg1d)}</td><td class="small">${(r.fit&&r.fit.tags||[]).filter(([k])=>k==='warn'||k==='no').map(([k,x])=>esc(x.split('：')[0])).join('；')||'<span class="muted">—</span>'}</td></tr>`;
+  else if(s.short){const li=(r,side)=>`<tr><td>${esc(r.code)} ${esc(r.name)}</td><td class="n">${fp(r.close,r.code)}</td><td class="n">${rvPct(r.chg1d)}</td><td class="small">${(r.fit&&r.fit.tags||[]).filter(([k])=>k==='warn'||k==='no').map(([k,x])=>esc(x.split('：')[0])).join('；')||'<span class="muted">—</span>'}</td></tr>`;
     const blk=(side,title,act)=>`<div style="margin-top:6px"><b class="${side==='short'?'dn':'up'}">${title}</b>${act?'':' <span class="rv-tag">大盤環境不符，只列參考</span>'}</div>${(s[side]||[]).length?`<table class="rv">${s[side].slice(0,s.top||3).map(r=>li(r,side)).join('')}</table>`:'<div class="rv-note">沒有符合條件的標的</div>'}`;
     right=`<div class="small muted">依 ${esc(s.date)} 收盤資料；大盤 ${s.short_active?'偏弱：弱勢股做空有效':'不弱：弱勢股做空無效'}；做多只在大盤恐慌開低時做</div>`
       +(s.no_trade?'<div class="rv-note" style="color:var(--warn)">盤前成立的名單一檔都沒有：不做（只看開盤才成立的隔日沖倒貨）</div>':'')

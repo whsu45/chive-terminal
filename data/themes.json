@@ -644,7 +644,7 @@
      "date": "2026-11-19"
     }
    ],
-   "avg_pct": -6.37,
+   "avg_pct": -6.36,
    "up": 0,
    "down": 6,
    "flat": 0
@@ -5777,89 +5777,6 @@
    "flat": 0
   },
   {
-   "slug": "quartz-components",
-   "title": "石英元件概念股",
-   "desc": "石英元件概念股指以頻率控制元件為主要營收的台股，產品是石英晶體諧振器（Crystal）、石英振盪器（XO、TCXO、VCXO、OCXO）與相關的聲波濾波器，功能是替電子產品提供穩定的時脈與頻率基準。",
-   "members": [
-    {
-     "code": "3221",
-     "name": "台嘉碩",
-     "market": "上櫃",
-     "open": 29.25,
-     "high": 29.7,
-     "low": 28.3,
-     "close": 28.55,
-     "change": -2.85,
-     "pct": -9.08,
-     "volume": 1125
-    },
-    {
-     "code": "3042",
-     "name": "晶技",
-     "market": "上市",
-     "open": 106.0,
-     "high": 110.0,
-     "low": 105.5,
-     "close": 105.5,
-     "change": -11.5,
-     "pct": -9.83,
-     "volume": 3271
-    },
-    {
-     "code": "8182",
-     "name": "加高",
-     "market": "上櫃",
-     "open": 23.0,
-     "high": 23.7,
-     "low": 22.4,
-     "close": 22.4,
-     "change": -2.45,
-     "pct": -9.86,
-     "volume": 568
-    },
-    {
-     "code": "6174",
-     "name": "安碁",
-     "market": "上櫃",
-     "open": 30.7,
-     "high": 31.4,
-     "low": 30.55,
-     "close": 30.55,
-     "change": -3.35,
-     "pct": -9.88,
-     "volume": 235
-    },
-    {
-     "code": "8289",
-     "name": "泰藝",
-     "market": "上櫃",
-     "open": 30.95,
-     "high": 34.1,
-     "low": 30.95,
-     "close": 30.95,
-     "change": -3.4,
-     "pct": -9.9,
-     "volume": 432
-    },
-    {
-     "code": "2484",
-     "name": "希華",
-     "market": "上市",
-     "open": 44.0,
-     "high": 45.05,
-     "low": 43.3,
-     "close": 43.3,
-     "change": -4.8,
-     "pct": -9.98,
-     "volume": 2738
-    }
-   ],
-   "avg_pct": -9.75,
-   "up": 0,
-   "down": 6,
-   "flat": 0
-  },
-  {
    "slug": "gaas",
    "title": "砷化鎵概念股",
    "desc": "砷化鎵概念股指以三五族化合物半導體為主業的台股：上游在砷化鎵（GaAs）或磷化銦（InP）基板上長磊晶片，中游做晶圓代工，下游做射頻功率放大器與微波元件。",
@@ -5953,6 +5870,89 @@
    "avg_pct": -9.75,
    "up": 0,
    "down": 7,
+   "flat": 0
+  },
+  {
+   "slug": "quartz-components",
+   "title": "石英元件概念股",
+   "desc": "石英元件概念股指以頻率控制元件為主要營收的台股，產品是石英晶體諧振器（Crystal）、石英振盪器（XO、TCXO、VCXO、OCXO）與相關的聲波濾波器，功能是替電子產品提供穩定的時脈與頻率基準。",
+   "members": [
+    {
+     "code": "3221",
+     "name": "台嘉碩",
+     "market": "上櫃",
+     "open": 29.25,
+     "high": 29.7,
+     "low": 28.3,
+     "close": 28.55,
+     "change": -2.85,
+     "pct": -9.08,
+     "volume": 1125
+    },
+    {
+     "code": "3042",
+     "name": "晶技",
+     "market": "上市",
+     "open": 106.0,
+     "high": 110.0,
+     "low": 105.5,
+     "close": 105.5,
+     "change": -11.5,
+     "pct": -9.83,
+     "volume": 3271
+    },
+    {
+     "code": "8182",
+     "name": "加高",
+     "market": "上櫃",
+     "open": 23.0,
+     "high": 23.7,
+     "low": 22.4,
+     "close": 22.4,
+     "change": -2.45,
+     "pct": -9.86,
+     "volume": 568
+    },
+    {
+     "code": "6174",
+     "name": "安碁",
+     "market": "上櫃",
+     "open": 30.7,
+     "high": 31.4,
+     "low": 30.55,
+     "close": 30.55,
+     "change": -3.35,
+     "pct": -9.88,
+     "volume": 235
+    },
+    {
+     "code": "8289",
+     "name": "泰藝",
+     "market": "上櫃",
+     "open": 30.95,
+     "high": 34.1,
+     "low": 30.95,
+     "close": 30.95,
+     "change": -3.4,
+     "pct": -9.9,
+     "volume": 432
+    },
+    {
+     "code": "2484",
+     "name": "希華",
+     "market": "上市",
+     "open": 44.0,
+     "high": 45.05,
+     "low": 43.3,
+     "close": 43.3,
+     "change": -4.8,
+     "pct": -9.98,
+     "volume": 2738
+    }
+   ],
+   "avg_pct": -9.76,
+   "up": 0,
+   "down": 6,
    "flat": 0
   },
   {

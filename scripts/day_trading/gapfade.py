@@ -350,6 +350,14 @@ class GapFade:
                          "ret1": dy.get("ret1"), "ret5": dy.get("ret5"), "lim_prev": dy.get("lim_prev"),
                          "hi0": float(getattr(s, "high", px) or px), "lo0": float(getattr(s, "low", px) or px),
                          "ts": _ts_str(getattr(s, "ts", 0)), "limit_up": up, "limit_down": dn})
+        # 恐慌指數（fear.py）：前一天臺指 VIX ≥40 極度恐慌時，B 隔日沖倒貨、C 恐慌開低做多不成立（照樣記錄，valid = False）
+        try:
+            import fear
+            fz = fear.state(now)
+        except Exception:
+            fz = {}
+        vix_prev = fz.get("prev")
+        extreme = bool(fz.get("extreme"))
         gaps = sorted(r["gap"] for r in rows)
         mkt_gap = round(gaps[len(gaps) // 2], 2) if gaps else None    # 全市場（可當沖普通股）開盤跳空中位數：C 組要恐慌開低才成立
         panic = mkt_gap is not None and mkt_gap <= C_MKT_GAP
@@ -373,12 +381,16 @@ class GapFade:
                 continue
             top10 = "B" in tags and r["gap"] >= TOP_GAP and r["room"] >= TOP_ROOM
             cands.append(self._cand(r, now, tags, top10, "short"))
+        for c in cands:
+            c["vix_prev"] = vix_prev
+            c["valid"] = not (extreme and ("B" in c["tags"] or "C" in c["tags"]))
         cands.sort(key=lambda x: (x["side"] == "long", not x["top10"], -abs(x["gap"])))
         na = sum(1 for c in cands if "A" in c["tags"]); nb = sum(1 for c in cands if "B" in c["tags"]); nt = sum(1 for c in cands if c["top10"])
         nc = sum(1 for c in cands if "C" in c["tags"])
         mg = f"全市場開盤跳空中位數 {mkt_gap:+.2f}%" if mkt_gap is not None else "全市場開盤跳空中位數算不出來"
         st.update(scanned=True, scan_time=now.strftime("%H:%M:%S"), universe=len(uni), quoted=len(rows), cut=cut, cands=cands,
                   last_poll_epoch=now.timestamp(), daily_note=self._daily_note, mkt_gap=mkt_gap, panic=panic,
+                  vix_prev=vix_prev, vix_extreme=extreme,
                   counts={"A": na, "B": nb, "top10": nt, "C": nc},
                   status="tracking" if cands else "closed",
                   note=(f"09:05 掃 {len(rows)} 檔，{len(cands)} 檔符合（A {na}、B {nb}、前 10% {nt}、C {nc}），13:25 前最後一筆結算；{mg}"
@@ -466,7 +478,7 @@ class GapFade:
             if c.get("net_pct") is None:
                 continue
             recs.append({"date": st["date"], "code": c["code"], "name": c["name"], "ex": c.get("ex"), "tags": c["tags"], "top10": c["top10"],
-                         "side": side_of(c), "mkt_gap": st.get("mkt_gap"),
+                         "side": side_of(c), "mkt_gap": st.get("mkt_gap"), "vix_prev": c.get("vix_prev"), "valid": c.get("valid", True),
                          "gap": c["gap"], "prev_close": c["prev_close"], "open": c["open"], "ret1": c.get("ret1"), "ret5": c.get("ret5"),
                          "room": c.get("room"), "lim_prev": c.get("lim_prev"), "val": c.get("val"),
                          "entry": c["entry"], "entry_ts": c["entry_ts"], "exit": c["exit"], "exit_ts": c.get("exit_ts"), "exit_kind": c.get("exit_kind"),
@@ -490,7 +502,7 @@ class GapFade:
             for c in st.get("cands") or []:
                 x = {k: c.get(k) for k in ("code", "name", "tags", "top10", "gap", "room", "ret1", "ret5", "lim_prev", "val", "prev_close", "open",
                                            "entry", "entry_ts", "last", "last_ts", "status", "hit_up", "close_up", "exit", "exit_ts", "exit_kind",
-                                           "net_pct", "pnl", "net_open_pct", "pnl_open", "limit_up", "hit_dn", "close_dn")}
+                                           "net_pct", "pnl", "net_open_pct", "pnl_open", "limit_up", "hit_dn", "close_dn", "valid", "vix_prev")}
                 x["side"] = side_of(c)
                 e = c.get("entry")
                 if e:
@@ -501,7 +513,7 @@ class GapFade:
                         x["pnl_now"] = round(x["net_now"] / 100 * e * 1000)
                 cands.append(x)
             return {"date": st.get("date"), "status": st.get("status"), "note": st.get("note"), "daily_note": st.get("daily_note", self._daily_note),
-                    "mkt_gap": st.get("mkt_gap"), "panic": st.get("panic"),
+                    "mkt_gap": st.get("mkt_gap"), "panic": st.get("panic"), "vix_prev": st.get("vix_prev"), "vix_extreme": st.get("vix_extreme"),
                     "scan_time": st.get("scan_time"), "last_poll": st.get("last_poll"), "universe": st.get("universe"), "quoted": st.get("quoted"),
                     "cut": st.get("cut"), "counts": st.get("counts"), "cands": cands, "cum": self.cum, "cost": self.cost, "basis": BASIS,
                     "groups": [list(g) for g in GROUPS], "rule": rule()}

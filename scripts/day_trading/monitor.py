@@ -27,6 +27,7 @@ import exhaust
 import combo
 import env_combos
 import notify
+import fear
 import history
 import src_mis
 import src_warrants as W
@@ -191,6 +192,32 @@ def gapfade_watch(use_shioaji):
     g.run(_SITE_STOP, put)
 
 
+def fear_watch(use_shioaji):
+    """
+    背景執行緒：恐慌指數（fear.py，臺指選擇權波動率指數）。盤中（08:30–13:31）每 60 秒用永豐 snapshots 抓即時值——
+    只用 monitor 串流已經登入的連線、在 _api_lock 裡查，不另外登入；其他時間（或沒有永豐）用期交所公開的日收盤。
+    結果放 WEB.fear：儀表板頂端、訊號判斷（恐慌升溫時做多寫參考）、開高放空觀察（極度恐慌時 B、C 不成立）都看它。
+    """
+    while not _SITE_STOP.is_set():
+        now = dt.datetime.now()
+        live = None
+        if use_shioaji and "08:30" <= now.strftime("%H:%M") < "13:31" and _is_trading(now.date()):
+            try:
+                import src_shioaji as S
+                if S._api is not None:
+                    with S._api_lock:
+                        live = fear.live_value(S._api)
+            except Exception:
+                live = None
+        try:
+            st = fear.state(now, live=live)
+            with WEB.lock:
+                WEB.fear = st
+        except Exception as e:
+            print(f"[恐慌指數] {str(e)[:100]}")
+        _SITE_STOP.wait(60 if live is not None else 600)
+
+
 class WebState:
     """monitor 與網頁共用的狀態。"""
     def __init__(self):
@@ -214,6 +241,7 @@ class WebState:
         self.winding = {}                 # 盤中移除、還在收尾的標的：code -> {name, since, open}（Monitor.remove_code）
         self.site = None                  # 網站的夜盤三大法人沒更新時的提醒（site_watch）：{date, site_date, url, checked}；沒事 = None
         self.gap = None                   # 開高放空觀察（gapfade_watch，全市場、只記錄不建議下單）：GapFade.view()
+        self.fear = None                  # 恐慌指數（fear_watch）：fear.state()
 
     def put_live(self, obj):
         with self.lock:
@@ -246,7 +274,7 @@ class WebState:
             return json.dumps({"codes": self.codes, "latest": self.latest, "daily": self.daily, "describe": self.describe,
                                "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji,
                                "picks": self.picks, "in_session": sess, "adding": self.adding, "winding": self.winding, "max_codes": MAX_CODES,
-                               "boot": BOOT_ID, "site": self.site, "gap": self.gap},
+                               "boot": BOOT_ID, "site": self.site, "gap": self.gap, "fear": self.fear},
                               ensure_ascii=False, default=str)
 
     def history_json(self, code):
@@ -1897,6 +1925,13 @@ class Monitor:
                 surge = None if (room or repeat) else self._surge_block(c, side, p, q)
                 chase_blk = None if (room or repeat or surge) else self._chase_block(side, sig["run5"], sig["run5_tk"])
                 blk = room or repeat or surge or chase_blk or self._against_trend(side, info)
+            fz = WEB.fear or {}
+            if fz.get("now") is not None or fz.get("prev") is not None:
+                sig["fear"] = {k: fz.get(k) for k in ("now", "prev", "chg_pct", "level", "extreme", "surge")}
+            if side == "long" and fz.get("surge") and fz.get("now") is not None:
+                # 回測（tw_stocker 2024–2026）：盤中 VIX 比昨收高 ≥10% 時做多訊號抱到收盤每筆 −0.38%（平常 −0.32%）；幅度小，只提醒不擋
+                sig.setdefault("refs", []).append({"kind": "恐慌升溫", "text": f"臺指 VIX {fz['now']:.1f} 比昨收高 {fz['chg_pct']:.0f}%："
+                                                   "回測這時做多訊號抱到收盤每筆 −0.38%（平常 −0.32%）"})
             if blk:
                 kind = "空間過濾" if room else "重複過濾" if repeat else "急漲過濾" if surge else "追價過濾" if chase_blk else "環境過濾" if env_blk else "逆勢過濾"
                 bkey = ("block",) + key            # 被擋的另外去重：趨勢轉回來後同一個進場區還能正常發
@@ -2032,7 +2067,7 @@ class Monitor:
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs", "fear")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -2246,7 +2281,7 @@ class Monitor:
                **score,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors"), "exh": sg.get("exh"), "exh_lit": sg.get("exh_lit"),
-               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs")}
+               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs"), "fear": sg.get("fear")}
         if sg.get("blocked"):
             out.update(blocked=True, block_reason=sg.get("block_reason"), block_kind=sg.get("block_kind"))
         if sg.get("cancelled"):
@@ -2987,6 +3022,7 @@ def main():
         if not a.once:
             threading.Thread(target=site_watch, daemon=True, name="site-watch").start()
             threading.Thread(target=gapfade_watch, args=(not a.no_shioaji,), daemon=True, name="gapfade").start()
+            threading.Thread(target=fear_watch, args=(not a.no_shioaji,), daemon=True, name="fear").start()
         if not a.no_open:
             try:
                 webbrowser.open(f"http://127.0.0.1:{a.web}/")  # macOS / Windows / Linux 都用系統預設瀏覽器

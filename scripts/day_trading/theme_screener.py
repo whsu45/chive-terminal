@@ -332,6 +332,22 @@ def pick(feats, exclude=(), min_value=MIN_VALUE):
     return shorts, longs
 
 
+def vix_on(date_iso):
+    """選股資料日（含）以前最新的臺指 VIX 收盤（fear.py：期交所公開日資料）。抓不到回 None，不影響選股。"""
+    try:
+        import fear
+        h = fear.refresh_daily(dt.date.fromisoformat(date_iso))
+        ks = [d for d in h if d <= date_iso]
+        if not ks:
+            return None
+        d = max(ks)
+        v = h[d]
+        return {"date": d, "close": v, "level": fear.level(v), "extreme": v >= fear.EXTREME, "extreme_at": fear.EXTREME}
+    except Exception as e:
+        print(f"  [warn] 臺指 VIX: {str(e)[:80]}", file=sys.stderr)
+        return None
+
+
 def nds_pick(feats, exclude=()):
     """隔日沖倒貨候選（開盤條件 9:00 才知道）：昨漲 ≥ NDS_RET1、價 ≤ NDS_PX、昨日成交值在普通股的前 40%，依成交值排序。"""
     com = [f for f in feats.values() if len(f["code"]) == 4 and f["code"].isdigit() and f["code"][0] != "0"]
@@ -809,6 +825,7 @@ def screen(ref, top=3, skip_heavy=False, warr_max_new=60):
     # 多留幾檔備用：開盤跳空不符時往下遞補
     return {"date": dates[-1], "mkt": mkt, "short": shorts[: top + 3], "long": longs[: top + 3], "top": top,
             "warrant": warr, "strong": strong, "warrant_error": warr_err, "strong_error": strong_err, "nds": nds, "nds_total": len(nds_all),
+            "vix": vix_on(dates[-1]),
             "member": member, "themes": tstats, "punished": [c for c in punish if c in feats],
             "skipped_heavy": sorted(c for c in heavy if c in feats and (feats[c]["weak5"] or long_conditions(feats[c]))) if skip_heavy else []}
 
@@ -892,6 +909,9 @@ def print_report(r):
     print(f"\n══ 當沖盤前選股 {r['date']}（隔天的候選）")
     print(f"大盤：加權 {m['idx']:.0f}，20 日線 {m['ma20']:.0f} → {'偏弱：弱勢股做空有效' if m['weak'] else '不弱：弱勢股做空無效'}；10 日 {m['r10']:+.1f}%")
     print(f"做多：{LONG_PANIC_RULE}")
+    vx = r.get("vix")
+    if vx:
+        print(f"恐慌指數：臺指 VIX {vx['close']:.2f}（{vx['date']}，{vx['level']}）" + (f" ≥{vx['extreme_at']:g} 極度恐慌：隔日沖倒貨、恐慌開低做多今天不做" if vx["extreme"] else ""))
     if not (m["weak"] and r["short"]):
         print("→ 盤前成立的名單一檔都沒有：今天不做（只看開盤才成立的隔日沖倒貨，和大盤恐慌開低時的做多）")
     if r["themes"]:
@@ -899,7 +919,8 @@ def print_report(r):
         print("最強族群：" + "、".join(fmt(t) for t in r["themes"][:3]) + "｜最弱族群：" + "、".join(fmt(t) for t in r["themes"][-3:][::-1]))
     for side, title, rule, active in (("short", SHORT_TITLE, SHORT_RULE, m["weak"]), ("long", LONG_TITLE, LONG_RULE, False), ("nds", NDS_TITLE, NDS_RULE, True)):
         if side == "nds":
-            print(f"\n{title}（符合 {r.get('nds_total', 0)} 檔，列成交值前 {NDS_LIST}）")
+            ext = (r.get("vix") or {}).get("extreme")
+            print(f"\n{title}（符合 {r.get('nds_total', 0)} 檔，列成交值前 {NDS_LIST}）" + ("　⚠ 極度恐慌（臺指 VIX ≥40）：回測這時勝率掉到五成、每筆轉負，今天不做，只列參考" if ext else ""))
             print(f"  {NDS_NOTE}")
         elif side == "long":
             print(f"\n{title}　⚠ 證據薄弱，只列參考、不建議做")
@@ -974,6 +995,8 @@ def to_dict(r):
             "short_active": r["mkt"]["weak"], "long_active": False,          # 做多只在開盤恐慌開低時做（LONG_PANIC_RULE），盤前不預設
             "long_panic_rule": LONG_PANIC_RULE, "long_note": LONG_NOTE,
             "nds": rows("nds") if r.get("nds") else [], "nds_total": r.get("nds_total", 0), "nds_rule": NDS_RULE, "nds_note": NDS_NOTE, "nds_title": NDS_TITLE,
+            # 極度恐慌（前一天臺指 VIX ≥40）時隔日沖倒貨不做：2026 全市場這時勝率 50%、每筆 −0.28%（17 天），tw_stocker 勝率 45%（4 天）
+            "vix": r.get("vix"), "nds_active": not ((r.get("vix") or {}).get("extreme")),
             "no_trade": not (r["mkt"]["weak"] and r["short"]),                # 盤前就成立的名單一檔都沒有：今天不做（開盤條件型的另看）
             "short": rows("short"), "long": rows("long"), "punished": r["punished"], "skipped_heavy": r.get("skipped_heavy") or [],
             "warrant": rows("warrant") if r.get("warrant") else [], "warrant_error": r.get("warrant_error"), "warrant_note": WARR_NOTE,

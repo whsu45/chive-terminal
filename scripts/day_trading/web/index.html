@@ -118,6 +118,8 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .signal .space{flex-basis:100%;color:#f0b429}
 .signal .env{flex-basis:100%;color:#7fd18b}
 .sitebar{margin:10px 16px 0;padding:8px 12px;border:1px solid #f0b429;border-radius:10px;background:rgba(240,180,41,.08);color:#f0b429;font-size:13px;line-height:1.6}
+.fear{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);white-space:nowrap;cursor:help}
+.fear.l0{color:#7fd18b}.fear.l1{color:var(--muted)}.fear.l2{color:#f0b429;border-color:#6b5520}.fear.l3{color:#fff;background:#8b1e2b;border-color:#c0392b}
 .sitebar.hidden{display:none}.sitebar a{color:#ffd166;font-weight:700;margin:0 4px}.sitebar .muted{color:var(--muted);font-size:12px}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 12px 1px currentColor}}
 .hint{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
@@ -222,6 +224,7 @@ main#review.hidden{display:none}
     <input id="add-code" maxlength="6" placeholder="代碼" autocomplete="off" inputmode="numeric"><button class="vbtn" type="submit">＋ 監控</button><span class="msg" id="add-msg"></span></form>
   <div class="meta">
     <span id="idx"></span>
+    <span id="fear" class="fear"></span>
     <span id="shioaji"></span>
     <span class="phase" id="phase"></span>
     <button class="vbtn" id="view-btn" onclick="toggleView()" title="收盤後的回顧：成績單、每個訊號的結果、被擋掉的訊號、警示、明天的準備">復盤</button>
@@ -313,6 +316,13 @@ function tick(){const n=new Date();$('clock').textContent=n.toLocaleTimeString('
 setInterval(tick,1000);tick();
 
 // 網站（GitHub Pages）的夜盤三大法人沒更新：期交所已公布、GitHub 排程沒跑 → 提醒手動觸發（monitor.site_watch，每 5～10 分鐘看一次）
+// 恐慌指數（fear.py：臺指選擇權波動率指數）。≥40 極度恐慌時隔日沖倒貨、恐慌開低做多不做；盤中比昨收高 ≥10% 時做多訊號寫參考
+function renderFear(){const el=$('fear');if(!el)return;const z=STATE&&STATE.fear;
+  if(!z||(z.now==null&&z.prev==null)){el.textContent='';el.className='fear';return;}
+  const v=z.now!=null?z.now:z.prev,lv={'平靜':0,'正常':1,'緊張':2,'極度恐慌':3}[z.level]??1;
+  el.className='fear l'+lv;
+  el.innerHTML=`恐慌 <b class="num">${f(v,1)}</b> ${esc(z.level||'')}${z.now!=null&&z.chg_pct!=null?` <span class="num">${z.chg_pct>0?'+':''}${f(z.chg_pct,1)}%</span>`:''}${z.extreme?' ⚠':''}`;
+  el.title=z.text||'';}
 function renderSite(){const el=$('sitebar');if(!el)return;const s=STATE&&STATE.site;
   if(!s){el.classList.add('hidden');el.innerHTML='';return;}
   el.classList.remove('hidden');
@@ -345,7 +355,7 @@ function gapTable(rows,live){rows=(rows||[]).filter(x=>gapIn(x,GAP_G));if(!rows.
     +rows.map(x=>{const done=x.net_pct!=null;const net=done?x.net_pct:x.net_now,amt=done?x.pnl:x.pnl_now;const w=W.includes(x.code);
       const st=x.status?(GAP_ST[x.status]||x.status):'13:25 結案';const late=x.exit_kind==='1330';const hit=x.hit_up||x.hit_limit_up;
       return `<tr class="${w?'watch':''}"><td>${esc(x.code)} ${esc(x.name||'')}${w?' <span class="rv-tag watch">監控中</span>':''}</td>`
-        +`<td>${(x.tags||['A']).map(t=>`<span class="rv-tag">${t}</span>`).join(' ')}${x.top10?' <span class="rv-tag top">前 10%</span>':''}${x.side==='long'?' <span class="rv-tag watch">做多</span>':''}</td>`
+        +`<td>${(x.tags||['A']).map(t=>`<span class="rv-tag">${t}</span>`).join(' ')}${x.top10?' <span class="rv-tag top">前 10%</span>':''}${x.side==='long'?' <span class="rv-tag watch">做多</span>':''}${x.valid===false?' <span class="rv-tag lim" title="極度恐慌（前一天臺指 VIX ≥40）時這組不成立，只記錄">不成立</span>':''}</td>`
         +`<td class="n">${pct(x.gap,1)}</td><td class="n">${x.ret1!=null?pct(x.ret1,1):'-'}${x.lim_prev?' <span class="rv-tag lim" title="昨天收漲停">停</span>':''}</td><td class="n">${x.room!=null?f(x.room,1)+'%':'-'}</td>`
         +`<td class="n">${fp(x.entry,x.code)}${x.entry_ts?` <span class="small muted">${esc(x.entry_ts.slice(0,5))}</span>`:''}</td>`
         +`<td class="n">${fp(done?x.exit:x.last,x.code)}</td><td class="n">${rvPct(net)}${!done&&net!=null?' <span class="small muted">目前</span>':''}</td><td class="n">${rvAmt(amt)}</td>`
@@ -364,6 +374,7 @@ function renderGap(){const el=$('gap');if(!el)return;const g=STATE&&STATE.gap;
   const gname=(GAP_GROUPS.find(([k])=>k===GAP_G)||[])[1]||'';
   el.innerHTML=`<div class="gap-st">${esc(g.note||'')}${g.universe?` <span class="small muted">（可當沖先賣 ${g.universe} 檔、有報價 ${g.quoted||0} 檔）</span>`:''}</div>`
     +(g.daily_note?`<div class="small" style="color:var(--warn);margin-bottom:6px">⚠ ${esc(g.daily_note)}</div>`:'')
+    +(g.vix_extreme?`<div class="small" style="color:#ff6b6b;margin-bottom:6px">⚠ 前一天臺指 VIX ${f(g.vix_prev,1)} ≥40（極度恐慌）：B 隔日沖倒貨、C 恐慌開低做多今天不成立，只記錄（回測這時這兩組都轉成賠錢）</div>`:'')
     +(cands.length?gapTabs(counts):'')
     +(dn?`<div class="gap-cum">今天 ${GAP_G==='all'?'':gname+' '}${dn} 檔：${dw} 賺 ${dn-dw} 賠，1 張合計 ${rvAmt(dsum)}</div>`:'')
     +(live&&nowL.length?`<div class="gap-cum">追蹤中 ${nowL.length} 檔，現在平倉的話 1 張合計 ${rvAmt(nowSum)}</div>`:'')
@@ -381,7 +392,7 @@ function renderGapReview(){const el=$('rv-gap');if(!el)return;const G=RV&&RV.gap
 let BOOT=null;   // 這次 monitor 程序的 ID：開著過夜時 monitor 會在新交易日 08:25 自動重開，ID 變了就整頁重新載入，畫面上不留前一天的分時、大盤、漲跌停
 async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());const s=await r.json();
   if(s.boot&&BOOT&&s.boot!==BOOT){location.reload();return;}if(s.boot)BOOT=s.boot;
-  STATE=s;autoReview();renderSite();renderGap();
+  STATE=s;autoReview();renderSite();renderFear();renderGap();
   if(!STATE.codes.length){loadPicker();return;}            // 選股模式：還沒選標的
   showPicker(false);
   if(ADD_WAIT&&STATE.codes.includes(ADD_WAIT)){CUR=ADD_WAIT;}renderAdd();
@@ -472,6 +483,7 @@ function renderPicker(){
     $('pk-mkt').innerHTML=`大盤：加權 <b>${f(m.idx,0)}</b>，20 日線 <b>${f(m.ma20,0)}</b>，10 日 <b class="${cls(m.r10)}">${pct(m.r10,1)}</b> → `
       +(res.short_active?'<b class="dn">偏弱：弱勢股做空有效</b>':'<b class="up">不弱：弱勢股做空無效</b>')
       +(res.long_panic_rule?`<div class="small" style="margin-top:4px">做多：${esc(res.long_panic_rule)}</div>`:'')
+      +(res.vix?`<div class="small" style="margin-top:4px">恐慌指數：臺指 VIX <b class="num">${f(res.vix.close,2)}</b>（${esc(res.vix.date)}，${esc(res.vix.level||'')}）${res.vix.extreme?' <b style="color:#ff6b6b">≥40 極度恐慌：隔日沖倒貨、恐慌開低做多今天不做</b>':''}</div>`:'')
       // 沒有適合的就不做（2026-11-18）：盤前就成立的名單一檔都沒有時，畫面直接寫不做，也不預設勾選任何一檔
       +(res.no_trade?'<div class="pk-err" style="margin-top:6px;font-size:14px">今天沒有適合的個股：不做（只看開盤才成立的隔日沖倒貨，和大盤恐慌開低時的做多）</div>':'')
       +(th.length?`<div class="small muted" style="margin-top:4px">最強族群：${th.slice(0,3).map(t=>esc(t.name)+' '+pct(t.chg1d,1)).join('、')}｜最弱族群：${th.slice(-3).reverse().map(t=>esc(t.name)+' '+pct(t.chg1d,1)).join('、')}</div>`:'');
@@ -484,7 +496,8 @@ function renderPicker(){
     $('pk-long').innerHTML=col('long',PK_TITLE.long,res.long_active);
     // 隔日沖倒貨（theme_screener.nds_pick）：昨漲 ≥3%、開盤開高 0～9% 且離漲停 ≥3% 才成立的做空；開盤條件 9:00 才知道，預設不勾
     const ND=res.nds||[];
-    $('pk-nds').innerHTML=res.nds_rule?`<h3>${esc(res.nds_title||'▼ 做空（開盤才成立）：隔日沖倒貨')} <span class="small muted">符合 ${res.nds_total||ND.length} 檔，列成交值前 ${ND.length}</span></h3>${def(res.nds_rule)}
+    const ndsOff=res.nds_active===false,vx=res.vix;
+    $('pk-nds').innerHTML=res.nds_rule?`<h3>${esc(res.nds_title||'▼ 做空（開盤才成立）：隔日沖倒貨')} <span class="small muted">符合 ${res.nds_total||ND.length} 檔，列成交值前 ${ND.length}</span>${ndsOff?`<span class="off">⚠ 極度恐慌（臺指 VIX ${vx?f(vx.close,1):''} ≥40）：回測這時勝率掉到五成、每筆轉負，今天不做，只列參考</span>`:''}</h3>${def(res.nds_rule)}
       <div class="pk-note">${esc(res.nds_note||'')}</div>`
       +(ND.length?`<div class="pk-wgrid">${ND.map(r=>pkCard('nds',r,res.top,true,p.selected)).join('')}</div>`:'<div class="pk-empty">沒有符合條件的標的</div>'):'';
     // 觀察名單「權證連買＋法人買超」（theme_screener.strong_pick，原名「強勢股」）。隔天容易開高、波動大，但回測開盤後沒有續漲，所以預設不勾、不給方向

@@ -1,47 +1,50 @@
 [
  {
   "date": "2026-11-19",
-  "composite": -1.74,
+  "composite": -1.93,
   "sox": -2.41,
   "top3Up": [
    {
-    "key": "cyber",
-    "title": "資安",
-    "pct": 2.75
-   },
-   {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 0.65
+    "pct": -0.19
    },
    {
     "key": "devices",
     "title": "消費電子",
     "pct": -0.79
+   },
+   {
+    "key": "networking",
+    "title": "網通／光通訊",
+    "pct": -1.01
    }
   ],
   "top3Down": [
    {
-    "key": "ev",
-    "title": "電動車／自駕",
-    "pct": -4
+    "key": "semicap",
+    "title": "半導體設備",
+    "pct": -3.32
    },
    {
     "key": "internet",
     "title": "網路平台",
-    "pct": -3.5
+    "pct": -3.2
    },
    {
-    "key": "semicap",
-    "title": "半導體設備",
-    "pct": -3.32
+    "key": "software",
+    "title": "軟體／雲端",
+    "pct": -2.65
    }
   ],
-  "taiexNext": null
+  "taiexNext": {
+   "date": "2026-11-20",
+   "pct": -6.3
+  }
  },
  {
   "date": "2026-11-18",
-  "composite": 0.94,
+  "composite": 0.84,
   "sox": 0.1,
   "top3Up": [
    {
@@ -50,14 +53,14 @@
     "pct": 7.24
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 1
-   },
-   {
     "key": "internet",
     "title": "網路平台",
     "pct": 0.88
+   },
+   {
+    "key": "semicap",
+    "title": "半導體設備",
+    "pct": 0.84
    }
   ],
   "top3Down": [
@@ -84,7 +87,7 @@
  },
  {
   "date": "2026-11-17",
-  "composite": -0.48,
+  "composite": -0.52,
   "sox": 0.34,
   "top3Up": [
    {
@@ -127,7 +130,7 @@
  },
  {
   "date": "2026-11-16",
-  "composite": -4.13,
+  "composite": -4.19,
   "sox": -5.28,
   "top3Up": [
    {
@@ -148,14 +151,14 @@
   ],
   "top3Down": [
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -6.68
+   },
+   {
     "key": "networking",
     "title": "網通／光通訊",
     "pct": -6.55
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -6.05
    },
    {
     "key": "semicap",
@@ -170,7 +173,7 @@
  },
  {
   "date": "2026-11-13",
-  "composite": -2.5,
+  "composite": -2.55,
   "sox": -3.43,
   "top3Up": [
    {
@@ -201,9 +204,9 @@
     "pct": -5.24
    },
    {
-    "key": "semis",
-    "title": "半導體",
-    "pct": -3.73
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -4.05
    }
   ],
   "taiexNext": {
@@ -213,7 +216,7 @@
  },
  {
   "date": "2026-11-12",
-  "composite": -1.26,
+  "composite": -1.33,
   "sox": -0.54,
   "top3Up": [
    {
@@ -244,9 +247,9 @@
     "pct": -2.01
    },
    {
-    "key": "semicap",
-    "title": "半導體設備",
-    "pct": -1.77
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -1.89
    }
   ],
   "taiexNext": {
@@ -256,13 +259,13 @@
  },
  {
   "date": "2026-11-11",
-  "composite": 4.4,
+  "composite": 4.49,
   "sox": 5.66,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 10.07
+    "pct": 10.97
    },
    {
     "key": "networking",
@@ -299,7 +302,7 @@
  },
  {
   "date": "2026-11-10",
-  "composite": -0.55,
+  "composite": -0.6,
   "sox": -0.35,
   "top3Up": [
    {
@@ -330,9 +333,9 @@
     "pct": -1.72
    },
    {
-    "key": "software",
-    "title": "軟體／雲端",
-    "pct": -0.88
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -1.3
    }
   ],
   "taiexNext": {
@@ -342,7 +345,7 @@
  },
  {
   "date": "2026-11-09",
-  "composite": 5.64,
+  "composite": 5.58,
   "sox": 6.85,
   "top3Up": [
    {
@@ -358,7 +361,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 8.63
+    "pct": 8.02
    }
   ],
   "top3Down": [
@@ -385,7 +388,7 @@
  },
  {
   "date": "2026-11-06",
-  "composite": 2.43,
+  "composite": 2.5,
   "sox": 4.21,
   "top3Up": [
    {
@@ -428,7 +431,7 @@
  },
  {
   "date": "2026-11-05",
-  "composite": -9.31,
+  "composite": -9.44,
   "sox": -12.25,
   "top3Up": [
    {
@@ -451,7 +454,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -17.02
+    "pct": -18.33
    },
    {
     "key": "networking",
@@ -471,7 +474,7 @@
  },
  {
   "date": "2026-11-04",
-  "composite": -1.22,
+  "composite": -1.24,
   "sox": -3.13,
   "top3Up": [
    {
@@ -494,7 +497,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -7.3
+    "pct": -7.45
    },
    {
     "key": "aiserver",
@@ -514,7 +517,7 @@
  },
  {
   "date": "2026-11-03",
-  "composite": 1.53,
+  "composite": 1.59,
   "sox": 2.63,
   "top3Up": [
    {
@@ -523,14 +526,14 @@
     "pct": 3.88
    },
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 3.02
+   },
+   {
     "key": "networking",
     "title": "網通／光通訊",
     "pct": 2.65
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 2.43
    }
   ],
   "top3Down": [
@@ -557,7 +560,7 @@
  },
  {
   "date": "2026-11-02",
-  "composite": -3.41,
+  "composite": -3.39,
   "sox": -3.37,
   "top3Up": [
    {
@@ -585,7 +588,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -7.06
+    "pct": -6.94
    },
    {
     "key": "aiserver",
@@ -600,7 +603,7 @@
  },
  {
   "date": "2026-10-30",
-  "composite": -5.12,
+  "composite": -5.29,
   "sox": -7.2,
   "top3Up": [
    {
@@ -631,9 +634,9 @@
     "pct": -8.84
    },
    {
-    "key": "aiserver",
-    "title": "AI 伺服器／資料中心硬體",
-    "pct": -7.53
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -8.54
    }
   ],
   "taiexNext": {
@@ -643,7 +646,7 @@
  },
  {
   "date": "2026-10-29",
-  "composite": -2.36,
+  "composite": -2.46,
   "sox": -1.42,
   "top3Up": [
    {
@@ -657,9 +660,9 @@
     "pct": 0.47
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -1.63
+    "key": "networking",
+    "title": "網通／光通訊",
+    "pct": -1.79
    }
   ],
   "top3Down": [
@@ -686,13 +689,13 @@
  },
  {
   "date": "2026-10-28",
-  "composite": 0.83,
+  "composite": 0.9,
   "sox": 1.75,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.82
+    "pct": 5.53
    },
    {
     "key": "semicap",
@@ -729,7 +732,7 @@
  },
  {
   "date": "2026-10-27",
-  "composite": 2.34,
+  "composite": 2.32,
   "sox": 3.6,
   "top3Up": [
    {
@@ -745,7 +748,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.46
+    "pct": 4.33
    }
   ],
   "top3Down": [
@@ -772,7 +775,7 @@
  },
  {
   "date": "2026-10-26",
-  "composite": 1.65,
+  "composite": 1.61,
   "sox": 2.82,
   "top3Up": [
    {
@@ -788,7 +791,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 2.93
+    "pct": 2.55
    }
   ],
   "top3Down": [
@@ -815,7 +818,7 @@
  },
  {
   "date": "2026-10-23",
-  "composite": 0.47,
+  "composite": 0.45,
   "sox": 0.44,
   "top3Up": [
    {
@@ -846,9 +849,9 @@
     "pct": -1.64
    },
    {
-    "key": "devices",
-    "title": "消費電子",
-    "pct": -0.93
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -1.04
    }
   ],
   "taiexNext": {
@@ -857,7 +860,7 @@
  },
  {
   "date": "2026-10-22",
-  "composite": -3.54,
+  "composite": -3.58,
   "sox": -6.72,
   "top3Up": [
    {
@@ -890,7 +893,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -6.85
+    "pct": -7.26
    }
   ],
   "taiexNext": {
@@ -899,7 +902,7 @@
  },
  {
   "date": "2026-10-21",
-  "composite": 1.95,
+  "composite": 1.89,
   "sox": 1.97,
   "top3Up": [
    {
@@ -915,7 +918,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 3.03
+    "pct": 2.51
    }
   ],
   "top3Down": [
@@ -942,7 +945,7 @@
  },
  {
   "date": "2026-10-20",
-  "composite": 0.25,
+  "composite": 0.2,
   "sox": -0.29,
   "top3Up": [
    {
@@ -953,7 +956,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 1.54
+    "pct": 1.05
    },
    {
     "key": "devices",
@@ -985,13 +988,13 @@
  },
  {
   "date": "2026-10-19",
-  "composite": 1.59,
+  "composite": 1.63,
   "sox": 1.61,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.15
+    "pct": 4.5
    },
    {
     "key": "software",
@@ -1028,7 +1031,7 @@
  },
  {
   "date": "2026-10-16",
-  "composite": -4.6,
+  "composite": -4.61,
   "sox": -3.83,
   "top3Up": [
    {
@@ -1056,7 +1059,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -6.66
+    "pct": -6.71
    },
    {
     "key": "networking",
@@ -1071,7 +1074,7 @@
  },
  {
   "date": "2026-10-15",
-  "composite": -0.52,
+  "composite": -0.5,
   "sox": -0.88,
   "top3Up": [
    {
@@ -1114,7 +1117,7 @@
  },
  {
   "date": "2026-10-14",
-  "composite": -3.99,
+  "composite": -4.02,
   "sox": -4.3,
   "top3Up": [
    {
@@ -1157,7 +1160,7 @@
  },
  {
   "date": "2026-10-13",
-  "composite": -0.45,
+  "composite": -0.41,
   "sox": -0.23,
   "top3Up": [
    {
@@ -1185,7 +1188,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.01
+    "pct": -1.59
    },
    {
     "key": "ev",
@@ -1200,7 +1203,7 @@
  },
  {
   "date": "2026-10-12",
-  "composite": -2.58,
+  "composite": -2.65,
   "sox": -2.67,
   "top3Up": [
    {
@@ -1233,7 +1236,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -3.43
+    "pct": -4.06
    }
   ],
   "taiexNext": {
@@ -1243,7 +1246,7 @@
  },
  {
   "date": "2026-10-09",
-  "composite": 1.16,
+  "composite": 1.11,
   "sox": -0.41,
   "top3Up": [
    {
@@ -1286,7 +1289,7 @@
  },
  {
   "date": "2026-10-08",
-  "composite": -1.74,
+  "composite": -1.77,
   "sox": -3.39,
   "top3Up": [
    {
@@ -1314,7 +1317,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -3.95
+    "pct": -4.18
    },
    {
     "key": "semis",
@@ -1328,13 +1331,13 @@
  },
  {
   "date": "2026-10-07",
-  "composite": -0.88,
+  "composite": -0.86,
   "sox": -1.15,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 0.98
+    "pct": 1.21
    },
    {
     "key": "aiserver",
@@ -1371,7 +1374,7 @@
  },
  {
   "date": "2026-10-06",
-  "composite": 0.4,
+  "composite": 0.48,
   "sox": 0.34,
   "top3Up": [
    {
@@ -1394,7 +1397,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -5.95
+    "pct": -5.1
    },
    {
     "key": "semicap",
@@ -1414,13 +1417,13 @@
  },
  {
   "date": "2026-10-05",
-  "composite": 0.66,
+  "composite": 0.55,
   "sox": 0.27,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 3.27
+    "pct": 2.22
    },
    {
     "key": "cyber",
@@ -1457,7 +1460,7 @@
  },
  {
   "date": "2026-10-02",
-  "composite": 0.85,
+  "composite": 0.94,
   "sox": 2.4,
   "top3Up": [
    {
@@ -1480,7 +1483,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -7.49
+    "pct": -6.57
    },
    {
     "key": "software",
@@ -1500,7 +1503,7 @@
  },
  {
   "date": "2026-10-01",
-  "composite": 1.51,
+  "composite": 1.52,
   "sox": 1.59,
   "top3Up": [
    {
@@ -1586,7 +1589,7 @@
  },
  {
   "date": "2026-09-29",
-  "composite": 0.8,
+  "composite": 0.83,
   "sox": 1.32,
   "top3Up": [
    {
@@ -1629,7 +1632,7 @@
  },
  {
   "date": "2026-09-28",
-  "composite": -1.54,
+  "composite": -1.61,
   "sox": -1.61,
   "top3Up": [
    {
@@ -1672,7 +1675,7 @@
  },
  {
   "date": "2026-09-25",
-  "composite": 0.32,
+  "composite": 0.33,
   "sox": 1.41,
   "top3Up": [
    {
@@ -1714,7 +1717,7 @@
  },
  {
   "date": "2026-09-24",
-  "composite": -0.41,
+  "composite": -0.44,
   "sox": -0.33,
   "top3Up": [
    {
@@ -1737,7 +1740,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.02
+    "pct": -2.38
    },
    {
     "key": "devices",
@@ -1756,7 +1759,7 @@
  },
  {
   "date": "2026-09-23",
-  "composite": -0.3,
+  "composite": -0.4,
   "sox": -1.23,
   "top3Up": [
    {
@@ -1799,13 +1802,13 @@
  },
  {
   "date": "2026-09-22",
-  "composite": 0.6,
+  "composite": 0.65,
   "sox": 2.06,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.5
+    "pct": 5.08
    },
    {
     "key": "semicap",
@@ -1842,7 +1845,7 @@
  },
  {
   "date": "2026-09-21",
-  "composite": 3.19,
+  "composite": 3.1,
   "sox": 4.29,
   "top3Up": [
    {
@@ -1863,6 +1866,11 @@
   ],
   "top3Down": [
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 1.27
+   },
+   {
     "key": "aiserver",
     "title": "AI 伺服器／資料中心硬體",
     "pct": 1.86
@@ -1871,11 +1879,6 @@
     "key": "devices",
     "title": "消費電子",
     "pct": 1.89
-   },
-   {
-    "key": "software",
-    "title": "軟體／雲端",
-    "pct": 1.9
    }
   ],
   "taiexNext": {
@@ -1885,18 +1888,18 @@
  },
  {
   "date": "2026-09-18",
-  "composite": 0.66,
+  "composite": 0.81,
   "sox": 2.78,
   "top3Up": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 6.49
+   },
    {
     "key": "semicap",
     "title": "半導體設備",
     "pct": 5.36
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 4.99
    },
    {
     "key": "networking",
@@ -1928,7 +1931,7 @@
  },
  {
   "date": "2026-09-17",
-  "composite": 2.24,
+  "composite": 2.32,
   "sox": 3.14,
   "top3Up": [
    {
@@ -1937,14 +1940,14 @@
     "pct": 5.45
    },
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 3.98
+   },
+   {
     "key": "semis",
     "title": "半導體",
     "pct": 3.65
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 3.23
    }
   ],
   "top3Down": [
@@ -1971,7 +1974,7 @@
  },
  {
   "date": "2026-09-16",
-  "composite": 0.44,
+  "composite": 0.4,
   "sox": 0.63,
   "top3Up": [
    {
@@ -2014,7 +2017,7 @@
  },
  {
   "date": "2026-09-15",
-  "composite": -0.44,
+  "composite": -0.41,
   "sox": 0.4,
   "top3Up": [
    {
@@ -2037,7 +2040,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.44
+    "pct": -2.17
    },
    {
     "key": "software",
@@ -2057,7 +2060,7 @@
  },
  {
   "date": "2026-09-14",
-  "composite": -1.73,
+  "composite": -1.74,
   "sox": -5.86,
   "top3Up": [
    {
@@ -2100,7 +2103,7 @@
  },
  {
   "date": "2026-09-11",
-  "composite": 1.57,
+  "composite": 1.54,
   "sox": 1.81,
   "top3Up": [
    {
@@ -2123,7 +2126,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.31
+    "pct": -2.61
    },
    {
     "key": "cyber",
@@ -2131,8 +2134,8 @@
     "pct": -1.18
    },
    {
-    "key": "ev",
-    "title": "電動車／自駕",
+    "key": "software",
+    "title": "軟體／雲端",
     "pct": 0.45
    }
   ],
@@ -2171,7 +2174,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -4
+    "pct": -4.01
    },
    {
     "key": "semicap",
@@ -2186,7 +2189,7 @@
  },
  {
   "date": "2026-09-09",
-  "composite": -0.16,
+  "composite": -0.13,
   "sox": 0.37,
   "top3Up": [
    {
@@ -2202,7 +2205,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 0.58
+    "pct": 0.81
    }
   ],
   "top3Down": [
@@ -2229,7 +2232,7 @@
  },
  {
   "date": "2026-09-08",
-  "composite": 1.06,
+  "composite": 1,
   "sox": 1.3,
   "top3Up": [
    {
@@ -2272,13 +2275,13 @@
  },
  {
   "date": "2026-09-04",
-  "composite": 1.14,
+  "composite": 1.29,
   "sox": 3.37,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 6.1
+    "pct": 7.55
    },
    {
     "key": "semicap",
@@ -2315,7 +2318,7 @@
  },
  {
   "date": "2026-09-03",
-  "composite": 1.23,
+  "composite": 1.26,
   "sox": 0.11,
   "top3Up": [
    {
@@ -2343,7 +2346,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -0.88
+    "pct": -0.64
    },
    {
     "key": "semicap",
@@ -2358,17 +2361,17 @@
  },
  {
   "date": "2026-09-02",
-  "composite": -0.43,
+  "composite": -0.41,
   "sox": 0.45,
   "top3Up": [
    {
-    "key": "internet",
-    "title": "網路平台",
+    "key": "ev",
+    "title": "電動車／自駕",
     "pct": 1.42
    },
    {
-    "key": "ev",
-    "title": "電動車／自駕",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 1.42
    },
    {
@@ -2401,7 +2404,7 @@
  },
  {
   "date": "2026-09-01",
-  "composite": -2.63,
+  "composite": -2.64,
   "sox": -2.14,
   "top3Up": [
    {
@@ -2417,7 +2420,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -1.36
+    "pct": -1.5
    }
   ],
   "top3Down": [
@@ -2444,7 +2447,7 @@
  },
  {
   "date": "2026-08-31",
-  "composite": 0.24,
+  "composite": 0.37,
   "sox": 0.57,
   "top3Up": [
    {
@@ -2453,14 +2456,14 @@
     "pct": 3.12
    },
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 1.54
+   },
+   {
     "key": "networking",
     "title": "網通／光通訊",
     "pct": 0.82
-   },
-   {
-    "key": "ev",
-    "title": "電動車／自駕",
-    "pct": 0.75
    }
   ],
   "top3Down": [
@@ -2487,7 +2490,7 @@
  },
  {
   "date": "2026-08-28",
-  "composite": -1.84,
+  "composite": -1.81,
   "sox": -3.47,
   "top3Up": [
    {
@@ -2530,7 +2533,7 @@
  },
  {
   "date": "2026-08-27",
-  "composite": 2.46,
+  "composite": 2.45,
   "sox": 2.33,
   "top3Up": [
    {
@@ -2558,7 +2561,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -0.56
+    "pct": -0.66
    },
    {
     "key": "devices",
@@ -2573,7 +2576,7 @@
  },
  {
   "date": "2026-08-26",
-  "composite": 0.78,
+  "composite": 0.75,
   "sox": 0.2,
   "top3Up": [
    {
@@ -2584,7 +2587,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 2.54
+    "pct": 2.22
    },
    {
     "key": "aiserver",
@@ -2616,7 +2619,7 @@
  },
  {
   "date": "2026-08-25",
-  "composite": 1.23,
+  "composite": 1.13,
   "sox": 1.44,
   "top3Up": [
    {
@@ -2632,7 +2635,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 3.14
+    "pct": 2.14
    }
   ],
   "top3Down": [
@@ -2659,7 +2662,7 @@
  },
  {
   "date": "2026-08-24",
-  "composite": -2.52,
+  "composite": -2.53,
   "sox": -2.7,
   "top3Up": [
    {
@@ -2682,7 +2685,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -5.86
+    "pct": -6.01
    },
    {
     "key": "networking",
@@ -2702,7 +2705,7 @@
  },
  {
   "date": "2026-08-21",
-  "composite": 0.68,
+  "composite": 0.69,
   "sox": -0.51,
   "top3Up": [
    {
@@ -2723,14 +2726,14 @@
   ],
   "top3Down": [
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -0.95
-   },
-   {
     "key": "semis",
     "title": "半導體",
     "pct": -0.87
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -0.78
    },
    {
     "key": "semicap",
@@ -2745,13 +2748,13 @@
  },
  {
   "date": "2026-08-20",
-  "composite": -0.4,
+  "composite": -0.41,
   "sox": 0.53,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 2.53
+    "pct": 2.41
    },
    {
     "key": "networking",
@@ -2788,7 +2791,7 @@
  },
  {
   "date": "2026-08-19",
-  "composite": -1.19,
+  "composite": -1.16,
   "sox": -2.12,
   "top3Up": [
    {
@@ -2811,7 +2814,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -5.04
+    "pct": -4.66
    },
    {
     "key": "semicap",
@@ -2831,7 +2834,7 @@
  },
  {
   "date": "2026-08-18",
-  "composite": -3.57,
+  "composite": -3.6,
   "sox": -4.98,
   "top3Up": [
    {
@@ -2859,7 +2862,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -7.87
+    "pct": -8.16
    },
    {
     "key": "semicap",
@@ -2874,13 +2877,13 @@
  },
  {
   "date": "2026-08-17",
-  "composite": 0.18,
+  "composite": 0.31,
   "sox": 1.64,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 3.89
+    "pct": 5.14
    },
    {
     "key": "networking",
@@ -2917,13 +2920,13 @@
  },
  {
   "date": "2026-08-14",
-  "composite": -0.29,
+  "composite": -0.21,
   "sox": -0.31,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.12
+    "pct": 4.94
    },
    {
     "key": "networking",
@@ -2960,13 +2963,13 @@
  },
  {
   "date": "2026-08-13",
-  "composite": 1.5,
+  "composite": 1.71,
   "sox": 0.46,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 5.48
+    "pct": 7.53
    },
    {
     "key": "cyber",
@@ -3003,7 +3006,7 @@
  },
  {
   "date": "2026-08-12",
-  "composite": 2.1,
+  "composite": 2.12,
   "sox": 2.49,
   "top3Up": [
    {
@@ -3019,7 +3022,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 5.22
+    "pct": 5.35
    }
   ],
   "top3Down": [
@@ -3046,7 +3049,7 @@
  },
  {
   "date": "2026-08-11",
-  "composite": 0.14,
+  "composite": 0.18,
   "sox": 0.87,
   "top3Up": [
    {
@@ -3057,7 +3060,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 1.07
+    "pct": 1.47
    },
    {
     "key": "networking",
@@ -3089,7 +3092,7 @@
  },
  {
   "date": "2026-08-10",
-  "composite": -0.29,
+  "composite": -0.22,
   "sox": -2.94,
   "top3Up": [
    {
@@ -3132,7 +3135,7 @@
  },
  {
   "date": "2026-08-07",
-  "composite": 2.28,
+  "composite": 2.27,
   "sox": 2.56,
   "top3Up": [
    {
@@ -3155,7 +3158,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.99
+    "pct": -3.16
    },
    {
     "key": "internet",
@@ -3175,7 +3178,7 @@
  },
  {
   "date": "2026-08-06",
-  "composite": -0.9,
+  "composite": -0.97,
   "sox": 0.33,
   "top3Up": [
    {
@@ -3198,7 +3201,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -4.17
+    "pct": -4.83
    },
    {
     "key": "software",
@@ -3218,7 +3221,7 @@
  },
  {
   "date": "2026-08-05",
-  "composite": -1.77,
+  "composite": -1.86,
   "sox": -1.4,
   "top3Up": [
    {
@@ -3246,7 +3249,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.07
+    "pct": -2.9
    },
    {
     "key": "internet",
@@ -3261,7 +3264,7 @@
  },
  {
   "date": "2026-08-04",
-  "composite": 5.08,
+  "composite": 5.24,
   "sox": 6.55,
   "top3Up": [
    {
@@ -3304,7 +3307,7 @@
  },
  {
   "date": "2026-08-03",
-  "composite": 2.53,
+  "composite": 2.72,
   "sox": 1.05,
   "top3Up": [
    {
@@ -3327,7 +3330,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -1.79
+    "pct": 0.16
    },
    {
     "key": "devices",
@@ -3347,7 +3350,7 @@
  },
  {
   "date": "2026-07-31",
-  "composite": 0.56,
+  "composite": 0.46,
   "sox": 0.07,
   "top3Up": [
    {
@@ -3373,14 +3376,14 @@
     "pct": -5.97
    },
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -2.06
+   },
+   {
     "key": "devices",
     "title": "消費電子",
     "pct": -1.39
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -1.06
    }
   ],
   "taiexNext": {
@@ -3390,13 +3393,13 @@
  },
  {
   "date": "2026-07-30",
-  "composite": 5.38,
+  "composite": 5.65,
   "sox": 8.19,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 15.05
+    "pct": 17.78
    },
    {
     "key": "semicap",
@@ -3433,7 +3436,7 @@
  },
  {
   "date": "2026-07-29",
-  "composite": -2.36,
+  "composite": -2.48,
   "sox": -5.33,
   "top3Up": [
    {
@@ -3476,7 +3479,7 @@
  },
  {
   "date": "2026-07-28",
-  "composite": -1.49,
+  "composite": -1.65,
   "sox": -4.49,
   "top3Up": [
    {
@@ -3499,7 +3502,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -8.1
+    "pct": -9.63
    },
    {
     "key": "semicap",
@@ -3519,7 +3522,7 @@
  },
  {
   "date": "2026-07-27",
-  "composite": -0.18,
+  "composite": -0.37,
   "sox": -2.23,
   "top3Up": [
    {
@@ -3540,14 +3543,14 @@
   ],
   "top3Down": [
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -5.39
+   },
+   {
     "key": "semicap",
     "title": "半導體設備",
     "pct": -3.96
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -3.51
    },
    {
     "key": "networking",
@@ -3562,7 +3565,7 @@
  },
  {
   "date": "2026-07-24",
-  "composite": -2.21,
+  "composite": -2.31,
   "sox": -4.25,
   "top3Up": [
    {
@@ -3585,7 +3588,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -6.88
+    "pct": -7.86
    },
    {
     "key": "networking",
@@ -3605,13 +3608,13 @@
  },
  {
   "date": "2026-07-23",
-  "composite": -1.53,
+  "composite": -1.55,
   "sox": -0.54,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 1.36
+    "pct": 1.19
    },
    {
     "key": "networking",
@@ -3659,7 +3662,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 0.72
+    "pct": 0.7
    },
    {
     "key": "semis",
@@ -3691,13 +3694,13 @@
  },
  {
   "date": "2026-07-21",
-  "composite": 3.51,
+  "composite": 3.57,
   "sox": 5.21,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 11.94
+    "pct": 12.52
    },
    {
     "key": "networking",
@@ -3734,13 +3737,13 @@
  },
  {
   "date": "2026-07-20",
-  "composite": -0.2,
+  "composite": -0.18,
   "sox": 0.6,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 1.99
+    "pct": 2.16
    },
    {
     "key": "networking",
@@ -3777,7 +3780,7 @@
  },
  {
   "date": "2026-07-17",
-  "composite": 0.27,
+  "composite": 0.11,
   "sox": -1.63,
   "top3Up": [
    {
@@ -3786,14 +3789,14 @@
     "pct": 4.48
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 2.46
-   },
-   {
     "key": "cyber",
     "title": "資安",
     "pct": 1.16
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 0.85
    }
   ],
   "top3Down": [
@@ -3820,7 +3823,7 @@
  },
  {
   "date": "2026-07-16",
-  "composite": -2.48,
+  "composite": -2.59,
   "sox": -4.29,
   "top3Up": [
    {
@@ -3843,7 +3846,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -8.27
+    "pct": -9.36
    },
    {
     "key": "networking",
@@ -3863,7 +3866,7 @@
  },
  {
   "date": "2026-07-15",
-  "composite": -1.03,
+  "composite": -1.04,
   "sox": -2.08,
   "top3Up": [
    {
@@ -3886,7 +3889,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -7.5
+    "pct": -7.66
    },
    {
     "key": "networking",
@@ -3906,7 +3909,7 @@
  },
  {
   "date": "2026-07-14",
-  "composite": 1.25,
+  "composite": 1.31,
   "sox": 2.54,
   "top3Up": [
    {
@@ -3920,9 +3923,9 @@
     "pct": 3.62
    },
    {
-    "key": "networking",
-    "title": "網通／光通訊",
-    "pct": 3.1
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 3.35
    }
   ],
   "top3Down": [
@@ -3949,7 +3952,7 @@
  },
  {
   "date": "2026-07-13",
-  "composite": -2.03,
+  "composite": -2.23,
   "sox": -4.78,
   "top3Up": [
    {
@@ -3970,14 +3973,14 @@
   ],
   "top3Down": [
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -6.76
+   },
+   {
     "key": "semicap",
     "title": "半導體設備",
     "pct": -4.95
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -4.81
    },
    {
     "key": "semis",
@@ -3992,13 +3995,13 @@
  },
  {
   "date": "2026-07-10",
-  "composite": -0.84,
+  "composite": -0.78,
   "sox": 0.06,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 0.61
+    "pct": 1.23
    },
    {
     "key": "networking",
@@ -4035,7 +4038,7 @@
  },
  {
   "date": "2026-07-09",
-  "composite": 3.05,
+  "composite": 3.13,
   "sox": 3.06,
   "top3Up": [
    {
@@ -4046,7 +4049,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.35
+    "pct": 5.16
    },
    {
     "key": "ev",
@@ -4077,7 +4080,7 @@
  },
  {
   "date": "2026-07-08",
-  "composite": 0.81,
+  "composite": 0.91,
   "sox": 2.23,
   "top3Up": [
    {
@@ -4086,14 +4089,14 @@
     "pct": 4.36
    },
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 3.8
+   },
+   {
     "key": "networking",
     "title": "網通／光通訊",
     "pct": 3
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 2.81
    }
   ],
   "top3Down": [
@@ -4120,7 +4123,7 @@
  },
  {
   "date": "2026-07-07",
-  "composite": -3.19,
+  "composite": -3.22,
   "sox": -4.65,
   "top3Up": [
    {
@@ -4153,7 +4156,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -5.75
+    "pct": -6.13
    }
   ],
   "taiexNext": {
@@ -4163,7 +4166,7 @@
  },
  {
   "date": "2026-07-06",
-  "composite": 2.9,
+  "composite": 2.78,
   "sox": 2.17,
   "top3Up": [
    {
@@ -4172,14 +4175,14 @@
     "pct": 8.11
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 4.65
-   },
-   {
     "key": "aiserver",
     "title": "AI 伺服器／資料中心硬體",
     "pct": 4.63
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 3.48
    }
   ],
   "top3Down": [
@@ -4206,7 +4209,7 @@
  },
  {
   "date": "2026-07-02",
-  "composite": -3.43,
+  "composite": -3.56,
   "sox": -5.44,
   "top3Up": [
    {
@@ -4227,14 +4230,14 @@
   ],
   "top3Down": [
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -9.98
+   },
+   {
     "key": "semicap",
     "title": "半導體設備",
     "pct": -9.65
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -8.6
    },
    {
     "key": "networking",
@@ -4249,7 +4252,7 @@
  },
  {
   "date": "2026-07-01",
-  "composite": -2.02,
+  "composite": -2.1,
   "sox": -6.27,
   "top3Up": [
    {
@@ -4277,7 +4280,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -7.35
+    "pct": -8.17
    },
    {
     "key": "networking",
@@ -4292,7 +4295,7 @@
  },
  {
   "date": "2026-06-30",
-  "composite": 1.69,
+  "composite": 1.98,
   "sox": 3.92,
   "top3Up": [
    {
@@ -4323,9 +4326,9 @@
     "pct": -0.54
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -0.53
+    "key": "software",
+    "title": "軟體／雲端",
+    "pct": 0.62
    }
   ],
   "taiexNext": {
@@ -4335,7 +4338,7 @@
  },
  {
   "date": "2026-06-29",
-  "composite": 3.89,
+  "composite": 3.67,
   "sox": 3.83,
   "top3Up": [
    {
@@ -4349,9 +4352,9 @@
     "pct": 8.02
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 6.64
+    "key": "cyber",
+    "title": "資安",
+    "pct": 4.92
    }
   ],
   "top3Down": [
@@ -4378,7 +4381,7 @@
  },
  {
   "date": "2026-06-26",
-  "composite": -1.03,
+  "composite": -1.02,
   "sox": -5.29,
   "top3Up": [
    {
@@ -4401,7 +4404,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -10.7
+    "pct": -10.64
    },
    {
     "key": "semicap",
@@ -4421,13 +4424,13 @@
  },
  {
   "date": "2026-06-25",
-  "composite": 0.91,
+  "composite": 1.26,
   "sox": 3.59,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 7.96
+    "pct": 11.46
    },
    {
     "key": "semicap",
@@ -4464,7 +4467,7 @@
  },
  {
   "date": "2026-06-24",
-  "composite": -0.61,
+  "composite": -0.6,
   "sox": -0.18,
   "top3Up": [
    {
@@ -4487,7 +4490,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.9
+    "pct": -2.8
    },
    {
     "key": "software",
@@ -4507,7 +4510,7 @@
  },
  {
   "date": "2026-06-23",
-  "composite": -3.64,
+  "composite": -3.76,
   "sox": -7.87,
   "top3Up": [
    {
@@ -4530,7 +4533,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -8.9
+    "pct": -10.08
    },
    {
     "key": "semicap",
@@ -4550,7 +4553,7 @@
  },
  {
   "date": "2026-06-22",
-  "composite": 0.54,
+  "composite": 0.59,
   "sox": 2.04,
   "top3Up": [
    {
@@ -4593,7 +4596,7 @@
  },
  {
   "date": "2026-06-18",
-  "composite": 2.53,
+  "composite": 2.7,
   "sox": 6.42,
   "top3Up": [
    {
@@ -4602,14 +4605,14 @@
     "pct": 6.82
    },
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 6.35
+   },
+   {
     "key": "semis",
     "title": "半導體",
     "pct": 6.02
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 4.63
    }
   ],
   "top3Down": [
@@ -4636,18 +4639,18 @@
  },
  {
   "date": "2026-06-17",
-  "composite": -0.15,
+  "composite": -0.27,
   "sox": 1.38,
   "top3Up": [
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 3.37
-   },
    {
     "key": "semicap",
     "title": "半導體設備",
     "pct": 2.23
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 2.12
    },
    {
     "key": "semis",
@@ -4679,7 +4682,7 @@
  },
  {
   "date": "2026-06-16",
-  "composite": -2.72,
+  "composite": -2.85,
   "sox": -5.71,
   "top3Up": [
    {
@@ -4688,14 +4691,14 @@
     "pct": -0.18
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -0.24
-   },
-   {
     "key": "devices",
     "title": "消費電子",
     "pct": -0.5
+   },
+   {
+    "key": "software",
+    "title": "軟體／雲端",
+    "pct": -1.33
    }
   ],
   "top3Down": [
@@ -4722,13 +4725,13 @@
  },
  {
   "date": "2026-06-15",
-  "composite": 3.73,
+  "composite": 3.59,
   "sox": 5.45,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 12.12
+    "pct": 10.7
    },
    {
     "key": "networking",
@@ -4765,13 +4768,13 @@
  },
  {
   "date": "2026-06-12",
-  "composite": 1.18,
+  "composite": 1.21,
   "sox": 1.52,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.06
+    "pct": 4.35
    },
    {
     "key": "ev",
@@ -4808,7 +4811,7 @@
  },
  {
   "date": "2026-06-11",
-  "composite": 4.56,
+  "composite": 4.71,
   "sox": 7.91,
   "top3Up": [
    {
@@ -4819,7 +4822,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 8.68
+    "pct": 10.14
    },
    {
     "key": "ev",
@@ -4851,7 +4854,7 @@
  },
  {
   "date": "2026-06-10",
-  "composite": -2.89,
+  "composite": -2.78,
   "sox": -3.57,
   "top3Up": [
    {
@@ -4882,9 +4885,9 @@
     "pct": -6.24
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -4.53
+    "key": "semis",
+    "title": "半導體",
+    "pct": -4.19
    }
   ],
   "taiexNext": {
@@ -4894,7 +4897,7 @@
  },
  {
   "date": "2026-06-09",
-  "composite": -2.53,
+  "composite": -2.47,
   "sox": -1.93,
   "top3Up": [
    {
@@ -4908,9 +4911,9 @@
     "pct": -0.27
    },
    {
-    "key": "devices",
-    "title": "消費電子",
-    "pct": -1.66
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -1.6
    }
   ],
   "top3Down": [
@@ -4948,7 +4951,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 5.43
+    "pct": 5.4
    },
    {
     "key": "semis",
@@ -4980,7 +4983,7 @@
  },
  {
   "date": "2026-06-05",
-  "composite": -6.82,
+  "composite": -6.83,
   "sox": -10.26,
   "top3Up": [
    {
@@ -5003,7 +5006,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -10.94
+    "pct": -11.05
    },
    {
     "key": "semicap",
@@ -5023,7 +5026,7 @@
  },
  {
   "date": "2026-06-04",
-  "composite": -0.63,
+  "composite": -0.62,
   "sox": -2.15,
   "top3Up": [
    {
@@ -5046,7 +5049,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -4.15
+    "pct": -4.09
    },
    {
     "key": "semis",
@@ -5066,13 +5069,13 @@
  },
  {
   "date": "2026-06-03",
-  "composite": -1.42,
+  "composite": -1.33,
   "sox": 1.39,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 2.83
+    "pct": 3.8
    },
    {
     "key": "semicap",
@@ -5109,7 +5112,7 @@
  },
  {
   "date": "2026-06-02",
-  "composite": 1.78,
+  "composite": 1.66,
   "sox": 5.87,
   "top3Up": [
    {
@@ -5152,7 +5155,7 @@
  },
  {
   "date": "2026-06-01",
-  "composite": 3.35,
+  "composite": 3.33,
   "sox": 1.06,
   "top3Up": [
    {
@@ -5195,7 +5198,7 @@
  },
  {
   "date": "2026-05-29",
-  "composite": 3.24,
+  "composite": 3.27,
   "sox": 0,
   "top3Up": [
    {
@@ -5238,7 +5241,7 @@
  },
  {
   "date": "2026-05-28",
-  "composite": 1.7,
+  "composite": 1.78,
   "sox": 1,
   "top3Up": [
    {
@@ -5281,7 +5284,7 @@
  },
  {
   "date": "2026-05-27",
-  "composite": -0.83,
+  "composite": -0.89,
   "sox": -1.36,
   "top3Up": [
    {
@@ -5292,7 +5295,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 2.57
+    "pct": 1.93
    },
    {
     "key": "internet",
@@ -5324,13 +5327,13 @@
  },
  {
   "date": "2026-05-26",
-  "composite": 2.17,
+  "composite": 2.09,
   "sox": 5.53,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 10.56
+    "pct": 9.8
    },
    {
     "key": "semicap",
@@ -5367,7 +5370,7 @@
  },
  {
   "date": "2026-05-22",
-  "composite": 2.18,
+  "composite": 2.09,
   "sox": 1.99,
   "top3Up": [
    {
@@ -5388,14 +5391,14 @@
   ],
   "top3Down": [
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -1.44
+   },
+   {
     "key": "internet",
     "title": "網路平台",
     "pct": -0.95
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -0.54
    },
    {
     "key": "ev",
@@ -5410,18 +5413,18 @@
  },
  {
   "date": "2026-05-21",
-  "composite": 2.12,
+  "composite": 2.24,
   "sox": 1.28,
   "top3Up": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 7.15
+   },
    {
     "key": "networking",
     "title": "網通／光通訊",
     "pct": 6.42
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 5.95
    },
    {
     "key": "aiserver",
@@ -5453,7 +5456,7 @@
  },
  {
   "date": "2026-05-20",
-  "composite": 2.37,
+  "composite": 2.32,
   "sox": 4.49,
   "top3Up": [
    {
@@ -5496,13 +5499,13 @@
  },
  {
   "date": "2026-05-19",
-  "composite": -0.5,
+  "composite": -0.41,
   "sox": 0.03,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 0.29
+    "pct": 1.16
    },
    {
     "key": "cyber",
@@ -5539,7 +5542,7 @@
  },
  {
   "date": "2026-05-18",
-  "composite": -1.42,
+  "composite": -1.4,
   "sox": -2.47,
   "top3Up": [
    {
@@ -5562,7 +5565,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -5.89
+    "pct": -5.74
    },
    {
     "key": "networking",
@@ -5582,7 +5585,7 @@
  },
  {
   "date": "2026-05-15",
-  "composite": -1.86,
+  "composite": -1.74,
   "sox": -4.02,
   "top3Up": [
    {
@@ -5625,7 +5628,7 @@
  },
  {
   "date": "2026-05-14",
-  "composite": 0.44,
+  "composite": 0.38,
   "sox": 0.46,
   "top3Up": [
    {
@@ -5648,7 +5651,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -1.99
+    "pct": -2.61
    },
    {
     "key": "devices",
@@ -5668,7 +5671,7 @@
  },
  {
   "date": "2026-05-13",
-  "composite": 2.07,
+  "composite": 2,
   "sox": 2.57,
   "top3Up": [
    {
@@ -5711,7 +5714,7 @@
  },
  {
   "date": "2026-05-12",
-  "composite": -1.63,
+  "composite": -1.68,
   "sox": -3.01,
   "top3Up": [
    {
@@ -5734,7 +5737,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -3.96
+    "pct": -4.52
    },
    {
     "key": "semis",
@@ -5754,7 +5757,7 @@
  },
  {
   "date": "2026-05-11",
-  "composite": 1.79,
+  "composite": 1.59,
   "sox": 2.59,
   "top3Up": [
    {
@@ -5765,7 +5768,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 6.84
+    "pct": 4.89
    },
    {
     "key": "semis",
@@ -5797,13 +5800,13 @@
  },
  {
   "date": "2026-05-08",
-  "composite": 2.5,
+  "composite": 2.74,
   "sox": 5.51,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 7.02
+    "pct": 9.42
    },
    {
     "key": "aiserver",
@@ -5840,7 +5843,7 @@
  },
  {
   "date": "2026-05-07",
-  "composite": -0.45,
+  "composite": -0.5,
   "sox": -2.72,
   "top3Up": [
    {
@@ -5871,9 +5874,9 @@
     "pct": -4.2
    },
    {
-    "key": "aiserver",
-    "title": "AI 伺服器／資料中心硬體",
-    "pct": -3.51
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -3.62
    }
   ],
   "taiexNext": {
@@ -5883,7 +5886,7 @@
  },
  {
   "date": "2026-05-06",
-  "composite": 2.33,
+  "composite": 2.25,
   "sox": 4.48,
   "top3Up": [
    {
@@ -5926,13 +5929,13 @@
  },
  {
   "date": "2026-05-05",
-  "composite": 2.04,
+  "composite": 2.17,
   "sox": 4.23,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 6.88
+    "pct": 8.15
    },
    {
     "key": "semicap",
@@ -5969,13 +5972,13 @@
  },
  {
   "date": "2026-05-04",
-  "composite": 0.43,
+  "composite": 0.49,
   "sox": -0.57,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 3.47
+    "pct": 4.06
    },
    {
     "key": "cyber",
@@ -6012,13 +6015,13 @@
  },
  {
   "date": "2026-05-01",
-  "composite": 1.45,
+  "composite": 1.56,
   "sox": 0.87,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.02
+    "pct": 5.08
    },
    {
     "key": "software",
@@ -6097,13 +6100,13 @@
  },
  {
   "date": "2026-04-29",
-  "composite": 1.11,
+  "composite": 1.1,
   "sox": 2.35,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 6.49
+    "pct": 6.41
    },
    {
     "key": "networking",
@@ -6140,7 +6143,7 @@
  },
  {
   "date": "2026-04-28",
-  "composite": -2.36,
+  "composite": -2.44,
   "sox": -3.58,
   "top3Up": [
    {
@@ -6171,9 +6174,9 @@
     "pct": -5.02
    },
    {
-    "key": "aiserver",
-    "title": "AI 伺服器／資料中心硬體",
-    "pct": -3.8
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -3.86
    }
   ],
   "taiexNext": {
@@ -6183,13 +6186,13 @@
  },
  {
   "date": "2026-04-27",
-  "composite": -0.64,
+  "composite": -0.49,
   "sox": -1,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 2.14
+    "pct": 3.64
    },
    {
     "key": "cyber",
@@ -6226,7 +6229,7 @@
  },
  {
   "date": "2026-04-24",
-  "composite": 2.22,
+  "composite": 2.34,
   "sox": 4.32,
   "top3Up": [
    {
@@ -6257,9 +6260,9 @@
     "pct": -0.51
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 1.03
+    "key": "software",
+    "title": "軟體／雲端",
+    "pct": 1.31
    }
   ],
   "taiexNext": {
@@ -6269,7 +6272,7 @@
  },
  {
   "date": "2026-04-23",
-  "composite": -1.96,
+  "composite": -2.11,
   "sox": 1.71,
   "top3Up": [
    {
@@ -6278,14 +6281,14 @@
     "pct": 3.27
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 1.25
-   },
-   {
     "key": "semicap",
     "title": "半導體設備",
     "pct": 0.15
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -0.25
    }
   ],
   "top3Down": [
@@ -6312,13 +6315,13 @@
  },
  {
   "date": "2026-04-22",
-  "composite": 1.78,
+  "composite": 1.87,
   "sox": 2.72,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.48
+    "pct": 5.45
    },
    {
     "key": "semis",
@@ -6355,7 +6358,7 @@
  },
  {
   "date": "2026-04-21",
-  "composite": 0.59,
+  "composite": 0.51,
   "sox": 0.5,
   "top3Up": [
    {
@@ -6369,9 +6372,9 @@
     "pct": 3.02
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 2.18
+    "key": "ev",
+    "title": "電動車／自駕",
+    "pct": 1.71
    }
   ],
   "top3Down": [
@@ -6398,7 +6401,7 @@
  },
  {
   "date": "2026-04-20",
-  "composite": 0.17,
+  "composite": 0.16,
   "sox": 0.45,
   "top3Up": [
    {
@@ -6431,7 +6434,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -0.83
+    "pct": -0.84
    }
   ],
   "taiexNext": {
@@ -6441,7 +6444,7 @@
  },
  {
   "date": "2026-04-17",
-  "composite": 1.36,
+  "composite": 1.32,
   "sox": 2.43,
   "top3Up": [
    {
@@ -6484,7 +6487,7 @@
  },
  {
   "date": "2026-04-16",
-  "composite": 1.23,
+  "composite": 1.29,
   "sox": 0.97,
   "top3Up": [
    {
@@ -6527,7 +6530,7 @@
  },
  {
   "date": "2026-04-15",
-  "composite": 1.07,
+  "composite": 0.98,
   "sox": 0.16,
   "top3Up": [
    {
@@ -6550,7 +6553,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -1.65
+    "pct": -2.63
    },
    {
     "key": "semicap",
@@ -6570,13 +6573,13 @@
  },
  {
   "date": "2026-04-14",
-  "composite": 1.38,
+  "composite": 1.21,
   "sox": 2.04,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 5.89
+    "pct": 4.21
    },
    {
     "key": "aiserver",
@@ -6613,7 +6616,7 @@
  },
  {
   "date": "2026-04-13",
-  "composite": 2.77,
+  "composite": 3.02,
   "sox": 1.68,
   "top3Up": [
    {
@@ -6656,7 +6659,7 @@
  },
  {
   "date": "2026-04-10",
-  "composite": 0.1,
+  "composite": 0.09,
   "sox": 2.31,
   "top3Up": [
    {
@@ -6699,9 +6702,14 @@
  },
  {
   "date": "2026-04-09",
-  "composite": -0.54,
+  "composite": -0.35,
   "sox": 2.1,
   "top3Up": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 3.33
+   },
    {
     "key": "semicap",
     "title": "半導體設備",
@@ -6711,11 +6719,6 @@
     "key": "internet",
     "title": "網路平台",
     "pct": 2.09
-   },
-   {
-    "key": "semis",
-    "title": "半導體",
-    "pct": 1.89
    }
   ],
   "top3Down": [
@@ -6742,7 +6745,7 @@
  },
  {
   "date": "2026-04-08",
-  "composite": 3.92,
+  "composite": 3.98,
   "sox": 6.34,
   "top3Up": [
    {
@@ -6758,7 +6761,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 7.4
+    "pct": 8.02
    }
   ],
   "top3Down": [
@@ -6785,7 +6788,7 @@
  },
  {
   "date": "2026-04-07",
-  "composite": 0.86,
+  "composite": 0.77,
   "sox": 1.11,
   "top3Up": [
    {
@@ -6799,9 +6802,9 @@
     "pct": 3.36
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 1.97
+    "key": "aiserver",
+    "title": "AI 伺服器／資料中心硬體",
+    "pct": 1.58
    }
   ],
   "top3Down": [
@@ -6828,13 +6831,13 @@
  },
  {
   "date": "2026-04-06",
-  "composite": 0.03,
+  "composite": 0.01,
   "sox": 1.06,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 3.94
+    "pct": 3.78
    },
    {
     "key": "semis",
@@ -6842,8 +6845,8 @@
     "pct": 0.93
    },
    {
-    "key": "semicap",
-    "title": "半導體設備",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 0.67
    }
   ],
@@ -6871,7 +6874,7 @@
  },
  {
   "date": "2026-04-02",
-  "composite": 1.24,
+  "composite": 1.27,
   "sox": 0.4,
   "top3Up": [
    {
@@ -6897,14 +6900,14 @@
     "pct": -1.54
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 0.04
-   },
-   {
     "key": "devices",
     "title": "消費電子",
     "pct": 0.13
+   },
+   {
+    "key": "internet",
+    "title": "網路平台",
+    "pct": 0.34
    }
   ],
   "taiexNext": {
@@ -6913,13 +6916,13 @@
  },
  {
   "date": "2026-04-01",
-  "composite": 2.26,
+  "composite": 2.27,
   "sox": 2.82,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 8.99
+    "pct": 9
    },
    {
     "key": "networking",
@@ -6956,13 +6959,13 @@
  },
  {
   "date": "2026-03-31",
-  "composite": 4.6,
+  "composite": 4.7,
   "sox": 6.24,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 6.85
+    "pct": 7.88
    },
    {
     "key": "semicap",
@@ -6999,7 +7002,7 @@
  },
  {
   "date": "2026-03-30",
-  "composite": -2.77,
+  "composite": -2.75,
   "sox": -4.23,
   "top3Up": [
    {
@@ -7027,7 +7030,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -7.72
+    "pct": -7.55
    },
    {
     "key": "aiserver",
@@ -7042,13 +7045,13 @@
  },
  {
   "date": "2026-03-27",
-  "composite": -2.07,
+  "composite": -2.03,
   "sox": -1.69,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 0.52
+    "pct": 0.91
    },
    {
     "key": "networking",
@@ -7085,7 +7088,7 @@
  },
  {
   "date": "2026-03-26",
-  "composite": -4.17,
+  "composite": -4.25,
   "sox": -4.79,
   "top3Up": [
    {
@@ -7113,7 +7116,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -7.67
+    "pct": -8.5
    },
    {
     "key": "semicap",
@@ -7128,7 +7131,7 @@
  },
  {
   "date": "2026-03-25",
-  "composite": 0.79,
+  "composite": 0.77,
   "sox": 1.21,
   "top3Up": [
    {
@@ -7151,7 +7154,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.6
+    "pct": -2.82
    },
    {
     "key": "cyber",
@@ -7171,7 +7174,7 @@
  },
  {
   "date": "2026-03-24",
-  "composite": 0.54,
+  "composite": 0.5,
   "sox": 1.28,
   "top3Up": [
    {
@@ -7214,7 +7217,7 @@
  },
  {
   "date": "2026-03-23",
-  "composite": 1.99,
+  "composite": 2.01,
   "sox": 1.34,
   "top3Up": [
    {
@@ -7237,7 +7240,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -1.85
+    "pct": -1.65
    },
    {
     "key": "cyber",
@@ -7257,7 +7260,7 @@
  },
  {
   "date": "2026-03-20",
-  "composite": -3.73,
+  "composite": -3.78,
   "sox": -2.45,
   "top3Up": [
    {
@@ -7290,7 +7293,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -5.9
+    "pct": -6.45
    }
   ],
   "taiexNext": {
@@ -7316,7 +7319,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 2.34
+    "pct": 2.36
    }
   ],
   "top3Down": [
@@ -7343,7 +7346,7 @@
  },
  {
   "date": "2026-03-18",
-  "composite": -0.71,
+  "composite": -0.54,
   "sox": -0.53,
   "top3Up": [
    {
@@ -7357,9 +7360,9 @@
     "pct": 1.46
    },
    {
-    "key": "semicap",
-    "title": "半導體設備",
-    "pct": -0.7
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -0.39
    }
   ],
   "top3Down": [
@@ -7386,13 +7389,13 @@
  },
  {
   "date": "2026-03-17",
-  "composite": 1.04,
+  "composite": 0.93,
   "sox": 0.52,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 6.58
+    "pct": 5.52
    },
    {
     "key": "ev",
@@ -7429,13 +7432,13 @@
  },
  {
   "date": "2026-03-16",
-  "composite": 1.53,
+  "composite": 1.58,
   "sox": 1.96,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.24
+    "pct": 4.77
    },
    {
     "key": "semicap",
@@ -7472,13 +7475,13 @@
  },
  {
   "date": "2026-03-13",
-  "composite": -0.18,
+  "composite": -0.1,
   "sox": 0.05,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 3.99
+    "pct": 4.72
    },
    {
     "key": "aiserver",
@@ -7515,7 +7518,7 @@
  },
  {
   "date": "2026-03-12",
-  "composite": -2.55,
+  "composite": -2.62,
   "sox": -3.43,
   "top3Up": [
    {
@@ -7558,18 +7561,18 @@
  },
  {
   "date": "2026-03-11",
-  "composite": 0.8,
+  "composite": 0.9,
   "sox": 0.63,
   "top3Up": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 2.79
+   },
    {
     "key": "ev",
     "title": "電動車／自駕",
     "pct": 2.37
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 1.76
    },
    {
     "key": "software",
@@ -7601,7 +7604,7 @@
  },
  {
   "date": "2026-03-10",
-  "composite": 0.51,
+  "composite": 0.58,
   "sox": 0.7,
   "top3Up": [
    {
@@ -7612,7 +7615,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 2.6
+    "pct": 3.23
    },
    {
     "key": "semicap",
@@ -7644,7 +7647,7 @@
  },
  {
   "date": "2026-03-09",
-  "composite": 3,
+  "composite": 3.14,
   "sox": 3.93,
   "top3Up": [
    {
@@ -7655,7 +7658,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 6.03
+    "pct": 7.43
    },
    {
     "key": "semicap",
@@ -7687,7 +7690,7 @@
  },
  {
   "date": "2026-03-06",
-  "composite": -2.07,
+  "composite": -2.11,
   "sox": -3.93,
   "top3Up": [
    {
@@ -7720,7 +7723,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -5.34
+    "pct": -5.69
    }
   ],
   "taiexNext": {
@@ -7730,7 +7733,7 @@
  },
  {
   "date": "2026-03-05",
-  "composite": -0.41,
+  "composite": -0.52,
   "sox": -1.17,
   "top3Up": [
    {
@@ -7773,13 +7776,13 @@
  },
  {
   "date": "2026-03-04",
-  "composite": 2.14,
+  "composite": 2.17,
   "sox": 1.93,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.89
+    "pct": 5.16
    },
    {
     "key": "aiserver",
@@ -7816,7 +7819,7 @@
  },
  {
   "date": "2026-03-03",
-  "composite": -2.52,
+  "composite": -2.57,
   "sox": -4.58,
   "top3Up": [
    {
@@ -7839,7 +7842,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -6.99
+    "pct": -7.41
    },
    {
     "key": "semicap",
@@ -7859,7 +7862,7 @@
  },
  {
   "date": "2026-03-02",
-  "composite": 0.77,
+  "composite": 0.79,
   "sox": 0.48,
   "top3Up": [
    {
@@ -7882,7 +7885,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -3.44
+    "pct": -3.22
    },
    {
     "key": "semis",
@@ -7902,7 +7905,7 @@
  },
  {
   "date": "2026-02-27",
-  "composite": 0.74,
+  "composite": 0.69,
   "sox": -1.21,
   "top3Up": [
    {
@@ -7945,7 +7948,7 @@
  },
  {
   "date": "2026-02-26",
-  "composite": -0.49,
+  "composite": -0.34,
   "sox": -3.19,
   "top3Up": [
    {
@@ -7976,9 +7979,9 @@
     "pct": -3.55
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -3
+    "key": "semis",
+    "title": "半導體",
+    "pct": -2.43
    }
   ],
   "taiexNext": {
@@ -7987,13 +7990,13 @@
  },
  {
   "date": "2026-02-25",
-  "composite": 2.71,
+  "composite": 2.54,
   "sox": 1.62,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 5.56
+    "pct": 3.93
    },
    {
     "key": "cyber",
@@ -8030,7 +8033,7 @@
  },
  {
   "date": "2026-02-24",
-  "composite": 1.15,
+  "composite": 1.11,
   "sox": 1.45,
   "top3Up": [
    {
@@ -8053,7 +8056,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.34
+    "pct": -2.8
    },
    {
     "key": "aiserver",
@@ -8073,7 +8076,7 @@
  },
  {
   "date": "2026-02-23",
-  "composite": -2.28,
+  "composite": -2.18,
   "sox": -0.57,
   "top3Up": [
    {
@@ -8087,9 +8090,9 @@
     "pct": -0.26
    },
    {
-    "key": "devices",
-    "title": "消費電子",
-    "pct": -0.51
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -0.46
    }
   ],
   "top3Down": [
@@ -8116,7 +8119,7 @@
  },
  {
   "date": "2026-02-20",
-  "composite": 0.26,
+  "composite": 0.35,
   "sox": 1.07,
   "top3Up": [
    {
@@ -8130,9 +8133,9 @@
     "pct": 2.34
    },
    {
-    "key": "semicap",
-    "title": "半導體設備",
-    "pct": 1.9
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 2.02
    }
   ],
   "top3Down": [
@@ -8159,7 +8162,7 @@
  },
  {
   "date": "2026-02-19",
-  "composite": -0.02,
+  "composite": 0.14,
   "sox": -0.5,
   "top3Up": [
    {
@@ -8180,14 +8183,14 @@
   ],
   "top3Down": [
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -2.81
-   },
-   {
     "key": "ev",
     "title": "電動車／自駕",
     "pct": -1.29
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -1.25
    },
    {
     "key": "semis",
@@ -8201,13 +8204,13 @@
  },
  {
   "date": "2026-02-18",
-  "composite": 0.78,
+  "composite": 0.72,
   "sox": 0.96,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 3.88
+    "pct": 3.33
    },
    {
     "key": "semicap",
@@ -8243,7 +8246,7 @@
  },
  {
   "date": "2026-02-17",
-  "composite": -0.86,
+  "composite": -0.96,
   "sox": -0.02,
   "top3Up": [
    {
@@ -8274,9 +8277,9 @@
     "pct": -2.83
    },
    {
-    "key": "software",
-    "title": "軟體／雲端",
-    "pct": -1.75
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -2.52
    }
   ],
   "taiexNext": {
@@ -8285,7 +8288,7 @@
  },
  {
   "date": "2026-02-13",
-  "composite": 2.13,
+  "composite": 2.14,
   "sox": 0.66,
   "top3Up": [
    {
@@ -8308,7 +8311,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -0.88
+    "pct": -0.81
    },
    {
     "key": "internet",
@@ -8327,13 +8330,13 @@
  },
  {
   "date": "2026-02-12",
-  "composite": -2.34,
+  "composite": -2.3,
   "sox": -2.5,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 3.51
+    "pct": 3.93
    },
    {
     "key": "software",
@@ -8369,13 +8372,13 @@
  },
  {
   "date": "2026-02-11",
-  "composite": 0.58,
+  "composite": 0.71,
   "sox": 2.28,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 5.66
+    "pct": 6.91
    },
    {
     "key": "semicap",
@@ -8411,7 +8414,7 @@
  },
  {
   "date": "2026-02-10",
-  "composite": 0.07,
+  "composite": 0.04,
   "sox": -0.68,
   "top3Up": [
    {
@@ -8434,7 +8437,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -5.88
+    "pct": -6.2
    },
    {
     "key": "internet",
@@ -8454,7 +8457,7 @@
  },
  {
   "date": "2026-02-09",
-  "composite": 1.62,
+  "composite": 1.58,
   "sox": 1.42,
   "top3Up": [
    {
@@ -8477,7 +8480,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -0.88
+    "pct": -1.27
    },
    {
     "key": "internet",
@@ -8497,7 +8500,7 @@
  },
  {
   "date": "2026-02-06",
-  "composite": 5.12,
+  "composite": 5.07,
   "sox": 5.7,
   "top3Up": [
    {
@@ -8540,7 +8543,7 @@
  },
  {
   "date": "2026-02-05",
-  "composite": -2.41,
+  "composite": -2.4,
   "sox": -0.06,
   "top3Up": [
    {
@@ -8583,7 +8586,7 @@
  },
  {
   "date": "2026-02-04",
-  "composite": -2.32,
+  "composite": -2.53,
   "sox": -4.36,
   "top3Up": [
    {
@@ -8606,7 +8609,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -7.51
+    "pct": -9.62
    },
    {
     "key": "networking",
@@ -8626,7 +8629,7 @@
  },
  {
   "date": "2026-02-03",
-  "composite": -1.26,
+  "composite": -1.2,
   "sox": -2.07,
   "top3Up": [
    {
@@ -8637,7 +8640,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 1.96
+    "pct": 2.6
    },
    {
     "key": "ev",
@@ -8669,13 +8672,13 @@
  },
  {
   "date": "2026-02-02",
-  "composite": 1.33,
+  "composite": 1.55,
   "sox": 1.7,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 6.57
+    "pct": 8.79
    },
    {
     "key": "networking",
@@ -8712,7 +8715,7 @@
  },
  {
   "date": "2026-01-30",
-  "composite": -2.28,
+  "composite": -1.91,
   "sox": -3.87,
   "top3Up": [
    {
@@ -8733,14 +8736,14 @@
   ],
   "top3Down": [
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -7.88
-   },
-   {
     "key": "semicap",
     "title": "半導體設備",
     "pct": -6.17
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -4.19
    },
    {
     "key": "aiserver",
@@ -8755,7 +8758,7 @@
  },
  {
   "date": "2026-01-29",
-  "composite": -0.82,
+  "composite": -0.76,
   "sox": 0.16,
   "top3Up": [
    {
@@ -8798,13 +8801,13 @@
  },
  {
   "date": "2026-01-28",
-  "composite": 1.49,
+  "composite": 1.43,
   "sox": 2.34,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 11.98
+    "pct": 11.39
    },
    {
     "key": "networking",
@@ -8841,7 +8844,7 @@
  },
  {
   "date": "2026-01-27",
-  "composite": 1.83,
+  "composite": 1.77,
   "sox": 2.4,
   "top3Up": [
    {
@@ -8850,14 +8853,14 @@
     "pct": 6.28
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 4.7
-   },
-   {
     "key": "semicap",
     "title": "半導體設備",
     "pct": 4.34
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 4.09
    }
   ],
   "top3Down": [
@@ -8884,7 +8887,7 @@
  },
  {
   "date": "2026-01-26",
-  "composite": 0.55,
+  "composite": 0.51,
   "sox": -0.39,
   "top3Up": [
    {
@@ -8927,7 +8930,7 @@
  },
  {
   "date": "2026-01-23",
-  "composite": -0.57,
+  "composite": -0.7,
   "sox": -1.21,
   "top3Up": [
    {
@@ -8958,9 +8961,9 @@
     "pct": -2.17
    },
    {
-    "key": "ev",
-    "title": "電動車／自駕",
-    "pct": -1.97
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -2.08
    }
   ],
   "taiexNext": {
@@ -8970,7 +8973,7 @@
  },
  {
   "date": "2026-01-22",
-  "composite": 0.79,
+  "composite": 0.78,
   "sox": 0.16,
   "top3Up": [
    {
@@ -8984,9 +8987,9 @@
     "pct": 1.29
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 1.14
+    "key": "networking",
+    "title": "網通／光通訊",
+    "pct": 1.11
    }
   ],
   "top3Down": [
@@ -9013,18 +9016,18 @@
  },
  {
   "date": "2026-01-21",
-  "composite": 2.17,
+  "composite": 2.26,
   "sox": 3.18,
   "top3Up": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 7.83
+   },
    {
     "key": "ev",
     "title": "電動車／自駕",
     "pct": 7.57
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 6.9
    },
    {
     "key": "semis",
@@ -9056,18 +9059,18 @@
  },
  {
   "date": "2026-01-20",
-  "composite": -1.88,
+  "composite": -1.65,
   "sox": -1.68,
   "top3Up": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 2.69
+   },
    {
     "key": "networking",
     "title": "網通／光通訊",
     "pct": 2.03
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 0.4
    },
    {
     "key": "semis",
@@ -9099,13 +9102,13 @@
  },
  {
   "date": "2026-01-16",
-  "composite": 0.32,
+  "composite": 0.26,
   "sox": 1.15,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 3.11
+    "pct": 2.6
    },
    {
     "key": "semicap",
@@ -9142,7 +9145,7 @@
  },
  {
   "date": "2026-01-15",
-  "composite": 0.61,
+  "composite": 0.69,
   "sox": 1.76,
   "top3Up": [
    {
@@ -9158,7 +9161,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 2.29
+    "pct": 3.1
    }
   ],
   "top3Down": [
@@ -9185,7 +9188,7 @@
  },
  {
   "date": "2026-01-14",
-  "composite": -1.5,
+  "composite": -1.49,
   "sox": -0.6,
   "top3Up": [
    {
@@ -9228,7 +9231,7 @@
  },
  {
   "date": "2026-01-13",
-  "composite": -0.1,
+  "composite": -0.08,
   "sox": 0.95,
   "top3Up": [
    {
@@ -9259,9 +9262,9 @@
     "pct": -1.6
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -0.77
+    "key": "devices",
+    "title": "消費電子",
+    "pct": -0.6
    }
   ],
   "taiexNext": {
@@ -9271,13 +9274,13 @@
  },
  {
   "date": "2026-01-12",
-  "composite": 0.69,
+  "composite": 0.67,
   "sox": 0.47,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 3.93
+    "pct": 3.74
    },
    {
     "key": "semicap",
@@ -9314,13 +9317,13 @@
  },
  {
   "date": "2026-01-09",
-  "composite": 1.43,
+  "composite": 1.59,
   "sox": 2.73,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 6.4
+    "pct": 8
    },
    {
     "key": "semicap",
@@ -9357,7 +9360,7 @@
  },
  {
   "date": "2026-01-08",
-  "composite": -2.45,
+  "composite": -2.44,
   "sox": -1.83,
   "top3Up": [
    {
@@ -9385,7 +9388,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -5.84
+    "pct": -5.72
    },
    {
     "key": "cyber",
@@ -9400,7 +9403,7 @@
  },
  {
   "date": "2026-01-07",
-  "composite": -0.71,
+  "composite": -0.54,
   "sox": -0.99,
   "top3Up": [
    {
@@ -9423,7 +9426,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -5.58
+    "pct": -3.9
    },
    {
     "key": "semicap",
@@ -9443,13 +9446,13 @@
  },
  {
   "date": "2026-01-06",
-  "composite": 2.67,
+  "composite": 3.02,
   "sox": 2.75,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 13.6
+    "pct": 17.09
    },
    {
     "key": "networking",
@@ -9486,7 +9489,7 @@
  },
  {
   "date": "2026-01-05",
-  "composite": 0.39,
+  "composite": 0.38,
   "sox": 1.07,
   "top3Up": [
    {
@@ -9529,13 +9532,13 @@
  },
  {
   "date": "2026-01-02",
-  "composite": 2.02,
+  "composite": 2.22,
   "sox": 4.01,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 7.96
+    "pct": 9.96
    },
    {
     "key": "semicap",
@@ -9572,7 +9575,7 @@
  },
  {
   "date": "2025-12-31",
-  "composite": -1.23,
+  "composite": -1.2,
   "sox": -1.2,
   "top3Up": [
    {
@@ -9595,7 +9598,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.1
+    "pct": -1.87
    },
    {
     "key": "semicap",
@@ -9615,7 +9618,7 @@
  },
  {
   "date": "2025-12-30",
-  "composite": -0.57,
+  "composite": -0.59,
   "sox": -0.13,
   "top3Up": [
    {
@@ -9643,7 +9646,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -1.01
+    "pct": -1.17
    },
    {
     "key": "networking",
@@ -9658,14 +9661,9 @@
  },
  {
   "date": "2025-12-29",
-  "composite": -0.78,
+  "composite": -0.84,
   "sox": -0.41,
   "top3Up": [
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 0.21
-   },
    {
     "key": "internet",
     "title": "網路平台",
@@ -9675,6 +9673,11 @@
     "key": "semis",
     "title": "半導體",
     "pct": -0.34
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -0.42
    }
   ],
   "top3Down": [
@@ -9715,9 +9718,9 @@
     "pct": 0.45
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 0.26
+    "key": "devices",
+    "title": "消費電子",
+    "pct": 0.21
    }
   ],
   "top3Down": [
@@ -9750,7 +9753,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 1.79
+    "pct": 1.87
    },
    {
     "key": "semicap",
@@ -9787,7 +9790,7 @@
  },
  {
   "date": "2025-12-23",
-  "composite": -0.14,
+  "composite": -0.11,
   "sox": 0.55,
   "top3Up": [
    {
@@ -9830,7 +9833,7 @@
  },
  {
   "date": "2025-12-22",
-  "composite": 1.1,
+  "composite": 1.16,
   "sox": 1.1,
   "top3Up": [
    {
@@ -9853,7 +9856,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -0.98
+    "pct": -0.37
    },
    {
     "key": "devices",
@@ -9873,7 +9876,7 @@
  },
  {
   "date": "2025-12-19",
-  "composite": 2.47,
+  "composite": 2.58,
   "sox": 2.98,
   "top3Up": [
    {
@@ -9882,14 +9885,14 @@
     "pct": 6.58
    },
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 5.06
+   },
+   {
     "key": "ev",
     "title": "電動車／自駕",
     "pct": 4.49
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 3.98
    }
   ],
   "top3Down": [
@@ -9916,7 +9919,7 @@
  },
  {
   "date": "2025-12-18",
-  "composite": 2.47,
+  "composite": 2.45,
   "sox": 2.51,
   "top3Up": [
    {
@@ -9927,7 +9930,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 6.88
+    "pct": 6.69
    },
    {
     "key": "networking",
@@ -9959,7 +9962,7 @@
  },
  {
   "date": "2025-12-17",
-  "composite": -3,
+  "composite": -2.94,
   "sox": -3.78,
   "top3Up": [
    {
@@ -9990,9 +9993,9 @@
     "pct": -4.01
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -3.8
+    "key": "semis",
+    "title": "半導體",
+    "pct": -3.51
    }
   ],
   "taiexNext": {
@@ -10002,9 +10005,14 @@
  },
  {
   "date": "2025-12-16",
-  "composite": -0.26,
+  "composite": -0.17,
   "sox": -0.46,
   "top3Up": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 0.99
+   },
    {
     "key": "software",
     "title": "軟體／雲端",
@@ -10014,11 +10022,6 @@
     "key": "cyber",
     "title": "資安",
     "pct": 0.71
-   },
-   {
-    "key": "aiserver",
-    "title": "AI 伺服器／資料中心硬體",
-    "pct": 0.66
    }
   ],
   "top3Down": [
@@ -10045,7 +10048,7 @@
  },
  {
   "date": "2025-12-15",
-  "composite": -1.12,
+  "composite": -1.14,
   "sox": -0.61,
   "top3Up": [
    {
@@ -10078,7 +10081,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -1.55
+    "pct": -1.69
    }
   ],
   "taiexNext": {
@@ -10088,7 +10091,7 @@
  },
  {
   "date": "2025-12-12",
-  "composite": -3.02,
+  "composite": -3.23,
   "sox": -5.1,
   "top3Up": [
    {
@@ -10116,7 +10119,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -6.36
+    "pct": -8.43
    },
    {
     "key": "aiserver",
@@ -10131,7 +10134,7 @@
  },
  {
   "date": "2025-12-11",
-  "composite": -0.39,
+  "composite": -0.33,
   "sox": -0.75,
   "top3Up": [
    {
@@ -10142,7 +10145,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 1.29
+    "pct": 1.91
    },
    {
     "key": "semicap",
@@ -10174,13 +10177,13 @@
  },
  {
   "date": "2025-12-10",
-  "composite": 1.36,
+  "composite": 1.37,
   "sox": 1.29,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 5.82
+    "pct": 5.89
    },
    {
     "key": "networking",
@@ -10217,7 +10220,7 @@
  },
  {
   "date": "2025-12-09",
-  "composite": 0.25,
+  "composite": 0.18,
   "sox": -0.04,
   "top3Up": [
    {
@@ -10231,9 +10234,9 @@
     "pct": 0.55
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 0.4
+    "key": "cyber",
+    "title": "資安",
+    "pct": 0.21
    }
   ],
   "top3Down": [
@@ -10248,9 +10251,9 @@
     "pct": -0.76
    },
    {
-    "key": "ev",
-    "title": "電動車／自駕",
-    "pct": -0.2
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -0.37
    }
   ],
   "taiexNext": {
@@ -10260,7 +10263,7 @@
  },
  {
   "date": "2025-12-08",
-  "composite": 0.08,
+  "composite": -0.02,
   "sox": 1.1,
   "top3Up": [
    {
@@ -10271,7 +10274,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 2.33
+    "pct": 1.42
    },
    {
     "key": "semicap",
@@ -10303,13 +10306,13 @@
  },
  {
   "date": "2025-12-05",
-  "composite": 0.81,
+  "composite": 0.87,
   "sox": 1.09,
   "top3Up": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 4.84
+    "pct": 5.41
    },
    {
     "key": "software",
@@ -10346,9 +10349,14 @@
  },
  {
   "date": "2025-12-04",
-  "composite": 0.72,
+  "composite": 0.94,
   "sox": -0.89,
   "top3Up": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 3.17
+   },
    {
     "key": "ev",
     "title": "電動車／自駕",
@@ -10358,11 +10366,6 @@
     "key": "networking",
     "title": "網通／光通訊",
     "pct": 2.68
-   },
-   {
-    "key": "aiserver",
-    "title": "AI 伺服器／資料中心硬體",
-    "pct": 1.5
    }
   ],
   "top3Down": [
@@ -10389,7 +10392,7 @@
  },
  {
   "date": "2025-12-03",
-  "composite": 0.83,
+  "composite": 0.76,
   "sox": 1.83,
   "top3Up": [
    {
@@ -10412,7 +10415,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -2.68
+    "pct": -3.35
    },
    {
     "key": "internet",
@@ -10432,7 +10435,7 @@
  },
  {
   "date": "2025-12-02",
-  "composite": 1.05,
+  "composite": 1.03,
   "sox": 1.84,
   "top3Up": [
    {
@@ -10455,7 +10458,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -1.26
+    "pct": -1.52
    },
    {
     "key": "networking",
@@ -10475,7 +10478,7 @@
  },
  {
   "date": "2025-12-01",
-  "composite": -0.65,
+  "composite": -0.79,
   "sox": -0.07,
   "top3Up": [
    {
@@ -10501,14 +10504,14 @@
     "pct": -1.98
    },
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -1.61
+   },
+   {
     "key": "networking",
     "title": "網通／光通訊",
     "pct": -1.39
-   },
-   {
-    "key": "cyber",
-    "title": "資安",
-    "pct": -1.23
    }
   ],
   "taiexNext": {
@@ -10518,7 +10521,7 @@
  },
  {
   "date": "2025-11-28",
-  "composite": 2.01,
+  "composite": 2.04,
   "sox": 1.82,
   "top3Up": [
    {
@@ -10534,7 +10537,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": 2.62
+    "pct": 2.92
    }
   ],
   "top3Down": [
@@ -10561,7 +10564,7 @@
  },
  {
   "date": "2025-11-26",
-  "composite": 1.5,
+  "composite": 1.37,
   "sox": 2.76,
   "top3Up": [
    {
@@ -10575,9 +10578,9 @@
     "pct": 3.16
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 2.67
+    "key": "ev",
+    "title": "電動車／自駕",
+    "pct": 2.53
    }
   ],
   "top3Down": [
@@ -10604,14 +10607,9 @@
  },
  {
   "date": "2025-11-25",
-  "composite": 0.91,
+  "composite": 0.79,
   "sox": 0.16,
   "top3Up": [
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 2.2
-   },
    {
     "key": "ev",
     "title": "電動車／自駕",
@@ -10621,6 +10619,11 @@
     "key": "cyber",
     "title": "資安",
     "pct": 1.78
+   },
+   {
+    "key": "semicap",
+    "title": "半導體設備",
+    "pct": 1.51
    }
   ],
   "top3Down": [
@@ -10647,18 +10650,18 @@
  },
  {
   "date": "2025-11-24",
-  "composite": 3.97,
+  "composite": 4.11,
   "sox": 4.63,
   "top3Up": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 9.11
+   },
    {
     "key": "networking",
     "title": "網通／光通訊",
     "pct": 8.09
-   },
-   {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 7.7
    },
    {
     "key": "aiserver",
@@ -10690,7 +10693,7 @@
  },
  {
   "date": "2025-11-21",
-  "composite": 1.16,
+  "composite": 1.2,
   "sox": 0.86,
   "top3Up": [
    {
@@ -10721,9 +10724,9 @@
     "pct": -0.88
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 0.33
+    "key": "semis",
+    "title": "半導體",
+    "pct": 0.75
    }
   ],
   "taiexNext": {

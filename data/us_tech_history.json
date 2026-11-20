@@ -1,5 +1,45 @@
 [
  {
+  "date": "2026-11-20",
+  "composite": -4.96,
+  "sox": -7,
+  "top3Up": [
+   {
+    "key": "devices",
+    "title": "消費電子",
+    "pct": -0.05
+   },
+   {
+    "key": "internet",
+    "title": "網路平台",
+    "pct": -0.71
+   },
+   {
+    "key": "software",
+    "title": "軟體／雲端",
+    "pct": -1.33
+   }
+  ],
+  "top3Down": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -11.22
+   },
+   {
+    "key": "networking",
+    "title": "網通／光通訊",
+    "pct": -9.36
+   },
+   {
+    "key": "semicap",
+    "title": "半導體設備",
+    "pct": -6.99
+   }
+  ],
+  "taiexNext": null
+ },
+ {
   "date": "2026-11-19",
   "composite": -1.82,
   "sox": -2.41,
@@ -4004,13 +4044,13 @@
     "pct": 1.23
    },
    {
-    "key": "networking",
-    "title": "網通／光通訊",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 0.46
    },
    {
-    "key": "internet",
-    "title": "網路平台",
+    "key": "networking",
+    "title": "網通／光通訊",
     "pct": 0.46
    }
   ],
@@ -6845,8 +6885,8 @@
     "pct": 0.93
    },
    {
-    "key": "semicap",
-    "title": "半導體設備",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 0.67
    }
   ],
@@ -9004,8 +9044,8 @@
     "pct": -0.52
    },
    {
-    "key": "internet",
-    "title": "網路平台",
+    "key": "aiserver",
+    "title": "AI 伺服器／資料中心硬體",
     "pct": 0.69
    }
   ],

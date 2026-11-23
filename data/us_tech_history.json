@@ -1,40 +1,40 @@
 [
  {
   "date": "2026-11-23",
-  "composite": 9.08,
-  "sox": 13.61,
+  "composite": 9.05,
+  "sox": 14.03,
   "top3Up": [
    {
     "key": "aiserver",
     "title": "AI 伺服器／資料中心硬體",
-    "pct": 14.98
+    "pct": 14.87
    },
    {
     "key": "semis",
     "title": "半導體",
-    "pct": 13.2
+    "pct": 13.64
    },
    {
     "key": "semicap",
     "title": "半導體設備",
-    "pct": 13.09
+    "pct": 13.57
    }
   ],
   "top3Down": [
    {
     "key": "devices",
     "title": "消費電子",
-    "pct": 2.78
-   },
-   {
-    "key": "cyber",
-    "title": "資安",
-    "pct": 3.77
+    "pct": 2.83
    },
    {
     "key": "internet",
     "title": "網路平台",
-    "pct": 4.55
+    "pct": 3.94
+   },
+   {
+    "key": "cyber",
+    "title": "資安",
+    "pct": 4.56
    }
   ],
   "taiexNext": null

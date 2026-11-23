@@ -348,6 +348,16 @@ def vix_on(date_iso):
         return None
 
 
+def _support_for(date_iso):
+    """選股是給下一個交易日用的：那一天是不是國安基金護盤期（support.py）。"""
+    try:
+        import support
+        nxt = cal.next_trading_day(dt.date.fromisoformat(date_iso))
+        return support.status(nxt)
+    except Exception:
+        return None
+
+
 def nds_pick(feats, exclude=()):
     """隔日沖倒貨候選（開盤條件 9:00 才知道）：昨漲 ≥ NDS_RET1、價 ≤ NDS_PX、昨日成交值在普通股的前 40%，依成交值排序。"""
     com = [f for f in feats.values() if len(f["code"]) == 4 and f["code"].isdigit() and f["code"][0] != "0"]
@@ -997,6 +1007,9 @@ def to_dict(r):
             "nds": rows("nds") if r.get("nds") else [], "nds_total": r.get("nds_total", 0), "nds_rule": NDS_RULE, "nds_note": NDS_NOTE, "nds_title": NDS_TITLE,
             # 極度恐慌（前一天臺指 VIX ≥40）時隔日沖倒貨不做：2026 全市場這時勝率 50%、每筆 −0.28%（17 天），tw_stocker 勝率 45%（4 天）
             "vix": r.get("vix"), "nds_active": not ((r.get("vix") or {}).get("extreme")),
+            "support": _support_for(r["date"]),
+            "open_rule": ("09:05 開盤策略：開高 2～7%（任何恐慌程度）" + ("" if (r.get("vix") or {}).get("extreme") else "與隔日沖倒貨") +
+                          "的股票，挑昨日成交值最大的 5 檔建議放空、13:25 前回補（儀表板「開盤策略」卡會叮一聲通知）"),
             "no_trade": not (r["mkt"]["weak"] and r["short"]),                # 盤前就成立的名單一檔都沒有：今天不做（開盤條件型的另看）
             "short": rows("short"), "long": rows("long"), "punished": r["punished"], "skipped_heavy": r.get("skipped_heavy") or [],
             "warrant": rows("warrant") if r.get("warrant") else [], "warrant_error": r.get("warrant_error"), "warrant_note": WARR_NOTE,

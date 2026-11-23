@@ -28,6 +28,7 @@ import combo
 import env_combos
 import notify
 import fear
+import support
 import history
 import src_mis
 import src_warrants as W
@@ -188,7 +189,8 @@ def gapfade_watch(use_shioaji):
         with WEB.lock:
             WEB.gap = view
 
-    g = gapfade.GapFade(api_fn, cost=Monitor.COST_PCT, is_trading=_is_trading, lock=lock, log=say)
+    g = gapfade.GapFade(api_fn, cost=Monitor.COST_PCT, is_trading=_is_trading, lock=lock, log=say,
+                        notify=lambda kind, title, msg="": notify.notify(kind, title, msg))      # 開盤策略建議的單：叮（進場）/ 叮咚（接近漲停、13:20 回補）
     g.run(_SITE_STOP, put)
 
 
@@ -201,12 +203,14 @@ def fear_watch(use_shioaji):
     while not _SITE_STOP.is_set():
         now = dt.datetime.now()
         live = None
+        pull = None
         if use_shioaji and "08:30" <= now.strftime("%H:%M") < "13:31" and _is_trading(now.date()):
             try:
                 import src_shioaji as S
                 if S._api is not None:
                     with S._api_lock:
                         live = fear.live_value(S._api)
+                        pull = _pull_feed(S, now)
             except Exception:
                 live = None
         try:
@@ -215,7 +219,32 @@ def fear_watch(use_shioaji):
                 WEB.fear = st
         except Exception as e:
             print(f"[恐慌指數] {str(e)[:100]}")
+        try:
+            sp = support.status(now.date())
+            last = SUPPORT_DET.recent(now)
+            sp["pull"] = last and dict(last, text=support.describe_pull(last), note=support.PULL_NOTE)
+            sp["pulls_today"] = len(SUPPORT_DET.events)
+            with WEB.lock:
+                WEB.support = sp
+            if pull:
+                print(f"[護盤] {support.describe_pull(pull)}")
+                notify.notify("exit", "疑似護盤拉抬：" + support.describe_pull(pull).split("：", 1)[1], support.PULL_NOTE)
+        except Exception as e:
+            print(f"[護盤] {str(e)[:100]}")
         _SITE_STOP.wait(60 if live is not None else 600)
+
+
+SUPPORT_DET = support.PullDetector()
+
+
+def _pull_feed(S, now):
+    """（在 _api_lock 裡呼叫）snapshots 台積電、鴻海、聯發科、加權、櫃買各一次，餵給護盤偵測。回新事件或 None。"""
+    api = S._api
+    cs = [S.get_contract(api, c) for c in support.HW]
+    cs = [c for c in cs if c is not None]
+    tx_c, otc_c = api.Contracts.Indexs.TSE["IX0001"], api.Contracts.Indexs.OTC["IX0043"]
+    snaps = {getattr(x, "code", None): float(x.close or 0) for x in api.snapshots(cs + [tx_c, otc_c])}
+    return SUPPORT_DET.feed(now, {c: snaps.get(c) for c in support.HW}, snaps.get("IX0001"), snaps.get("IX0043"))
 
 
 class WebState:
@@ -242,6 +271,7 @@ class WebState:
         self.site = None                  # 網站的夜盤三大法人沒更新時的提醒（site_watch）：{date, site_date, url, checked}；沒事 = None
         self.gap = None                   # 開高放空觀察（gapfade_watch，全市場、只記錄不建議下單）：GapFade.view()
         self.fear = None                  # 恐慌指數（fear_watch）：fear.state()
+        self.support = None               # 國安基金護盤期與盤中拉抬偵測（fear_watch）：support.status() + pull
 
     def put_live(self, obj):
         with self.lock:
@@ -274,7 +304,7 @@ class WebState:
             return json.dumps({"codes": self.codes, "latest": self.latest, "daily": self.daily, "describe": self.describe,
                                "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji,
                                "picks": self.picks, "in_session": sess, "adding": self.adding, "winding": self.winding, "max_codes": MAX_CODES,
-                               "boot": BOOT_ID, "site": self.site, "gap": self.gap, "fear": self.fear},
+                               "boot": BOOT_ID, "site": self.site, "gap": self.gap, "fear": self.fear, "support": self.support},
                               ensure_ascii=False, default=str)
 
     def history_json(self, code):
@@ -1932,6 +1962,11 @@ class Monitor:
                 # 回測（tw_stocker 2024–2026）：盤中 VIX 比昨收高 ≥10% 時做多訊號抱到收盤每筆 −0.38%（平常 −0.32%）；幅度小，只提醒不擋
                 sig.setdefault("refs", []).append({"kind": "恐慌升溫", "text": f"臺指 VIX {fz['now']:.1f} 比昨收高 {fz['chg_pct']:.0f}%："
                                                    "回測這時做多訊號抱到收盤每筆 −0.38%（平常 −0.32%）"})
+            pl = SUPPORT_DET.recent(now)
+            if pl:
+                sig["support_pull"] = {k: pl.get(k) for k in ("time", "r_hw", "r_tx", "r_otc")}
+                sig.setdefault("refs", []).append({"kind": "護盤拉抬", "text": (f"{pl['time'][:5]} 權值股突然被拉（加權 5 分鐘 {pl['r_tx']:+.1f}%）："
+                    + ("護盤期這種拉抬 7 次裡 6 次收盤更低，追多小心" if side == "long" else "可能再被拉一段，停損放寬或等拉完再進；護盤期 7 次裡 6 次收盤更低"))})
             if blk:
                 kind = "空間過濾" if room else "重複過濾" if repeat else "急漲過濾" if surge else "追價過濾" if chase_blk else "環境過濾" if env_blk else "逆勢過濾"
                 bkey = ("block",) + key            # 被擋的另外去重：趨勢轉回來後同一個進場區還能正常發
@@ -2067,7 +2102,7 @@ class Monitor:
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs", "fear")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs", "fear", "support_pull")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -2281,7 +2316,7 @@ class Monitor:
                **score,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors"), "exh": sg.get("exh"), "exh_lit": sg.get("exh_lit"),
-               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs"), "fear": sg.get("fear")}
+               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs"), "fear": sg.get("fear"), "support_pull": sg.get("support_pull")}
         if sg.get("blocked"):
             out.update(blocked=True, block_reason=sg.get("block_reason"), block_kind=sg.get("block_kind"))
         if sg.get("cancelled"):

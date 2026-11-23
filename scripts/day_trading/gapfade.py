@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """
-開高放空觀察（2026-11-18 加；只記錄假設進場的結果，不建議下單）。
+開盤策略（2026-11-18 加觀察；2026-11-20 起 A、B 兩組變成建議）：09:05 掃全市場，挑出建議放空的股票，13:25 前回補。
+
+  建議（會叮一聲通知、寫在卡片最上面）：成立的 A、B 候選裡，昨日成交值最大的 5 檔（REC_N）。
+    - A 開高 2～7% 放空：任何恐慌程度都建議（使用者 11/20 決定）。
+    - B 隔日沖倒貨放空：前一天臺指 VIX <40 才建議；≥40（極度恐慌）只記錄。
+    - C 恐慌開低做多：只記錄，不建議。
+  建議的單：09:05 叮一聲（進場）；接近漲停（離漲停 1.5% 內）叮咚提醒考慮先回補（鎖死會買不回來，回測不設停損最好，所以只是提醒）；
+  13:20 叮咚提醒 13:25 前回補。通知走 monitor 的 notify（不用開網頁）。
 
 全市場、兩組的聯集（每筆用 tags 標它屬於哪一組）：
   共同條件：上市 + 上櫃的 4 位數普通股、可以現股當沖先賣（day_trade = Yes）、不是處置股或暫停交易，
@@ -12,7 +19,11 @@
     開低 ≥2% 的股票 09:05 假設買進、13:25 前最後一筆賣出。網路常見的做多選股條件測下來都賠，只有這個情境站得住：
     2026 年 2 天（6/8、11/6）每筆約 +4%；tw_stocker 2024/03–2026/04 共 15～20 天，每天平均 +0.3～0.5%、賺的天 50～67%（勝率只有五成左右）。
 
-為什麼只是觀察：
+依據（2026/04/10–11/19 全市場日 K，150 元以內、昨日成交值前 40%、開盤空收盤補、2.8 折；「每天平均」是每天算一次再平均）：
+  - A 開高 2～7%：前一天 VIX <30 勝率 57%、每筆 +0.50%；30～40 勝率 56%、+0.29%；≥40 勝率 47%、每筆 −0.42%，但每天平均 +0.43%、17 天裡 9 天賺，
+    好的一天 +5.1%、差的一天 −4.7%（大反彈日會大賠，例如 11/09 開高的 149 檔平均 −4.7%）。tw_stocker 2024–2026 勝率 56%、每筆 +0.42%，≥40 的 7 天 +0.79%。
+  - B 隔日沖倒貨：VIX <30 勝率 63%、每筆 +0.87%（每天平均 +0.76%，區間 +0.31～+1.22）；30～40 勝率 57%、+0.41%；≥40 勝率 50%、−0.28%（不建議）。
+舊的說明（11/18 只是觀察時）：
   - A：tw_stocker 5 分 K（120 檔上市股、2024/02–2026/04），150 元以內、開高 2～7%、09:05 空 13:20 補、扣成本：
     2,027 筆、勝率 56%、每筆 +0.42%（以交易日重抽 90% 區間 +0.25～+0.64），測試段（2025/07 起）+0.28%。
     但今年全市場日 K（2026/03–11/16，開盤進收盤出）150 元以內：勝率 52%、每筆 +0.02%，9～11 月 −0.17%、11 月 −0.59%。
@@ -47,10 +58,16 @@ TOP_GAP, TOP_ROOM = 3.5, 3.0                     # 前 10%：B 組裡開高 ≥3
 C_MKT_GAP, C_GAP = -2.0, -2.0                    # C 組（做多）：全市場開盤跳空中位數 ≤ −2% 的日子，開低 ≥2% 的
 CHUNK = 500                                      # snapshots 一次最多幾檔（永豐文件）
 COST_PCT = 0.235                                 # 預設成本；monitor 會傳 Monitor.COST_PCT 進來
-GROUPS = (("all", "全部"), ("A", "A 開高 2～7%"), ("B", "B 隔日沖倒貨"), ("top10", "前 10%"), ("C", "C 恐慌開低做多"))
+GROUPS = (("rec", "建議的 5 檔"), ("all", "全部"), ("A", "A 開高 2～7%"), ("B", "B 隔日沖倒貨"), ("top10", "前 10%"), ("C", "C 恐慌開低做多"))
+REC_N = 5                                        # 每天建議幾檔（成立的 A、B 裡昨日成交值最大的）
+NEAR_LIMIT_PCT = 1.5                             # 建議的單離漲停這麼近（%）就叮咚提醒考慮先回補
+COVER_REMIND = "13:20:00"                        # 叮咚提醒 13:25 前回補
 
 BASIS = [
-    "A 開高 2～7%：回測 tw_stocker（120 檔上市股、2024/02–2026/04）150 元以內、09:05 空 13:20 補，2,027 筆、勝率 56%、每筆 +0.42%，測試段（2025/07 起）+0.28%；"
+    "建議：成立的 A、B 裡昨日成交值最大的 5 檔，09:05 放空、13:25 前回補、不設停損（接近漲停只提醒）。A 任何恐慌程度都建議；B 前一天臺指 VIX <40 才建議；C 只記錄",
+    "A 2026 全市場依前一天 VIX：<30 勝率 57%/每筆 +0.50%、30～40 56%/+0.29%、≥40 47%/−0.42%（每天平均 +0.43%、17 天 9 天賺，大反彈日會大賠）",
+    "B 2026 全市場依前一天 VIX：<30 勝率 63%/+0.87%、30～40 57%/+0.41%、≥40 50%/−0.28%（≥40 不建議）",
+    "舊依據 A：回測 tw_stocker（120 檔上市股、2024/02–2026/04）150 元以內、09:05 空 13:20 補，2,027 筆、勝率 56%、每筆 +0.42%，測試段（2025/07 起）+0.28%；"
     "今年全市場日 K（2026/03–11/16，開盤進收盤出）150 元以內勝率 52%、每筆 +0.02%（看不出優勢），9～11 月 −0.17%、11 月 −0.59%",
     "隔日沖倒貨：昨漲≥3%、今天開高放空，tw_stocker 勝率 60%/每筆 +0.34%、2026 全市場 58%/+0.56%；前 10%（開高≥3.5%、離漲停≥3%）57%/+1.0%，"
     "但約 26% 收漲停、平均 −5%，鎖死時可能買不回來。只記錄，不建議下單",
@@ -109,6 +126,8 @@ def stats(rows):
 
 def in_group(r, g):
     tags = r.get("tags") or ["A"]                 # 加 tags 之前的紀錄只有 A 組
+    if g == "rec":
+        return bool(r.get("rec"))
     return g == "all" or (g == "top10" and bool(r.get("top10"))) or g in tags
 
 
@@ -147,7 +166,8 @@ class GapFade:
     主迴圈 run(stop) 在背景執行緒跑；step(now) 做一步、回下次幾秒後再來；view() 給儀表板。
     """
 
-    def __init__(self, api_fn, log_dir=None, cache_dir=None, cost=COST_PCT, is_trading=None, now_fn=None, lock=None, log=print, daily_fn=None):
+    def __init__(self, api_fn, log_dir=None, cache_dir=None, cost=COST_PCT, is_trading=None, now_fn=None, lock=None, log=print, daily_fn=None,
+                 notify=None):
         self.api_fn = api_fn
         self.log_dir = log_dir or LOG_DIR
         self.cache_dir = cache_dir or CACHE_DIR
@@ -157,6 +177,7 @@ class GapFade:
         self.lock = lock                     # 永豐 api 的鎖（src_shioaji._api_lock）；測試不用
         self.log = log
         self.daily_fn = daily_fn or _default_daily
+        self.notify = notify                 # notify(kind, title, msg)：建議的單要通知（monitor 傳 notify.notify）；測試不傳
         self.st = None
         self.cum = group_stats([])
         self._daily_for = None               # 哪一天準備好的昨漲資料
@@ -384,6 +405,21 @@ class GapFade:
         for c in cands:
             c["vix_prev"] = vix_prev
             c["valid"] = not (extreme and ("B" in c["tags"] or "C" in c["tags"]))
+            # 建議的候選：A 不看恐慌程度；B 要前一天 VIX <40；C（做多）不建議
+            c["active"] = c["side"] == "short" and ("A" in c["tags"] or ("B" in c["tags"] and not extreme))
+        # 國安基金護盤期、大盤開高（全市場開盤跳空中位數 ≥ +0.3%）：開盤策略不建議放空（support.py）
+        try:
+            import support
+            sup_blk = support.open_block(now.date(), mkt_gap)
+        except Exception:
+            sup_blk = None
+        st["support_block"] = sup_blk
+        if sup_blk:
+            for c in cands:
+                c["active"] = False
+        recs = sorted((c for c in cands if c["active"]), key=lambda c: -(c.get("val") or 0))[:REC_N]
+        for k, c in enumerate(recs, 1):
+            c["rec"] = True; c["rec_rank"] = k
         cands.sort(key=lambda x: (x["side"] == "long", not x["top10"], -abs(x["gap"])))
         na = sum(1 for c in cands if "A" in c["tags"]); nb = sum(1 for c in cands if "B" in c["tags"]); nt = sum(1 for c in cands if c["top10"])
         nc = sum(1 for c in cands if "C" in c["tags"])
@@ -396,8 +432,24 @@ class GapFade:
                   note=(f"09:05 掃 {len(rows)} 檔，{len(cands)} 檔符合（A {na}、B {nb}、前 10% {nt}、C {nc}），13:25 前最後一筆結算；{mg}"
                         + ("（恐慌開低：C 組做多成立）" if panic else "（沒有恐慌開低，C 組做多不成立）") if cands
                         else f"09:05 掃 {len(rows)} 檔，今天沒有符合的；{mg}"))
+        st["rec_n"] = len(recs)
+        if recs:
+            txt = "、".join(f"{c['code']} {c['name']} @{c['entry']}（開高 {c['gap']:+.1f}%，{'/'.join(t for t in c['tags'] if t in ('A', 'B'))}）" for c in recs)
+            st["rec_note"] = f"09:05 建議放空 {len(recs)} 檔：{txt}；13:25 前回補，不設停損（接近漲停會提醒）"
+            self._notify("entry", f"開盤策略：建議放空 {len(recs)} 檔", "、".join(f"{c['code']} {c['name']} @{c['entry']}" for c in recs))
+        elif sup_blk:
+            st["rec_note"] = sup_blk
+        else:
+            st["rec_note"] = "09:05 沒有成立的開盤策略（A 開高 2～7%、B 隔日沖倒貨" + ("；前一天 VIX ≥40，B 不成立" if extreme else "") + "）：今天不做"
         self.log(f"[開高放空] {st['note']}" + (("：" + "、".join(f"{c['code']} {c['name']} {c['gap']:+.1f}%{'★' if c['top10'] else ''}{'（做多）' if c['side'] == 'long' else ''}" for c in cands[:8])
                                                 + ("…" if len(cands) > 8 else "")) if cands else ""))
+
+    def _notify(self, kind, title, msg=""):
+        if self.notify:
+            try:
+                self.notify(kind, title, msg)
+            except Exception as e:
+                self.log(f"[開盤策略] 通知失敗：{str(e)[:80]}")
 
     @staticmethod
     def _cand(r, now, tags, top10, side):
@@ -441,6 +493,10 @@ class GapFade:
                 c["hit_up"] = True
             if c.get("limit_down") and c["low_after"] <= c["limit_down"] + 1e-9:
                 c["hit_dn"] = True
+            if c.get("rec") and not final and not c.get("near_flag") and c.get("limit_up") and px >= c["limit_up"] * (1 - NEAR_LIMIT_PCT / 100) - 1e-9:
+                c["near_flag"] = hms
+                self._notify("exit", f"開盤策略：{c['code']} {c['name']} 接近漲停 {c['limit_up']}（現價 {px}）",
+                             f"放空 {c['entry']}，考慮先回補——漲停鎖死會買不回來（回測不設停損最好，這只是提醒）")
             if final:
                 sg = 1 if side_of(c) == "long" else -1
                 c["exit"], c["exit_ts"] = px, c["last_ts"]
@@ -454,6 +510,14 @@ class GapFade:
                 c["status"] = "closed"
         st["last_poll_epoch"] = now.timestamp()
         st["last_poll"] = hms
+        if not final and hms >= COVER_REMIND and not st.get("cover_reminded"):
+            open_rec = [c for c in st["cands"] if c.get("rec") and c["status"] == "tracking"]
+            st["cover_reminded"] = hms
+            if open_rec:
+                def now_net(c):
+                    return -(c["last"] / c["entry"] - 1) * 100 - self.cost
+                self._notify("exit", f"開盤策略：13:25 前回補 {len(open_rec)} 檔",
+                             "、".join(f"{c['code']} {c['name']} 現價 {c['last']}（{now_net(c):+.1f}%）" for c in open_rec))
         if final:
             for c in st["cands"]:
                 if c["status"] == "tracking":       # 這次沒查到（停牌、資料缺）：不結算、不寫紀錄
@@ -468,6 +532,8 @@ class GapFade:
                 gs = group_stats(day)
                 self.log(f"[開高放空] 今天 {gs['all']['n']} 檔：勝 {gs['all']['win']} 輸 {gs['all']['loss']}，每筆 {gs['all']['avg']:+.2f}%，1 張合計 {gs['all']['pnl_sum']:+,} 元"
                          + (f"；前 10% {gs['top10']['n']} 檔每筆 {gs['top10']['avg']:+.2f}%" if gs["top10"]["n"] else "") + "（只是記錄，沒有下單）")
+                if gs["rec"]["n"]:
+                    self.log(f"[開盤策略] 建議的 {gs['rec']['n']} 檔：勝 {gs['rec']['win']} 輸 {gs['rec']['loss']}，每筆 {gs['rec']['avg']:+.2f}%，1 張合計 {gs['rec']['pnl_sum']:+,} 元")
 
     def _write_log(self, now):
         st = self.st
@@ -479,6 +545,7 @@ class GapFade:
                 continue
             recs.append({"date": st["date"], "code": c["code"], "name": c["name"], "ex": c.get("ex"), "tags": c["tags"], "top10": c["top10"],
                          "side": side_of(c), "mkt_gap": st.get("mkt_gap"), "vix_prev": c.get("vix_prev"), "valid": c.get("valid", True),
+                         "active": c.get("active"), "rec": bool(c.get("rec")), "rec_rank": c.get("rec_rank"), "near_flag": c.get("near_flag"),
                          "gap": c["gap"], "prev_close": c["prev_close"], "open": c["open"], "ret1": c.get("ret1"), "ret5": c.get("ret5"),
                          "room": c.get("room"), "lim_prev": c.get("lim_prev"), "val": c.get("val"),
                          "entry": c["entry"], "entry_ts": c["entry_ts"], "exit": c["exit"], "exit_ts": c.get("exit_ts"), "exit_kind": c.get("exit_kind"),
@@ -502,7 +569,8 @@ class GapFade:
             for c in st.get("cands") or []:
                 x = {k: c.get(k) for k in ("code", "name", "tags", "top10", "gap", "room", "ret1", "ret5", "lim_prev", "val", "prev_close", "open",
                                            "entry", "entry_ts", "last", "last_ts", "status", "hit_up", "close_up", "exit", "exit_ts", "exit_kind",
-                                           "net_pct", "pnl", "net_open_pct", "pnl_open", "limit_up", "hit_dn", "close_dn", "valid", "vix_prev")}
+                                           "net_pct", "pnl", "net_open_pct", "pnl_open", "limit_up", "hit_dn", "close_dn", "valid", "vix_prev",
+                                           "active", "rec", "rec_rank", "near_flag")}
                 x["side"] = side_of(c)
                 e = c.get("entry")
                 if e:
@@ -514,6 +582,7 @@ class GapFade:
                 cands.append(x)
             return {"date": st.get("date"), "status": st.get("status"), "note": st.get("note"), "daily_note": st.get("daily_note", self._daily_note),
                     "mkt_gap": st.get("mkt_gap"), "panic": st.get("panic"), "vix_prev": st.get("vix_prev"), "vix_extreme": st.get("vix_extreme"),
+                    "rec_n": st.get("rec_n"), "rec_note": st.get("rec_note"), "cover_reminded": st.get("cover_reminded"), "support_block": st.get("support_block"),
                     "scan_time": st.get("scan_time"), "last_poll": st.get("last_poll"), "universe": st.get("universe"), "quoted": st.get("quoted"),
                     "cut": st.get("cut"), "counts": st.get("counts"), "cands": cands, "cum": self.cum, "cost": self.cost, "basis": BASIS,
                     "groups": [list(g) for g in GROUPS], "rule": rule()}
@@ -547,7 +616,8 @@ def _mfe(c):
 
 def rule():
     return {"px_max": PX_MAX, "top": TURNOVER_TOP, "gap_min": GAP_MIN, "gap_max": GAP_MAX, "b_ret1": B_RET1, "b_gap": list(B_GAP),
-            "b_room": B_ROOM, "top_gap": TOP_GAP, "top_room": TOP_ROOM, "c_mkt_gap": C_MKT_GAP, "c_gap": C_GAP}
+            "b_room": B_ROOM, "top_gap": TOP_GAP, "top_room": TOP_ROOM, "c_mkt_gap": C_MKT_GAP, "c_gap": C_GAP,
+            "rec_n": REC_N, "near_limit": NEAR_LIMIT_PCT, "cover_remind": COVER_REMIND}
 
 
 if __name__ == "__main__":

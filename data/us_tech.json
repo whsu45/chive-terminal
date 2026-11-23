@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-23T02:49:23.111Z",
+ "generatedAt": "2026-11-23T07:34:30.506Z",
  "usDate": "2026-11-20",
  "twDate": "2026-11-23",
  "windows": {
@@ -13,7 +13,7 @@
   "groups": 10,
   "usSymbols": 57,
   "usFailed": [],
-  "twCandidates": 124
+  "twCandidates": 130
  },
  "benchmarks": {
   "DJI": {
@@ -59,13 +59,13 @@
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.212,
-    "corr120": 0.227,
-    "corr250": 0.299,
-    "beta120": 0.549,
+    "corr60": 0.178,
+    "corr120": 0.209,
+    "corr250": 0.288,
+    "beta120": 0.506,
     "hit120": {
      "n": 120,
-     "rate": 0.567
+     "rate": 0.558
     },
     "condUp": {
      "n": 27,
@@ -74,8 +74,8 @@
     },
     "condDown": {
      "n": 29,
-     "mean": -1.14,
-     "sameDirRate": 0.793
+     "mean": -1.06,
+     "sameDirRate": 0.759
     },
     "verdict": {
      "level": 1,
@@ -127,13 +127,13 @@
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.491,
-    "corr120": 0.542,
-    "corr250": 0.557,
-    "beta120": 0.318,
+    "corr60": 0.432,
+    "corr120": 0.515,
+    "corr250": 0.54,
+    "beta120": 0.304,
     "hit120": {
      "n": 120,
-     "rate": 0.717
+     "rate": 0.708
     },
     "condUp": {
      "n": 103,
@@ -142,8 +142,8 @@
     },
     "condDown": {
      "n": 75,
-     "mean": -1.42,
-     "sameDirRate": 0.84
+     "mean": -1.39,
+     "sameDirRate": 0.827
     },
     "verdict": {
      "level": 3,
@@ -195,13 +195,13 @@
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.402,
-    "corr120": 0.5,
-    "corr250": 0.508,
-    "beta120": 0.767,
+    "corr60": 0.337,
+    "corr120": 0.467,
+    "corr250": 0.488,
+    "beta120": 0.72,
     "hit120": {
      "n": 120,
-     "rate": 0.642
+     "rate": 0.633
     },
     "condUp": {
      "n": 52,
@@ -210,8 +210,8 @@
     },
     "condDown": {
      "n": 46,
-     "mean": -1.53,
-     "sameDirRate": 0.87
+     "mean": -1.48,
+     "sameDirRate": 0.848
     },
     "verdict": {
      "level": 3,
@@ -225,10 +225,10 @@
    "symbol": "^TWII",
    "dec": 2,
    "date": "2026-11-23",
-   "close": 36013.57,
-   "pct": -0.05,
-   "pct5": -12.25,
-   "pct20": -21.78,
+   "close": 36811.89,
+   "pct": 2.16,
+   "pct5": -10.3,
+   "pct20": -20.05,
    "spark": [
     49313.44,
     49301.96,
@@ -259,20 +259,19 @@
     40194.91,
     38426.89,
     36033.29,
-    36013.57
+    36811.89
    ]
   },
   "BRENT": {
    "name": "布蘭特原油",
    "symbol": "BZ=F",
    "dec": 2,
-   "date": "2026-11-20",
-   "close": 92.57,
-   "pct": 0.64,
-   "pct5": -3.41,
-   "pct20": -20.69,
+   "date": "2026-11-23",
+   "close": 89.42,
+   "pct": -3.4,
+   "pct5": -3.27,
+   "pct20": -22.79,
    "spark": [
-    106.65,
     105.69,
     106.06,
     105.92,
@@ -301,17 +300,18 @@
     93.14,
     91.95,
     91.98,
-    92.57
+    92.57,
+    89.42
    ],
    "taiex": {
-    "pairs": 470,
-    "corr60": -0.006,
-    "corr120": 0.01,
-    "corr250": -0.1,
-    "beta120": 0.007,
+    "pairs": 469,
+    "corr60": -0.001,
+    "corr120": 0.012,
+    "corr250": -0.099,
+    "beta120": 0.009,
     "hit120": {
      "n": 120,
-     "rate": 0.433
+     "rate": 0.442
     },
     "condUp": {
      "n": 97,
@@ -335,10 +335,10 @@
    "symbol": "TWD=X",
    "dec": 3,
    "date": "2026-11-23",
-   "close": 32.941,
-   "pct": -0.26,
-   "pct5": 0.2,
-   "pct20": 1.14,
+   "close": 32.87,
+   "pct": -0.47,
+   "pct5": -0.02,
+   "pct20": 0.92,
    "spark": [
     31.928,
     32.105,
@@ -369,17 +369,17 @@
     32.911,
     32.93,
     33.026,
-    32.941
+    32.87
    ],
    "taiex": {
     "pairs": 480,
-    "corr60": -0.114,
-    "corr120": -0.091,
-    "corr250": -0.087,
-    "beta120": -0.785,
+    "corr60": -0.098,
+    "corr120": -0.082,
+    "corr250": -0.083,
+    "beta120": -0.709,
     "hit120": {
      "n": 120,
-     "rate": 0.508
+     "rate": 0.517
     },
     "condUp": {
      "n": 1,
@@ -442,12 +442,12 @@
     "code": "3711",
     "name": "日月光投控",
     "market": "上市",
-    "corr": 0.503,
-    "corrAlt": 0.483,
-    "beta": 0.88,
+    "corr": 0.479,
+    "corrAlt": 0.434,
+    "beta": 0.84,
     "hit": 0.672,
     "n": 120,
-    "lastPct": 1.64,
+    "lastPct": 5.47,
     "lastDate": "2026-11-23",
     "themes": [
      "封測概念股",
@@ -458,42 +458,42 @@
     "code": "2330",
     "name": "台積電",
     "market": "上市",
-    "corr": 0.494,
-    "corrAlt": 0.429,
-    "beta": 0.42,
-    "hit": 0.634,
+    "corr": 0.473,
+    "corrAlt": 0.383,
+    "beta": 0.4,
+    "hit": 0.625,
     "n": 120,
-    "lastPct": -0.25,
+    "lastPct": 1.5,
     "lastDate": "2026-11-23",
     "themes": [
-     "蘋概股",
+     "先進封裝概念股",
      "輝達概念股",
-     "先進封裝概念股"
+     "蘋概股"
     ]
    },
    {
     "code": "2360",
     "name": "致茂",
     "market": "上市",
-    "corr": 0.472,
-    "corrAlt": 0.597,
-    "beta": 0.87,
-    "hit": 0.595,
+    "corr": 0.448,
+    "corrAlt": 0.554,
+    "beta": 0.82,
+    "hit": 0.591,
     "n": 120,
-    "lastPct": -4.75,
+    "lastPct": 0,
     "lastDate": "2026-11-23",
     "themes": []
    }
   ],
   "taiex": {
    "pairs": 468,
-   "corr60": 0.462,
-   "corr120": 0.534,
-   "corr250": 0.536,
-   "beta120": 0.459,
+   "corr60": 0.406,
+   "corr120": 0.506,
+   "corr250": 0.518,
+   "beta120": 0.437,
    "hit120": {
     "n": 120,
-    "rate": 0.683
+    "rate": 0.675
    },
    "condUp": {
     "n": 85,
@@ -502,8 +502,8 @@
    },
    "condDown": {
     "n": 68,
-    "mean": -1.4,
-    "sameDirRate": 0.838
+    "mean": -1.36,
+    "sameDirRate": 0.824
    },
    "verdict": {
     "level": 3,
@@ -516,10 +516,10 @@
   "n": 250,
   "from": "2025-11-04",
   "to": "2026-11-23",
-  "stratPct": 705.28,
-  "bhPct": 27.84,
+  "stratPct": 687.44,
+  "bhPct": 30.67,
   "maxDDPct": -7.43,
-  "hitRate": 0.72,
+  "hitRate": 0.716,
   "curve": [
    {
     "date": "2025-11-04",
@@ -1768,8 +1768,8 @@
    },
    {
     "date": "2026-11-23",
-    "strat": 705.28,
-    "bh": 27.84
+    "strat": 687.44,
+    "bh": 30.67
    }
   ]
  },
@@ -1865,53 +1865,53 @@
      "code": "2474",
      "name": "可成",
      "market": "上市",
-     "corr": 0.257,
-     "corrAlt": 0.089,
+     "corr": 0.258,
+     "corrAlt": 0.092,
      "beta": 0.45,
-     "hit": 0.514,
+     "hit": 0.519,
      "n": 120,
-     "lastPct": 0.26,
+     "lastPct": 0,
      "lastDate": "2026-11-23",
      "themes": []
     },
     {
-     "code": "7765",
-     "name": "中華資安",
+     "code": "2357",
+     "name": "華碩",
      "market": "上市",
-     "corr": 0.206,
-     "corrAlt": 0.192,
-     "beta": 0.39,
-     "hit": 0.579,
+     "corr": 0.18,
+     "corrAlt": 0.114,
+     "beta": 0.42,
+     "hit": 0.508,
      "n": 120,
-     "lastPct": -5.94,
+     "lastPct": 0.26,
      "lastDate": "2026-11-23",
      "themes": [
-      "資安概念股"
+      "AI 伺服器概念股"
      ]
     },
     {
-     "code": "2385",
-     "name": "群光",
+     "code": "2353",
+     "name": "宏碁",
      "market": "上市",
-     "corr": 0.175,
-     "corrAlt": 0.095,
-     "beta": 0.26,
-     "hit": 0.495,
+     "corr": 0.168,
+     "corrAlt": -0.04,
+     "beta": 0.36,
+     "hit": 0.5,
      "n": 120,
-     "lastPct": 4,
+     "lastPct": 1.13,
      "lastDate": "2026-11-23",
      "themes": []
     }
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": -0.113,
-    "corr120": -0.064,
-    "corr250": 0.085,
-    "beta120": -0.101,
+    "corr60": -0.13,
+    "corr120": -0.072,
+    "corr250": 0.08,
+    "beta120": -0.114,
     "hit120": {
      "n": 120,
-     "rate": 0.467
+     "rate": 0.458
     },
     "condUp": {
      "n": 52,
@@ -1920,8 +1920,8 @@
     },
     "condDown": {
      "n": 45,
-     "mean": -0.48,
-     "sameDirRate": 0.711
+     "mean": -0.43,
+     "sameDirRate": 0.689
     },
     "verdict": {
      "level": 0,
@@ -2029,61 +2029,61 @@
    ],
    "top3": [
     {
-     "code": "1802",
-     "name": "台玻",
-     "market": "上市",
-     "corr": 0.256,
-     "corrAlt": 0.144,
-     "beta": 0.7,
-     "hit": 0.538,
-     "n": 120,
-     "lastPct": -3.21,
-     "lastDate": "2026-11-23",
-     "themes": [
-      "玻璃基板概念股",
-      "CCL 概念股"
-     ]
-    },
-    {
      "code": "4906",
      "name": "正文",
      "market": "上市",
-     "corr": 0.237,
-     "corrAlt": 0.131,
-     "beta": 0.59,
-     "hit": 0.546,
+     "corr": 0.215,
+     "corrAlt": 0.086,
+     "beta": 0.54,
+     "hit": 0.538,
      "n": 120,
-     "lastPct": -0.19,
+     "lastPct": 4.6,
      "lastDate": "2026-11-23",
      "themes": [
       "網通概念股"
      ]
     },
     {
-     "code": "6285",
-     "name": "啟碁",
+     "code": "1802",
+     "name": "台玻",
      "market": "上市",
-     "corr": 0.216,
-     "corrAlt": 0.152,
-     "beta": 0.55,
-     "hit": 0.518,
+     "corr": 0.201,
+     "corrAlt": 0.041,
+     "beta": 0.56,
+     "hit": 0.53,
      "n": 120,
-     "lastPct": -4.65,
+     "lastPct": 9.83,
      "lastDate": "2026-11-23",
      "themes": [
-      "網通概念股"
+      "CCL 概念股",
+      "玻璃基板概念股"
+     ]
+    },
+    {
+     "code": "3443",
+     "name": "創意",
+     "market": "上市",
+     "corr": 0.198,
+     "corrAlt": 0.203,
+     "beta": 0.64,
+     "hit": 0.513,
+     "n": 120,
+     "lastPct": -5.19,
+     "lastDate": "2026-11-23",
+     "themes": [
+      "矽智財概念股"
      ]
     }
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.116,
-    "corr120": 0.097,
-    "corr250": 0.162,
-    "beta120": 0.127,
+    "corr60": 0.074,
+    "corr120": 0.078,
+    "corr250": 0.15,
+    "beta120": 0.103,
     "hit120": {
      "n": 120,
-     "rate": 0.467
+     "rate": 0.458
     },
     "condUp": {
      "n": 56,
@@ -2092,8 +2092,8 @@
     },
     "condDown": {
      "n": 68,
-     "mean": -0.54,
-     "sameDirRate": 0.603
+     "mean": -0.51,
+     "sameDirRate": 0.588
     },
     "verdict": {
      "level": 0,
@@ -2234,25 +2234,12 @@
      "code": "2353",
      "name": "宏碁",
      "market": "上市",
-     "corr": 0.482,
-     "corrAlt": 0.239,
+     "corr": 0.48,
+     "corrAlt": 0.234,
      "beta": 0.52,
      "hit": 0.647,
      "n": 120,
-     "lastPct": 0.75,
-     "lastDate": "2026-11-23",
-     "themes": []
-    },
-    {
-     "code": "2474",
-     "name": "可成",
-     "market": "上市",
-     "corr": 0.444,
-     "corrAlt": 0.234,
-     "beta": 0.39,
-     "hit": 0.552,
-     "n": 120,
-     "lastPct": 0.26,
+     "lastPct": 1.13,
      "lastDate": "2026-11-23",
      "themes": []
     },
@@ -2260,27 +2247,40 @@
      "code": "2357",
      "name": "華碩",
      "market": "上市",
-     "corr": 0.44,
-     "corrAlt": 0.249,
-     "beta": 0.53,
+     "corr": 0.456,
+     "corrAlt": 0.293,
+     "beta": 0.54,
      "hit": 0.559,
      "n": 120,
-     "lastPct": 3.84,
+     "lastPct": 0.26,
      "lastDate": "2026-11-23",
      "themes": [
       "AI 伺服器概念股"
      ]
+    },
+    {
+     "code": "2474",
+     "name": "可成",
+     "market": "上市",
+     "corr": 0.445,
+     "corrAlt": 0.239,
+     "beta": 0.39,
+     "hit": 0.558,
+     "n": 120,
+     "lastPct": 0,
+     "lastDate": "2026-11-23",
+     "themes": []
     }
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.307,
-    "corr120": 0.255,
-    "corr250": 0.182,
-    "beta120": 0.201,
+    "corr60": 0.276,
+    "corr120": 0.241,
+    "corr250": 0.174,
+    "beta120": 0.191,
     "hit120": {
      "n": 120,
-     "rate": 0.533
+     "rate": 0.525
     },
     "condUp": {
      "n": 71,
@@ -2289,8 +2289,8 @@
     },
     "condDown": {
      "n": 76,
-     "mean": -0.51,
-     "sameDirRate": 0.592
+     "mean": -0.48,
+     "sameDirRate": 0.579
     },
     "verdict": {
      "level": 1,
@@ -2401,55 +2401,55 @@
      "code": "2474",
      "name": "可成",
      "market": "上市",
-     "corr": 0.404,
-     "corrAlt": 0.122,
+     "corr": 0.406,
+     "corrAlt": 0.127,
      "beta": 0.28,
-     "hit": 0.524,
+     "hit": 0.529,
      "n": 120,
-     "lastPct": 0.26,
+     "lastPct": 0,
      "lastDate": "2026-11-23",
      "themes": []
-    },
-    {
-     "code": "4919",
-     "name": "新唐",
-     "market": "上市",
-     "corr": 0.308,
-     "corrAlt": 0.267,
-     "beta": 0.47,
-     "hit": 0.605,
-     "n": 120,
-     "lastPct": -1.43,
-     "lastDate": "2026-11-23",
-     "themes": [
-      "IC 設計概念股"
-     ]
     },
     {
      "code": "2327",
      "name": "國巨",
      "market": "上市",
-     "corr": 0.295,
-     "corrAlt": 0.374,
-     "beta": 0.46,
+     "corr": 0.283,
+     "corrAlt": 0.348,
+     "beta": 0.44,
      "hit": 0.643,
      "n": 120,
-     "lastPct": 0.68,
+     "lastPct": 4.73,
      "lastDate": "2026-11-23",
      "themes": [
       "被動元件概念股"
+     ]
+    },
+    {
+     "code": "4919",
+     "name": "新唐",
+     "market": "上市",
+     "corr": 0.281,
+     "corrAlt": 0.217,
+     "beta": 0.43,
+     "hit": 0.597,
+     "n": 120,
+     "lastPct": 7.41,
+     "lastDate": "2026-11-23",
+     "themes": [
+      "IC 設計概念股"
      ]
     }
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.191,
-    "corr120": 0.239,
-    "corr250": 0.202,
-    "beta120": 0.147,
+    "corr60": 0.161,
+    "corr120": 0.223,
+    "corr250": 0.193,
+    "beta120": 0.138,
     "hit120": {
      "n": 120,
-     "rate": 0.558
+     "rate": 0.55
     },
     "condUp": {
      "n": 89,
@@ -2458,8 +2458,8 @@
     },
     "condDown": {
      "n": 79,
-     "mean": -0.51,
-     "sameDirRate": 0.608
+     "mean": -0.48,
+     "sameDirRate": 0.595
     },
     "verdict": {
      "level": 1,
@@ -2548,66 +2548,64 @@
    ],
    "top3": [
     {
-     "code": "2330",
-     "name": "台積電",
-     "market": "上市",
-     "corr": 0.323,
-     "corrAlt": 0.458,
-     "beta": 0.19,
-     "hit": 0.634,
-     "n": 120,
-     "lastPct": -0.25,
-     "lastDate": "2026-11-23",
-     "themes": [
-      "蘋概股",
-      "輝達概念股",
-      "先進封裝概念股"
-     ]
-    },
-    {
      "code": "2317",
      "name": "鴻海",
      "market": "上市",
-     "corr": 0.31,
-     "corrAlt": 0.508,
+     "corr": 0.316,
+     "corrAlt": 0.525,
      "beta": 0.22,
      "hit": 0.64,
      "n": 120,
-     "lastPct": -0.95,
+     "lastPct": -1.9,
      "lastDate": "2026-11-23",
      "themes": [
+      "輝達概念股",
       "AI 伺服器概念股",
-      "蘋概股",
-      "輝達概念股"
+      "蘋概股"
      ]
     },
     {
-     "code": "2449",
-     "name": "京元電子",
+     "code": "2330",
+     "name": "台積電",
      "market": "上市",
-     "corr": 0.276,
-     "corrAlt": 0.461,
-     "beta": 0.37,
-     "hit": 0.578,
+     "corr": 0.307,
+     "corrAlt": 0.413,
+     "beta": 0.18,
+     "hit": 0.625,
      "n": 120,
-     "lastPct": -3.81,
+     "lastPct": 1.5,
      "lastDate": "2026-11-23",
      "themes": [
-      "封測概念股",
-      "HBM 概念股",
-      "先進封裝概念股"
+      "先進封裝概念股",
+      "輝達概念股",
+      "蘋概股"
+     ]
+    },
+    {
+     "code": "3231",
+     "name": "緯創",
+     "market": "上市",
+     "corr": 0.264,
+     "corrAlt": 0.298,
+     "beta": 0.25,
+     "hit": 0.584,
+     "n": 120,
+     "lastPct": 1.02,
+     "lastDate": "2026-11-23",
+     "themes": [
+      "AI 伺服器概念股"
      ]
     }
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.406,
-    "corr120": 0.276,
-    "corr250": 0.271,
-    "beta120": 0.165,
+    "corr60": 0.355,
+    "corr120": 0.255,
+    "corr250": 0.259,
+    "beta120": 0.153,
     "hit120": {
      "n": 120,
-     "rate": 0.625
+     "rate": 0.617
     },
     "condUp": {
      "n": 76,
@@ -2616,8 +2614,8 @@
     },
     "condDown": {
      "n": 104,
-     "mean": -0.28,
-     "sameDirRate": 0.577
+     "mean": -0.26,
+     "sameDirRate": 0.567
     },
     "verdict": {
      "level": 2,
@@ -2739,63 +2737,60 @@
    ],
    "top3": [
     {
-     "code": "4979",
-     "name": "華星光",
-     "market": "上櫃",
-     "corr": 0.476,
-     "corrAlt": 0.498,
-     "beta": 0.7,
-     "hit": 0.653,
-     "n": 120,
-     "lastPct": -8.08,
-     "lastDate": "2026-11-23",
-     "themes": [
-      "矽光子概念股",
-      "CPO 概念股",
-      "光通訊概念股"
-     ]
-    },
-    {
-     "code": "3450",
-     "name": "聯鈞",
-     "market": "上市",
-     "corr": 0.475,
-     "corrAlt": 0.432,
-     "beta": 0.69,
-     "hit": 0.65,
-     "n": 120,
-     "lastPct": -3.7,
-     "lastDate": "2026-11-23",
-     "themes": [
-      "CPO 概念股",
-      "光通訊概念股"
-     ]
-    },
-    {
      "code": "6805",
      "name": "富世達",
      "market": "上市",
-     "corr": 0.471,
-     "corrAlt": 0.503,
-     "beta": 0.62,
-     "hit": 0.706,
+     "corr": 0.448,
+     "corrAlt": 0.461,
+     "beta": 0.59,
+     "hit": 0.697,
      "n": 120,
-     "lastPct": -4.9,
+     "lastPct": 1.75,
      "lastDate": "2026-11-23",
      "themes": [
       "伺服器機殼概念股"
+     ]
+    },
+    {
+     "code": "3231",
+     "name": "緯創",
+     "market": "上市",
+     "corr": 0.442,
+     "corrAlt": 0.261,
+     "beta": 0.38,
+     "hit": 0.646,
+     "n": 120,
+     "lastPct": 1.02,
+     "lastDate": "2026-11-23",
+     "themes": [
+      "AI 伺服器概念股"
+     ]
+    },
+    {
+     "code": "6217",
+     "name": "中探針",
+     "market": "上櫃",
+     "corr": 0.438,
+     "corrAlt": 0.334,
+     "beta": 0.66,
+     "hit": 0.586,
+     "n": 120,
+     "lastPct": 3.14,
+     "lastDate": "2026-11-23",
+     "themes": [
+      "探針卡概念股"
      ]
     }
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.442,
-    "corr120": 0.453,
-    "corr250": 0.468,
-    "beta120": 0.249,
+    "corr60": 0.398,
+    "corr120": 0.431,
+    "corr250": 0.455,
+    "beta120": 0.238,
     "hit120": {
      "n": 120,
-     "rate": 0.667
+     "rate": 0.658
     },
     "condUp": {
      "n": 93,
@@ -2804,8 +2799,8 @@
     },
     "condDown": {
      "n": 84,
-     "mean": -0.97,
-     "sameDirRate": 0.726
+     "mean": -0.95,
+     "sameDirRate": 0.714
     },
     "verdict": {
      "level": 3,
@@ -2928,12 +2923,12 @@
      "code": "3711",
      "name": "日月光投控",
      "market": "上市",
-     "corr": 0.544,
-     "corrAlt": 0.526,
-     "beta": 0.53,
+     "corr": 0.526,
+     "corrAlt": 0.486,
+     "beta": 0.52,
      "hit": 0.638,
      "n": 120,
-     "lastPct": 1.64,
+     "lastPct": 5.47,
      "lastDate": "2026-11-23",
      "themes": [
       "封測概念股",
@@ -2944,44 +2939,42 @@
      "code": "2330",
      "name": "台積電",
      "market": "上市",
-     "corr": 0.491,
-     "corrAlt": 0.445,
+     "corr": 0.476,
+     "corrAlt": 0.408,
      "beta": 0.23,
-     "hit": 0.571,
+     "hit": 0.563,
      "n": 120,
-     "lastPct": -0.25,
+     "lastPct": 1.5,
      "lastDate": "2026-11-23",
      "themes": [
-      "蘋概股",
+      "先進封裝概念股",
       "輝達概念股",
-      "先進封裝概念股"
+      "蘋概股"
      ]
     },
     {
-     "code": "3037",
-     "name": "欣興",
+     "code": "2360",
+     "name": "致茂",
      "market": "上市",
-     "corr": 0.447,
-     "corrAlt": 0.463,
-     "beta": 0.53,
-     "hit": 0.624,
+     "corr": 0.425,
+     "corrAlt": 0.507,
+     "beta": 0.44,
+     "hit": 0.6,
      "n": 120,
-     "lastPct": -4.66,
+     "lastPct": 0,
      "lastDate": "2026-11-23",
-     "themes": [
-      "PCB 概念股"
-     ]
+     "themes": []
     }
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.472,
-    "corr120": 0.501,
-    "corr250": 0.534,
-    "beta120": 0.244,
+    "corr60": 0.425,
+    "corr120": 0.481,
+    "corr250": 0.521,
+    "beta120": 0.235,
     "hit120": {
      "n": 120,
-     "rate": 0.642
+     "rate": 0.633
     },
     "condUp": {
      "n": 103,
@@ -2990,8 +2983,8 @@
     },
     "condDown": {
      "n": 81,
-     "mean": -1.13,
-     "sameDirRate": 0.765
+     "mean": -1.11,
+     "sameDirRate": 0.753
     },
     "verdict": {
      "level": 3,
@@ -3154,29 +3147,29 @@
      "code": "2330",
      "name": "台積電",
      "market": "上市",
-     "corr": 0.537,
-     "corrAlt": 0.459,
-     "beta": 0.33,
-     "hit": 0.714,
+     "corr": 0.516,
+     "corrAlt": 0.412,
+     "beta": 0.32,
+     "hit": 0.705,
      "n": 120,
-     "lastPct": -0.25,
+     "lastPct": 1.5,
      "lastDate": "2026-11-23",
      "themes": [
-      "蘋概股",
+      "先進封裝概念股",
       "輝達概念股",
-      "先進封裝概念股"
+      "蘋概股"
      ]
     },
     {
      "code": "3711",
      "name": "日月光投控",
      "market": "上市",
-     "corr": 0.532,
-     "corrAlt": 0.513,
-     "beta": 0.67,
+     "corr": 0.508,
+     "corrAlt": 0.464,
+     "beta": 0.65,
      "hit": 0.681,
      "n": 120,
-     "lastPct": 1.64,
+     "lastPct": 5.47,
      "lastDate": "2026-11-23",
      "themes": [
       "封測概念股",
@@ -3187,25 +3180,25 @@
      "code": "2360",
      "name": "致茂",
      "market": "上市",
-     "corr": 0.492,
-     "corrAlt": 0.598,
-     "beta": 0.66,
-     "hit": 0.698,
+     "corr": 0.468,
+     "corrAlt": 0.553,
+     "beta": 0.62,
+     "hit": 0.696,
      "n": 120,
-     "lastPct": -4.75,
+     "lastPct": 0,
      "lastDate": "2026-11-23",
      "themes": []
     }
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.494,
-    "corr120": 0.558,
-    "corr250": 0.552,
-    "beta120": 0.346,
+    "corr60": 0.437,
+    "corr120": 0.53,
+    "corr250": 0.534,
+    "beta120": 0.331,
     "hit120": {
      "n": 120,
-     "rate": 0.75
+     "rate": 0.742
     },
     "condUp": {
      "n": 92,
@@ -3214,8 +3207,8 @@
     },
     "condDown": {
      "n": 73,
-     "mean": -1.4,
-     "sameDirRate": 0.822
+     "mean": -1.37,
+     "sameDirRate": 0.808
     },
     "verdict": {
      "level": 3,
@@ -3339,12 +3332,12 @@
      "code": "3711",
      "name": "日月光投控",
      "market": "上市",
-     "corr": 0.517,
-     "corrAlt": 0.523,
-     "beta": 0.47,
+     "corr": 0.497,
+     "corrAlt": 0.483,
+     "beta": 0.46,
      "hit": 0.672,
      "n": 120,
-     "lastPct": 1.64,
+     "lastPct": 5.47,
      "lastDate": "2026-11-23",
      "themes": [
       "封測概念股",
@@ -3352,48 +3345,44 @@
      ]
     },
     {
-     "code": "3163",
-     "name": "波若威",
-     "market": "上櫃",
-     "corr": 0.498,
-     "corrAlt": 0.536,
-     "beta": 0.55,
-     "hit": 0.626,
-     "n": 120,
-     "lastPct": -9.94,
-     "lastDate": "2026-11-23",
-     "themes": [
-      "矽光子概念股",
-      "CPO 概念股",
-      "光通訊概念股"
-     ]
-    },
-    {
      "code": "3707",
      "name": "漢磊",
      "market": "上櫃",
-     "corr": 0.493,
-     "corrAlt": 0.489,
-     "beta": 0.5,
-     "hit": 0.652,
+     "corr": 0.472,
+     "corrAlt": 0.446,
+     "beta": 0.47,
+     "hit": 0.643,
      "n": 120,
-     "lastPct": -2.96,
+     "lastPct": 2.36,
      "lastDate": "2026-11-23",
      "themes": [
       "功率半導體概念股",
       "第三代半導體概念股"
      ]
+    },
+    {
+     "code": "2360",
+     "name": "致茂",
+     "market": "上市",
+     "corr": 0.455,
+     "corrAlt": 0.579,
+     "beta": 0.44,
+     "hit": 0.626,
+     "n": 120,
+     "lastPct": 0,
+     "lastDate": "2026-11-23",
+     "themes": []
     }
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.465,
-    "corr120": 0.498,
-    "corr250": 0.449,
-    "beta120": 0.225,
+    "corr60": 0.419,
+    "corr120": 0.476,
+    "corr250": 0.436,
+    "beta120": 0.216,
     "hit120": {
      "n": 120,
-     "rate": 0.683
+     "rate": 0.675
     },
     "condUp": {
      "n": 112,
@@ -3402,8 +3391,8 @@
     },
     "condDown": {
      "n": 85,
-     "mean": -0.9,
-     "sameDirRate": 0.694
+     "mean": -0.87,
+     "sameDirRate": 0.682
     },
     "verdict": {
      "level": 3,
@@ -3505,12 +3494,12 @@
      "code": "3711",
      "name": "日月光投控",
      "market": "上市",
-     "corr": 0.454,
-     "corrAlt": 0.412,
-     "beta": 0.36,
+     "corr": 0.435,
+     "corrAlt": 0.371,
+     "beta": 0.35,
      "hit": 0.621,
      "n": 120,
-     "lastPct": 1.64,
+     "lastPct": 5.47,
      "lastDate": "2026-11-23",
      "themes": [
       "封測概念股",
@@ -3521,42 +3510,42 @@
      "code": "2330",
      "name": "台積電",
      "market": "上市",
-     "corr": 0.448,
-     "corrAlt": 0.318,
+     "corr": 0.432,
+     "corrAlt": 0.278,
      "beta": 0.17,
-     "hit": 0.652,
+     "hit": 0.643,
      "n": 120,
-     "lastPct": -0.25,
+     "lastPct": 1.5,
      "lastDate": "2026-11-23",
      "themes": [
-      "蘋概股",
+      "先進封裝概念股",
       "輝達概念股",
-      "先進封裝概念股"
+      "蘋概股"
      ]
     },
     {
      "code": "2360",
      "name": "致茂",
      "market": "上市",
-     "corr": 0.412,
-     "corrAlt": 0.503,
-     "beta": 0.34,
-     "hit": 0.595,
+     "corr": 0.395,
+     "corrAlt": 0.466,
+     "beta": 0.33,
+     "hit": 0.591,
      "n": 120,
-     "lastPct": -4.75,
+     "lastPct": 0,
      "lastDate": "2026-11-23",
      "themes": []
     }
    ],
    "taiex": {
     "pairs": 468,
-    "corr60": 0.343,
-    "corr120": 0.447,
-    "corr250": 0.442,
-    "beta120": 0.172,
+    "corr60": 0.296,
+    "corr120": 0.426,
+    "corr250": 0.429,
+    "beta120": 0.165,
     "hit120": {
      "n": 120,
-     "rate": 0.675
+     "rate": 0.667
     },
     "condUp": {
      "n": 118,
@@ -3565,8 +3554,8 @@
     },
     "condDown": {
      "n": 89,
-     "mean": -0.82,
-     "sameDirRate": 0.697
+     "mean": -0.8,
+     "sameDirRate": 0.685
     },
     "verdict": {
      "level": 3,
@@ -3578,5 +3567,5 @@
   }
  ],
  "historyCount": 265,
- "elapsedSec": 13.1
+ "elapsedSec": 11.4
 }

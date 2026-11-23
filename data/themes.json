@@ -6,7 +6,7 @@
  "date_counts": {
   "2026-11-23": 369
  },
- "members_fetched": "2026-11-23",
+ "members_fetched": "2026-11-24",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -527,18 +527,6 @@
    "desc": "電動車概念股指營收來自汽車電動化的台股，核心環節包括電源與三電系統、充電樁與充電槍座、高壓線束與連接器、電池上游材料，以及電動巴士整車。",
    "members": [
     {
-     "code": "3665",
-     "name": "貿聯-KY",
-     "market": "上市",
-     "open": 1240.0,
-     "high": 1430.0,
-     "low": 1240.0,
-     "close": 1430.0,
-     "change": 130.0,
-     "pct": 10.0,
-     "volume": 4254
-    },
-    {
      "code": "2308",
      "name": "台達電",
      "market": "上市",
@@ -549,6 +537,18 @@
      "change": 90.0,
      "pct": 10.0,
      "volume": 30512
+    },
+    {
+     "code": "3665",
+     "name": "貿聯-KY",
+     "market": "上市",
+     "open": 1240.0,
+     "high": 1430.0,
+     "low": 1240.0,
+     "close": 1430.0,
+     "change": 130.0,
+     "pct": 10.0,
+     "volume": 4254
     },
     {
      "code": "4739",
@@ -790,18 +790,6 @@
      "volume": 1590
     },
     {
-     "code": "6173",
-     "name": "信昌電",
-     "market": "上櫃",
-     "open": 125.5,
-     "high": 141.0,
-     "low": 123.5,
-     "close": 137.5,
-     "change": 2.5,
-     "pct": 1.85,
-     "volume": 8036
-    },
-    {
      "code": "3026",
      "name": "禾伸堂",
      "market": "上市",
@@ -812,6 +800,18 @@
      "change": 6.0,
      "pct": 1.85,
      "volume": 12378
+    },
+    {
+     "code": "6173",
+     "name": "信昌電",
+     "market": "上櫃",
+     "open": 125.5,
+     "high": 141.0,
+     "low": 123.5,
+     "close": 137.5,
+     "change": 2.5,
+     "pct": 1.85,
+     "volume": 8036
     },
     {
      "code": "8042",
@@ -861,18 +861,6 @@
      "volume": 8463
     },
     {
-     "code": "6274",
-     "name": "台燿",
-     "market": "上櫃",
-     "open": 600.0,
-     "high": 685.0,
-     "low": 585.0,
-     "close": 685.0,
-     "change": 62.0,
-     "pct": 9.95,
-     "volume": 17965
-    },
-    {
      "code": "1303",
      "name": "南亞",
      "market": "上市",
@@ -883,6 +871,18 @@
      "change": 20.5,
      "pct": 9.95,
      "volume": 127623
+    },
+    {
+     "code": "6274",
+     "name": "台燿",
+     "market": "上櫃",
+     "open": 600.0,
+     "high": 685.0,
+     "low": 585.0,
+     "close": 685.0,
+     "change": 62.0,
+     "pct": 9.95,
+     "volume": 17965
     },
     {
      "code": "1802",
@@ -4482,18 +4482,6 @@
      "volume": 396
     },
     {
-     "code": "6570",
-     "name": "維田",
-     "market": "上櫃",
-     "open": 34.35,
-     "high": 37.95,
-     "low": 34.35,
-     "close": 37.2,
-     "change": 0.6,
-     "pct": 1.64,
-     "volume": 76
-    },
-    {
      "code": "6166",
      "name": "凌華",
      "market": "上市",
@@ -4504,6 +4492,18 @@
      "change": 1.2,
      "pct": 1.64,
      "volume": 1323
+    },
+    {
+     "code": "6570",
+     "name": "維田",
+     "market": "上櫃",
+     "open": 34.35,
+     "high": 37.95,
+     "low": 34.35,
+     "close": 37.2,
+     "change": 0.6,
+     "pct": 1.64,
+     "volume": 76
     },
     {
      "code": "3416",
@@ -6196,18 +6196,6 @@
      "volume": 1101
     },
     {
-     "code": "4533",
-     "name": "協易機",
-     "market": "上櫃",
-     "open": 22.3,
-     "high": 23.85,
-     "low": 22.0,
-     "close": 23.1,
-     "change": -1.2,
-     "pct": -4.94,
-     "volume": 3595
-    },
-    {
      "code": "4526",
      "name": "東台",
      "market": "上市",
@@ -6218,6 +6206,18 @@
      "change": -1.75,
      "pct": -4.94,
      "volume": 12224
+    },
+    {
+     "code": "4533",
+     "name": "協易機",
+     "market": "上櫃",
+     "open": 22.3,
+     "high": 23.85,
+     "low": 22.0,
+     "close": 23.1,
+     "change": -1.2,
+     "pct": -4.94,
+     "volume": 3595
     }
    ],
    "avg_pct": 0.38,

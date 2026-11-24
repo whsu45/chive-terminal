@@ -1,9 +1,14 @@
 [
  {
   "date": "2026-11-23",
-  "composite": 9.05,
+  "composite": 9.61,
   "sox": 14.03,
   "top3Up": [
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 15.56
+   },
    {
     "key": "aiserver",
     "title": "AI 伺服器／資料中心硬體",
@@ -13,11 +18,6 @@
     "key": "semis",
     "title": "半導體",
     "pct": 13.64
-   },
-   {
-    "key": "semicap",
-    "title": "半導體設備",
-    "pct": 13.57
    }
   ],
   "top3Down": [
@@ -37,7 +37,10 @@
     "pct": 4.56
    }
   ],
-  "taiexNext": null
+  "taiexNext": {
+   "date": "2026-11-24",
+   "pct": 9.02
+  }
  },
  {
   "date": "2026-11-20",

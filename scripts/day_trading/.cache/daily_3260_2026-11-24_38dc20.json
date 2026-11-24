@@ -1,0 +1,2886 @@
+{
+ "version": 9,
+ "code": "3260",
+ "name": "威剛",
+ "market": "otc",
+ "date": "2026-11-24",
+ "prev_date": "2026-11-23",
+ "group": "記憶體模組控制IC",
+ "peers": [
+  "8299",
+  "4967",
+  "2451",
+  "8271"
+ ],
+ "peers_arg": null,
+ "peer_info": {
+  "8299": {
+   "name": "群聯",
+   "ex": "otc",
+   "y": 1450.0,
+   "prev_chg_pct": 9.84848484848484,
+   "prev_vol": 6085
+  },
+  "4967": {
+   "name": "十銓",
+   "ex": "tse",
+   "y": 233.0,
+   "prev_chg_pct": 7.621247113163965,
+   "prev_vol": 4508
+  },
+  "2451": {
+   "name": "創見",
+   "ex": "tse",
+   "y": 232.0,
+   "prev_chg_pct": 9.952606635071092,
+   "prev_vol": 6408
+  },
+  "8271": {
+   "name": "宇瞻",
+   "ex": "tse",
+   "y": 141.0,
+   "prev_chg_pct": 6.015037593984962,
+   "prev_vol": 2113
+  }
+ },
+ "tech": {
+  "date": "2026-11-23",
+  "close": 249.5,
+  "open": 231.0,
+  "high": 254.0,
+  "low": 230.5,
+  "vol": 9062,
+  "ma5": 257.8,
+  "ma10": 277.1,
+  "ma20": 302.7,
+  "ma60": 357.3666666666667,
+  "bb_up": 371.6633235858018,
+  "bb_dn": 233.73667641419823,
+  "atr14": 22.321428571428573,
+  "rsi14": 27.236012292091175,
+  "vol_ma5": 8561.0,
+  "vol_ma20": 7893.8,
+  "chg_pct": 5.944798301486198,
+  "high20": 378.5,
+  "low20": 230.5,
+  "high60": 437.5,
+  "low60": 230.5,
+  "prev_high": 250.0,
+  "prev_low": 232.5,
+  "ret5": -10.251798561151082,
+  "ret20": -23.932926829268297,
+  "streak": 1,
+  "atr_pct": 8.946464357286
+ },
+ "hist_tail": [
+  {
+   "date": "2026-10-08",
+   "v": 4276,
+   "amt": 1558311.0,
+   "o": 365.0,
+   "h": 369.0,
+   "l": 362.5,
+   "c": 362.5
+  },
+  {
+   "date": "2026-10-12",
+   "v": 3249,
+   "amt": 1190293.0,
+   "o": 360.0,
+   "h": 370.0,
+   "l": 359.0,
+   "c": 367.5
+  },
+  {
+   "date": "2026-10-13",
+   "v": 3477,
+   "amt": 1256702.0,
+   "o": 362.5,
+   "h": 364.0,
+   "l": 358.5,
+   "c": 363.0
+  },
+  {
+   "date": "2026-10-14",
+   "v": 2050,
+   "amt": 746695.0,
+   "o": 365.0,
+   "h": 367.5,
+   "l": 360.5,
+   "c": 367.5
+  },
+  {
+   "date": "2026-10-15",
+   "v": 4950,
+   "amt": 1750561.0,
+   "o": 358.0,
+   "h": 360.0,
+   "l": 350.0,
+   "c": 350.0
+  },
+  {
+   "date": "2026-10-16",
+   "v": 3903,
+   "amt": 1408964.0,
+   "o": 350.0,
+   "h": 367.0,
+   "l": 350.0,
+   "c": 360.0
+  },
+  {
+   "date": "2026-10-19",
+   "v": 10584,
+   "amt": 3563942.0,
+   "o": 348.0,
+   "h": 348.5,
+   "l": 327.0,
+   "c": 335.0
+  },
+  {
+   "date": "2026-10-20",
+   "v": 4315,
+   "amt": 1468023.0,
+   "o": 335.5,
+   "h": 346.5,
+   "l": 333.5,
+   "c": 335.5
+  },
+  {
+   "date": "2026-10-21",
+   "v": 3831,
+   "amt": 1294261.0,
+   "o": 345.5,
+   "h": 346.0,
+   "l": 330.0,
+   "c": 332.5
+  },
+  {
+   "date": "2026-10-22",
+   "v": 3961,
+   "amt": 1311507.0,
+   "o": 335.0,
+   "h": 337.0,
+   "l": 328.0,
+   "c": 328.0
+  },
+  {
+   "date": "2026-10-27",
+   "v": 4129,
+   "amt": 1367411.0,
+   "o": 332.0,
+   "h": 336.0,
+   "l": 328.0,
+   "c": 330.5
+  },
+  {
+   "date": "2026-10-28",
+   "v": 10934,
+   "amt": 3880915.0,
+   "o": 337.0,
+   "h": 363.5,
+   "l": 336.5,
+   "c": 363.5
+  },
+  {
+   "date": "2026-10-29",
+   "v": 13820,
+   "amt": 5048313.0,
+   "o": 369.5,
+   "h": 378.5,
+   "l": 354.5,
+   "c": 362.0
+  },
+  {
+   "date": "2026-10-30",
+   "v": 12011,
+   "amt": 4190378.0,
+   "o": 352.0,
+   "h": 357.0,
+   "l": 343.0,
+   "c": 346.5
+  },
+  {
+   "date": "2026-11-02",
+   "v": 5499,
+   "amt": 1862664.0,
+   "o": 335.5,
+   "h": 346.0,
+   "l": 333.0,
+   "c": 340.5
+  },
+  {
+   "date": "2026-11-03",
+   "v": 5886,
+   "amt": 1919519.0,
+   "o": 334.0,
+   "h": 338.0,
+   "l": 318.0,
+   "c": 318.0
+  },
+  {
+   "date": "2026-11-04",
+   "v": 6654,
+   "amt": 2081087.0,
+   "o": 324.0,
+   "h": 324.0,
+   "l": 300.0,
+   "c": 318.0
+  },
+  {
+   "date": "2026-11-05",
+   "v": 7465,
+   "amt": 2266041.0,
+   "o": 305.0,
+   "h": 315.0,
+   "l": 296.0,
+   "c": 299.5
+  },
+  {
+   "date": "2026-11-06",
+   "v": 9408,
+   "amt": 2695105.0,
+   "o": 270.0,
+   "h": 304.5,
+   "l": 270.0,
+   "c": 299.5
+  },
+  {
+   "date": "2026-11-09",
+   "v": 7938,
+   "amt": 2466698.0,
+   "o": 311.5,
+   "h": 320.0,
+   "l": 303.0,
+   "c": 305.0
+  },
+  {
+   "date": "2026-11-10",
+   "v": 8793,
+   "amt": 2740493.0,
+   "o": 317.0,
+   "h": 323.0,
+   "l": 300.5,
+   "c": 304.5
+  },
+  {
+   "date": "2026-11-11",
+   "v": 4586,
+   "amt": 1377161.0,
+   "o": 304.5,
+   "h": 305.0,
+   "l": 295.0,
+   "c": 304.0
+  },
+  {
+   "date": "2026-11-12",
+   "v": 6254,
+   "amt": 1910543.0,
+   "o": 307.0,
+   "h": 316.5,
+   "l": 292.5,
+   "c": 293.5
+  },
+  {
+   "date": "2026-11-13",
+   "v": 4254,
+   "amt": 1295992.0,
+   "o": 303.0,
+   "h": 312.0,
+   "l": 297.5,
+   "c": 302.0
+  },
+  {
+   "date": "2026-11-16",
+   "v": 7440,
+   "amt": 2115287.0,
+   "o": 300.0,
+   "h": 300.0,
+   "l": 277.0,
+   "c": 278.0
+  },
+  {
+   "date": "2026-11-17",
+   "v": 7177,
+   "amt": 1958462.0,
+   "o": 270.5,
+   "h": 282.0,
+   "l": 263.0,
+   "c": 275.0
+  },
+  {
+   "date": "2026-11-18",
+   "v": 6199,
+   "amt": 1706222.0,
+   "o": 286.0,
+   "h": 288.0,
+   "l": 263.5,
+   "c": 275.0
+  },
+  {
+   "date": "2026-11-19",
+   "v": 8888,
+   "amt": 2298140.0,
+   "o": 273.5,
+   "h": 275.0,
+   "l": 252.0,
+   "c": 254.0
+  },
+  {
+   "date": "2026-11-20",
+   "v": 11479,
+   "amt": 2740496.0,
+   "o": 242.0,
+   "h": 250.0,
+   "l": 232.5,
+   "c": 235.5
+  },
+  {
+   "date": "2026-11-23",
+   "v": 9062,
+   "amt": 2224616.0,
+   "o": 231.0,
+   "h": 254.0,
+   "l": 230.5,
+   "c": 249.5
+  }
+ ],
+ "limit_up": 274.0,
+ "limit_down": 225.0,
+ "insti": {
+  "2026-11-23": {
+   "foreign": 1188,
+   "trust": 4,
+   "dealer": -40,
+   "total": 1153
+  },
+  "2026-11-20": {
+   "foreign": 2405,
+   "trust": 10,
+   "dealer": -93,
+   "total": 2324
+  },
+  "2026-11-19": {
+   "foreign": 545,
+   "trust": -1,
+   "dealer": -231,
+   "total": 314
+  }
+ },
+ "insti_sum": {
+  "foreign": 4138,
+  "trust": 13,
+  "dealer": -364,
+  "total": 3791
+ },
+ "weak_screen": {
+  "close": 249.5,
+  "r10": -18.2,
+  "idx_r10": -11.64,
+  "ma60": 357.37,
+  "idx": 36811.89,
+  "idx_ma20": 42258.09,
+  "mkt_weak": true,
+  "foreign": 1188,
+  "trust": 4,
+  "under": true,
+  "drop10": true,
+  "below_ma": true,
+  "px100": true,
+  "sell": false,
+  "n_ok": 4,
+  "hit": false
+ },
+ "margin": {
+  "fin_prev": 13331,
+  "fin_now": 13033,
+  "fin_chg": -298,
+  "short_prev": 199,
+  "short_now": 193,
+  "short_chg": -6,
+  "fin_limit": 89115,
+  "fin_use_pct": 14.62
+ },
+ "sbl": null,
+ "brokers": {
+  "day": {
+   "daytrade_net": 497,
+   "daytrade_buy": 497,
+   "foreign_net": 695,
+   "top5_buy": 1431,
+   "top5_sell": -815,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "凱基-台北",
+     "bid": "9268",
+     "bhid": "9200",
+     "buy": 1623,
+     "sell": 1126,
+     "net": 497,
+     "pct": 5.48
+    },
+    {
+     "broker": "摩根大通",
+     "bid": "8440",
+     "bhid": "8440",
+     "buy": 433,
+     "sell": 138,
+     "net": 295,
+     "pct": 3.26
+    },
+    {
+     "broker": "永豐金-敦南",
+     "bid": "0039004100380046",
+     "bhid": "9A00",
+     "buy": 270,
+     "sell": 7,
+     "net": 263,
+     "pct": 2.9
+    },
+    {
+     "broker": "美商高盛",
+     "bid": "1480",
+     "bhid": "1480",
+     "buy": 822,
+     "sell": 588,
+     "net": 234,
+     "pct": 2.58
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "bid": "1470",
+     "bhid": "1470",
+     "buy": 486,
+     "sell": 344,
+     "net": 142,
+     "pct": 1.57
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "群益金鼎-中壢",
+     "bid": "0039003100380041",
+     "bhid": "9100",
+     "buy": 5,
+     "sell": 402,
+     "net": -397,
+     "pct": 4.38
+    },
+    {
+     "broker": "美好-富順",
+     "bid": "003500320036004b",
+     "bhid": "5260",
+     "buy": 6,
+     "sell": 198,
+     "net": -192,
+     "pct": 2.12
+    },
+    {
+     "broker": "兆豐-高雄",
+     "bid": "003700300030005a",
+     "bhid": "7000",
+     "buy": 5,
+     "sell": 89,
+     "net": -84,
+     "pct": 0.93
+    },
+    {
+     "broker": "凱基-東勢",
+     "bid": "0039003200310059",
+     "bhid": "9200",
+     "buy": 0,
+     "sell": 72,
+     "net": -72,
+     "pct": 0.79
+    },
+    {
+     "broker": "兆豐證券",
+     "bid": "7000",
+     "bhid": "7000",
+     "buy": 1,
+     "sell": 71,
+     "net": -70,
+     "pct": 0.77
+    }
+   ],
+   "daytrade_buy_pct": 5.48,
+   "foreign_net_pct": 7.669388655925845,
+   "top5_buy_pct": 15.791216067093359,
+   "top5_sell_pct": 8.993599646877069
+  },
+  "day_date": "2026/11/23",
+  "range4": {
+   "daytrade_net": 251,
+   "daytrade_buy": 384,
+   "foreign_net": 4156,
+   "top5_buy": 4770,
+   "top5_sell": -1606,
+   "daytrade_names": [
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "美商高盛",
+     "bid": "1480",
+     "bhid": "1480",
+     "buy": 3283,
+     "sell": 1583,
+     "net": 1700,
+     "pct": 4.77
+    },
+    {
+     "broker": "台灣摩根士丹利",
+     "bid": "1470",
+     "bhid": "1470",
+     "buy": 2345,
+     "sell": 1163,
+     "net": 1182,
+     "pct": 3.32
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "bid": "1650",
+     "bhid": "1650",
+     "buy": 1267,
+     "sell": 624,
+     "net": 643,
+     "pct": 1.8
+    },
+    {
+     "broker": "摩根大通",
+     "bid": "8440",
+     "bhid": "8440",
+     "buy": 1249,
+     "sell": 618,
+     "net": 631,
+     "pct": 1.77
+    },
+    {
+     "broker": "永豐金-敦南",
+     "bid": "0039004100380046",
+     "bhid": "9A00",
+     "buy": 631,
+     "sell": 17,
+     "net": 614,
+     "pct": 1.72
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "群益金鼎-中壢",
+     "bid": "0039003100380041",
+     "bhid": "9100",
+     "buy": 11,
+     "sell": 411,
+     "net": -400,
+     "pct": 1.12
+    },
+    {
+     "broker": "凱基-市府",
+     "bid": "0039003200300044",
+     "bhid": "9200",
+     "buy": 56,
+     "sell": 379,
+     "net": -323,
+     "pct": 0.91
+    },
+    {
+     "broker": "元大-大同",
+     "bid": "0039003800390047",
+     "bhid": "9800",
+     "buy": 14,
+     "sell": 327,
+     "net": -313,
+     "pct": 0.88
+    },
+    {
+     "broker": "統一-竹南",
+     "bid": "003500380035006d",
+     "bhid": "5850",
+     "buy": 6,
+     "sell": 307,
+     "net": -301,
+     "pct": 0.84
+    },
+    {
+     "broker": "永豐金證券",
+     "bid": "0039004100300030",
+     "bhid": "9A00",
+     "buy": 231,
+     "sell": 500,
+     "net": -269,
+     "pct": 0.76
+    }
+   ],
+   "daytrade_buy_pct": 1.0778039744021557,
+   "foreign_net_pct": 11.664982597956664,
+   "top5_buy_pct": 13.388346244526778,
+   "top5_sell_pct": 4.507690580442349
+  },
+  "daytraders": {
+   "buy": 497,
+   "buy_pct": 5.48,
+   "expect_sell": 273,
+   "list": [
+    {
+     "broker": "凱基-台北",
+     "net": 497,
+     "buy": 1623,
+     "sell": 1126,
+     "pct": 5.48,
+     "n": 389,
+     "rate": 0.558,
+     "mean_f": 0.55,
+     "here_n": 5,
+     "here_flip": 0
+    }
+   ],
+   "source": "dynamic",
+   "stat_days": 61,
+   "stat_last": "2026-11-20"
+  }
+ },
+ "winners": {
+  "winners": [
+   {
+    "broker": "統一-竹南",
+    "count": 8,
+    "cum_net": -696,
+    "buy_days": 2,
+    "sell_days": 6,
+    "last_date": "2026-11-19",
+    "last_net": -231,
+    "scored": 8,
+    "win_rate": 0.875,
+    "avg_capture_pct": 3.6223311306946284,
+    "t": 2.57953214330032,
+    "cum_net_pct": -0.440852314474651,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常勝"
+   }
+  ],
+  "losers": [
+   {
+    "broker": "富邦-南京",
+    "count": 7,
+    "cum_net": 371,
+    "buy_days": 7,
+    "sell_days": 0,
+    "last_date": "2026-11-19",
+    "last_net": 36,
+    "scored": 7,
+    "win_rate": 0.14285714285714285,
+    "avg_capture_pct": -2.6691986334313547,
+    "t": -2.5807839196367603,
+    "cum_net_pct": 0.23499455268691885,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   },
+   {
+    "broker": "統一",
+    "count": 7,
+    "cum_net": 76,
+    "buy_days": 5,
+    "sell_days": 2,
+    "last_date": "2026-11-18",
+    "last_net": 50,
+    "scored": 7,
+    "win_rate": 0.14285714285714285,
+    "avg_capture_pct": -4.871410872104769,
+    "t": -3.1799414864397577,
+    "cum_net_pct": 0.0481390458334389,
+    "daytrade": false,
+    "foreign": false,
+    "tag": "常敗"
+   }
+  ],
+  "winners_last_net": 0,
+  "winners_last_net_pct": 0.0,
+  "winners_inventory": -696,
+  "winners_inventory_pct": -0.440852314474651,
+  "losers_last_net": 0,
+  "losers_last_net_pct": 0.0,
+  "n_scored": 196
+ },
+ "warrants": {
+  "call_vol": 13199,
+  "put_vol": 827,
+  "call_amt": 6642610.0,
+  "put_amt": 1288490.0,
+  "n_call": 315,
+  "n_put": 28,
+  "n_call_active": 86,
+  "n_put_active": 14,
+  "call_share": 0.9410380721517182,
+  "amt_share": 0.6750791189116264,
+  "hedge_net": 41,
+  "hedge_pct": 0.4524387552416685,
+  "call_amt_5d": 7290930.0,
+  "call_surge": 0.9110785592510147,
+  "list": [
+   {
+    "code": "700126",
+    "name": "威剛國票61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "700756",
+    "name": "威剛統一5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "700828",
+    "name": "威剛永豐64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "701037",
+    "name": "威剛永豐5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "701438",
+    "name": "威剛統一6B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "702786",
+    "name": "威剛中信5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708268",
+    "name": "威剛元大64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708292",
+    "name": "威剛國票5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708304",
+    "name": "威剛永豐5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708305",
+    "name": "威剛永豐61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708306",
+    "name": "威剛永豐65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708307",
+    "name": "威剛永豐68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708317",
+    "name": "威剛群益5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708318",
+    "name": "威剛群益61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708408",
+    "name": "威剛凱基5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708501",
+    "name": "威剛兆豐65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708674",
+    "name": "威剛永豐67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708757",
+    "name": "威剛群益61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708767",
+    "name": "威剛國票5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708871",
+    "name": "威剛中信65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708923",
+    "name": "威剛統一64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708924",
+    "name": "威剛統一65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708925",
+    "name": "威剛統一65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708926",
+    "name": "威剛統一65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708927",
+    "name": "威剛統一69購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "708987",
+    "name": "威剛統一65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709015",
+    "name": "威剛凱基5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709044",
+    "name": "威剛國泰5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709045",
+    "name": "威剛國泰5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709046",
+    "name": "威剛國泰5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709074",
+    "name": "威剛永豐61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709240",
+    "name": "威剛富邦5B購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709245",
+    "name": "威剛元大5B購15",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709429",
+    "name": "威剛凱基64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709457",
+    "name": "威剛富邦62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709473",
+    "name": "威剛群益62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709568",
+    "name": "威剛凱基61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709585",
+    "name": "威剛元大5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709591",
+    "name": "威剛群益5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709605",
+    "name": "威剛元大5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709606",
+    "name": "威剛元大61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709626",
+    "name": "威剛群益5C購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709648",
+    "name": "威剛凱基5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709668",
+    "name": "威剛元大61購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709678",
+    "name": "威剛群益5C購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709685",
+    "name": "威剛永豐6C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709712",
+    "name": "威剛國泰61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709729",
+    "name": "威剛元大61購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709776",
+    "name": "威剛凱基5C購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709819",
+    "name": "威剛元大5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709851",
+    "name": "威剛群益5C購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709908",
+    "name": "威剛統一6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709933",
+    "name": "威剛台新5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709934",
+    "name": "威剛台新5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709935",
+    "name": "威剛台新5C購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709936",
+    "name": "威剛台新61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709937",
+    "name": "威剛台新62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709938",
+    "name": "威剛台新63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709939",
+    "name": "威剛台新66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "709943",
+    "name": "威剛富邦5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710063",
+    "name": "威剛凱基5C購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710078",
+    "name": "威剛元大61購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710090",
+    "name": "威剛統一63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710091",
+    "name": "威剛統一65購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710116",
+    "name": "威剛凱基5C購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710117",
+    "name": "威剛凱基5C購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710121",
+    "name": "威剛元大5C購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710156",
+    "name": "威剛元大5C購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710191",
+    "name": "威剛元大5C購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710225",
+    "name": "威剛群益5C購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710226",
+    "name": "威剛群益62購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710236",
+    "name": "威剛中信66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710311",
+    "name": "威剛凱基61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710347",
+    "name": "威剛永豐64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710348",
+    "name": "威剛永豐66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710430",
+    "name": "威剛富邦5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710515",
+    "name": "威剛國票62購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710530",
+    "name": "威剛永豐61購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710531",
+    "name": "威剛永豐61購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710563",
+    "name": "威剛永豐61購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710564",
+    "name": "威剛永豐61購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710701",
+    "name": "威剛台新61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710704",
+    "name": "威剛中信61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710735",
+    "name": "威剛國泰62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710811",
+    "name": "威剛群益61購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710885",
+    "name": "威剛群益61購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710923",
+    "name": "威剛凱基61購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710938",
+    "name": "威剛富邦64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710947",
+    "name": "威剛永豐61購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "710948",
+    "name": "威剛永豐64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711159",
+    "name": "威剛群益61購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711243",
+    "name": "威剛凱基61購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711365",
+    "name": "威剛永豐67購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711501",
+    "name": "威剛凱基61購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711600",
+    "name": "威剛富邦61購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711639",
+    "name": "威剛國票64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711650",
+    "name": "威剛國泰62購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711712",
+    "name": "威剛群益63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711721",
+    "name": "威剛中信61購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711756",
+    "name": "威剛凱基61購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711926",
+    "name": "威剛元大61購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711946",
+    "name": "威剛富邦64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711950",
+    "name": "威剛國票62購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711971",
+    "name": "威剛凱基63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711983",
+    "name": "威剛元大62購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "711998",
+    "name": "威剛台新62購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712037",
+    "name": "威剛國泰63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712055",
+    "name": "威剛元大63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712056",
+    "name": "威剛元大64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712164",
+    "name": "威剛凱基64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712184",
+    "name": "威剛元大63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712185",
+    "name": "威剛元大64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712192",
+    "name": "威剛台新65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712193",
+    "name": "威剛台新68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712238",
+    "name": "威剛富邦62購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712248",
+    "name": "威剛群益62購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712308",
+    "name": "威剛凱基63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712373",
+    "name": "威剛群益64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712427",
+    "name": "威剛中信63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712432",
+    "name": "威剛永豐68購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712520",
+    "name": "威剛群益63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712578",
+    "name": "威剛凱基63購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712633",
+    "name": "威剛群益62購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712652",
+    "name": "威剛元大64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712679",
+    "name": "威剛台新62購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712680",
+    "name": "威剛台新63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712688",
+    "name": "威剛元大64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712705",
+    "name": "威剛凱基63購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712717",
+    "name": "威剛群益62購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712777",
+    "name": "威剛元大64購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712840",
+    "name": "威剛凱基64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712878",
+    "name": "威剛群益62購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712951",
+    "name": "威剛凱基68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "712993",
+    "name": "威剛元大65購12",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713003",
+    "name": "威剛群益62購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713048",
+    "name": "威剛凱基65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713067",
+    "name": "威剛永豐63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713068",
+    "name": "威剛永豐63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713072",
+    "name": "威剛富邦68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713094",
+    "name": "威剛凱基63購10",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713095",
+    "name": "威剛凱基63購11",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713112",
+    "name": "威剛中信62購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713115",
+    "name": "威剛永豐63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713127",
+    "name": "威剛群益62購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713144",
+    "name": "威剛元大65購13",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713196",
+    "name": "威剛國泰63購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713225",
+    "name": "威剛國票64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713235",
+    "name": "威剛元大65購14",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713246",
+    "name": "威剛凱基65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713258",
+    "name": "威剛群益63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713277",
+    "name": "威剛元大63購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713278",
+    "name": "威剛元大65購15",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713338",
+    "name": "威剛元大63購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713382",
+    "name": "威剛群益63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713383",
+    "name": "威剛群益63購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713430",
+    "name": "威剛凱基63購12",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713443",
+    "name": "威剛台新63購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713444",
+    "name": "威剛台新63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713552",
+    "name": "威剛群益63購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713586",
+    "name": "威剛元大63購09",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713607",
+    "name": "威剛富邦66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713625",
+    "name": "威剛群益63購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713642",
+    "name": "威剛國票64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713765",
+    "name": "威剛凱基63購13",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713794",
+    "name": "威剛元大63購12",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713795",
+    "name": "威剛元大67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713877",
+    "name": "威剛群益63購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713887",
+    "name": "威剛統一69購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713896",
+    "name": "威剛元大67購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713924",
+    "name": "威剛凱基67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "713972",
+    "name": "威剛元大63購13",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714023",
+    "name": "威剛元大63購14",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714101",
+    "name": "威剛凱基63購14",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714302",
+    "name": "威剛群益63購09",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714351",
+    "name": "威剛凱基67購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714365",
+    "name": "威剛台新66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714458",
+    "name": "威剛群益63購10",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714485",
+    "name": "威剛元大66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714521",
+    "name": "威剛群益63購11",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714599",
+    "name": "威剛元大63購15",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714648",
+    "name": "威剛凱基65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714669",
+    "name": "威剛富邦63購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714708",
+    "name": "威剛群益63購12",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714724",
+    "name": "威剛元大63購16",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714807",
+    "name": "威剛凱基63購15",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714845",
+    "name": "威剛元大63購17",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714867",
+    "name": "威剛群益63購13",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714868",
+    "name": "威剛群益63購14",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714909",
+    "name": "威剛元大63購18",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714968",
+    "name": "威剛凱基63購16",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "714994",
+    "name": "威剛元大63購19",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715203",
+    "name": "威剛台新63購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715204",
+    "name": "威剛台新63購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715205",
+    "name": "威剛台新66購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715274",
+    "name": "威剛元大67購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715354",
+    "name": "威剛凱基66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715405",
+    "name": "威剛國泰64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715470",
+    "name": "威剛永豐63購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715471",
+    "name": "威剛永豐64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715520",
+    "name": "威剛群益68購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715563",
+    "name": "威剛凱基63購17",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715564",
+    "name": "威剛凱基63購18",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715565",
+    "name": "威剛凱基66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715663",
+    "name": "威剛富邦69購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715664",
+    "name": "威剛富邦75購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "715779",
+    "name": "威剛群益64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716203",
+    "name": "威剛元大64購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716204",
+    "name": "威剛元大64購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716280",
+    "name": "威剛永豐65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716317",
+    "name": "威剛富邦64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716318",
+    "name": "威剛富邦66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716395",
+    "name": "威剛凱基67購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716449",
+    "name": "威剛群益64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716478",
+    "name": "威剛凱基66購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716522",
+    "name": "威剛國泰65購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716580",
+    "name": "威剛群益64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716601",
+    "name": "威剛元大64購09",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716602",
+    "name": "威剛元大6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716643",
+    "name": "威剛永豐64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716644",
+    "name": "威剛永豐64購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716678",
+    "name": "威剛台新64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716679",
+    "name": "威剛台新64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716689",
+    "name": "威剛凱基64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716704",
+    "name": "威剛元大64購10",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716705",
+    "name": "威剛元大6A購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716727",
+    "name": "威剛國票65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716728",
+    "name": "威剛國票65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "716755",
+    "name": "威剛富邦64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717430",
+    "name": "威剛台新64購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717431",
+    "name": "威剛台新65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717432",
+    "name": "威剛台新67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717448",
+    "name": "威剛凱基64購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717449",
+    "name": "威剛凱基6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717450",
+    "name": "威剛凱基6A購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717470",
+    "name": "威剛國票65購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717471",
+    "name": "威剛國票66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717472",
+    "name": "威剛國票67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717478",
+    "name": "威剛中信64購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717479",
+    "name": "威剛中信66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717525",
+    "name": "威剛群益64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717526",
+    "name": "威剛群益64購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717527",
+    "name": "威剛群益66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717534",
+    "name": "威剛國泰65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717539",
+    "name": "威剛富邦64購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717556",
+    "name": "威剛凱基66購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717593",
+    "name": "威剛群益64購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717653",
+    "name": "威剛台新65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717654",
+    "name": "威剛台新65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717674",
+    "name": "威剛元大64購11",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717675",
+    "name": "威剛元大64購12",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717676",
+    "name": "威剛元大64購13",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717677",
+    "name": "威剛元大67購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717678",
+    "name": "威剛元大69購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717753",
+    "name": "威剛永豐64購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717754",
+    "name": "威剛永豐64購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717755",
+    "name": "威剛永豐64購09",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717773",
+    "name": "威剛群益66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717812",
+    "name": "威剛凱基66購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717838",
+    "name": "威剛元大64購14",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717839",
+    "name": "威剛元大64購15",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717840",
+    "name": "威剛元大64購16",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717841",
+    "name": "威剛元大67購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717842",
+    "name": "威剛元大69購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717889",
+    "name": "威剛國票64購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717898",
+    "name": "威剛富邦67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717899",
+    "name": "威剛富邦6A購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717909",
+    "name": "威剛群益65購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "717910",
+    "name": "威剛群益66購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718075",
+    "name": "威剛富邦64購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718107",
+    "name": "威剛元大65購16",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718108",
+    "name": "威剛元大65購17",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718109",
+    "name": "威剛元大65購18",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718110",
+    "name": "威剛元大6A購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718148",
+    "name": "威剛台新68購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718166",
+    "name": "威剛凱基65購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718182",
+    "name": "威剛永豐6B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718207",
+    "name": "威剛群益65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718347",
+    "name": "威剛群益67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718368",
+    "name": "威剛凱基67購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718416",
+    "name": "威剛台新65購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718422",
+    "name": "威剛國泰67購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718453",
+    "name": "威剛群益67購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718631",
+    "name": "威剛凱基65購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718672",
+    "name": "威剛凱基65購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718696",
+    "name": "威剛國票65購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718813",
+    "name": "威剛群益67購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718814",
+    "name": "威剛群益67購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718847",
+    "name": "威剛凱基65購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718863",
+    "name": "威剛富邦68購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718905",
+    "name": "威剛台新65購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718913",
+    "name": "威剛凱基68購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718945",
+    "name": "威剛群益67購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718961",
+    "name": "威剛國票66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718967",
+    "name": "威剛永豐65購03",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718968",
+    "name": "威剛永豐65購04",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "718985",
+    "name": "威剛統一76購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719020",
+    "name": "威剛群益67購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719038",
+    "name": "威剛元大6B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719078",
+    "name": "威剛國泰66購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719137",
+    "name": "威剛元大65購20",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719138",
+    "name": "威剛元大6B購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719154",
+    "name": "威剛凱基66購06",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719194",
+    "name": "威剛群益67購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719213",
+    "name": "威剛凱基67購05",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719230",
+    "name": "威剛元大65購21",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719315",
+    "name": "威剛富邦7B購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719342",
+    "name": "威剛永豐66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719388",
+    "name": "威剛國泰66購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719437",
+    "name": "威剛群益67購08",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719465",
+    "name": "威剛元大65購23",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719518",
+    "name": "威剛群益69購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "719554",
+    "name": "威剛國票65購07",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "734874",
+    "name": "威剛統一5C購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "739382",
+    "name": "威剛統一5C購02",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "739383",
+    "name": "威剛統一64購01",
+    "right": "call",
+    "ex": "otc"
+   },
+   {
+    "code": "72873U",
+    "name": "威剛國票5C售02",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72874U",
+    "name": "威剛群益5C售02",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72893U",
+    "name": "威剛中信64售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72908U",
+    "name": "威剛群益65售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72909U",
+    "name": "威剛凱基65售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72911U",
+    "name": "威剛元大5B售16",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72913U",
+    "name": "威剛群益5B售04",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72914U",
+    "name": "威剛群益5B售05",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72915U",
+    "name": "威剛群益61售03",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72917U",
+    "name": "威剛凱基5B售09",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72918U",
+    "name": "威剛永豐61售03",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72922U",
+    "name": "威剛凱基5C售05",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72930U",
+    "name": "威剛群益5C售08",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72932U",
+    "name": "威剛國泰61售02",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72939U",
+    "name": "威剛國票62售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72949U",
+    "name": "威剛元大61售06",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72974U",
+    "name": "威剛國票65售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "72978U",
+    "name": "威剛凱基61售06",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73012U",
+    "name": "威剛國票65售02",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73013U",
+    "name": "威剛元大63售02",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73021U",
+    "name": "威剛凱基63售03",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73022U",
+    "name": "威剛元大63售03",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73031U",
+    "name": "威剛凱基63售05",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73220U",
+    "name": "威剛群益6A售01",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73255U",
+    "name": "威剛元大65售19",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73284U",
+    "name": "威剛永豐65售05",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73288U",
+    "name": "威剛凱基65售09",
+    "right": "put",
+    "ex": "otc"
+   },
+   {
+    "code": "73290U",
+    "name": "威剛元大65售22",
+    "right": "put",
+    "ex": "otc"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-23",
+  "breadth": {
+   "up": 652,
+   "down": 362
+  },
+  "foreign_amt_b": -289.5,
+  "trust_amt_b": -41.5,
+  "tx_night": {
+   "contract": "202612",
+   "o": 36671.0,
+   "h": 40324.0,
+   "l": 36280.0,
+   "c": 39829.0,
+   "chg": 3170.0,
+   "chg_pct": 8.65,
+   "vol": 92939,
+   "title": "2026/11/23"
+  },
+  "tx_day_prev": {
+   "contract": "202612",
+   "o": 35000.0,
+   "h": 37119.0,
+   "l": 34828.0,
+   "c": 36576.0,
+   "chg": 776.0,
+   "chg_pct": 2.17,
+   "vol": 82477,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -103432,
+   "raw": [
+    135560,
+    972129216,
+    141139,
+    1013658043,
+    -5579,
+    -41528828,
+    14599,
+    107038564,
+    118031,
+    865391547,
+    -103432,
+    -758352983
+   ]
+  },
+  "us": {
+   "SOX": {
+    "date": "2026/11/23",
+    "c": 9580.0,
+    "pct": 7.88,
+    "src": "taifex",
+    "label": "費半期",
+    "vol": 147
+   },
+   "NDX": {
+    "date": "2026/11/23",
+    "c": 26950.0,
+    "pct": 3.97,
+    "src": "taifex",
+    "label": "那斯達克100期",
+    "vol": 503
+   },
+   "SPX": {
+    "date": "2026/11/23",
+    "c": 7300.0,
+    "pct": 2.8,
+    "src": "taifex",
+    "label": "標普期",
+    "vol": 10
+   },
+   "DOW": {
+    "date": "2026/11/23",
+    "c": 49744.0,
+    "pct": 1.56,
+    "src": "taifex",
+    "label": "道瓊期",
+    "vol": 62
+   }
+  }
+ },
+ "fit": {
+  "cap_e8": 35.65,
+  "market": "otc",
+  "mcap_rank": 124,
+  "heavy": false,
+  "amp5": 8.2,
+  "amp_x_cost": 32.8,
+  "tags": [
+   [
+    "ok",
+    "近 5 日平均振幅 8.2%（來回成本的 33 倍）"
+   ],
+   [
+    "ok",
+    "股本 36 億"
+   ]
+  ]
+ }
+}

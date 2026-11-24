@@ -2223,9 +2223,10 @@
   "group": "玻纖紗布",
   "days": [
    "2026-11-11",
-   "2026-11-12"
+   "2026-11-12",
+   "2026-11-24"
   ],
-  "launches": 2,
+  "launches": 3,
   "signals": [],
   "notes": []
  },
@@ -2878,9 +2879,10 @@
   "days": [
    "2026-11-12",
    "2026-11-18",
-   "2026-11-19"
+   "2026-11-19",
+   "2026-11-24"
   ],
-  "launches": 3,
+  "launches": 4,
   "signals": [
    {
     "date": "2026-11-12",
@@ -3323,9 +3325,10 @@
   "market": "tse",
   "group": null,
   "days": [
-   "2026-11-16"
+   "2026-11-16",
+   "2026-11-24"
   ],
-  "launches": 1,
+  "launches": 2,
   "signals": [
    {
     "date": "2026-11-16",
@@ -3399,6 +3402,660 @@
     ],
     "exh": null,
     "exh_lit": null
+   },
+   {
+    "date": "2026-11-24",
+    "time": "11:40:00",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 402.5,
+    "stop": 411.5,
+    "t1": 400.0,
+    "t2": 389.5,
+    "zone": [
+     402.5,
+     405.0
+    ],
+    "alert_px": 402.5,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.783,
+    "run5": 1.71,
+    "run5_tk": 14.0,
+    "rr_now": 0.28,
+    "rr_zone": 0.28,
+    "verdict": "win",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": 1,
+    "scoring": 2,
+    "score_stop": 404.5,
+    "score_tgt": 398.5,
+    "heat_ticks": 3,
+    "tick": 0.5,
+    "exit": "target",
+    "exit_px": 398.5,
+    "net_pct": 0.759,
+    "mae_ticks": 0.0,
+    "mfe_ticks": 11.0,
+    "ret_10m": -1.6149068322981353,
+    "ret_30m": -4.596273291925468,
+    "suspects": [],
+    "why": "反彈 405.0 不過，1 分 K 收 402.5 確認（偏空強度 70）",
+    "features": {
+     "idx_trend_10m": 0.01053929287575528,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 19.84113444930163,
+     "rs_vs_index": -13.975438456779521,
+     "group_avg": null,
+     "chg_pct": -4.935370152761454,
+     "warrant_surge": false,
+     "small_net_pct": -5.837768101919045,
+     "p_long": 29.54,
+     "p_short": 70.46000000000001,
+     "liq_level": "thin",
+     "liq_l1": 2.0,
+     "liq_wide_pct": 50,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.3333333333333333,
+     "big_net_10m": 8,
+     "phase": "mid",
+     "range_pos": 0.16993464052287582
+    },
+    "factors": [
+     "開高有庫存",
+     "弱於大盤",
+     "日內低檔",
+     "跌破開盤價",
+     "VWAP之下",
+     "大單淨賣",
+     "內盤強",
+     "量能爆增"
+    ],
+    "exh": null,
+    "exh_lit": null,
+    "space": {
+     "text": "到前方第一個支撐 400.0（整數）只有 9 tick，報酬風險比 0.6 不到 1.5",
+     "t1": 400.0,
+     "t1_name": "整數",
+     "ticks": 9,
+     "rr": 0.64,
+     "rr_min": 1.5
+    },
+    "env": [
+     2,
+     3,
+     6,
+     8
+    ],
+    "env_conds": [
+     "主力10分反向",
+     "五檔反向",
+     "個股今天順勢",
+     "做空",
+     "散戶同向擁擠",
+     "漲跌幅<5%",
+     "現價成交",
+     "開盤價順勢",
+     "靠近今高今低"
+    ],
+    "refs": [
+     {
+      "kind": "追價",
+      "text": "前 5 分鐘已經跌了 1.7%（14 檔）才確認，太晚了：回測這種訊號不管追價還是等回，都比任意時點進場差"
+     }
+    ],
+    "fear": {
+     "now": 38.43,
+     "prev": 55.36,
+     "chg_pct": -30.58,
+     "level": "緊張",
+     "extreme": true,
+     "surge": false
+    },
+    "support_pull": null
+   },
+   {
+    "date": "2026-11-24",
+    "time": "11:59:37",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 387.5,
+    "stop": 396.5,
+    "t1": 387.0,
+    "t2": 383.0,
+    "zone": [
+     387.5,
+     390.0
+    ],
+    "alert_px": 387.5,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.947,
+    "run5": 2.27,
+    "run5_tk": 18.0,
+    "rr_now": 0.06,
+    "rr_zone": 0.06,
+    "verdict": "win",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": 3,
+    "scoring": 2,
+    "score_stop": 389.5,
+    "score_tgt": 383.5,
+    "heat_ticks": 3,
+    "tick": 0.5,
+    "exit": "target",
+    "exit_px": 383.5,
+    "net_pct": 0.797,
+    "mae_ticks": 3.0,
+    "mfe_ticks": 8.0,
+    "ret_10m": -0.6451612903225823,
+    "ret_30m": 1.806451612903226,
+    "suspects": [],
+    "why": "反彈 390.0 不過，1 分 K 收 388.0 確認（偏空強度 67）",
+    "features": {
+     "idx_trend_10m": -0.0025164955034462366,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 20.183899726946738,
+     "rs_vs_index": -18.069502973541606,
+     "group_avg": null,
+     "chg_pct": -9.048178613396008,
+     "warrant_surge": false,
+     "small_net_pct": -6.940572267057961,
+     "p_long": 32.84,
+     "p_short": 67.16,
+     "liq_level": "thin",
+     "liq_l1": 2.5,
+     "liq_wide_pct": 51,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.0,
+     "big_net_10m": 19,
+     "phase": "mid",
+     "range_pos": 0.006329113924050633
+    },
+    "factors": [
+     "開高有庫存",
+     "弱於大盤",
+     "日內低檔",
+     "跌破開盤價",
+     "VWAP之下",
+     "賣盤竭盡",
+     "大單淨賣",
+     "內盤強",
+     "量能爆增"
+    ],
+    "exh": null,
+    "exh_lit": null,
+    "space": {
+     "text": "到前方第一個支撐 387.0（今低）只有 5 tick，報酬風險比 0.4 不到 1.5",
+     "t1": 387.0,
+     "t1_name": "今低",
+     "ticks": 5,
+     "rr": 0.36,
+     "rr_min": 1.5
+    },
+    "env": [
+     6,
+     8
+    ],
+    "env_conds": [
+     "主力10分反向",
+     "個股今天順勢",
+     "做空",
+     "散戶同向擁擠",
+     "現價成交",
+     "開盤價順勢",
+     "靠近今高今低"
+    ],
+    "refs": [
+     {
+      "kind": "追價",
+      "text": "前 5 分鐘已經跌了 2.3%（18 檔）才確認，太晚了：回測這種訊號不管追價還是等回，都比任意時點進場差"
+     }
+    ],
+    "fear": {
+     "now": 39.28,
+     "prev": 55.36,
+     "chg_pct": -29.05,
+     "level": "緊張",
+     "extreme": true,
+     "surge": false
+    },
+    "support_pull": null
+   },
+   {
+    "date": "2026-11-24",
+    "time": "11:43:51",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 400.0,
+    "stop": 406.5,
+    "t1": 390.0,
+    "t2": 383.0,
+    "zone": [
+     400.0,
+     400.0
+    ],
+    "alert_px": 397.0,
+    "filled_at_alert": false,
+    "fill_min": 3,
+    "chase": 0.576,
+    "run5": 1.73,
+    "run5_tk": 14.0,
+    "rr_now": 0.74,
+    "rr_zone": 1.54,
+    "verdict": "win",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": 6,
+    "scoring": 2,
+    "score_stop": 402.0,
+    "score_tgt": 396.0,
+    "heat_ticks": 3,
+    "tick": 0.5,
+    "exit": "target",
+    "exit_px": 396.0,
+    "net_pct": 0.765,
+    "mae_ticks": 0.0,
+    "mfe_ticks": 8.0,
+    "ret_10m": -0.25188916876573986,
+    "ret_30m": -3.400503778337527,
+    "suspects": [],
+    "why": "反彈 400.0 不過，1 分 K 收 399.0 確認（偏空強度 70）",
+    "features": {
+     "idx_trend_10m": -0.006825312843439235,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 20.153905348210852,
+     "rs_vs_index": -15.382909196514817,
+     "group_avg": null,
+     "chg_pct": -6.345475910693299,
+     "warrant_surge": false,
+     "small_net_pct": -6.09375,
+     "p_long": 29.54,
+     "p_short": 70.46000000000001,
+     "liq_level": "thin",
+     "liq_l1": 2.0,
+     "liq_wide_pct": 46,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.07692307692307693,
+     "big_net_10m": 8,
+     "phase": "mid",
+     "range_pos": 0.09803921568627451
+    },
+    "factors": [
+     "開高有庫存",
+     "弱於大盤",
+     "日內低檔",
+     "跌破開盤價",
+     "VWAP之下",
+     "大單淨賣",
+     "內盤強",
+     "量能爆增"
+    ],
+    "exh": null,
+    "exh_lit": null,
+    "space": null,
+    "env": [
+     6
+    ],
+    "env_conds": [
+     "主力10分反向",
+     "個股今天順勢",
+     "做空",
+     "散戶同向擁擠",
+     "開盤價順勢",
+     "靠近今高今低"
+    ],
+    "refs": [
+     {
+      "kind": "追價",
+      "text": "前 5 分鐘已經跌了 1.7%（14 檔）才確認，太晚了：回測這種訊號不管追價還是等回，都比任意時點進場差"
+     }
+    ],
+    "fear": {
+     "now": 38.55,
+     "prev": 55.36,
+     "chg_pct": -30.36,
+     "level": "緊張",
+     "extreme": true,
+     "surge": false
+    },
+    "support_pull": null
+   },
+   {
+    "date": "2026-11-24",
+    "time": "12:27:01",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 387.5,
+    "stop": 396.5,
+    "t1": 383.0,
+    "t2": 383.0,
+    "zone": [
+     387.5,
+     390.0
+    ],
+    "alert_px": 387.5,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.667,
+    "run5": -0.52,
+    "run5_tk": -4.0,
+    "rr_now": 0.5,
+    "rr_zone": 0.5,
+    "verdict": "loss",
+    "fast_adverse": true,
+    "first_stop_min": 1,
+    "first_t1_min": null,
+    "scoring": 2,
+    "score_stop": 389.5,
+    "score_tgt": 383.5,
+    "heat_ticks": 3,
+    "tick": 0.5,
+    "exit": "stop",
+    "exit_px": 389.5,
+    "net_pct": -0.751,
+    "mae_ticks": 10.0,
+    "mfe_ticks": 0.0,
+    "ret_10m": 1.806451612903226,
+    "ret_30m": 0.0,
+    "suspects": [
+     "散戶已同向擁擠",
+     "尾盤",
+     "已在日內極端位置追單"
+    ],
+    "why": "反彈 390.0 不過，1 分 K 收 387.5 確認（偏空強度 70）",
+    "features": {
+     "idx_trend_10m": 0.0054056881789721345,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 21.859602965797656,
+     "rs_vs_index": -17.628643077012228,
+     "group_avg": null,
+     "chg_pct": -8.578143360752055,
+     "warrant_surge": false,
+     "small_net_pct": -6.710169908889436,
+     "p_long": 29.54,
+     "p_short": 70.46000000000001,
+     "liq_level": "thin",
+     "liq_l1": 3.5,
+     "liq_wide_pct": 50,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.16666666666666666,
+     "big_net_10m": 0,
+     "phase": "late",
+     "range_pos": 0.05421686746987952
+    },
+    "factors": [
+     "開高有庫存",
+     "弱於大盤",
+     "日內低檔",
+     "跌破開盤價",
+     "VWAP之下",
+     "大單淨賣",
+     "內盤強",
+     "量能爆增"
+    ],
+    "exh": null,
+    "exh_lit": null,
+    "space": {
+     "text": "到前方第一個支撐 383.0（跌停）只有 13 tick，報酬風險比 0.9 不到 1.5",
+     "t1": 383.0,
+     "t1_name": "跌停",
+     "ticks": 13,
+     "rr": 0.93,
+     "rr_min": 1.5
+    },
+    "env": [
+     7,
+     10
+    ],
+    "env_conds": [
+     "五檔反向",
+     "個股今天順勢",
+     "做空",
+     "尾盤",
+     "散戶同向擁擠",
+     "現價成交",
+     "開盤價順勢",
+     "靠近今高今低"
+    ],
+    "refs": [],
+    "fear": {
+     "now": 39.23,
+     "prev": 55.36,
+     "chg_pct": -29.14,
+     "level": "緊張",
+     "extreme": true,
+     "surge": false
+    },
+    "support_pull": null
+   },
+   {
+    "date": "2026-11-24",
+    "time": "12:39:01",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 400.0,
+    "stop": 406.5,
+    "t1": 390.0,
+    "t2": 383.0,
+    "zone": [
+     400.0,
+     400.0
+    ],
+    "alert_px": 397.0,
+    "filled_at_alert": false,
+    "fill_min": null,
+    "chase": 0.576,
+    "run5": -0.89,
+    "run5_tk": -7.0,
+    "rr_now": 0.74,
+    "rr_zone": 1.54,
+    "verdict": "nofill",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": null,
+    "scoring": 2,
+    "score_stop": 402.0,
+    "score_tgt": 396.0,
+    "heat_ticks": 3,
+    "tick": 0.5,
+    "exit": null,
+    "exit_px": null,
+    "net_pct": null,
+    "mae_ticks": null,
+    "mfe_ticks": null,
+    "ret_10m": -1.8891687657430767,
+    "ret_30m": -3.5264483627204024,
+    "suspects": [],
+    "why": "反彈 400.0 不過，1 分 K 收 396.0 確認（偏空強度 72）",
+    "features": {
+     "idx_trend_10m": 0.026580744679383095,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 22.109527640501092,
+     "rs_vs_index": -15.655496205989884,
+     "group_avg": null,
+     "chg_pct": -6.5804935370152755,
+     "warrant_surge": false,
+     "small_net_pct": -5.814225549836219,
+     "p_long": 27.89,
+     "p_short": 72.11,
+     "liq_level": "thin",
+     "liq_l1": 2.5,
+     "liq_wide_pct": 46,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": -0.2727272727272727,
+     "big_net_10m": -27,
+     "phase": "late",
+     "range_pos": 0.1686746987951807
+    },
+    "factors": [
+     "開高有庫存",
+     "弱於大盤",
+     "日內低檔",
+     "跌破開盤價",
+     "VWAP之下",
+     "委賣厚",
+     "大單淨賣",
+     "內盤強",
+     "量能爆增"
+    ],
+    "exh": null,
+    "exh_lit": null,
+    "space": null,
+    "env": [
+     7
+    ],
+    "env_conds": [
+     "個股今天順勢",
+     "做空",
+     "尾盤",
+     "散戶同向擁擠",
+     "開盤價順勢",
+     "靠近今高今低"
+    ],
+    "refs": [],
+    "fear": {
+     "now": 39.39,
+     "prev": 55.36,
+     "chg_pct": -28.85,
+     "level": "緊張",
+     "extreme": true,
+     "surge": false
+    },
+    "support_pull": null
+   },
+   {
+    "date": "2026-11-24",
+    "time": "12:51:00",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 389.0,
+    "stop": 396.5,
+    "t1": 383.0,
+    "t2": 383.0,
+    "zone": [
+     387.5,
+     390.0
+    ],
+    "alert_px": 389.0,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.556,
+    "run5": 0.77,
+    "run5_tk": 6.0,
+    "rr_now": 0.8,
+    "rr_zone": 0.5,
+    "verdict": "win",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": 3,
+    "scoring": 2,
+    "score_stop": 391.0,
+    "score_tgt": 385.0,
+    "heat_ticks": 3,
+    "tick": 0.5,
+    "exit": "target",
+    "exit_px": 385.0,
+    "net_pct": 0.793,
+    "mae_ticks": 0.0,
+    "mfe_ticks": 11.0,
+    "ret_10m": -0.5141388174807249,
+    "ret_30m": -1.5424164524421635,
+    "suspects": [],
+    "why": "反彈 390.0 不過，1 分 K 收 389.0 確認（偏空強度 70）",
+    "features": {
+     "idx_trend_10m": -0.009188144057137304,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 21.902654867256636,
+     "rs_vs_index": -17.66580498312461,
+     "group_avg": null,
+     "chg_pct": -8.578143360752055,
+     "warrant_surge": false,
+     "small_net_pct": -6.194589679472608,
+     "p_long": 29.54,
+     "p_short": 70.46000000000001,
+     "liq_level": "thin",
+     "liq_l1": 2.5,
+     "liq_wide_pct": 43,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.5686274509803921,
+     "big_net_10m": 0,
+     "phase": "late",
+     "range_pos": 0.07228915662650602
+    },
+    "factors": [
+     "開高有庫存",
+     "弱於大盤",
+     "日內低檔",
+     "跌破開盤價",
+     "VWAP之下",
+     "大單淨賣",
+     "內盤強",
+     "量能爆增"
+    ],
+    "exh": null,
+    "exh_lit": null,
+    "space": {
+     "text": "到前方第一個支撐 383.0（跌停）只有 13 tick，報酬風險比 0.9 不到 1.5",
+     "t1": 383.0,
+     "t1_name": "跌停",
+     "ticks": 13,
+     "rr": 0.93,
+     "rr_min": 1.5
+    },
+    "env": [
+     7,
+     10
+    ],
+    "env_conds": [
+     "五檔反向",
+     "個股今天順勢",
+     "做空",
+     "尾盤",
+     "散戶同向擁擠",
+     "現價成交",
+     "開盤價順勢",
+     "靠近今高今低"
+    ],
+    "refs": [
+     {
+      "kind": "重複",
+      "text": "這個價位（387.5–390.0）12:27 已經發過做空（輸），之後今低 383.0 沒再跌破"
+     },
+     {
+      "kind": "追價",
+      "text": "前 5 分鐘已經跌了 0.8%（6 檔）才確認，太晚了：回測這種訊號不管追價還是等回，都比任意時點進場差"
+     }
+    ],
+    "fear": {
+     "now": 38.84,
+     "prev": 55.36,
+     "chg_pct": -29.84,
+     "level": "緊張",
+     "extreme": true,
+     "surge": false
+    },
+    "support_pull": null
    }
   ],
   "notes": []
@@ -4596,9 +5253,10 @@
   "group": null,
   "days": [
    "2026-11-18",
-   "2026-11-23"
+   "2026-11-23",
+   "2026-11-24"
   ],
-  "launches": 2,
+  "launches": 3,
   "signals": [
    {
     "date": "2026-11-23",
@@ -4922,6 +5580,325 @@
      "surge": false
     },
     "support_pull": null
+   },
+   {
+    "date": "2026-11-24",
+    "time": "12:08:02",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 68.9,
+    "stop": 70.3,
+    "t1": 68.3,
+    "t2": 67.32,
+    "zone": [
+     68.6,
+     69.1
+    ],
+    "alert_px": 68.9,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.7,
+    "run5": 0.29,
+    "run5_tk": 2.0,
+    "rr_now": 0.43,
+    "rr_zone": 0.18,
+    "verdict": "loss",
+    "fast_adverse": false,
+    "first_stop_min": 1,
+    "first_t1_min": null,
+    "scoring": 2,
+    "score_stop": 69.3,
+    "score_tgt": 68.1,
+    "heat_ticks": 3,
+    "tick": 0.1,
+    "exit": "stop",
+    "exit_px": 69.3,
+    "net_pct": -0.816,
+    "mae_ticks": 7.0,
+    "mfe_ticks": 0.0,
+    "ret_10m": 0.2902757619738683,
+    "ret_30m": 0.2902757619738683,
+    "suspects": [
+     "五檔反向厚",
+     "主力 10 分鐘反向",
+     "尾盤"
+    ],
+    "why": "反彈 69.1 不過，1 分 K 收 68.9 確認（偏空強度 62）",
+    "features": {
+     "idx_trend_10m": 0.027458651929679334,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 0.8479026025899329,
+     "rs_vs_index": -2.7310237637634183,
+     "group_avg": null,
+     "chg_pct": 6.317411402157158,
+     "warrant_surge": false,
+     "small_net_pct": 0.2536424231699404,
+     "p_long": 37.9,
+     "p_short": 62.1,
+     "liq_level": "ok",
+     "liq_l1": 21.2,
+     "liq_wide_pct": 2,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.5210084033613446,
+     "big_net_10m": 109,
+     "phase": "late",
+     "range_pos": 0.20000000000000284
+    },
+    "factors": [
+     "跳空開高",
+     "衝高回落",
+     "弱於大盤",
+     "跌破開盤價",
+     "VWAP之下",
+     "委買厚"
+    ],
+    "exh": null,
+    "exh_lit": null,
+    "space": {
+     "text": "到前方第一個支撐 68.3（今低）只有 7 tick，報酬風險比 0.5 不到 1.5",
+     "t1": 68.3,
+     "t1_name": "今低",
+     "ticks": 7,
+     "rr": 0.54,
+     "rr_min": 1.5
+    },
+    "env": [
+     3,
+     10
+    ],
+    "env_conds": [
+     "主力10分反向",
+     "五檔反向",
+     "做空",
+     "尾盤",
+     "現價成交",
+     "開盤價順勢",
+     "靠近今高今低"
+    ],
+    "refs": [],
+    "fear": {
+     "now": 39.3,
+     "prev": 55.36,
+     "chg_pct": -29.01,
+     "level": "緊張",
+     "extreme": true,
+     "surge": false
+    },
+    "support_pull": null
+   },
+   {
+    "date": "2026-11-24",
+    "time": "12:18:06",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 69.1,
+    "stop": 70.6,
+    "t1": 68.3,
+    "t2": 67.32,
+    "zone": [
+     68.9,
+     69.4
+    ],
+    "alert_px": 69.1,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.652,
+    "run5": 0.29,
+    "run5_tk": 2.0,
+    "rr_now": 0.53,
+    "rr_zone": 0.35,
+    "verdict": "win",
+    "fast_adverse": false,
+    "first_stop_min": null,
+    "first_t1_min": 31,
+    "scoring": 2,
+    "score_stop": 69.5,
+    "score_tgt": 68.3,
+    "heat_ticks": 3,
+    "tick": 0.1,
+    "exit": "target",
+    "exit_px": 68.3,
+    "net_pct": 0.923,
+    "mae_ticks": 3.0,
+    "mfe_ticks": 11.0,
+    "ret_10m": 0.14471780028944004,
+    "ret_30m": -0.723589001447178,
+    "suspects": [],
+    "why": "反彈 69.42 不過，1 分 K 收 69.2 確認（偏空強度 61）",
+    "features": {
+     "idx_trend_10m": -0.005255914460611244,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 0.8385549258141346,
+     "rs_vs_index": -2.428589197608022,
+     "group_avg": null,
+     "chg_pct": 6.6255778120184905,
+     "warrant_surge": false,
+     "small_net_pct": 0.8749964021529517,
+     "p_long": 39.0,
+     "p_short": 61.0,
+     "liq_level": "ok",
+     "liq_l1": 26.8,
+     "liq_wide_pct": 2,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.48258706467661694,
+     "big_net_10m": 0,
+     "phase": "late",
+     "range_pos": 0.2666666666666657
+    },
+    "factors": [
+     "跳空開高",
+     "弱於大盤",
+     "跌破開盤價",
+     "VWAP之下",
+     "委賣厚"
+    ],
+    "exh": null,
+    "exh_lit": null,
+    "space": {
+     "text": "到前方第一個支撐 68.3（今低）只有 10 tick，報酬風險比 0.8 不到 1.5",
+     "t1": 68.3,
+     "t1_name": "今低",
+     "ticks": 10,
+     "rr": 0.77,
+     "rr_min": 1.5
+    },
+    "env": [
+     10
+    ],
+    "env_conds": [
+     "五檔反向",
+     "做空",
+     "尾盤",
+     "現價成交",
+     "開盤價順勢",
+     "靠近今高今低"
+    ],
+    "refs": [
+     {
+      "kind": "重複",
+      "text": "這個價位（68.6–69.1）12:08 已經發過做空（輸），之後今低 68.3 沒再跌破"
+     }
+    ],
+    "fear": {
+     "now": 39.25,
+     "prev": 55.36,
+     "chg_pct": -29.1,
+     "level": "緊張",
+     "extreme": true,
+     "surge": false
+    },
+    "support_pull": null
+   },
+   {
+    "date": "2026-11-24",
+    "time": "12:57:40",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 67.3,
+    "stop": 68.5,
+    "t1": 65.0,
+    "t2": 64.5,
+    "zone": [
+     67.1,
+     67.3
+    ],
+    "alert_px": 67.3,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.343,
+    "run5": 0.74,
+    "run5_tk": 5.0,
+    "rr_now": 1.92,
+    "rr_zone": 1.5,
+    "verdict": "loss",
+    "fast_adverse": true,
+    "first_stop_min": 3,
+    "first_t1_min": null,
+    "scoring": 2,
+    "score_stop": 67.7,
+    "score_tgt": 66.5,
+    "heat_ticks": 3,
+    "tick": 0.1,
+    "exit": "stop",
+    "exit_px": 67.7,
+    "net_pct": -0.829,
+    "mae_ticks": 12.0,
+    "mfe_ticks": 2.0,
+    "ret_10m": 0.7429420505200568,
+    "ret_30m": -1.4858841010401136,
+    "suspects": [
+     "尾盤",
+     "已在日內極端位置追單"
+    ],
+    "why": "反彈 67.32 不過，1 分 K 收 67.2 確認（偏空強度 64）",
+    "features": {
+     "idx_trend_10m": -0.03170070154921989,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 0.8098251156826212,
+     "rs_vs_index": -5.370486117987427,
+     "group_avg": null,
+     "chg_pct": 3.6979969183358774,
+     "warrant_surge": false,
+     "small_net_pct": -1.9775045775568927,
+     "p_long": 36.25,
+     "p_short": 63.75,
+     "liq_level": "ok",
+     "liq_l1": 44.5,
+     "liq_wide_pct": 7,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.25,
+     "big_net_10m": -62,
+     "phase": "late",
+     "range_pos": 0.0697674418604645
+    },
+    "factors": [
+     "跳空開高",
+     "衝高回落",
+     "弱於大盤",
+     "日內低檔",
+     "跌破開盤價",
+     "VWAP之下",
+     "賣盤竭盡"
+    ],
+    "exh": null,
+    "exh_lit": null,
+    "space": null,
+    "env": [
+     10
+    ],
+    "env_conds": [
+     "五檔反向",
+     "做空",
+     "尾盤",
+     "漲跌幅<5%",
+     "現價成交",
+     "開盤價順勢",
+     "靠近今高今低"
+    ],
+    "refs": [
+     {
+      "kind": "追價",
+      "text": "前 5 分鐘已經跌了 0.7%（5 檔）才確認，太晚了：回測這種訊號不管追價還是等回，都比任意時點進場差"
+     }
+    ],
+    "fear": {
+     "now": 38.48,
+     "prev": 55.36,
+     "chg_pct": -30.49,
+     "level": "緊張",
+     "extreme": true,
+     "surge": false
+    },
+    "support_pull": null
    }
   ],
   "notes": []
@@ -4931,10 +5908,114 @@
   "market": "otc",
   "group": null,
   "days": [
-   "2026-11-18"
+   "2026-11-18",
+   "2026-11-24"
   ],
-  "launches": 1,
-  "signals": [],
+  "launches": 2,
+  "signals": [
+   {
+    "date": "2026-11-24",
+    "time": "12:08:02",
+    "src": "shioaji",
+    "side": "short",
+    "label": "做空",
+    "price": 51.7,
+    "stop": 53.0,
+    "t1": 50.7,
+    "t2": 50.0,
+    "zone": [
+     51.6,
+     52.0
+    ],
+    "alert_px": 51.7,
+    "filled_at_alert": true,
+    "fill_min": 1,
+    "chase": 0.565,
+    "run5": 0.39,
+    "run5_tk": 2.0,
+    "rr_now": 0.77,
+    "rr_zone": 0.64,
+    "verdict": "loss",
+    "fast_adverse": false,
+    "first_stop_min": 1,
+    "first_t1_min": null,
+    "scoring": 2,
+    "score_stop": 52.1,
+    "score_tgt": 50.9,
+    "heat_ticks": 3,
+    "tick": 0.1,
+    "exit": "stop",
+    "exit_px": 52.1,
+    "net_pct": -1.009,
+    "mae_ticks": 5.0,
+    "mfe_ticks": 0.0,
+    "ret_10m": 0.0,
+    "ret_30m": 0.19342359767891004,
+    "suspects": [
+     "尾盤"
+    ],
+    "why": "反彈 52.05 不過，1 分 K 收 51.7 確認（偏空強度 64）",
+    "features": {
+     "idx_trend_10m": 0.03069681776322053,
+     "group_trend_10m": null,
+     "momentum": null,
+     "vol_pace": 0.7139141590704781,
+     "rs_vs_index": -2.5470653377630113,
+     "group_avg": null,
+     "chg_pct": 5.714285714285716,
+     "warrant_surge": false,
+     "small_net_pct": 0.30190578023775083,
+     "p_long": 36.25,
+     "p_short": 63.75,
+     "liq_level": "ok",
+     "liq_l1": 14.0,
+     "liq_wide_pct": 6,
+     "wall_bid": null,
+     "wall_ask": null,
+     "book_imb": 0.2903225806451613,
+     "big_net_10m": 0,
+     "phase": "late",
+     "range_pos": 0.3225806451612909
+    },
+    "factors": [
+     "跳空開高",
+     "衝高回落",
+     "弱於大盤",
+     "跌破開盤價",
+     "VWAP之下"
+    ],
+    "exh": null,
+    "exh_lit": null,
+    "space": {
+     "text": "到前方第一個支撐 50.7（今低）只有 12 tick，報酬風險比 1.1 不到 1.5",
+     "t1": 50.7,
+     "t1_name": "今低",
+     "ticks": 12,
+     "rr": 1.09,
+     "rr_min": 1.5
+    },
+    "env": [
+     10
+    ],
+    "env_conds": [
+     "五檔反向",
+     "做空",
+     "尾盤",
+     "現價成交",
+     "開盤價順勢"
+    ],
+    "refs": [],
+    "fear": {
+     "now": 39.3,
+     "prev": 55.36,
+     "chg_pct": -29.01,
+     "level": "緊張",
+     "extreme": true,
+     "surge": false
+    },
+    "support_pull": null
+   }
+  ],
   "notes": []
  },
  "3711": {
@@ -5914,6 +6995,50 @@
   "group": null,
   "days": [
    "2026-11-23"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "7765": {
+  "name": "中華資安",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-24"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2344": {
+  "name": "華邦電",
+  "market": "tse",
+  "group": "DRAM原廠",
+  "days": [
+   "2026-11-24"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3260": {
+  "name": "威剛",
+  "market": "otc",
+  "group": "記憶體模組控制IC",
+  "days": [
+   "2026-11-24"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "6505": {
+  "name": "台塑化",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-24"
   ],
   "launches": 1,
   "signals": [],

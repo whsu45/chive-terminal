@@ -11,8 +11,8 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 -apple-system,
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .up{color:var(--up)}.dn{color:var(--dn)}.flat{color:var(--muted)}
 header{display:flex;align-items:center;gap:16px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5;flex-wrap:wrap}
-header .tabs{display:flex;gap:6px}
-header .tab{padding:6px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--panel2)}
+header .tabs{display:flex;gap:6px;flex-wrap:wrap}
+header .tab{white-space:nowrap;padding:6px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--panel2)}
 header .tab.active{border-color:var(--accent);background:#1b2a46}
 header .meta{margin-left:auto;display:flex;gap:18px;color:var(--muted);align-items:center;flex-wrap:wrap}
 .clock{font-size:20px;color:var(--fg)}
@@ -37,6 +37,15 @@ main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16
 .lim{padding:0 8px;border-radius:6px;color:#fff!important}.lim.lim-up{background:var(--up)}.lim.lim-dn{background:var(--dn);color:#06240f!important}
 .limtag{font-size:13px;font-weight:700;padding:2px 8px;border-radius:6px;align-self:center}.limtag.up{border:1px solid var(--up);color:var(--up)}.limtag.dn{border:1px solid var(--dn);color:var(--dn)}
 header .tab .cb{color:var(--warn);margin-left:4px}
+/* 個股卡片上的 Buy / Sell（renderSigBadges）：現價成交 = 實心閃爍；掛單等回 = 虛線「掛」 */
+header .tab .sigb{margin-left:6px;padding:0 6px;border-radius:5px;font:800 12px/18px var(--mono);letter-spacing:.3px;display:inline-block;vertical-align:1px;border:1px solid transparent}
+header .tab .sigb:empty{display:none}
+header .tab .sigb.buy{background:var(--up);color:#fff;animation:sigbuy 1.4s ease-in-out infinite}
+header .tab .sigb.sell{background:var(--dn);color:#06210f;animation:sigsell 1.4s ease-in-out infinite}
+header .tab .sigb.wait{background:transparent;animation:none;border-style:dashed}
+header .tab .sigb.buy.wait{color:var(--up);border-color:var(--up)}header .tab .sigb.sell.wait{color:var(--dn);border-color:var(--dn)}
+@keyframes sigbuy{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 10px 1px var(--up)}}
+@keyframes sigsell{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 10px 1px var(--dn)}}
 header .addbox{display:flex;gap:6px;align-items:center}
 header .tab .rm{margin-left:6px;padding:0 3px;border-radius:4px;color:var(--muted);cursor:pointer;font-size:12px}header .tab .rm:hover{color:var(--up);background:var(--panel)}
 header .addbox input{width:88px;background:var(--panel2);border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:6px 8px;font-family:var(--mono)}
@@ -439,7 +448,19 @@ async function removeCode(c){const el=$('add-msg');const nm=(STATE.daily[c]||{})
     el.className='msg ok';el.textContent=j.status==='winding'?`${c} ${j.name||''} 已移除；還有 ${j.open} 筆訊號 / 警示在追蹤結果，結案後才停它的報價`:`${c} ${j.name||''} 已移除，報價${STATE.shioaji?'與永豐訂閱':''}已停`;
     if(CUR===c)CUR=null;setTimeout(loadState,300);}
   catch(e){el.className='msg err';el.textContent='送不出去：'+e;}}
-async function loadLive(){try{const r=await fetch('/api/live?_='+Date.now());const j=await r.json();LIVE=(j&&j.quotes)?j:null;applyFast();if(STATE)renderLive();}catch(e){}}
+async function loadLive(){try{const r=await fetch('/api/live?_='+Date.now());const j=await r.json();LIVE=(j&&j.quotes)?j:null;applyFast();if(STATE){renderLive();renderSigBadges();}}catch(e){}}
+// 個股卡片上的 Buy / Sell（2026-11-24）：這檔現在有建議的進場點（monitor 的 ▶ 建議做多 / 做空，LIVE.signal）就在卡片上標出來，
+// 不用切到那一檔也看得到。現價成交 = 實心閃爍「Buy / Sell」；掛單等回 = 虛線「Buy 掛 / Sell 掛」；
+// 結案（到目標 / 逆向 3 tick / 到時 / 未成交）和被過濾擋掉的（⏸）不標。每 3 秒跟著即時資料更新。
+function sigBadge(c){const sg=LIVE&&LIVE.signal&&LIVE.signal[c];if(!sg||sg.status)return null;
+  const buy=sg.side==='long',w=sg.filled===false,z=sg.zone||[];
+  const tgt=`停損 ${fp(sg.stop,c)}，目標 ${fp(sg.t1,c)}${sg.t2!=null&&sg.t2!==sg.t1?` / ${fp(sg.t2,c)}`:''}`;
+  return {cls:`sigb ${buy?'buy':'sell'}${w?' wait':''}`,txt:(buy?'Buy':'Sell')+(w?' 掛':''),
+    title:w?`建議${sg.label}：掛 ${fp(z[0],c)}–${fp(z[1],c)} 等回再進（${(sg.since||'').slice(0,5)} 發出），${tgt}`
+           :`建議${sg.label} @${fp(sg.price,c)}（${(sg.since||'').slice(0,5)} 發出），${tgt}`};}
+function renderSigBadges(){if(!STATE||!STATE.codes)return;
+  for(const c of STATE.codes){const el=document.getElementById('sigb-'+c);if(!el)continue;const b=sigBadge(c);
+    const cl=b?b.cls:'sigb';if(el.className!==cl)el.className=cl;el.textContent=b?b.txt:'';el.title=b?b.title:'';}}
 // 報價快速通道：成交價與五檔直接讀永豐串流的最新狀態（monitor.quote_json），每 0.5 秒拉一次；其餘資料照舊每 3 秒。
 // 沒有串流或不在盤中時後端回 on:false，就改成每 5 秒問一次。
 let QFAST=null,QFAST_AT=0,QFAST_KEY='',QBUSY=false,QSKIP=0;
@@ -928,7 +949,7 @@ function renderWarr(ev){const w=(LIVE&&LIVE.warrants&&LIVE.warrants[CUR])||ev.wa
 // ---------------------------------------------------------------- 估算區（每 interval 秒）
 function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   $('tabs').innerHTML=STATE.codes.map(c=>{const lq=LIVE&&LIVE.quotes[c];const e=STATE.latest[c];const ch=lq?lq.chg_pct:e?.info?.chg_pct;
-    const hd=(STATE.daily[c]||{}).history;return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||(STATE.daily[c]||{}).name||'')} <span class="num ${cls(ch)}${limCls(c,lq?lq.ref:e?.quote?.ref)}">${pct(ch)}</span>${(e?.combos||[]).length?`<span class="cb" title="${esc(e.combos.map(x=>x.name).join('、'))}">◆</span>`:''}${hd?`<span class="days">${hd.days}天</span>`:''}${STATE.codes.length>1?`<span class="rm" title="移除這檔監控（盤中省資源）" onclick="event.stopPropagation();removeCode('${c}')">✕</span>`:''}</div>`}).join('');
+    const hd=(STATE.daily[c]||{}).history;return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||(STATE.daily[c]||{}).name||'')} <span class="num ${cls(ch)}${limCls(c,lq?lq.ref:e?.quote?.ref)}">${pct(ch)}</span><span class="sigb" id="sigb-${c}"></span>${(e?.combos||[]).length?`<span class="cb" title="${esc(e.combos.map(x=>x.name).join('、'))}">◆</span>`:''}${hd?`<span class="days">${hd.days}天</span>`:''}${STATE.codes.length>1?`<span class="rm" title="移除這檔監控（盤中省資源）" onclick="event.stopPropagation();removeCode('${c}')">✕</span>`:''}</div>`}).join('');renderSigBadges();
   renderHist();renderDT();
   if(!LIVE){const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
     $('shioaji').innerHTML=STATE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';}

@@ -19,7 +19,10 @@
   - 恐慌開低做多（開盤觀察 C 組）：前一天 VIX ≥40 時不做。
       2026 年賺錢的 6/8、11/6 前一天 VIX 36.3、39.9；11/20 前一天 49.3，開盤買到收盤 0050 −3.2%。
       tw_stocker 裡 VIX ≥30 時這組勝率 42～46%、每筆都賠——證據很薄，這組本來就只記錄。
-  - 盤中支撐壓力訊號：VIX 高低對它沒有差別（各段每筆都是 −0.27～−0.28%）。盤中 VIX 比昨收高 ≥10%（恐慌升溫中）時，
+  - 盤中支撐壓力訊號暫停（2026-11-24 加）：VIX ≥48（盤中即時值）時不發，記 ⏸ 恐慌暫停、照樣追蹤假設結果。
+      實盤 11/10–11/23（含被擋的假設結果）：≥48 做空 23 筆贏 4 筆、每筆 −0.54%（發出去的 13 筆只贏 1 筆）；做多 21 筆贏 9 筆、−0.03%。
+      40～48 做空 26 筆贏 10 筆 −0.12%、做多 10 筆贏 2 筆；<40 做空 17 筆贏 10 筆 +0.30%。只有 6 個 ≥48 的交易日，是實盤經驗不是大樣本驗證。
+  - 盤中支撐壓力訊號（tw_stocker 回測）：VIX 高低對它沒有差別（各段每筆都是 −0.27～−0.28%）。盤中 VIX 比昨收高 ≥10%（恐慌升溫中）時，
       做多訊號抱到收盤每筆 −0.38%（平常 −0.32%）、做空 −0.13%（平常 −0.19%）：方向有、幅度很小，只在訊號上寫參考、不擋。
 
     python3 fear.py            # 印現在的恐慌指數（有永豐就是即時值）與歷史分位
@@ -38,6 +41,9 @@ DAILY_URL = "https://www.taifex.com.tw/file/taifex/Dailydownload/vix/log2data/{y
 HIST = os.path.join(CACHE_DIR, "vix_daily.json")
 EXTREME = 40.0           # 前一天收盤 ≥ 這個 → 極度恐慌：隔日沖倒貨、恐慌開低做多都不做
 SURGE_PCT = 10.0         # 盤中比昨收高這麼多 % → 恐慌升溫中（做多訊號寫參考）
+# 盤中暫停（2026-11-24）：VIX（盤中即時值，沒有就用昨收）≥ 這個 → 盤中支撐壓力訊號全部不發（monitor ⏸ 恐慌暫停，照樣追蹤假設結果）。
+# 實盤 11/10–11/23：VIX ≥48 做空 23 筆贏 4 筆（−0.54%/筆）、做多 21 筆贏 9 筆（−0.03%/筆）。環境變數 DAYTRADE_VIX_PAUSE 可改，設 0 = 不暫停。
+INTRADAY_PAUSE = float(os.environ.get("DAYTRADE_VIX_PAUSE", "48") or 0)
 LEVELS = ((0, 20, "平靜"), (20, 30, "正常"), (30, 40, "緊張"), (40, 1e9, "極度恐慌"))
 _lock = threading.Lock()
 _hist = None
@@ -158,9 +164,10 @@ def state(now=None, api=None, live=None):
     chg = ((cur / prev - 1) * 100) if (cur is not None and prev) else None
     extreme = prev is not None and prev >= EXTREME
     surge = chg is not None and chg >= SURGE_PCT
+    pause = bool(INTRADAY_PAUSE) and ref is not None and ref >= INTRADAY_PAUSE
     out = {"now": cur, "prev": prev, "prev_date": prev_date, "chg_pct": round(chg, 2) if chg is not None else None,
            "level": level(ref), "pct": round(pct) if pct is not None else None, "hist_days": len(vals),
-           "extreme": extreme, "surge": surge, "src": "shioaji" if ((api is not None or live is not None) and cur is not None and today not in h) else "taifex",
+           "extreme": extreme, "surge": surge, "pause": pause, "src": "shioaji" if ((api is not None or live is not None) and cur is not None and today not in h) else "taifex",
            "allow_nds": not extreme, "allow_panic_long": not extreme, "time": now.strftime("%H:%M:%S")}
     out["text"] = describe(out)
     return out
@@ -180,6 +187,8 @@ def describe(s):
         t += "（前一天收盤，沒有盤中即時值）"
     if s.get("extreme"):
         t += f"；前一天 ≥{EXTREME:g} 極度恐慌：隔日沖倒貨、恐慌開低做多今天不做"
+    if s.get("pause"):
+        t += f"；≥{INTRADAY_PAUSE:g}：盤中支撐壓力訊號暫停（實盤這時做空 23 筆只贏 4 筆）"
     if s.get("surge"):
         t += f"；盤中恐慌升溫（比昨收高 ≥{SURGE_PCT:g}%）：做多訊號回測更差"
     return t

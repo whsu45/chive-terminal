@@ -198,7 +198,7 @@ def fear_watch(use_shioaji):
     """
     背景執行緒：恐慌指數（fear.py，臺指選擇權波動率指數）。盤中（08:30–13:31）每 60 秒用永豐 snapshots 抓即時值——
     只用 monitor 串流已經登入的連線、在 _api_lock 裡查，不另外登入；其他時間（或沒有永豐）用期交所公開的日收盤。
-    結果放 WEB.fear：儀表板頂端、訊號判斷（恐慌升溫時做多寫參考）、開高放空觀察（極度恐慌時 B、C 不成立）都看它。
+    結果放 WEB.fear：儀表板頂端、訊號判斷（VIX ≥48 盤中暫停、恐慌升溫時做多寫參考）、開高放空觀察（極度恐慌時 B、C 不成立）都看它。
     """
     while not _SITE_STOP.is_set():
         now = dt.datetime.now()
@@ -1473,7 +1473,8 @@ class Monitor:
     SPACE_BLOCK = False
     # 環境組合門檻（2026-11-18，使用者：「沒有適合的進場點就不做」）：訊號要符合 env_combos.COMBOS 的 10 種實盤贏過的環境之一才發，
     # 不符合的記成 ⏸ 環境過濾、照樣追蹤假設結果。這 10 組只在實盤 90 筆裡贏過，大樣本（tw_stocker、歷史逐筆）沒有重現，
-    # 細節與限制見 env_combos.py；改 False 就回到不看環境。
+    # 樣本外 11/19–11/23 只有 2/11 勝；細節與限制見 env_combos.py；改 False 就回到不看環境。
+    # 2026-11-24 起它是額外的門檻：重複 / 追價 / 逆勢 / 急漲過濾和 VIX ≥48 恐慌暫停先擋，過了才看環境組合（見 make() 裡的說明）。
     ENV_GATE = True
 
     def _env_ctx(self, c, ev, q, now, inzone, run5):
@@ -1936,28 +1937,32 @@ class Monitor:
             sig["env"] = [cb["id"] for cb in env]
             sig["env_conds"] = sorted(env_combos.conditions(side, env_ctx))
             sig["env_txt"] = [env_combos.label(cb) for cb in env]
-            env_blk = None
-            if self.ENV_GATE:
-                # 環境組合決定做不做；急漲過濾（漲停鎖住時空單買不回來、跌停賣不掉）是安全問題，照樣擋。
-                # 重複 / 追價 / 逆勢過濾從沒證明有效（實盤符合組合的 34 筆裡 9 筆被它們擋掉，6 贏），改成只寫在訊號上當參考。
-                repeat = chase_blk = None
-                surge = None if room else self._surge_block(c, side, p, q)
-                refs = [(k, why_) for k, why_ in (("重複", self._repeat_block(c, side, lo, hi, q, tick)),
-                                                  ("追價", self._chase_block(side, sig["run5"], sig["run5_tk"])),
-                                                  ("逆勢", self._against_trend(side, info))) if why_]
-                sig["refs"] = [{"kind": k, "text": why_} for k, why_ in refs]
-                if not (room or surge) and not env:
-                    env_blk = (f"當下環境不符合實盤贏過的前 10 種組合（成立的條件：{'、'.join(sig['env_conds']) or '無'}），"
-                               f"沒有適合的進場點就不做")
-                blk = room or surge or env_blk
-            else:
-                repeat = None if room else self._repeat_block(c, side, lo, hi, q, tick)
-                surge = None if (room or repeat) else self._surge_block(c, side, p, q)
-                chase_blk = None if (room or repeat or surge) else self._chase_block(side, sig["run5"], sig["run5_tk"])
-                blk = room or repeat or surge or chase_blk or self._against_trend(side, info)
+            # 過濾（2026-11-24 改回）：11/18 讓「符合環境組合」的訊號不被重複 / 追價 / 逆勢過濾擋、只提醒，結果 11/19–11/23 發出去
+            # 11 筆 2 勝 9 敗、1 張 −8,799 元，其中 10 筆以前會被這三個擋掉（−8,200 元；帶逆勢的 0/4、帶追價的 2/8）。
+            # 拿掉更糟，所以不管符不符合環境組合都照擋；環境組合變成「通過這些過濾之後」再加的一道門檻。
+            # 恐慌暫停：臺指 VIX ≥48（fear.INTRADAY_PAUSE，盤中即時值，沒有就用昨收）時盤中訊號全部不發、照樣追蹤假設結果。
+            #   實盤 11/10–11/23（signal_outcomes，含被擋的假設結果）：VIX ≥48 時做空 23 筆只贏 4 筆、每筆 −0.54%（發出去的 13 筆贏 1 筆），
+            #   做多 21 筆贏 9 筆、每筆 −0.03%；VIX <40 時做空 17 筆贏 10 筆 +0.30%。兩邊都沒有優勢，照「沒有適合的就不做」。樣本小（6 天）。
+            # 每一種過濾成不成立都記在 sig["filters"]（只擋第一個），之後可以各自驗證。
             fz = WEB.fear or {}
+            vv = fz.get("now") if fz.get("now") is not None else fz.get("prev")
+            vix_blk = (f"臺指 VIX {vv:.1f} ≥{fear.INTRADAY_PAUSE:g} 極度恐慌，盤中不做（實盤 VIX ≥48 時做空 23 筆只贏 4 筆、"
+                       f"做多 21 筆贏 9 筆每筆 −0.03%）") if (fz.get("pause") and vv is not None) else None
+            checks = (("恐慌暫停", vix_blk),
+                      ("重複過濾", self._repeat_block(c, side, lo, hi, q, tick)),
+                      ("急漲過濾", self._surge_block(c, side, p, q)),
+                      ("追價過濾", self._chase_block(side, sig["run5"], sig["run5_tk"])),
+                      ("逆勢過濾", self._against_trend(side, info)))
+            hits = [(k, why_) for k, why_ in checks if why_]
+            if self.ENV_GATE and not env:
+                hits.append(("環境過濾", f"當下環境不符合實盤贏過的前 10 種組合（成立的條件：{'、'.join(sig['env_conds']) or '無'}），"
+                                       f"沒有適合的進場點就不做"))
+            sig["filters"] = [{"kind": k, "text": why_} for k, why_ in hits]
+            if room:
+                hits.insert(0, ("空間過濾", room))
+            kind, blk = hits[0] if hits else (None, None)
             if fz.get("now") is not None or fz.get("prev") is not None:
-                sig["fear"] = {k: fz.get(k) for k in ("now", "prev", "chg_pct", "level", "extreme", "surge")}
+                sig["fear"] = {k: fz.get(k) for k in ("now", "prev", "chg_pct", "level", "extreme", "surge", "pause")}
             if side == "long" and fz.get("surge") and fz.get("now") is not None:
                 # 回測（tw_stocker 2024–2026）：盤中 VIX 比昨收高 ≥10% 時做多訊號抱到收盤每筆 −0.38%（平常 −0.32%）；幅度小，只提醒不擋
                 sig.setdefault("refs", []).append({"kind": "恐慌升溫", "text": f"臺指 VIX {fz['now']:.1f} 比昨收高 {fz['chg_pct']:.0f}%："
@@ -1968,11 +1973,10 @@ class Monitor:
                 sig.setdefault("refs", []).append({"kind": "護盤拉抬", "text": (f"{pl['time'][:5]} 權值股突然被拉（加權 5 分鐘 {pl['r_tx']:+.1f}%）："
                     + ("護盤期這種拉抬 7 次裡 6 次收盤更低，追多小心" if side == "long" else "可能再被拉一段，停損放寬或等拉完再進；護盤期 7 次裡 6 次收盤更低"))})
             if blk:
-                kind = "空間過濾" if room else "重複過濾" if repeat else "急漲過濾" if surge else "追價過濾" if chase_blk else "環境過濾" if env_blk else "逆勢過濾"
                 bkey = ("block",) + key            # 被擋的另外去重：趨勢轉回來後同一個進場區還能正常發
                 if now.timestamp() - self._sig_seen.get(bkey, 0) < 900:
                     return None
-                if room or repeat or env_blk:
+                if kind in ("空間過濾", "重複過濾", "環境過濾", "恐慌暫停"):
                     # 這幾種常常連續成立（VWAP 每分鐘在動，進場區跟著變）：同一檔同一邊 10 分鐘只記一次，免得洗版
                     tkey = ("blockkind", c, side, kind)
                     if now.timestamp() - self._sig_seen.get(tkey, 0) < 600:
@@ -1993,7 +1997,7 @@ class Monitor:
             if env:
                 score_txt += f"｜✅ 環境符合 {env_combos.label(env[0])}" + (f" 等 {len(env)} 組" if len(env) > 1 else "")
             for rf in sig.get("refs") or []:
-                score_txt += f"｜ⓘ {rf['kind']}參考（以前會擋，現在只提醒）：{rf['text']}"
+                score_txt += f"｜ⓘ {rf['kind']}參考（只提醒）：{rf['text']}"
             ex = self._exh_bonus(c, side, now)
             if ex:
                 sig["exh"] = {k: ex.get(k) for k in ("side", "time", "n", "vol", "vr", "push_tk", "push_pct", "ext", "pre", "over", "kind")}
@@ -2046,7 +2050,7 @@ class Monitor:
                 return make("long", bo, "做多（突破追）", l["bo_stop"], l["bo_target"], l["bo_target"], f"5 分 K 帶量收過 {bo}（量 {f5[-1][5]} 張，偏多強度 {pl:.0f}）", l.get("bo_target_name"))
         return None
 
-    BLOCK_TYPES = ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾", "追價過濾", "環境過濾")     # 被擋掉、但照樣追蹤假設進場結果的訊號
+    BLOCK_TYPES = ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾", "追價過濾", "環境過濾", "恐慌暫停")     # 被擋掉、但照樣追蹤假設進場結果的訊號
     ALERT_TYPES = exhaust.alert_types() + combo.alert_types() + [("大盤急漲", r"^⚠ 大盤急漲"), ("大盤急跌", r"^⚠ 大盤急跌"),
                    ("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
@@ -2102,7 +2106,7 @@ class Monitor:
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs", "fear", "support_pull")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs", "filters", "fear", "support_pull")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -2316,7 +2320,7 @@ class Monitor:
                **score,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors"), "exh": sg.get("exh"), "exh_lit": sg.get("exh_lit"),
-               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs"), "fear": sg.get("fear"), "support_pull": sg.get("support_pull")}
+               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs"), "filters": sg.get("filters"), "fear": sg.get("fear"), "support_pull": sg.get("support_pull")}
         if sg.get("blocked"):
             out.update(blocked=True, block_reason=sg.get("block_reason"), block_kind=sg.get("block_kind"))
         if sg.get("cancelled"):

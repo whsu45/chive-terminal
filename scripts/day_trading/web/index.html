@@ -323,7 +323,7 @@ function renderFear(){const el=$('fear');if(!el)return;const z=STATE&&STATE.fear
   if(!z||(z.now==null&&z.prev==null)){el.textContent='';el.className='fear';return;}
   const v=z.now!=null?z.now:z.prev,lv={'平靜':0,'正常':1,'緊張':2,'極度恐慌':3}[z.level]??1;
   el.className='fear l'+lv;
-  el.innerHTML=`恐慌 <b class="num">${f(v,1)}</b> ${esc(z.level||'')}${z.now!=null&&z.chg_pct!=null?` <span class="num">${z.chg_pct>0?'+':''}${f(z.chg_pct,1)}%</span>`:''}${z.extreme?' ⚠':''}`;
+  el.innerHTML=`恐慌 <b class="num">${f(v,1)}</b> ${esc(z.level||'')}${z.now!=null&&z.chg_pct!=null?` <span class="num">${z.chg_pct>0?'+':''}${f(z.chg_pct,1)}%</span>`:''}${z.extreme?' ⚠':''}${z.pause?' ⏸盤中暫停':''}`;
   el.title=z.text||'';}
 // 國安基金護盤期（support.py）：頂端標「護盤期 第 N 週」；30 分鐘內偵測到權值股突然被拉就閃一下並寫出來
 function renderSupport(){const el=$('support');if(!el)return;const z=STATE&&STATE.support;
@@ -827,6 +827,7 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
       if(b){el.className=`signal ${b.side} ended`;el.style.animation='none';
         el.innerHTML=`<span class="h">⏸ ${esc(b.block_kind||(/軋空|停損賣不掉/.test(b.block_reason||"")?"急漲過濾":"逆勢過濾"))}</span><span class="d">${esc(b.since)} 原本要建議${esc(b.label)} <b>${fp(b.alert_px)}</b>，但${esc(b.block_reason)}，不發（照樣追蹤假設進場的結果）</span><span class="why">${esc(b.why||'')}</span>`
           +(b.space?`<span class="d space">📏 空間參考：${esc(b.space.text)}</span>`:'')
+          +(b.block_kind==='恐慌暫停'?`<span class="d space" title="fear.py INTRADAY_PAUSE：實盤 11/10–11/23 VIX ≥48 時做空 23 筆只贏 4 筆、做多 21 筆贏 9 筆每筆 −0.03%；被擋的照樣追蹤">臺指 VIX ≥48 極度恐慌：盤中支撐壓力訊號暫停（開盤策略不受影響）</span>`:'')
           +(b.block_kind==='環境過濾'?`<span class="d space" title="env_combos.py：只在符合實盤 11/10–11/18 贏過的前 10 種環境組合時才發；大樣本沒有重現，這層是使用者「沒有適合就不做」的規則，被擋的照樣追蹤">沒有適合的進場點就不做（盤中只做實盤贏過的前 10 種環境組合）</span>`:'');}
       else{el.className='signal hidden';el.innerHTML='';}}return;}
   el.style.animation='';
@@ -838,9 +839,9 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
   const rr=waiting?`報酬風險比 現價 <b>${f(sg.rr_now,1)}</b> → 掛價 <b>${f(sg.rr_zone,1)}</b>`:(sg.zone?`進場區 <b>${zs}</b>${sg.rr_zone!=null?` · 掛價報酬風險比 <b>${f(sg.rr_zone,1)}</b>`:''}`:'');
   // 空間參考：前方第一個支撐 / 壓力很近（報酬風險比不到 1.5）。以前會擋掉這種訊號（空間過濾），驗證沒效後改成只提醒
   const sp=(sg.space?`<span class="d space" title="以前的「空間過濾」：實盤和 69.9 萬個回測訊號都顯示擋掉的並沒有比較差，所以只提醒、不擋">📏 空間參考：${esc(sg.space.text)}（只提醒，不擋訊號）</span>`:'')
-    // 環境組合：這筆符合哪幾種實盤贏過的環境（env_combos.py）；以前會擋的重複 / 追價 / 逆勢過濾改成只提醒
+    // 環境組合：這筆符合哪幾種實盤贏過的環境（env_combos.py）。重複 / 追價 / 逆勢過濾 11/24 起又會擋（11/18–11/23 改成只提醒時 10 筆 2 勝 8 敗）
     +(sg.env_txt&&sg.env_txt.length?`<span class="d env" title="實盤 11/10–11/18 的 90 筆裡贏最多的環境組合；大樣本沒有重現，抽樣誤差大">✅ 環境符合：${sg.env_txt.map(esc).join('；')}</span>`:'')
-    +(sg.refs||[]).map(r=>`<span class="d space" title="以前會擋掉這種訊號，但從沒證明有效；環境組合成立時只提醒">ⓘ ${esc(r.kind)}參考：${esc(r.text)}</span>`).join('');
+    +(sg.refs||[]).map(r=>`<span class="d space" title="只提醒、不擋（恐慌升溫、護盤拉抬）">ⓘ ${esc(r.kind)}參考：${esc(r.text)}</span>`).join('');
   el.innerHTML=(waiting
     ?`<span class="h">▶ 建議${esc(sg.label)}：掛</span><span class="zone">${zs}</span>
     <span class="d">現價 <b>${fp(sg.now)}</b> 已${sg.side==='short'?'殺低':'追高'}，等回進場區再進（20 分鐘沒回就取消）· 停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · ${rr} · ${esc(sg.since)} 起</span>

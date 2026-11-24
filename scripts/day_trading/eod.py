@@ -140,7 +140,7 @@ def series(rows):
 
 _SIG_KEYS = ("code", "name", "time", "side", "label", "alert_px", "zone", "price", "stop", "t1", "score_stop", "score_tgt", "verdict", "exit",
              "exit_px", "net_pct", "mae_ticks", "mfe_ticks", "fill_min", "first_stop_min", "first_t1_min", "ret_30m", "why", "blocked",
-             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src", "run5", "run5_tk", "space", "env", "refs")
+             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src", "run5", "run5_tk", "space", "env", "refs", "filters")
 
 CHASE_PCT, CHASE_TICKS = 0.5, 2        # 跟 monitor.CHASE_* 一致：確認前 5 分鐘已順向走這麼多算「追價」
 # 追價的訊號再依「當時離漲跌停多遠」分三段（順向漲跌幅：做多看漲幅、做空看跌幅；漲跌停是 10%）。

@@ -92,13 +92,50 @@ jobs:
         run: |
           python scripts/build_limit_up.py
 
-      # 將更新後的 data/history.json 與族群資料推回 Git 儲存庫備份
+      # 將更新後的 data/history.json 與族群資料推回 Git 儲存庫備份。
+      # 這個工作要跑 10 分鐘以上，期間別人（盤中資料同步、盤前選股、手動 push）可能先推了，直接 git push 會被拒絕
+      # （2026-11-24 12:00 那次就是這樣失敗，連後面的 Pages 部署都沒跑）。工作目錄裡還有剛產生、沒要 commit 的 index.html，
+      # 不能直接 git pull --rebase。所以改成：在另一個工作目錄放「遠端最新版」，把這次產生的資料檔複製過去再 commit / push，
+      # 被拒絕就重抓遠端再來一次（最多 5 次）。資料檔以這次產生的為準（只有這個流程在寫）；目前的工作目錄不動，後面照樣部署。
+      # 這一步只是備份，就算 5 次都失敗也繼續部署（continue-on-error）。
       - name: Commit and push updated history.json
+        continue-on-error: true
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/history.json data/themes.json data/theme_picks.json data/us_tech.json data/us_tech_history.json data/night_futures.json data/limit_up.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update history.json [skip ci]" && git push)
+          FILES="data/history.json data/themes.json data/theme_picks.json data/us_tech.json data/us_tech_history.json data/night_futures.json data/limit_up.json"
+          BR="${GITHUB_REF_NAME}"
+          PUSH_DIR="${RUNNER_TEMP}/push"
+          for i in 1 2 3 4 5; do
+            cd "${GITHUB_WORKSPACE}"
+            git fetch --quiet origin "${BR}"
+            rm -rf "${PUSH_DIR}"
+            git worktree prune
+            git worktree add --quiet --detach "${PUSH_DIR}" "origin/${BR}"
+            for f in ${FILES}; do
+              if [ -f "$f" ]; then
+                mkdir -p "${PUSH_DIR}/$(dirname "$f")"
+                cp "$f" "${PUSH_DIR}/$f"
+              fi
+            done
+            cd "${PUSH_DIR}"
+            for f in ${FILES}; do
+              if [ -f "$f" ]; then git add "$f"; fi
+            done
+            if git diff --staged --quiet; then
+              echo "資料沒有變，不 commit"
+              exit 0
+            fi
+            git commit --quiet -m "auto: update history.json [skip ci]"
+            if git push origin "HEAD:${BR}"; then
+              echo "推上去了（第 ${i} 次）"
+              exit 0
+            fi
+            echo "第 ${i} 次被拒絕（遠端有新的 commit），重抓再試"
+            sleep $((i * 10))
+          done
+          echo "push 失敗（試了 5 次），這次資料只部署、沒備份進 repo"
+          exit 1
 
       # 每個頁面的 ./assets/*.js 加上 ?v=<commit>：GitHub Pages 讓瀏覽器快取 10 分鐘，
       # 不加的話剛部署完會出現「新 HTML + 舊 JS」（例如新加的篩選勾選框沒有作用）。只改要部署的檔案，不 commit 回 repo

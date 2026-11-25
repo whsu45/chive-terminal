@@ -17,7 +17,10 @@ from modules.html_generator import generate_index_html, generate_broker_html
 from modules.themes_scraper import update_themes_json
 
 # 資料結構版本：變更判讀邏輯時遞增，強制重新計算歷史紀錄
-DATA_VERSION = "v13"
+DATA_VERSION = "v14"
+# 期交所原始數值（夜盤、量、法人）跟這些版本相同、可以沿用：v14 只改了當日漲跌的算法（收盤 − 昨收），
+# 改版重算時期交所暫時連不上，還是能用 v13 已抓到的數值，不會把夜盤資料蓋成 NA
+CACHE_COMPAT_VERSIONS = ("v13", "v14")
 
 
 def _cached_int(prev_rec, key):
@@ -57,6 +60,7 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
         "forecast_desc": "數據尚未準備就緒或目前為休市期間 (NA)",
         "trust_signal": "NA",
         "actual_change": "NA",
+        "intraday_change": "NA",
         "sparkline_svg": '<span class="text-xs text-slate-400">未收盤</span>',
         "verify_status": "尚未驗證",
         "verify_badge_class": "bg-slate-100 text-slate-500",
@@ -76,7 +80,7 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
 
     # 重新計算（例如等待收盤驗證）時若期交所暫時連不上，沿用之前已成功抓到的數值，
     # 避免整筆紀錄從空白重建而把已抓到的夜盤資料蓋成 NA。已結束的交易時段數值不會再變動。
-    if prev_rec and prev_rec.get("prev_date") == prev_date_str and prev_rec.get("version") == DATA_VERSION:
+    if prev_rec and prev_rec.get("prev_date") == prev_date_str and prev_rec.get("version") in CACHE_COMPAT_VERSIONS:
         if night_price_change is None:
             night_price_change = _cached_int(prev_rec, "night_price_change")
         if night_vol is None:
@@ -169,7 +173,8 @@ def process_single_date(session, target_date_str, prev_date_str, us_data_by_date
         data["verify_badge_class"] = "bg-slate-100 text-slate-500"
         return data
 
-    data["actual_change"] = actual_info["change_str"]
+    data["actual_change"] = actual_info["change_str"]          # 收盤 − 昨收
+    data["intraday_change"] = actual_info.get("intraday_str", "NA")   # 收盤 − 開盤第一筆（劇本驗證看的）
     data["sparkline_svg"] = actual_info["sparkline_svg"]
     
     v_status, v_badge = verify_match(data["scenario"], actual_info)

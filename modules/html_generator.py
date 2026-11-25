@@ -124,6 +124,10 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
         act_change = str(item.get('actual_change', 'NA'))
         act_color = "text-red-500 font-semibold" if act_change.startswith(
             "+") else "text-green-500 font-semibold" if act_change.startswith("-") else "text-slate-400"
+        # 開盤後的漲跌（收盤 − 開盤第一筆）：劇本驗證看的是這段，跳空大的日子跟當日漲跌差很多
+        intraday = str(item.get('intraday_change') or 'NA')
+        intraday_html = (f'<div class="text-[10px] text-slate-400 whitespace-nowrap" title="收盤 − 開盤第一筆，劇本驗證看的是這段">開盤後 {intraday}</div>'
+                         if intraday != 'NA' else '')
 
         verify_text, verify_note = verify_status_display(item)
         verify_note_html = f'<div class="text-[11px] text-slate-400 mt-1 whitespace-nowrap">{verify_note}</div>' if verify_note else ''
@@ -161,7 +165,7 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
                 </div>
             </td>
             <td class="py-3 px-3"><span class="inline-block whitespace-nowrap px-2.5 py-1 rounded-md text-xs {s_badge}">{item['scenario']}</span></td>
-            <td class="py-3 px-3 text-center whitespace-nowrap">{item.get('sparkline_svg', '')}<div class="text-[11px] {act_color} mt-0.5">{act_change}</div></td>
+            <td class="py-3 px-3 text-center whitespace-nowrap">{item.get('sparkline_svg', '')}<div class="text-[11px] {act_color} mt-0.5" title="收盤 − 昨收">{act_change}</div>{intraday_html}</td>
             <td class="py-3 px-3"><span class="inline-block whitespace-nowrap px-2.5 py-1 rounded-md text-xs {item.get('verify_badge_class', 'bg-slate-100')}">{verify_text}</span>{verify_note_html}</td>
         </tr>
         """

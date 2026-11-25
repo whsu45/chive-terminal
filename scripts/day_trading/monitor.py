@@ -383,6 +383,7 @@ def tomorrow_json(codes):
 
 MAX_PICK = 6   # 選股模式最多同時監控幾檔（每檔一條永豐串流與一次盤前資料）
 MAX_CODES = 12 # 盤中再加入標的時，總共最多幾檔（MIS 一次查詢的檔數、畫面分頁、快迴圈的負擔都有限）
+STARTUP_WAIT = 1800  # monitor 啟動中按「加入監控」的，最多排隊等幾秒（啟動 5 檔約 9 分鐘；超過就請使用者稍後再加）
 WEB = WebState()
 
 
@@ -728,16 +729,21 @@ class Monitor:
         self.code_lock = threading.Lock()            # 改 self.codes / self.winding 時拿（加入、移除、收尾在不同執行緒）；不要跟 WEB.lock 巢狀拿
         self.boot_date = dt.date.today()             # 盤前資料是這天抓的；跨到之後的交易日就自動重開（stale_day / restart_due）
         self._halt = False                           # 自動重開前停掉快迴圈
+        # WEB.monitor 一設好，儀表板就能按「加入監控」，但下面抓盤前資料、接串流要好幾分鐘（11/25 啟動 5 檔花了 9 分鐘）。
+        # 那段時間加入的會用到還沒建好的 ex_codes / flow_src（11/25 1560、3034 加入失敗：no attribute 'ex_codes'），
+        # 所以 ex_codes 先建好，加入的背景執行緒等 _ready（啟動全部做完）才開始（_add_worker）。
+        self.ex_codes = set(src_mis.index_codes())
+        self._ready = threading.Event()
         WEB.monitor = self
         self._load_positions()
         import src_shioaji
         for c in codes:
             self._setup_code(c)
-        self.ex_codes = set(src_mis.index_codes())
         for c in codes:
             self._add_ex(c)
         self.calibrate_after_close = False
         self._init_stream(codes, use_shioaji, big_lot)
+        self._ready.set()
 
     def _add_ex(self, c):
         """這檔和它的族群成員加進 MIS 要查的代碼。用重新指定（不是原地改），另一條執行緒正在 sorted(self.ex_codes) 也不會出錯。"""
@@ -801,6 +807,16 @@ class Monitor:
     def _add_worker(self, code, was_winding=False):
         t0 = time.time()
         try:
+            if not self._ready.is_set():
+                # monitor 還在啟動（抓監控中標的的盤前資料、接串流）：排隊等啟動完成再加，不然會用到還沒建好的東西
+                with WEB.lock:
+                    WEB.adding[code] = dict(WEB.adding.get(code) or {}, wait=True)
+                print(f"[加入] {code}：monitor 還在啟動，啟動完成就接著加")
+                if not self._ready.wait(STARTUP_WAIT):
+                    raise RuntimeError(f"monitor 啟動還沒完成（等了 {STARTUP_WAIT // 60} 分鐘），請稍後再加一次")
+                with WEB.lock:
+                    (WEB.adding.get(code) or {}).pop("wait", None)
+                t0 = time.time()
             print(f"[加入] {code}：抓盤前資料中…")
             for store, empty in ((self.samples, list), (self.live_alerts, list), (self.mis_bars, dict), (self.peer_hist, dict)):
                 store.setdefault(code, empty())

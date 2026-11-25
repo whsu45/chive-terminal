@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>當沖監控</title>
+<title>Day Trading Monitor</title>
 <style>
 :root{--bg:#0f1115;--panel:#171a21;--panel2:#1e222b;--line:#2a2f3a;--fg:#e6e9ef;--muted:#8b93a3;--up:#ff4d4f;--dn:#2ecc71;--warn:#ffb020;--accent:#4c8dff;--vwap:#f5c542;--mono:"SF Mono",Menlo,Consolas,monospace}
 *{box-sizing:border-box}
@@ -434,7 +434,9 @@ let ADD_WAIT=null,ADD_TIMER=null,WD_SHOWN=false;
 function renderAdd(){const box=$('addbox');if(!box)return;box.style.display=(STATE&&STATE.codes&&STATE.codes.length)?'':'none';
   const ad=(STATE&&STATE.adding)||{},el=$('add-msg');const run=Object.entries(ad).filter(([c,v])=>v.status==='running').map(([c])=>c);
   const last=ADD_WAIT;const v=last&&ad[last];      // 結果只顯示自己剛送出的那一檔（重新整理後不再顯示舊的失敗訊息）
-  if(run.length){el.className='msg';el.textContent=`加入 ${run.join('、')} 中（抓盤前資料、接上即時報價，約 10～30 秒）…`;}
+  if(run.length){const wq=run.filter(c=>ad[c].wait),go=run.filter(c=>!ad[c].wait);el.className='msg';
+    el.textContent=[go.length?`加入 ${go.join('、')} 中（抓盤前資料、接上即時報價，約 10～30 秒）…`:'',
+      wq.length?`${wq.join('、')} 排隊中：monitor 還在啟動（抓監控中標的的盤前資料），啟動完成就接著加…`:''].filter(Boolean).join('　');}
   else if(v&&v.status==='error'){el.className='msg err';el.textContent=`${last} 加入失敗：${v.error}`;ADD_WAIT=null;}
   else if(v&&v.status==='done'&&STATE.codes.includes(last)){el.className='msg ok';el.textContent=`${last} ${v.name||''} 已加入（${v.secs} 秒）${v.note?'；'+v.note:''}`;ADD_WAIT=null;}
   // 盤中移除、還在收尾的（還有訊號 / 警示在追蹤結果）：沒有其他訊息要顯示時列出來，收尾完就清掉

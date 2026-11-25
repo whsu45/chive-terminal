@@ -68,6 +68,33 @@ def taiex_history(ref, months=3):
     return sorted(set(out))
 
 
+def taiex_ohlc(ref, months=2):
+    """加權指數日 K（MI_5MINS_HIST，每月一張表）→ [(YYYY-MM-DD, 開, 高, 低, 收)]，舊到新，只取 ref 之前（不含 ref）。給大盤日 KD 用。
+    FMTQIK（taiex_history）只有收盤，算 KD 要高低點。這個月的表每天會多一天，不快取。"""
+    out = []
+    y, m = ref.year, ref.month
+    months_list = []
+    for _ in range(months):
+        months_list.append((y, m))
+        m -= 1
+        if m == 0:
+            m, y = 12, y - 1
+    for y, m in reversed(months_list):
+        cur = (y, m) == (ref.year, ref.month)
+        j = http.get_json(f"{BASE}/rwd/zh/TAIEX/MI_5MINS_HIST", params={"date": f"{y}{m:02d}01", "response": "json"},
+                          cache_ttl=0 if cur else TTL_DAY)
+        for r in j.get("data", []) or []:
+            try:
+                ry, rm, rd = (int(x) for x in r[0].strip().split("/"))
+                d = f"{ry + 1911:04d}-{rm:02d}-{rd:02d}"
+            except (ValueError, AttributeError):
+                continue
+            o, h, l, c = (http.to_float(x) for x in r[1:5])
+            if h and l and c and d < ref.isoformat():
+                out.append((d, o, h, l, c))
+    return sorted(set(out))
+
+
 def t86(date):
     """三大法人買賣超（股）→ {code: {foreign, trust, dealer, total}}（張）。"""
     j = http.get_json(f"{BASE}/rwd/zh/fund/T86", params={"date": _ymd(date), "selectType": "ALL", "response": "json"},

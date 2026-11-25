@@ -656,7 +656,9 @@ function drawKD(c,o){if(!c)return;
     return o.stock?{m,h:b[2],l:b[3],c:b[4]}:{m,h:b[1],l:b[1],c:b[1]};}).filter(p=>p.c!=null&&p.h!=null&&p.l!=null&&p.m>=0&&p.m<=270);
   const padL=F(6),padR=F(o.stock?96:84),padT=F(16),padB=F(4);const x0=padL,x1=W-padR,y0=padT,y1=H-padB;
   const X=m=>x0+(x1-x0)*m/270,Y=v=>y0+(y1-y0)*(100-v)/100;
-  const head=`KD(9,3,3) ${KD_TF}分K`;g.fillStyle='#8b93a3';g.fillText(head,x0,F(11));
+  // 日 KD（monitor._kd_ref：前一天為止的日 K + 今天盤中這一根）寫在標題後面；只顯示、不影響訊號
+  const dy=o.day,dayTxt=dy?` · 日 K${dy.k.toFixed(0)}/D${dy.d.toFixed(0)}${dy.zone?'・'+dy.zone:''}${dy.cross?'・'+dy.cross:''}`:'';
+  const head=`KD(9,3,3) ${KD_TF}分K${dayTxt}`;g.fillStyle='#8b93a3';g.fillText(head,x0,F(11));
   if(!pts.length){g.fillText('等待分時資料…',x0+g.measureText(head).width+F(10),F(11));return;}
   // 超買 / 超賣區與格線
   g.fillStyle='rgba(255,77,79,.07)';g.fillRect(x0,Y(100),x1-x0,Y(80)-Y(100));g.fillStyle='rgba(46,204,113,.07)';g.fillRect(x0,Y(20),x1-x0,Y(0)-Y(20));
@@ -672,16 +674,16 @@ function drawKD(c,o){if(!c)return;
   if(Math.abs(yk-yd)<F(12)){const mid=(yk+yd)/2;if(last.k>=last.d){yk=mid-F(6);yd=mid+F(6);}else{yk=mid+F(6);yd=mid-F(6);}}
   const clampY=y=>Math.min(H-F(2),Math.max(F(10),y));
   g.fillStyle='#4c8dff';g.fillText('K '+last.k.toFixed(0),x1+F(4),clampY(yk));g.fillStyle='#f5a623';g.fillText('D '+last.d.toFixed(0),x1+F(44),clampY(yd));
-  const zone=last.k>=80?'高檔（K≥80）':last.k<=20?'低檔（K≤20）':'';
+  const zone=last.k>=80?`${KD_TF}分K 高檔（K≥80）`:last.k<=20?`${KD_TF}分K 低檔（K≤20）`:'';   // 標明是分 K 的，跟標題裡的日 KD 分開
   if(zone){g.fillStyle=last.k>=80?'#ff4d4f':'#2ecc71';g.fillText(zone,x0+g.measureText(head).width+F(10),F(11));}
 }
 function drawAll(){if(!LIVE||!LIVE.quotes)return;const ev=STATE&&STATE.latest[CUR];
   for(const [k,id,tid,nm] of [['t00','jb-tse','t-tse','加權'],['o00','jb-otc','t-otc','櫃買']]){const ix=LIVE.index[k];const s=LIVE.index_series[k]||[];
     $(tid).innerHTML=`${nm} <b class="num ${cls(ix?.chg)}">${ix?f(ix.ref,0):'-'} ${ix?chgTxt(ix.ref,ix.y,0):''}</b>${LIVE.index_stream?'':' <span class="small muted">(MIS 取樣)</span>'}`;
-    drawJB($(id),{series:s,y:ix?.y,last:ix?.ref,stock:false});drawKD($(id.replace('jb-','kd-')),{series:s,stock:false});}
+    drawJB($(id),{series:s,y:ix?.y,last:ix?.ref,stock:false});drawKD($(id.replace('jb-','kd-')),{series:s,stock:false,day:k==='t00'?ev?.info?.kd?.idx_day:null});}
   const q=LIVE.quotes[CUR];const s=LIVE.series[CUR]||[];
   $('t-stk').innerHTML=`${CUR} ${esc(q?.name||ev?.name||'')} <b class="num ${cls(q?.chg_pct)}${q?limCls(CUR,q.ref):''}">${q?fp(q.ref):'-'} ${q?chgTxt(q.ref,q.y,dec(q.ref)):''}</b> <span class="small muted">— 價 · <span style="color:var(--vwap)">VWAP</span> · ${LIVE.shioaji?'逐筆分K':'MIS 取樣'} · 線：<span style="color:#9aa4b2">壓/撐</span>＝要先測試的價位、<span class="dn">空進</span>/<span class="up">多進</span>＝測試失敗後才掛的進場價、<span style="color:var(--warn)">損</span>、T1/T2</span>`;
-  drawJB($('jb-stk'),{series:s,y:q?.y,last:q?.ref,stock:true,plan:ev?.plan,side:activeSide(ev)});drawKD($('kd-stk'),{series:s,stock:true});}
+  drawJB($('jb-stk'),{series:s,y:q?.y,last:q?.ref,stock:true,plan:ev?.plan,side:activeSide(ev)});drawKD($('kd-stk'),{series:s,stock:true,day:ev?.info?.kd?.stk_day});}
 window.addEventListener('resize',()=>{drawAll();drawChart();});
 
 // ---------------------------------------------------------------- 即時區（10 秒）
@@ -875,7 +877,7 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
   const sp=(sg.space?`<span class="d space" title="以前的「空間過濾」：實盤和 69.9 萬個回測訊號都顯示擋掉的並沒有比較差，所以只提醒、不擋">📏 空間參考：${esc(sg.space.text)}（只提醒，不擋訊號）</span>`:'')
     // 環境組合：這筆符合哪幾種實盤贏過的環境（env_combos.py）。重複 / 追價只提醒（ⓘ），逆勢照擋（11/24 復盤定案，monitor.REF_ONLY）
     +(sg.env_txt&&sg.env_txt.length?`<span class="d env" title="實盤 11/10–11/18 的 90 筆裡贏最多的環境組合；大樣本沒有重現，抽樣誤差大">✅ 環境符合：${sg.env_txt.map(esc).join('；')}</span>`:'')
-    +(sg.refs||[]).map(r=>`<span class="d space" title="只提醒、不擋（重複、追價：全期驗證擋了沒有比較好；恐慌升溫、護盤拉抬）">ⓘ ${esc(r.kind)}參考：${esc(r.text)}</span>`).join('');
+    +(sg.refs||[]).map(r=>`<span class="d space" title="只提醒、不擋（重複、追價：全期驗證擋了沒有比較好；恐慌升溫、護盤拉抬；KD：還沒驗證，先記錄）">ⓘ ${esc(r.kind)}參考：${esc(r.text)}</span>`).join('');
   el.innerHTML=(waiting
     ?`<span class="h">▶ 建議${esc(sg.label)}：掛</span><span class="zone">${zs}</span>
     <span class="d">現價 <b>${fp(sg.now)}</b> 已${sg.side==='short'?'殺低':'追高'}，等回進場區再進（20 分鐘沒回就取消）· 停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · ${rr} · ${esc(sg.since)} 起</span>

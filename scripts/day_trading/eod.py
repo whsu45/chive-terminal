@@ -58,7 +58,7 @@ _OTHER = (
     (r"買單牆.*仍掛", "買單牆補單", 1), (r"賣單牆.*仍掛", "賣單牆補單", -1),
     (r"認購權證今日中位跌幅", "權證多方被洗出", 0), (r"認購權證今日中位漲幅", "權證普遍上漲", 0),
 )
-_NOT_ALERT = re.compile(r"逾時|記輸|記贏|未成交|— 平|模型假設|過濾驗證|撤單驗證|離開五檔|訊號取消")
+_NOT_ALERT = re.compile(r"逾時|記輸|記贏|未成交|— 平|模型假設|過濾驗證|撤單驗證|離開五檔|訊號取消|^⏸ ")   # ⏸ 開頭 = 被擋的訊號
 
 _cache = {}
 
@@ -140,7 +140,7 @@ def series(rows):
 
 _SIG_KEYS = ("code", "name", "time", "side", "label", "alert_px", "zone", "price", "stop", "t1", "score_stop", "score_tgt", "verdict", "exit",
              "exit_px", "net_pct", "mae_ticks", "mfe_ticks", "fill_min", "first_stop_min", "first_t1_min", "ret_30m", "why", "blocked",
-             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src", "run5", "run5_tk", "space", "env", "refs", "filters")
+             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src", "run5", "run5_tk", "space", "env", "refs", "filters", "kd")
 
 CHASE_PCT, CHASE_TICKS = 0.5, 2        # 跟 monitor.CHASE_* 一致：確認前 5 分鐘已順向走這麼多算「追價」
 # 追價的訊號再依「當時離漲跌停多遠」分三段（順向漲跌幅：做多看漲幅、做空看跌幅；漲跌停是 10%）。
@@ -414,7 +414,7 @@ def direction(rows, horizon=HORIZON, edge=EDGE):
 def alert_kind(r):
     """警示 → (種類, 預期方向)；不是警示（訊號結案訊息等）回 (None, 0)。"""
     t, text = r.get("type") or "其他", r.get("text") or ""
-    if t in ("建議做空", "建議做多") or "過濾" in t or t == "掛單成交":
+    if t in ("建議做空", "建議做多", "掛單成交", "恐慌暫停") or "過濾" in t:
         return None, 0                   # 訊號本身在第 2、3 塊看
     if t != "其他":
         return t, ALERT_DIR.get(t, 0)

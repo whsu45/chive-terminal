@@ -108,6 +108,67 @@ def daily_snapshot(rows):
     return out
 
 
+def kd(hlc, n=9):
+    """
+    KD(9,3,3)：RSV =（收 − 最近 n 根最低）÷（最近 n 根最高 − 最低）× 100（不足 n 根用現有的），
+    K = 前一個 K × 2/3 + RSV × 1/3，D = 前一個 D × 2/3 + K × 1/3，從 50 起算。跟儀表板的 KD 圖（index.html kdCalc）同一套算法。
+    hlc：[(高, 低, 收)]，舊到新。回 [(K, D)]。
+    """
+    k = d = 50.0
+    out = []
+    for i, (h, l, c) in enumerate(hlc):
+        win = hlc[max(0, i - n + 1): i + 1]
+        hh, ll = max(x[0] for x in win), min(x[1] for x in win)
+        rsv = (c - ll) / (hh - ll) * 100 if hh > ll else 50.0
+        k = k * 2 / 3 + rsv / 3
+        d = d * 2 / 3 + k / 3
+        out.append((k, d))
+    return out
+
+
+def kd_state(hlc, n=9):
+    """最後一根的 KD：{k, d, cross（最後一根剛發生的黃金交叉 / 死亡交叉）, zone（K≥80 高檔 / K≤20 低檔）, bars}；沒資料回 None。"""
+    s = kd(hlc, n)
+    if not s:
+        return None
+    k, d = s[-1]
+    cross = None
+    if len(s) >= 2:
+        pk, pd = s[-2]
+        if pk <= pd and k > d:
+            cross = "黃金交叉"
+        elif pk >= pd and k < d:
+            cross = "死亡交叉"
+    return {"k": round(k, 1), "d": round(d, 1), "cross": cross, "zone": "高檔" if k >= 80 else ("低檔" if k <= 20 else None), "bars": len(s)}
+
+
+def tf_hlc(series, tf=5):
+    """
+    盤中 1 分 K → tf 分 K 的 [(高, 低, 收)]（09:00 起每 tf 分鐘一根，最後一根是還沒走完的，跟儀表板 KD 圖一樣）。
+    series：個股 [[HH:MM, 開, 高, 低, 收, ...]]，或指數 [[HH:MM, 值]]（指數每分鐘只有一個取樣值，高低用它代替）。
+    """
+    out, key = [], None
+    for row in series or []:
+        try:
+            hh, mm = str(row[0]).split(":")[:2]
+            m = (int(hh) - 9) * 60 + int(mm)
+        except (ValueError, IndexError):
+            continue
+        if not 0 <= m <= 270:
+            continue
+        h, l, c = (row[2], row[3], row[4]) if len(row) >= 5 else (row[1], row[1], row[1])
+        if h is None or l is None or c is None:
+            continue
+        b = m // tf
+        if out and key == b:
+            oh, ol, _ = out[-1]
+            out[-1] = (max(oh, h), min(ol, l), c)
+        else:
+            out.append((h, l, c))
+            key = b
+    return out
+
+
 def range_position(p, h, l):
     if p is None or h is None or l is None or h == l:
         return None

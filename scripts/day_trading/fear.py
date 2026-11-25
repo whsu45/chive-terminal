@@ -39,6 +39,9 @@ import http_client as http
 
 DAILY_URL = "https://www.taifex.com.tw/file/taifex/Dailydownload/vix/log2data/{ym}new.txt"
 HIST = os.path.join(CACHE_DIR, "vix_daily.json")
+# 今天最後一筆盤中即時值：收盤後（13:31 起不再查永豐）到期交所公布今天收盤前，頂端顯示它，不要退回昨天的收盤。
+# 2026-11-25：盤中 VIX 57～60 極度恐慌，收盤後頂端卻顯示昨收 26.2「正常」。monitor 收盤後重開也讀得到。
+LIVE_LAST = os.path.join(CACHE_DIR, "vix_live_last.json")
 EXTREME = 40.0           # 前一天收盤 ≥ 這個 → 極度恐慌：隔日沖倒貨、恐慌開低做多都不做
 SURGE_PCT = 10.0         # 盤中比昨收高這麼多 % → 恐慌升溫中（做多訊號寫參考）
 # 盤中暫停（2026-11-24）：VIX（盤中即時值，沒有就用昨收）≥ 這個 → 盤中支撐壓力訊號全部不發（monitor ⏸ 恐慌暫停，照樣追蹤假設結果）。
@@ -138,13 +141,35 @@ def backfill_shioaji(api, since="2024-01-01"):
 
 
 def live_value(api):
-    """永豐即時值（snapshots）；拿不到回 None。"""
+    """永豐即時值（snapshots）；拿不到回 None。拿到就記成「今天最後一筆」（LIVE_LAST）。"""
     try:
         c = api.Contracts.Indexs.TAIFEX["TAIWANVIX"]
         s = api.snapshots([c])
-        return float(s[0].close) if s and s[0].close else None
+        v = float(s[0].close) if s and s[0].close else None
     except Exception:
         return None
+    if v is not None:
+        now = dt.datetime.now()
+        try:
+            tmp = LIVE_LAST + ".tmp"
+            with open(tmp, "w") as f:
+                json.dump({"date": now.date().isoformat(), "time": now.strftime("%H:%M:%S"), "value": v}, f)
+            os.replace(tmp, LIVE_LAST)
+        except Exception:
+            pass
+    return v
+
+
+def _live_last(day):
+    """day 那天最後一筆盤中即時值 → (值, HH:MM)；沒有回 (None, None)。"""
+    try:
+        with open(LIVE_LAST) as f:
+            j = json.load(f)
+        if j.get("date") == day and j.get("value") is not None:
+            return float(j["value"]), str(j.get("time") or "")[:5]
+    except Exception:
+        pass
+    return None, None
 
 
 def state(now=None, api=None, live=None):
@@ -156,8 +181,11 @@ def state(now=None, api=None, live=None):
     prev = h[past[-1]] if past else None
     prev_date = past[-1] if past else None
     cur = live if live is not None else (live_value(api) if api is not None else None)
+    last_at = None
     if cur is None and today in h:
         cur = h[today]                                  # 收盤後：今天的收盤已經公布
+    elif cur is None and now.strftime("%H:%M") >= "13:30":
+        cur, last_at = _live_last(today)                # 收盤後、期交所還沒公布：用今天最後一筆盤中即時值
     ref = cur if cur is not None else prev
     vals = sorted(h.values())
     pct = (sum(1 for x in vals if x <= ref) / len(vals) * 100) if (ref is not None and len(vals) >= 200) else None
@@ -167,7 +195,8 @@ def state(now=None, api=None, live=None):
     pause = bool(INTRADAY_PAUSE) and ref is not None and ref >= INTRADAY_PAUSE
     out = {"now": cur, "prev": prev, "prev_date": prev_date, "chg_pct": round(chg, 2) if chg is not None else None,
            "level": level(ref), "pct": round(pct) if pct is not None else None, "hist_days": len(vals),
-           "extreme": extreme, "surge": surge, "pause": pause, "src": "shioaji" if ((api is not None or live is not None) and cur is not None and today not in h) else "taifex",
+           "extreme": extreme, "surge": surge, "pause": pause, "last_at": last_at,
+           "src": "shioaji_last" if last_at else ("shioaji" if ((api is not None or live is not None) and cur is not None and today not in h) else "taifex"),
            "allow_nds": not extreme, "allow_panic_long": not extreme, "time": now.strftime("%H:%M:%S")}
     out["text"] = describe(out)
     return out
@@ -181,6 +210,8 @@ def describe(s):
     if s.get("pct") is not None:
         t += f"，2024 年以來第 {s['pct']} 百分位"
     t += "）"
+    if s.get("last_at"):
+        t += f"，今天 {s['last_at']} 最後一筆盤中即時值（期交所收盤還沒公布）"
     if s.get("now") is not None and s.get("prev"):
         t += f"，昨收 {s['prev']:.2f}（{s['chg_pct']:+.1f}%）"
     elif s.get("prev"):

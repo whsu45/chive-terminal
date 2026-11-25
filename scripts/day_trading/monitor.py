@@ -711,6 +711,7 @@ class Monitor:
         self.peer_hist = {c: {} for c in codes}     # code -> {peer: [[epoch, chg_pct], ...]}，給 model 算族群 10 分鐘趨勢
         self.signals = {}                            # code -> 目前的「建議做空/做多」訊號（快迴圈每 3 秒檢查進場確認條件）
         self.sig_block = {}                          # code -> 最近一次被逆勢過濾擋掉的訊號（照樣追蹤假設進場的結果，驗證過濾有沒有擋對）
+        self._idx_day = {"date": None, "hlc": None, "ts": 0}   # 加權指數日 K（前一天為止），給大盤日 KD（_kd_ref）
         self.walls = {}                              # code -> {"bid": 牆, "ask": 牆}：五檔裡特別大的那一檔，追蹤被吃/被撤/補單判真假
         self._fs_cache = {}                          # code -> (epoch, 每分鐘主力/散戶累積淨額序列)，10 秒重算一次給「大戶散戶」圖
         self.pending = []                            # 警示結果追蹤：每則 ⚠/▶ 記下當時狀態，10/30 分鐘後補上漲跌，寫 logs/alert_outcomes.jsonl
@@ -1045,6 +1046,10 @@ class Monitor:
             wq = self.wq.get(c) if (self.fast_thread and c in self.wq) else self._warrant_snapshot(c, q, now, max(1, round(self.interval / 60)))
             ctx = self._ctx(c, now)
             ev = model.evaluate(d, q, idx, peers_q, flow, self.samples[c], now, warrants=wq, ctx=ctx)
+            try:
+                ev["info"]["kd"] = self._kd_ref(c, q, ctx.get("bars"), (ctx.get("idx_series") or {}).get("t00"))
+            except Exception as e:
+                print(f"[{now:%H:%M:%S}] {c} KD 計算失敗：{str(e)[:100]}")
             if wq and wq.get("alerts"):
                 ev["warnings"] = wq["alerts"] + ev["warnings"]
             try:
@@ -1524,6 +1529,62 @@ class Monitor:
                 "range_pos": ((p - q["l"]) / (q["h"] - q["l"])) if (p and q.get("h") and q.get("l") and q["h"] != q["l"]) else None,
                 "big_net_10m": big_10, "small_net_pct": inf.get("small_net_pct"), "book_imb": (bv - av) / (bv + av) if bv + av else None,
                 "vol_pace": inf.get("vol_pace"), "inzone": inzone, "run5": run5}
+    # ──────────────────────────────────────────────── KD 參考（2026-11-25 加，使用者要求）
+    # 大盤（加權）與個股的 KD(9,3,3)：盤中 5 分 K（跟江波圖下面的 KD 圖同一套算法）與日 KD（前一天為止 + 今天盤中這一根）。
+    # 只顯示、寫進訊號紀錄（sig["kd"] → signal_outcomes），不加分、不擋訊號：還沒驗證 KD 對這套訊號有沒有用，
+    # 照「過濾要先證明有效」的原則先當參考，之後用 signal_outcomes 的 kd 欄位分組比勝率再決定。
+    IDX_DAY_RETRY = 600     # 加權日 K 抓失敗，隔多久再試
+
+    def _idx_ser(self, k):
+        """指數分 K [[HH:MM, 值]]：有永豐指數串流用串流，否則用 MIS 取樣組的。"""
+        if self.index_stream:
+            return self.flow_src.index_series(k)
+        return [[kk, v[3]] for kk, v in sorted((self.idx_bars.get(k) or {}).items()) if kk != "_v"]
+
+    def _idx_day_hlc(self):
+        """加權指數前一天為止的日 K [(高, 低, 收)]（證交所 MI_5MINS_HIST，一天抓一次）；抓不到回 None。"""
+        today = dt.date.today()
+        st = self._idx_day
+        if st["date"] == today and st["hlc"] is not None:
+            return st["hlc"]
+        if st["date"] == today and time.time() - st["ts"] < self.IDX_DAY_RETRY:
+            return None
+        st.update(date=today, ts=time.time(), hlc=None)
+        try:
+            import src_twse
+            rows = src_twse.taiex_ohlc(today, months=2)
+            st["hlc"] = [(h, l, c) for _, _, h, l, c in rows] or None
+        except Exception as e:
+            print(f"[KD] 加權日 K 抓不到，{self.IDX_DAY_RETRY // 60} 分鐘後再試：{str(e)[:80]}")
+        return st["hlc"]
+
+    def _kd_ref(self, c, q, bars, idx_ser):
+        """大盤與個股的 KD：{idx_5m, idx_day, stk_5m, stk_day}，每個是 indicators.kd_state 的結果（或 None）。"""
+        out = {}
+        today = dt.date.today().isoformat()
+        out["stk_5m"] = I.kd_state(I.tf_hlc(bars, 5)) if bars else None
+        hist = [(r["h"], r["l"], r["c"]) for r in ((self.daily.get(c) or {}).get("hist_tail") or [])
+                if r.get("h") and r.get("l") and r.get("c") and str(r.get("date", "")) < today]
+        p, h, l = q.get("ref"), q.get("h"), q.get("l")
+        out["stk_day"] = I.kd_state(hist + ([(h, l, p)] if (p and h and l) else [])) if hist else None
+        out["idx_5m"] = I.kd_state(I.tf_hlc(idx_ser, 5)) if idx_ser else None
+        ih = self._idx_day_hlc()
+        vals = [v for _, v in (idx_ser or []) if v]
+        out["idx_day"] = I.kd_state(ih + ([(max(vals), min(vals), vals[-1])] if vals else [])) if ih else None
+        return out
+
+    @staticmethod
+    def _kd_text(kdv):
+        """KD 參考的一行字：加權 日 K/D、5 分 K/D；個股 同上（高檔 / 低檔 / 剛交叉另外標）。"""
+        def one(x):
+            if not x:
+                return "-"
+            tag = "".join(f"・{t}" for t in (x.get("zone"), x.get("cross")) if t)
+            return f"K{x['k']:.0f}/D{x['d']:.0f}{tag}"
+        kdv = kdv or {}
+        return (f"加權 日 {one(kdv.get('idx_day'))}、5分 {one(kdv.get('idx_5m'))}；"
+                f"個股 日 {one(kdv.get('stk_day'))}、5分 {one(kdv.get('stk_5m'))}（只顯示、未驗證）")
+
     REPEAT_TICKS = 3        # 進場區相差這麼多 tick 以內算「同一個價位」
 
     def _repeat_block(self, c, side, lo, hi, q, tick):
@@ -2006,6 +2067,11 @@ class Monitor:
                 sig["support_pull"] = {k: pl.get(k) for k in ("time", "r_hw", "r_tx", "r_otc")}
                 sig.setdefault("refs", []).append({"kind": "護盤拉抬", "text": (f"{pl['time'][:5]} 權值股突然被拉（加權 5 分鐘 {pl['r_tx']:+.1f}%）："
                     + ("護盤期這種拉抬 7 次裡 6 次收盤更低，追多小心" if side == "long" else "可能再被拉一段，停損放寬或等拉完再進；護盤期 7 次裡 6 次收盤更低"))})
+            try:
+                sig["kd"] = self._kd_ref(c, q, bars, self._idx_ser("t00"))
+                sig.setdefault("refs", []).append({"kind": "KD", "text": self._kd_text(sig["kd"])})
+            except Exception as e:
+                print(f"[{now:%H:%M:%S}] {c} KD 參考失敗：{str(e)[:100]}")
             if blk:
                 bkey = ("block",) + key            # 被擋的另外去重：趨勢轉回來後同一個進場區還能正常發
                 if now.timestamp() - self._sig_seen.get(bkey, 0) < 900:
@@ -2085,12 +2151,14 @@ class Monitor:
         return None
 
     BLOCK_TYPES = ("逆勢過濾", "急漲過濾", "空間過濾", "重複過濾", "追價過濾", "環境過濾", "恐慌暫停")     # 被擋掉、但照樣追蹤假設進場結果的訊號
+    # 每一種 BLOCK_TYPES 都要在 ALERT_TYPES 有對應的樣式，不然 ⏸ 提醒會被歸成「其他」、不會寫進 signal_outcomes
+    # （2026-11-25：恐慌暫停漏了，當天 13 筆被擋的訊號沒有追蹤結果，復盤顯示被擋 0 筆；之後補回）
     ALERT_TYPES = exhaust.alert_types() + combo.alert_types() + [("大盤急漲", r"^⚠ 大盤急漲"), ("大盤急跌", r"^⚠ 大盤急跌"),
                    ("認購權證急漲", r"認購權證.*急漲"), ("認購權證急跌", r"認購權證.*急跌"), ("認售權證急漲", r"認售權證.*急漲"),
                    ("權證爆量", r"權證.*成交.*張"), ("主力急回補", r"主力 \d+ 分鐘內回補"), ("主力急出", r"主力 \d+ 分鐘內出掉"),
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
-                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("追價過濾", r"⏸ 追價過濾"), ("環境過濾", r"⏸ 環境過濾"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
+                   ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("追價過濾", r"⏸ 追價過濾"), ("環境過濾", r"⏸ 環境過濾"), ("恐慌暫停", r"⏸ 恐慌暫停"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
                    ("掛單薄", r"^⚠ 掛單薄"), ("買盤竭盡", r"^➕ 買盤竭盡"), ("賣盤竭盡", r"^➕ 賣盤竭盡")]
 
     @classmethod
@@ -2140,7 +2208,7 @@ class Monitor:
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs", "filters", "fear", "support_pull")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs", "filters", "fear", "support_pull", "kd")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -2354,7 +2422,7 @@ class Monitor:
                **score,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors"), "exh": sg.get("exh"), "exh_lit": sg.get("exh_lit"),
-               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs"), "filters": sg.get("filters"), "fear": sg.get("fear"), "support_pull": sg.get("support_pull")}
+               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs"), "filters": sg.get("filters"), "fear": sg.get("fear"), "support_pull": sg.get("support_pull"), "kd": sg.get("kd")}
         if sg.get("blocked"):
             out.update(blocked=True, block_reason=sg.get("block_reason"), block_kind=sg.get("block_kind"))
         if sg.get("cancelled"):

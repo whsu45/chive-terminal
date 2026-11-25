@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-25T05:28:11.323Z",
+ "generatedAt": "2026-11-25T08:29:58.120Z",
  "quote_date": "2026-11-25",
  "method": {
   "strongPool": 10,
@@ -14,90 +14,61 @@
   "strong": 10,
   "weak": 10
  },
- "strong": [
-  {
-   "code": "2379",
-   "name": "瑞昱",
-   "market": "上市",
-   "close": 701,
-   "pct": 1.01,
-   "volume": 4366,
-   "themes": [
-    "IC 設計概念股"
-   ],
-   "asOf": "2026-11-24",
-   "verdict": "買進",
-   "verdictKey": "BUY",
-   "score": 1.7,
-   "trend": "REBOUND",
-   "reasons": [
-    "今日 +1.01%，量 4,366 張；所屬族群：IC 設計概念股（平均 -6.29%）",
-    "策略綜合判斷「買進」（分數 +1.70）",
-    "今日觸發「大帶寬回測下軌＋主力吃貨」：帶寬 22.6%（≥20% 區間震盪型）｜本股歷史 2 次，勝率 50%、平均每筆 +4.75%；跨 42 檔驗證 338 次，勝率 42%、PF 1.23",
-    "1 日前觸發「大帶寬回測下軌＋主力吃貨」：帶寬 22.7%（≥20% 區間震盪型）｜本股歷史 2 次，勝率 50%、平均每筆 +4.75%；跨 42 檔驗證 338 次，勝率 42%、PF 1.23",
-    "⚠ 同時有反向訊號：葛蘭碧⑦ 反彈無力碰不到月線",
-    "反彈架構：月線下彎且股價在月線下（空頭，反彈是逃命點）",
-    "主力(法人)買＋月線下彎：低檔抗跌（近 10 日 +1,987 張）"
-   ],
-   "confidence": 1,
-   "confidenceLabel": "中"
-  }
- ],
+ "strong": [],
  "weak": [
   {
-   "code": "4526",
-   "name": "東台",
+   "code": "2454",
+   "name": "聯發科",
    "market": "上市",
-   "close": 33.35,
-   "pct": -9.99,
-   "volume": 1642,
+   "close": 3645,
+   "pct": -10,
+   "volume": 21737,
    "themes": [
-    "工具機概念股"
+    "CPU 概念股",
+    "IC 設計概念股",
+    "ASIC 概念股"
    ],
-   "asOf": "2026-11-24",
+   "asOf": "2026-11-25",
    "verdict": "強力賣出",
    "verdictKey": "STRONG_SELL",
-   "score": -7.1,
+   "score": -4.85,
    "trend": "REBOUND",
    "reasons": [
-    "今日 -9.99%，量 1,642 張；所屬族群：工具機概念股（平均 -6.99%）",
-    "策略綜合判斷「強力賣出」（分數 -7.10）",
-    "今日觸發「葛蘭碧⑦ 反彈無力碰不到月線」：月線下彎｜本股歷史 31 次，10 日後下跌機率 48%（基準 47%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
-    "今日觸發「軋空衰竭右側（資減券減＋破月線）」：20 日內券資比高達 31.8%｜本股歷史未曾觸發；跨 42 檔 10 日後下跌機率 44%（基準 45%）",
-    "1 日前觸發「軋空衰竭右側（資減券減＋破月線）」：20 日內券資比高達 31.8%｜本股歷史未曾觸發；跨 42 檔 10 日後下跌機率 44%（基準 45%）",
-    "⚠ 同時有反向訊號：大帶寬回測下軌＋主力吃貨、大帶寬回測下軌＋主力吃貨",
+    "今日 -10.00%，量 21,737 張；所屬族群：CPU 概念股（平均 -6.26%）、IC 設計概念股（平均 -6.3%）、ASIC 概念股（平均 -9.36%）",
+    "策略綜合判斷「強力賣出」（分數 -4.85）",
+    "今日觸發「葛蘭碧⑤ 跌破下彎月線」：月線扣高轉下彎｜本股歷史 28 次，10 日後下跌機率 64%（基準 44%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
+    "2 日前觸發「葛蘭碧⑦ 反彈無力碰不到月線」：月線下彎｜本股歷史 33 次，10 日後下跌機率 39%（基準 44%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
     "反彈架構：月線下彎且股價在月線下（空頭，反彈是逃命點）",
-    "主力(法人)賣＋月線下彎：多殺多（近 10 日 -2,637 張）"
+    "主力(法人)賣＋月線下彎：多殺多（近 10 日 -1,459 張）"
    ],
-   "confidence": 1,
-   "confidenceLabel": "中"
+   "confidence": 2,
+   "confidenceLabel": "高"
   },
   {
-   "code": "5475",
-   "name": "德宏",
-   "market": "上櫃",
-   "close": 140,
-   "pct": -9.97,
-   "volume": 6157,
+   "code": "3149",
+   "name": "正達",
+   "market": "上市",
+   "close": 52.3,
+   "pct": -9.98,
+   "volume": 4118,
    "themes": [
-    "CCL 概念股"
+    "FOPLP 概念股"
    ],
-   "asOf": "2026-11-24",
-   "verdict": "強力賣出",
-   "verdictKey": "STRONG_SELL",
-   "score": -4.8,
+   "asOf": "2026-11-25",
+   "verdict": "賣出",
+   "verdictKey": "SELL",
+   "score": -3.45,
    "trend": "REBOUND",
    "reasons": [
-    "今日 -9.97%，量 6,157 張；所屬族群：CCL 概念股（平均 -7.63%）",
-    "策略綜合判斷「強力賣出」（分數 -4.80）",
-    "今日觸發「葛蘭碧⑦ 反彈無力碰不到月線」：月線下彎｜本股歷史 32 次，10 日後下跌機率 47%（基準 43%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
-    "1 日前觸發「葛蘭碧⑦ 反彈無力碰不到月線」：月線下彎｜本股歷史 32 次，10 日後下跌機率 47%（基準 43%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
-    "2 日前觸發「扣抵高點月線即將下彎」：波段高點 237.41（2026-10-21）後第 20 天未再創高｜本股歷史 1 次，10 日後下跌機率 100%（基準 43%）；跨 42 檔 10 日後下跌機率 47%（基準 45%）",
+    "今日 -9.98%，量 4,118 張；所屬族群：FOPLP 概念股（平均 -7.68%）",
+    "策略綜合判斷「賣出」（分數 -3.45）",
+    "1 日前觸發「葛蘭碧⑦ 反彈無力碰不到月線」：月線下彎｜本股歷史 39 次，10 日後下跌機率 54%（基準 49%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
+    "2 日前觸發「葛蘭碧⑦ 反彈無力碰不到月線」：月線下彎｜本股歷史 39 次，10 日後下跌機率 54%（基準 49%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
     "反彈架構：月線下彎且股價在月線下（空頭，反彈是逃命點）",
-    "主力(法人)賣＋月線下彎：多殺多（近 10 日 -506 張）"
+    "主力(法人)賣＋月線下彎：多殺多（近 10 日 -138 張）"
    ],
-   "confidence": 1,
-   "confidenceLabel": "中"
+   "confidence": 2,
+   "confidenceLabel": "高"
   },
   {
    "code": "8227",
@@ -105,22 +76,22 @@
    "market": "上櫃",
    "close": 194,
    "pct": -9.98,
-   "volume": 2044,
+   "volume": 2050,
    "themes": [
     "ASIC 概念股"
    ],
-   "asOf": "2026-11-24",
-   "verdict": "強力賣出",
-   "verdictKey": "STRONG_SELL",
-   "score": -4.1,
+   "asOf": "2026-11-25",
+   "verdict": "賣出",
+   "verdictKey": "SELL",
+   "score": -3.45,
    "trend": "REBOUND",
    "reasons": [
-    "今日 -9.98%，量 2,044 張；所屬族群：ASIC 概念股（平均 -9.43%）",
-    "策略綜合判斷「強力賣出」（分數 -4.10）",
-    "今日觸發「葛蘭碧⑦ 反彈無力碰不到月線」：月線下彎｜本股歷史 46 次，10 日後下跌機率 52%（基準 55%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
+    "今日 -9.98%，量 2,050 張；所屬族群：ASIC 概念股（平均 -9.36%）",
+    "策略綜合判斷「賣出」（分數 -3.45）",
     "1 日前觸發「葛蘭碧⑦ 反彈無力碰不到月線」：月線下彎｜本股歷史 46 次，10 日後下跌機率 52%（基準 55%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
+    "2 日前觸發「葛蘭碧⑦ 反彈無力碰不到月線」：月線下彎｜本股歷史 46 次，10 日後下跌機率 52%（基準 55%）；跨 42 檔 10 日後下跌機率 45%（基準 45%）",
     "反彈架構：月線下彎且股價在月線下（空頭，反彈是逃命點）",
-    "主力(法人)賣＋月線下彎：多殺多（近 10 日 -1,350 張）"
+    "主力(法人)賣＋月線下彎：多殺多（近 10 日 -890 張）"
    ],
    "confidence": 0,
    "confidenceLabel": "低"
@@ -133,33 +104,33 @@
    "market": "上市",
    "close": 311,
    "pct": 9.89,
-   "volume": 4826,
+   "volume": 4832,
    "themes": [
     "資安概念股"
    ],
-   "asOf": "2026-11-24",
+   "asOf": "2026-11-25",
    "verdict": "觀望",
    "verdictKey": "HOLD",
-   "score": 0.8,
+   "score": 0.3,
    "trend": "RECOVERY",
-   "confidence": 1,
-   "confidenceLabel": "中"
+   "confidence": 0,
+   "confidenceLabel": "低"
   },
   {
    "code": "6584",
    "name": "南俊國際",
    "market": "上櫃",
-   "close": 267.5,
-   "pct": 5.73,
-   "volume": 1570,
+   "close": 268,
+   "pct": 5.93,
+   "volume": 1667,
    "themes": [
     "伺服器機殼概念股",
     "輝達概念股"
    ],
-   "asOf": "2026-11-24",
-   "verdict": "觀望",
-   "verdictKey": "HOLD",
-   "score": -0.9,
+   "asOf": "2026-11-25",
+   "verdict": "賣出",
+   "verdictKey": "SELL",
+   "score": -3.75,
    "trend": "REBOUND",
    "confidence": 1,
    "confidenceLabel": "中"
@@ -168,16 +139,16 @@
    "code": "2368",
    "name": "金像電",
    "market": "上市",
-   "close": 908,
-   "pct": 5.58,
-   "volume": 26724,
+   "close": 905,
+   "pct": 5.23,
+   "volume": 27215,
    "themes": [
     "PCB 概念股"
    ],
-   "asOf": "2026-11-24",
+   "asOf": "2026-11-25",
    "verdict": "賣出",
    "verdictKey": "SELL",
-   "score": -2.1,
+   "score": -2.45,
    "trend": "REBOUND",
    "confidence": 0,
    "confidenceLabel": "低"
@@ -186,53 +157,16 @@
    "code": "2059",
    "name": "川湖",
    "market": "上市",
-   "close": 6525,
-   "pct": 5.24,
-   "volume": 1461,
+   "close": 6505,
+   "pct": 4.92,
+   "volume": 1515,
    "themes": [
     "伺服器機殼概念股"
    ],
-   "asOf": "2026-11-24",
-   "verdict": "觀望",
-   "verdictKey": "HOLD",
-   "score": -0.2,
-   "trend": "REBOUND",
-   "confidence": 2,
-   "confidenceLabel": "高"
-  },
-  {
-   "code": "6112",
-   "name": "邁達特",
-   "market": "上市",
-   "close": 44.45,
-   "pct": 3.49,
-   "volume": 11883,
-   "themes": [
-    "資安概念股"
-   ],
-   "asOf": "2026-11-24",
+   "asOf": "2026-11-25",
    "verdict": "賣出",
    "verdictKey": "SELL",
-   "score": -1.6,
-   "trend": "REBOUND",
-   "confidence": 1,
-   "confidenceLabel": "中"
-  },
-  {
-   "code": "3653",
-   "name": "健策",
-   "market": "上市",
-   "close": 4185,
-   "pct": 3.33,
-   "volume": 1766,
-   "themes": [
-    "散熱概念股",
-    "CPU 概念股"
-   ],
-   "asOf": "2026-11-24",
-   "verdict": "觀望",
-   "verdictKey": "HOLD",
-   "score": -0.8,
+   "score": -1.75,
    "trend": "REBOUND",
    "confidence": 2,
    "confidenceLabel": "高"
@@ -241,36 +175,18 @@
    "code": "3665",
    "name": "貿聯-KY",
    "market": "上市",
-   "close": 1620,
-   "pct": 3.18,
-   "volume": 10897,
+   "close": 1630,
+   "pct": 3.82,
+   "volume": 11137,
    "themes": [
-    "連接器概念股",
-    "電動車概念股"
+    "電動車概念股",
+    "連接器概念股"
    ],
-   "asOf": "2026-11-24",
+   "asOf": "2026-11-25",
    "verdict": "觀望",
    "verdictKey": "HOLD",
-   "score": 1.1,
+   "score": 0.85,
    "trend": "TRANSITION",
-   "confidence": 2,
-   "confidenceLabel": "高"
-  },
-  {
-   "code": "3691",
-   "name": "碩禾",
-   "market": "上櫃",
-   "close": 94.7,
-   "pct": 3.16,
-   "volume": 9096,
-   "themes": [
-    "太陽能概念股"
-   ],
-   "asOf": "2026-11-24",
-   "verdict": "強力賣出",
-   "verdictKey": "STRONG_SELL",
-   "score": -5.1,
-   "trend": "REBOUND",
    "confidence": 2,
    "confidenceLabel": "高"
   },
@@ -278,35 +194,91 @@
    "code": "6667",
    "name": "信紘科",
    "market": "上櫃",
-   "close": 242,
-   "pct": 2.33,
-   "volume": 1006,
+   "close": 244,
+   "pct": 3.17,
+   "volume": 1083,
    "themes": [
     "半導體設備概念股",
     "廠務概念股"
    ],
-   "asOf": "2026-11-24",
+   "asOf": "2026-11-25",
    "verdict": "賣出",
    "verdictKey": "SELL",
-   "score": -2.1,
+   "score": -1.85,
    "trend": "TRANSITION",
    "confidence": 0,
    "confidenceLabel": "低"
   },
   {
-   "code": "2379",
-   "name": "瑞昱",
+   "code": "6112",
+   "name": "邁達特",
    "market": "上市",
-   "close": 701,
-   "pct": 1.01,
-   "volume": 4366,
+   "close": 44.3,
+   "pct": 3.14,
+   "volume": 12248,
    "themes": [
-    "IC 設計概念股"
+    "資安概念股"
    ],
-   "asOf": "2026-11-24",
-   "verdict": "買進",
-   "verdictKey": "BUY",
-   "score": 1.7,
+   "asOf": "2026-11-25",
+   "verdict": "觀望",
+   "verdictKey": "HOLD",
+   "score": -1.4,
+   "trend": "REBOUND",
+   "confidence": 1,
+   "confidenceLabel": "中"
+  },
+  {
+   "code": "3691",
+   "name": "碩禾",
+   "market": "上櫃",
+   "close": 94.6,
+   "pct": 3.05,
+   "volume": 10051,
+   "themes": [
+    "太陽能概念股"
+   ],
+   "asOf": "2026-11-25",
+   "verdict": "強力賣出",
+   "verdictKey": "STRONG_SELL",
+   "score": -4.25,
+   "trend": "REBOUND",
+   "confidence": 2,
+   "confidenceLabel": "高"
+  },
+  {
+   "code": "3653",
+   "name": "健策",
+   "market": "上市",
+   "close": 4170,
+   "pct": 2.96,
+   "volume": 1827,
+   "themes": [
+    "散熱概念股",
+    "CPU 概念股"
+   ],
+   "asOf": "2026-11-25",
+   "verdict": "賣出",
+   "verdictKey": "SELL",
+   "score": -2.1,
+   "trend": "REBOUND",
+   "confidence": 0,
+   "confidenceLabel": "低"
+  },
+  {
+   "code": "3008",
+   "name": "大立光",
+   "market": "上市",
+   "close": 4025,
+   "pct": 1.13,
+   "volume": 4859,
+   "themes": [
+    "蘋概股",
+    "光學鏡頭概念股"
+   ],
+   "asOf": "2026-11-25",
+   "verdict": "觀望",
+   "verdictKey": "HOLD",
+   "score": -1.4,
    "trend": "REBOUND",
    "confidence": 1,
    "confidenceLabel": "中"

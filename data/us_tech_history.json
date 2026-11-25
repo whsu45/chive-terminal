@@ -1,7 +1,7 @@
 [
  {
   "date": "2026-11-24",
-  "composite": -4.04,
+  "composite": -3.82,
   "sox": -7.88,
   "top3Up": [
    {
@@ -22,14 +22,14 @@
   ],
   "top3Down": [
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": -10.88
-   },
-   {
     "key": "aiserver",
     "title": "AI 伺服器／資料中心硬體",
     "pct": -9.84
+   },
+   {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": -8.69
    },
    {
     "key": "semis",
@@ -37,7 +37,10 @@
     "pct": -7.73
    }
   ],
-  "taiexNext": null
+  "taiexNext": {
+   "date": "2026-11-25",
+   "pct": -7.59
+  }
  },
  {
   "date": "2026-11-23",

@@ -3326,9 +3326,10 @@
   "group": null,
   "days": [
    "2026-11-16",
-   "2026-11-24"
+   "2026-11-24",
+   "2026-11-25"
   ],
-  "launches": 2,
+  "launches": 3,
   "signals": [
    {
     "date": "2026-11-16",
@@ -7039,6 +7040,94 @@
   "group": null,
   "days": [
    "2026-11-24"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3189": {
+  "name": "景碩",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-25"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2408": {
+  "name": "南亞科",
+  "market": "tse",
+  "group": "DRAM原廠",
+  "days": [
+   "2026-11-25"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "8069": {
+  "name": "元太",
+  "market": "otc",
+  "group": null,
+  "days": [
+   "2026-11-25"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3034": {
+  "name": "聯詠",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-25"
+  ],
+  "launches": 2,
+  "signals": [],
+  "notes": []
+ },
+ "1560": {
+  "name": "中砂",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-25"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "1301": {
+  "name": "台塑",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-25"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "4979": {
+  "name": "華星光",
+  "market": "otc",
+  "group": "光通訊",
+  "days": [
+   "2026-11-25"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2303": {
+  "name": "聯電",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-25"
   ],
   "launches": 1,
   "signals": [],

@@ -6,7 +6,7 @@
 ```bash
 cd scripts/day_trading
 python3 monitor.py --web                    # 每天 8:30 用這個：網頁先跑 theme_screener 列多空前 3 與理由，勾選（可自選代號）後才開始監控
-python3 monitor.py 3042 --web               # 本機網頁儀表板 http://127.0.0.1:8770/（盯盤用這個，會自動開瀏覽器）
+python3 monitor.py 3042 --web               # 本機網頁儀表板 http://127.0.0.1:8999/（盯盤用這個，會自動開瀏覽器；--web 後面加數字可換 port）
 python3 monitor.py 3042                     # 純終端輸出，族群自動查 groups.json
 python3 monitor.py 3042 --peers 2484,8081   # 自訂同族群
 python3 monitor.py 3042 7704 --interval 180 # 多檔、估算改三分鐘一次（預設 60 秒）

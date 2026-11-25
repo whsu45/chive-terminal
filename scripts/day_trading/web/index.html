@@ -366,6 +366,15 @@ function gapRule(r){r=r||{};
 function gapCum(c,label,oneDay){if(!c||!c.n)return `<div class="gap-cum muted">${label}：還沒有紀錄（每天 09:05 有開 monitor 才會記）</div>`;
   return `<div class="gap-cum">${label}${oneDay?'':` ${c.days} 天`} ${c.n} 筆：勝率 <b>${f(c.win_rate,0)}%</b>（${c.win} 賺 ${c.loss} 賠）、均賺 ${rvPct(c.avg_win)} 均賠 ${rvPct(c.avg_loss)}、賠率 <b>${c.payoff!=null?f(c.payoff,2):'-'}</b>、每筆 ${rvPct(c.avg,3)}`
     +`${c.avg_open!=null?`（開盤進 ${rvPct(c.avg_open,3)}）`:''}、1 張合計 ${rvAmt(c.pnl_sum)}${c.hit_up?`、碰漲停 ${c.hit_up}`:''}${c.close_up?`、收漲停 ${c.close_up}`:''}</div>`;}
+function gapDt(cd,big){if(!cd||!['B','rec','all','top10'].includes(GAP_G))return '';big=big||5;
+  const one=(c,lab)=>c&&c.n?`${lab} ${c.n} 筆 勝率 <b>${f(c.win_rate,0)}%</b>、每筆 ${rvPct(c.avg,3)}、1 張合計 ${rvAmt(c.pnl_sum)}`:`${lab} 還沒有`;
+  const line=(k,n)=>{const s=cd[k]||{};const a=s.big||{},b=s.small||{};if(!a.n&&!b.n)return '';
+    return `<div class="gap-cum" title="昨天的分點表裡，隔日沖分點買超合計 ≥ 昨量 ${big}% 算大買（權證小哥 11/23：隔日沖大買的隔天落跑賣壓大）。只記錄、不擋，累積夠了再決定">${n}依昨天隔日沖分點：${one(a,`昨買 ≥${big}% 量`)}｜${one(b,'沒有大買')}</div>`;};
+  return line('B','B 隔日沖倒貨 ')+line('rec','建議的 ')||`<div class="gap-cum muted small">依昨天隔日沖分點分組：還沒有紀錄（2026-11-26 起，B 組和建議的會在 09:05 後補抓昨天的分點表）</div>`;}
+function gapDtTag(x){if(x.dt_pct==null)return '';const big=(STATE&&STATE.gap&&STATE.gap.dt_big)||(RV&&RV.gapfade&&RV.gapfade.dt_big)||5;
+  const t=`昨天隔日沖分點買超 ${x.dt_buy!=null?x.dt_buy.toLocaleString():'-'} 張（${f(x.dt_pct,1)}% 量）：${(x.dt_top||[]).join('、')||'分點表前 15 名買超裡沒有隔日沖分點'}`
+    +`${x.top5_buy!=null?`；前五大買超 ${f(x.top5_buy,1)}%、賣超 ${f(x.top5_sell,1)}% 量`:''}${x.turn!=null?`；週轉率 ${f(x.turn,1)}%`:''}（只記錄、不擋）`;
+  return ` <span class="rv-tag${x.dt_pct>=big?' top':''}" title="${esc(t)}">隔沖 ${f(x.dt_pct,0)}%</span>`;}
 function gapGroupTable(gs,title){if(!gs)return '';const rows=GAP_GROUPS.filter(([k])=>gs[k]&&gs[k].n);if(!rows.length)return '';
   return `<table class="rv" style="margin-top:6px"><tr><th>${title}</th><th class="n">筆數</th><th class="n">勝率</th><th class="n">賠率</th><th class="n">每筆</th><th class="n" title="同一筆改用開盤價放空">開盤進</th><th class="n">1 張合計</th><th class="n">收漲停</th></tr>`
     +rows.map(([k,n])=>{const c=gs[k];return `<tr class="${k===GAP_G?'sum':''}"><td>${n}</td><td class="n">${c.n}</td><td class="n">${f(c.win_rate,0)}%</td><td class="n">${c.payoff!=null?f(c.payoff,2):'-'}</td><td class="n">${rvPct(c.avg,3)}</td><td class="n">${rvPct(c.avg_open,3)}</td><td class="n">${rvAmt(c.pnl_sum)}</td><td class="n">${c.close_up||0}</td></tr>`;}).join('')+'</table>';}
@@ -375,7 +384,7 @@ function gapTable(rows,live){rows=(rows||[]).filter(x=>gapIn(x,GAP_G));if(!rows.
       const st=x.status?(GAP_ST[x.status]||x.status):'13:25 結案';const late=x.exit_kind==='1330';const hit=x.hit_up||x.hit_limit_up;
       return `<tr class="${w?'watch':''}"><td>${esc(x.code)} ${esc(x.name||'')}${w?' <span class="rv-tag watch">監控中</span>':''}</td>`
         +`<td>${(x.tags||['A']).map(t=>`<span class="rv-tag">${t}</span>`).join(' ')}${x.top10?' <span class="rv-tag top">前 10%</span>':''}${x.side==='long'?' <span class="rv-tag watch">做多</span>':''}${x.valid===false?' <span class="rv-tag lim" title="極度恐慌（前一天臺指 VIX ≥40）時這組不成立，只記錄">不成立</span>':''}${x.rec?` <span class="rv-tag top" title="開盤策略建議放空（成立的 A、B 裡昨日成交值前 5 檔）">建議 #${x.rec_rank||''}</span>`:''}${x.near_flag?` <span class="rv-tag lim" title="${esc(x.near_flag)} 離漲停 1.5% 內，已提醒考慮先回補">近漲停</span>`:''}</td>`
-        +`<td class="n">${pct(x.gap,1)}</td><td class="n">${x.ret1!=null?pct(x.ret1,1):'-'}${x.lim_prev?' <span class="rv-tag lim" title="昨天收漲停">停</span>':''}</td><td class="n">${x.room!=null?f(x.room,1)+'%':'-'}</td>`
+        +`<td class="n">${pct(x.gap,1)}</td><td class="n">${x.ret1!=null?pct(x.ret1,1):'-'}${x.lim_prev?' <span class="rv-tag lim" title="昨天收漲停">停</span>':''}${gapDtTag(x)}</td><td class="n">${x.room!=null?f(x.room,1)+'%':'-'}</td>`
         +`<td class="n">${fp(x.entry,x.code)}${x.entry_ts?` <span class="small muted">${esc(x.entry_ts.slice(0,5))}</span>`:''}</td>`
         +`<td class="n">${fp(done?x.exit:x.last,x.code)}</td><td class="n">${rvPct(net)}${!done&&net!=null?' <span class="small muted">目前</span>':''}</td><td class="n">${rvAmt(amt)}</td>`
         +`<td class="n">${x.net_open_pct!=null?rvPct(x.net_open_pct):'-'}</td><td class="n">${x.mae_pct!=null?pct(x.mae_pct,1):'-'}</td>`
@@ -398,7 +407,8 @@ function renderGap(){const el=$('gap');if(!el)return;const g=STATE&&STATE.gap;
     +(cands.length?gapTabs(counts):'')
     +(dn?`<div class="gap-cum">今天 ${GAP_G==='all'?'':gname+' '}${dn} 檔：${dw} 賺 ${dn-dw} 賠，1 張合計 ${rvAmt(dsum)}</div>`:'')
     +(live&&nowL.length?`<div class="gap-cum">追蹤中 ${nowL.length} 檔，現在平倉的話 1 張合計 ${rvAmt(nowSum)}</div>`:'')
-    +(cands.length?gapTable(cands,live):'')+gapCum((g.cum||{})[GAP_G],`實盤累計（${gname}）`)+gapGroupTable(g.cum,'實盤累計')
+    +(g.dt_note?`<div class="small muted" style="margin-bottom:4px">${esc(g.dt_note)}</div>`:'')
+    +(cands.length?gapTable(cands,live):'')+gapCum((g.cum||{})[GAP_G],`實盤累計（${gname}）`)+gapDt(g.cum_dt,g.dt_big)+gapGroupTable(g.cum,'實盤累計')
     +`<div class="rv-note">${gapRule(g.rule)}</div>`+gapBasis(g.basis);}
 function renderGapReview(){const el=$('rv-gap');if(!el)return;const G=RV&&RV.gapfade;
   if(!G){el.innerHTML='<span class="muted">沒有資料</span>';return;}
@@ -406,7 +416,7 @@ function renderGapReview(){const el=$('rv-gap');if(!el)return;const G=RV&&RV.gap
   const gname=(GAP_GROUPS.find(([k])=>k===GAP_G)||[])[1]||'';
   el.innerHTML=`<div class="small muted">${esc(RV.date)}</div>`
     +(G.day.length?gapTabs(counts)+gapCum((G.day_stats||{})[GAP_G],`這一天（${gname}）`,true)+gapTable(G.day,false):'<div class="gap-cum muted">這一天沒有紀錄（09:05 那時 monitor 沒開，或沒有符合的股票）</div>')
-    +gapGroupTable(G.day_stats,'這一天')+gapGroupTable(G.cum,'累計')
+    +gapGroupTable(G.day_stats,'這一天')+gapGroupTable(G.cum,'累計')+gapDt(G.cum_dt,G.dt_big)
     +(G.by_day&&G.by_day.length>1?`<table class="rv" style="margin-top:6px"><tr><th>日期</th><th class="n">筆數</th><th class="n">勝率</th><th class="n">每筆</th><th class="n">1 張合計</th><th class="n">前 10% 筆數</th><th class="n">前 10% 每筆</th></tr>${G.by_day.map(d=>`<tr><td>${esc(d.date)}</td><td class="n">${d.n}</td><td class="n">${d.win_rate!=null?f(d.win_rate,0)+'%':'-'}</td><td class="n">${rvPct(d.avg,3)}</td><td class="n">${rvAmt(d.pnl_sum)}</td><td class="n">${(d.top10||{}).n||0}</td><td class="n">${rvPct((d.top10||{}).avg,3)}</td></tr>`).join('')}</table>`:'')
     +`<div class="rv-note">${gapRule(G.rule)}</div>`+gapBasis(G.basis);}
 let BOOT=null;   // 這次 monitor 程序的 ID：開著過夜時 monitor 會在新交易日 08:25 自動重開，ID 變了就整頁重新載入，畫面上不留前一天的分時、大盤、漲跌停

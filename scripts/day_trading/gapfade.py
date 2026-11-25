@@ -35,6 +35,14 @@
   13:24:50 後第一次查詢的成交價當出場價（13:25 起是收盤集合競價，沒有成交）。沒有永豐就不跑。
   昨漲、5 日漲跌、昨天是否漲停用選股的全市場日 K（.cache/screen_daily.json，theme_screener.load_store）：
   09:05 前先補抓缺的那幾天（證交所 / 櫃買公開資料）；補不到、不是前一個交易日的 → 這些欄位留空、B 組今天不列，卡片註明。
+隔日沖分點（2026-11-25 加，只記錄、不擋）：09:05 掃完後，B 組和建議的（最多 40 檔）補抓「昨天」的 MoneyDJ 分點表
+  （src_moneydj.zco_fetch_many：三個鏡站各一條線、每頁停 0.3 秒，抓過的永久存在 .cache/zco），記下隔日沖分點買超合計（dt_buy 張、
+  dt_pct 佔昨量 %、dt_top 買最多的 3 個）、前五大買賣超佔量、週轉率。抓不到試 2 次就算了，不影響追蹤。
+  為什麼：權證小哥 11/23 投影片「避開週轉率高、隔日沖分點大買、波段分點在賣的；急漲漲停的多半有隔日沖鎖單，明天落跑賣壓大」，
+  正是 B 組的道理，但沒有個股的歷史分點可以好好回測。dt_pct ≥5%（DT_BIG）算大買：B 類股票（昨漲 ≥3%）的中位數約 5.5%，剛好分兩半。
+  初步（11/25 用 .cache/zco 現有的 343 筆 B 條件、日 K 開盤空收盤補）：大買 203 筆勝率 56%、每筆 +1.13%；沒大買 140 筆 43%、−0.11%，
+  8～11 月每個月都是大買比較好。但只有存過分點表的股票（偏向看過的），隔日沖名單又是用最近 60 天統計的（有前視），所以先記實盤再決定。
+  統計：python3 gapfade.py 最後一段、儀表板開盤策略卡「依昨天隔日沖分點」那行、收盤復盤第 7 段。
 紀錄：logs/gapfade_<裝置ID>.jsonl（每檔每天一筆，收盤後跟其他紀錄一起推）；當天進度存 .cache/gapfade_YYYYMMDD.json，
   monitor 盤中重開讀回來接著追蹤。09:07 後才啟動、又沒有當天 09:05 的紀錄 → 今天不記（進場價要 09:05 的，不補）。
 限制：最大逆向、碰漲停是每分鐘取樣（加上 snapshots 的今高）判斷的，分鐘內的尖點可能漏掉；出場是 13:25 前最後一筆，不是 13:30 收盤價。
@@ -62,6 +70,9 @@ GROUPS = (("rec", "建議的 5 檔"), ("all", "全部"), ("A", "A 開高 2～7%"
 REC_N = 5                                        # 每天建議幾檔（成立的 A、B 裡昨日成交值最大的）
 NEAR_LIMIT_PCT = 1.5                             # 建議的單離漲停這麼近（%）就叮咚提醒考慮先回補
 COVER_REMIND = "13:20:00"                        # 叮咚提醒 13:25 前回補
+DT_BIG = 5.0                                     # 隔日沖分點昨天買超合計 ≥ 昨量的這個 % = 「隔日沖大買」（只用來分組統計，不擋）
+DT_MAX_FETCH = 40                                # 每天最多補抓幾檔的昨天分點表（B 組＋建議的；MoneyDJ 三個鏡站輪流、每頁停 0.3 秒）
+DT_TRIES = 2                                     # 抓分點表最多試幾次（失敗不影響追蹤，只是這天的紀錄沒有隔日沖欄位）
 
 BASIS = [
     "建議：成立的 A、B 裡昨日成交值最大的 5 檔，09:05 放空、13:25 前回補、不設停損（接近漲停只提醒）。A 任何恐慌程度都建議；B 前一天臺指 VIX <40 才建議；C 只記錄",
@@ -136,6 +147,62 @@ def group_stats(rows):
     return {g: stats([r for r in rows if in_group(r, g)]) for g, _ in GROUPS}
 
 
+# 隔日沖分點（2026-11-25 加，只記錄）：權證小哥 11/23 投影片說「隔日沖分點大買的，隔天落跑賣壓大」，
+# 這正是 B 組的道理，但沒有個股的歷史分點可以回測，所以先每天記下來，累積之後再看 B 組裡「隔日沖大買」的有沒有比較好。
+DT_KEYS = ("dt_buy", "dt_pct", "dt_exp", "dt_n", "dt_top", "dt_src", "top5_buy", "top5_sell", "turn")
+
+
+def dt_fields(summ, yvol, tbl=None, shares=None):
+    """一張單日分點表 → 要記的欄位：
+    dt_buy 隔日沖分點昨天買超合計（張）、dt_pct 佔昨量 %（分點表前 15 名買超裡沒有隔日沖分點 = 0）、dt_exp 預估今天倒回幾張、
+    dt_n 幾個隔日沖分點、dt_top 買最多的 3 個、dt_src 隔日沖名單來源（dynamic 動態統計 / fixed 固定名單）、
+    top5_buy / top5_sell 前五大買超 / 賣超佔昨量 %、turn 昨天週轉率 %（昨量 ÷ 發行股數）。"""
+    import daytraders
+    d = daytraders.for_stock(summ, yvol, tbl)
+    pct = d["buy_pct"] if d["list"] else 0.0
+    f = {"dt_buy": d["buy"], "dt_pct": pct, "dt_exp": d["expect_sell"], "dt_n": len(d["list"]),
+         "dt_top": [x["broker"] for x in d["list"][:3]], "dt_src": d.get("source")}
+    if yvol:
+        f["top5_buy"] = round(sum(r["net"] for r in summ.get("buyers", [])[:5]) / yvol * 100, 1)
+        f["top5_sell"] = round(-sum(r["net"] for r in summ.get("sellers", [])[:5]) / yvol * 100, 1)
+        if shares:
+            f["turn"] = round(yvol * 1000 / shares * 100, 2)
+    return f
+
+
+def _default_dt(d, targets):
+    """targets = [(code, 昨量張)] → ({code: dt_fields 或 None（沒抓到）}, 前一個交易日)。
+    分點表用 MoneyDJ 單日表：src_moneydj.zco_fetch_many 三個鏡站各一條線、每頁停 0.3 秒，抓過的永久存在 .cache/zco，不重抓。"""
+    import daytraders
+    import src_moneydj as MJ
+    import tw_calendar as cal
+    ref = cal.prev_trading_day(d)
+    MJ.zco_fetch_many([(code, ref) for code, _ in targets])
+    tbl = daytraders.table(d)
+    try:
+        import theme_screener as TS
+        caps = TS.load_caps(max_age_days=30)
+    except Exception:
+        caps = {}
+    out = {}
+    for code, yv in targets:
+        summ = MJ.zco_day(code, ref, fetch=False)
+        if not summ or not (summ.get("buyers") or summ.get("sellers")):
+            out[code] = None
+            continue
+        out[code] = dt_fields(summ, yv, tbl, (caps.get(code) or [None, None])[1])
+    return out, ref
+
+
+def dt_split(rows, groups=("B", "rec")):
+    """B 組、建議的各自依「隔日沖大買（dt_pct ≥ DT_BIG）」分兩半的統計；沒有隔日沖欄位的紀錄不算。"""
+    out = {}
+    for g in groups:
+        rs = [r for r in rows if in_group(r, g) and side_of(r) == "short" and r.get("dt_pct") is not None]
+        out[g] = {"big": stats([r for r in rs if r["dt_pct"] >= DT_BIG]), "small": stats([r for r in rs if r["dt_pct"] < DT_BIG])}
+    return out
+
+
 def load_rows(log_dir=None):
     """各台電腦的 gapfade 紀錄合併；同一天同一檔兩台都有只算一台（交易日才算）。"""
     log_dir = log_dir or LOG_DIR
@@ -167,7 +234,7 @@ class GapFade:
     """
 
     def __init__(self, api_fn, log_dir=None, cache_dir=None, cost=COST_PCT, is_trading=None, now_fn=None, lock=None, log=print, daily_fn=None,
-                 notify=None):
+                 notify=None, dt_fn=None):
         self.api_fn = api_fn
         self.log_dir = log_dir or LOG_DIR
         self.cache_dir = cache_dir or CACHE_DIR
@@ -178,8 +245,10 @@ class GapFade:
         self.log = log
         self.daily_fn = daily_fn or _default_daily
         self.notify = notify                 # notify(kind, title, msg)：建議的單要通知（monitor 傳 notify.notify）；測試不傳
+        self.dt_fn = dt_fn or _default_dt    # dt_fn(date, [(code, 昨量張)]) → ({code: 隔日沖欄位 或 None}, 前一個交易日)；測試可以換
         self.st = None
         self.cum = group_stats([])
+        self.cum_dt = dt_split([])
         self._daily_for = None               # 哪一天準備好的昨漲資料
         self._daily = {}                     # code -> {ret1, ret5, lim_prev}
         self._daily_note = None
@@ -210,9 +279,12 @@ class GapFade:
 
     def _refresh_cum(self):
         try:
-            self.cum = group_stats(load_rows(self.log_dir))
+            rows = load_rows(self.log_dir)
+            self.cum = group_stats(rows)
+            self.cum_dt = dt_split(rows)
         except Exception as e:
             self.cum = dict(group_stats([]), error=str(e)[:80])
+            self.cum_dt = dt_split([])
 
     # ---------------------------------------------------------------- 昨漲、5 日漲跌（全市場日 K）
     def _prep_daily(self, d):
@@ -287,6 +359,9 @@ class GapFade:
         # 09:05 前先把昨漲資料準備好（要連線補抓，在鎖外面做，不卡儀表板）
         if hms < SCAN_AT and self._daily_for != d and self.is_trading(d):
             self._prep_daily(d)
+        # 09:05 掃完之後補抓 B 組（和建議的）昨天的隔日沖分點：要連線，也在鎖外面做；只記錄、不擋
+        if self._dt_due(d, hms):
+            self._fill_dt(d)
         with self._mx:
             if self.st is None or self.st.get("date") != d.isoformat():
                 self.st = self._load(d) or {"date": d.isoformat(), "status": "waiting", "cands": []}
@@ -367,7 +442,7 @@ class GapFade:
             dy = self._daily.get(c.code) or {}
             rows.append({"code": c.code, "name": getattr(c, "name", ""), "ex": str(getattr(c, "exchange", "")).replace("Exchange.", ""),
                          "prev_close": prev, "open": float(o), "px": float(px), "gap": round((o / prev - 1) * 100, 2),
-                         "room": round((up / o - 1) * 100, 2), "val": yv * 1000 * prev,
+                         "room": round((up / o - 1) * 100, 2), "val": yv * 1000 * prev, "yvol": yv,
                          "ret1": dy.get("ret1"), "ret5": dy.get("ret5"), "lim_prev": dy.get("lim_prev"),
                          "hi0": float(getattr(s, "high", px) or px), "lo0": float(getattr(s, "low", px) or px),
                          "ts": _ts_str(getattr(s, "ts", 0)), "limit_up": up, "limit_down": dn})
@@ -444,6 +519,58 @@ class GapFade:
         self.log(f"[開高放空] {st['note']}" + (("：" + "、".join(f"{c['code']} {c['name']} {c['gap']:+.1f}%{'★' if c['top10'] else ''}{'（做多）' if c['side'] == 'long' else ''}" for c in cands[:8])
                                                 + ("…" if len(cands) > 8 else "")) if cands else ""))
 
+    # ---------------------------------------------------------------- 隔日沖分點（昨天的分點表；只記錄）
+    def _dt_targets(self):
+        """要補抓昨天分點表的候選：放空的 B 組或建議的，最多 DT_MAX_FETCH 檔（建議的優先）。"""
+        cs = [c for c in (self.st or {}).get("cands") or []
+              if side_of(c) == "short" and ("B" in (c.get("tags") or []) or c.get("rec"))]
+        cs.sort(key=lambda c: (not c.get("rec"), -(c.get("val") or 0)))
+        return cs[:DT_MAX_FETCH]
+
+    def _dt_due(self, d, hms):
+        st = self.st
+        return bool(st and st.get("date") == d.isoformat() and st.get("scanned") and not st.get("dt_done")
+                    and not st.get("logged") and st.get("dt_tries", 0) < DT_TRIES and hms < EXIT_END)
+
+    def _fill_dt(self, d):
+        """B 組（和建議的）昨天的隔日沖分點買超、前五大買賣超佔量、週轉率 → 寫進候選（收盤寫紀錄時帶上）。
+        抓不到就算了（最多試 DT_TRIES 次），不影響追蹤。"""
+        with self._mx:
+            st = self.st
+            if not self._dt_due(d, "00:00:00"):
+                return
+            st["dt_tries"] = tries = st.get("dt_tries", 0) + 1
+            targets = [(c["code"], c.get("yvol")) for c in self._dt_targets()]
+            if not targets:
+                st.update(dt_done=True, dt_note=None)
+                return
+        try:
+            res, ref = self.dt_fn(d, targets)
+        except Exception as e:
+            last = tries >= DT_TRIES
+            with self._mx:
+                if self.st is st:
+                    st["dt_note"] = (f"隔日沖分點抓不到（{e.__class__.__name__}: {str(e)[:60]}）"
+                                     + ("：今天的紀錄沒有隔日沖欄位" if last else "，下一輪再試"))
+                    st["dt_done"] = last
+                    self._save()
+            self.log(f"[開盤策略] {st.get('dt_note')}")
+            return
+        with self._mx:
+            if self.st is not st:
+                return
+            for c in st["cands"]:
+                x = res.get(c["code"])
+                if x:
+                    c.update(x)
+            ok = sum(1 for v in res.values() if v)
+            big = sum(1 for v in res.values() if v and (v.get("dt_pct") or 0) >= DT_BIG)
+            st.update(dt_done=True, dt_ref=ref.isoformat(),
+                      dt_note=f"隔日沖分點：{ok}/{len(targets)} 檔抓到 {ref:%m/%d} 的分點表，{big} 檔隔日沖大買（≥{DT_BIG:g}% 量）；只記錄、不擋")
+            self._save()
+            note = st["dt_note"]
+        self.log(f"[開盤策略] {note}")
+
     def _notify(self, kind, title, msg=""):
         if self.notify:
             try:
@@ -456,6 +583,7 @@ class GapFade:
         return {"code": r["code"], "name": r["name"], "ex": r["ex"], "tags": tags, "top10": top10, "side": side,
                 "prev_close": r["prev_close"], "open": r["open"], "gap": r["gap"], "room": r["room"],
                 "ret1": r["ret1"], "ret5": r["ret5"], "lim_prev": r["lim_prev"], "val": round(r["val"]),
+                "yvol": round(r["yvol"]) if r.get("yvol") is not None else None,
                 "entry": r["px"], "entry_ts": r["ts"] or now.strftime("%H:%M:%S"),
                 "limit_up": r["limit_up"], "limit_down": r.get("limit_down"), "hi0": r["hi0"], "lo0": r["lo0"],
                 "last": r["px"], "last_ts": r["ts"], "high_after": r["px"], "low_after": r["px"], "hit_up": False, "hit_dn": False,
@@ -553,7 +681,9 @@ class GapFade:
                          "mae_pct": _mae(c), "mfe_pct": _mfe(c),
                          "hit_up": c["hit_up"], "close_up": c.get("close_up"), "hit_dn": c.get("hit_dn"), "close_dn": c.get("close_dn"),
                          "net_pct": c["net_pct"], "pnl": c["pnl"], "net_open_pct": c.get("net_open_pct"), "pnl_open": c.get("pnl_open"),
-                         "samples": c.get("samples"), "cost": self.cost, "daily_ok": st.get("daily_note") is None, "src": "shioaji"})
+                         "samples": c.get("samples"), "cost": self.cost, "daily_ok": st.get("daily_note") is None, "src": "shioaji",
+                         "yvol": c.get("yvol"),
+                         **({"dt_ref": st.get("dt_ref"), **{k: c.get(k) for k in DT_KEYS}} if "dt_buy" in c else {})})
         if recs:
             os.makedirs(self.log_dir, exist_ok=True)
             with open(dev_path(self.log_dir, "gapfade", ".jsonl"), "a", encoding="utf-8") as f:
@@ -570,7 +700,7 @@ class GapFade:
                 x = {k: c.get(k) for k in ("code", "name", "tags", "top10", "gap", "room", "ret1", "ret5", "lim_prev", "val", "prev_close", "open",
                                            "entry", "entry_ts", "last", "last_ts", "status", "hit_up", "close_up", "exit", "exit_ts", "exit_kind",
                                            "net_pct", "pnl", "net_open_pct", "pnl_open", "limit_up", "hit_dn", "close_dn", "valid", "vix_prev",
-                                           "active", "rec", "rec_rank", "near_flag")}
+                                           "active", "rec", "rec_rank", "near_flag", "yvol") + DT_KEYS}
                 x["side"] = side_of(c)
                 e = c.get("entry")
                 if e:
@@ -585,7 +715,8 @@ class GapFade:
                     "rec_n": st.get("rec_n"), "rec_note": st.get("rec_note"), "cover_reminded": st.get("cover_reminded"), "support_block": st.get("support_block"),
                     "scan_time": st.get("scan_time"), "last_poll": st.get("last_poll"), "universe": st.get("universe"), "quoted": st.get("quoted"),
                     "cut": st.get("cut"), "counts": st.get("counts"), "cands": cands, "cum": self.cum, "cost": self.cost, "basis": BASIS,
-                    "groups": [list(g) for g in GROUPS], "rule": rule()}
+                    "groups": [list(g) for g in GROUPS], "rule": rule(),
+                    "dt_note": st.get("dt_note"), "dt_ref": st.get("dt_ref"), "cum_dt": self.cum_dt, "dt_big": DT_BIG}
 
     def run(self, stop, on_update=None):
         """背景執行緒的主迴圈。stop：threading.Event。on_update(view)：每一步之後呼叫（monitor 用來放進 WEB.gap）。"""
@@ -636,7 +767,15 @@ if __name__ == "__main__":
             if s.get("avg_open") is not None:
                 line += f"（開盤價進 {s['avg_open']:+.3f}%）"
             print(line + f" 1 張合計 {s['pnl_sum']:+,} 元 碰漲停 {s['hit_up']} 收漲停 {s['close_up']}")
+        sp = dt_split(rows)
+        print(f"  依昨天隔日沖分點買超（≥{DT_BIG:g}% 昨量 = 大買；2026-11-26 起才有這個欄位）：")
+        for g, name in (("B", "B 隔日沖倒貨"), ("rec", "建議的")):
+            for k, lab in (("big", "隔日沖大買"), ("small", "沒有大買")):
+                s = sp[g][k]
+                print(f"    {name} {lab}：" + (f"{s['n']} 筆 {s['days']} 天 勝率 {s['win_rate']}% 每筆 {s['avg']:+.3f}% 1 張合計 {s['pnl_sum'] or 0:+,} 元 收漲停 {s['close_up']}"
+                                                if s["n"] else "還沒有紀錄"))
         for r in rows[-20:]:
             print(f"  {r['date']} {r['code']} {r['name']:<6} [{'/'.join(r.get('tags') or ['A'])}{'★' if r.get('top10') else ''}]{'做多' if side_of(r) == 'long' else '放空'} 開盤 {r['gap']:+.1f}%"
                   f" 昨漲 {r['ret1'] if r.get('ret1') is not None else '-'}%  {r['entry']}→{r['exit']}  {r['net_pct']:+.2f}%  {r['pnl']:+,} 元"
-                  + ("  碰漲停" if _hit_up(r) else "") + ("  收漲停" if r.get("close_up") else ""))
+                  + ("  碰漲停" if _hit_up(r) else "") + ("  收漲停" if r.get("close_up") else "")
+                  + (f"  隔日沖昨買 {r['dt_buy']:,} 張（{r['dt_pct']:.1f}% 量）" if r.get("dt_pct") is not None and r.get("dt_buy") is not None else ""))

@@ -581,7 +581,8 @@ def gapfade_review(iso):
     return {"day": day, "day_stats": gapfade.group_stats(day), "cum": gapfade.group_stats(rows),
             "by_day": [{"date": d, **gapfade.stats([r for r in rows if r["date"] == d]),
                         "top10": gapfade.stats([r for r in rows if r["date"] == d and r.get("top10")])} for d in days[:30]],
-            "basis": gapfade.BASIS, "rule": gapfade.rule(), "groups": [list(g) for g in gapfade.GROUPS]}
+            "basis": gapfade.BASIS, "rule": gapfade.rule(), "groups": [list(g) for g in gapfade.GROUPS],
+            "cum_dt": gapfade.dt_split(rows), "dt_big": gapfade.DT_BIG}
 
 
 # ------------------------------------------------------------------ 6. 明天的準備（要連線）
@@ -684,11 +685,19 @@ def describe(r):
                 L.append(f"   {title} {names.get(key, key):<10} {s['n']:>3} 筆：勝率 {s['win_rate']}%（賠率 {s['payoff']}），每筆 {f(s['avg'], 3)}"
                          + (f"（開盤價進 {f(s['avg_open'], 3)}）" if s.get("avg_open") is not None else "")
                          + f"，1 張合計 {s['pnl_sum']:+,} 元" + (f"，收漲停 {s['close_up']}" if s.get("close_up") else ""))
+    big = g.get("dt_big", 5.0)
+    for key, name in (("B", "B 隔日沖倒貨"), ("rec", "建議的")):
+        sp = (g.get("cum_dt") or {}).get(key) or {}
+        parts = [f"{lab} {s['n']} 筆 勝率 {s['win_rate']}% 每筆 {f(s['avg'], 3)}" for k, lab in (("big", f"隔日沖昨買 ≥{big:g}% 量"), ("small", "沒有大買"))
+                 if (s := sp.get(k) or {}).get("n")]
+        if parts:
+            L.append(f"   累計 {name}，依昨天隔日沖分點：" + "｜".join(parts))
     for x in g.get("day") or []:
         L.append(f"     {x['code']} {x['name']} [{'/'.join(x.get('tags') or ['A'])}{' 前10%' if x.get('top10') else ''}] 開高 {x['gap']:+.1f}%"
                  + (f" 昨漲 {x['ret1']:+.1f}%" if x.get("ret1") is not None else "")
                  + f"  {x['entry']} → {x['exit']}  {f(x['net_pct'])}  {x['pnl']:+,} 元  最大逆向 {x['mae_pct']:+.1f}%"
-                 + ("  碰漲停" if (x.get("hit_up") or x.get("hit_limit_up")) else "") + ("  收漲停" if x.get("close_up") else ""))
+                 + ("  碰漲停" if (x.get("hit_up") or x.get("hit_limit_up")) else "") + ("  收漲停" if x.get("close_up") else "")
+                 + (f"  隔日沖昨買 {x['dt_buy']:,} 張（{x['dt_pct']:.1f}% 量）" if x.get("dt_pct") is not None and x.get("dt_buy") is not None else ""))
     if not (g.get("day") or []):
         L.append("   當天沒有紀錄")
     return "\n".join(L)

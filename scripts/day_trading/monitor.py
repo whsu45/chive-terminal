@@ -34,6 +34,13 @@ import src_mis
 import src_warrants as W
 import http_client as hc   # 別名不能叫 http：下面 import http.server 會把它蓋掉
 import tw_calendar as cal
+# 復盤（eod）、開盤策略（gapfade）、選股、期貨也在啟動時一起載入：以前要用到才 import，monitor 開著時程式改版，
+# 晚載入的新版 eod 會配上早就載入的舊版 gapfade（2026-11-25：10:37 啟動、10:56 改版，收盤復盤 'gapfade' has no attribute 'dt_split'）。
+# 一起載入 → 整個程序都是同一版，改版要重開才生效。（src_shioaji 沒裝永豐也要能跑，照樣用到才載入）
+import eod
+import gapfade
+import theme_screener
+import src_taifex
 import re
 import glob
 import subprocess

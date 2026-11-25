@@ -566,8 +566,16 @@ def build(date=None):
                   "limit": limit_table(all_sigs), "near_pct": NEAR_LIMIT_PCT, "strong_pct": STRONG_PCT},
         "direction": {"day": direction(rows), "cum": cum_dir},
         "alerts": {"day": alerts(al_day), "cum": alerts(_alerts_all()), "cum_days": len({r.get("date") for r in _alerts_all()})},
-        "gapfade": gapfade_review(iso),
+        "gapfade": _section(gapfade_review, iso),
     }
+
+
+def _section(fn, *a):
+    """單一區塊出錯只讓那一塊顯示錯誤，不要整個復盤畫面都空白。"""
+    try:
+        return fn(*a)
+    except Exception as e:
+        return {"error": f"{e.__class__.__name__}: {str(e)[:200]}"}
 
 
 # ------------------------------------------------------------------ 7. 開高放空觀察（gapfade.py；只記錄、不建議下單）

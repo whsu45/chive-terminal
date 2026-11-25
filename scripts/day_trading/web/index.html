@@ -412,6 +412,7 @@ function renderGap(){const el=$('gap');if(!el)return;const g=STATE&&STATE.gap;
     +`<div class="rv-note">${gapRule(g.rule)}</div>`+gapBasis(g.basis);}
 function renderGapReview(){const el=$('rv-gap');if(!el)return;const G=RV&&RV.gapfade;
   if(!G){el.innerHTML='<span class="muted">沒有資料</span>';return;}
+  if(G.error){el.innerHTML=`<span class="stale">這一區讀取失敗：${esc(G.error)}</span>`;return;}
   const counts={all:G.day.length};GAP_GROUPS.slice(1).forEach(([k])=>counts[k]=G.day.filter(x=>gapIn(x,k)).length);
   const gname=(GAP_GROUPS.find(([k])=>k===GAP_G)||[])[1]||'';
   el.innerHTML=`<div class="small muted">${esc(RV.date)}</div>`

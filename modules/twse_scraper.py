@@ -1,3 +1,5 @@
+import time
+
 from .utils import clean_float, DATA_SOURCES
 from .chart_generator import generate_svg_sparkline
 
@@ -11,9 +13,19 @@ def fetch_twse_intraday_taiex(session, target_date_str):
     url = f"{base_url}?response=json&date={formatted_date}"
     headers = {'User-Agent': 'Mozilla/5.0'}
 
+    # 5 秒資料一天約 3,240 筆、回應將近 1 MB，GitHub Actions 從海外連證交所常常 5 秒讀不完
+    # （2026-11-25 改版重算 20 天時 11/23、11/06、11/03、11/02 都 Read timed out），讀取放寬到 25 秒、失敗隔 3 秒再試一次
+    resp = None
+    for attempt in range(2):
+        try:
+            resp = session.get(url, headers=headers, timeout=(5, 25))
+            break
+        except Exception as e:
+            print(f"[{target_date_str}] TWSE TAIEX fetch error（第 {attempt + 1} 次）: {e}")
+            if attempt == 0:
+                time.sleep(3)
     try:
-        resp = session.get(url, headers=headers, timeout=5)
-        if resp.status_code == 200:
+        if resp is not None and resp.status_code == 200:
             res_json = resp.json()
             if res_json.get('stat') == 'OK' and 'data' in res_json:
                 prices = []

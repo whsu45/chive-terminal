@@ -6,7 +6,7 @@
  "date_counts": {
   "2026-11-25": 369
  },
- "members_fetched": "2026-11-25",
+ "members_fetched": "2026-11-26",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -14,18 +14,6 @@
    "title": "資安概念股",
    "desc": "資安概念股指營收來自資訊安全產品與服務的台股，環節涵蓋資安監控中心（SOC）委外、滲透測試與健診、資安軟體與雲端防護、防駭與流量安全設備，以及企業資安系統整合。",
    "members": [
-    {
-     "code": "3664",
-     "name": "安瑞-KY",
-     "market": "上櫃",
-     "open": 7.78,
-     "high": 7.78,
-     "low": 7.78,
-     "close": 7.78,
-     "change": 0.7,
-     "pct": 9.89,
-     "volume": 262
-    },
     {
      "code": "7765",
      "name": "中華資安",
@@ -37,6 +25,18 @@
      "change": 28.0,
      "pct": 9.89,
      "volume": 4832
+    },
+    {
+     "code": "3664",
+     "name": "安瑞-KY",
+     "market": "上櫃",
+     "open": 7.78,
+     "high": 7.78,
+     "low": 7.78,
+     "close": 7.78,
+     "change": 0.7,
+     "pct": 9.89,
+     "volume": 262
     },
     {
      "code": "6112",
@@ -4404,6 +4404,101 @@
    "flat": 0
   },
   {
+   "slug": "bbu",
+   "title": "BBU 概念股",
+   "desc": "BBU 概念股指供應資料中心備援電池（Battery Backup Unit）的台股：AI 伺服器機櫃功率快速拉高後，斷電瞬間由 BBU 電池模組接手供電、保護運算不中斷，從電池芯、電池管理系統（BMS）到機櫃電源整合都有台廠參與。",
+   "members": [
+    {
+     "code": "2308",
+     "name": "台達電",
+     "market": "上市",
+     "open": 1095.0,
+     "high": 1115.0,
+     "low": 989.0,
+     "close": 1055.0,
+     "change": -30.0,
+     "pct": -2.76,
+     "volume": 38130
+    },
+    {
+     "code": "6781",
+     "name": "AES-KY",
+     "market": "上市",
+     "open": 656.0,
+     "high": 669.0,
+     "low": 608.0,
+     "close": 633.0,
+     "change": -42.0,
+     "pct": -6.22,
+     "volume": 732
+    },
+    {
+     "code": "2301",
+     "name": "光寶科",
+     "market": "上市",
+     "open": 191.5,
+     "high": 205.0,
+     "low": 184.0,
+     "close": 189.0,
+     "change": -15.0,
+     "pct": -7.35,
+     "volume": 19405
+    },
+    {
+     "code": "3211",
+     "name": "順達",
+     "market": "上櫃",
+     "open": 185.0,
+     "high": 191.0,
+     "low": 171.0,
+     "close": 175.5,
+     "change": -14.0,
+     "pct": -7.39,
+     "volume": 3387
+    },
+    {
+     "code": "6558",
+     "name": "興能高",
+     "market": "上市",
+     "open": 17.75,
+     "high": 17.75,
+     "low": 16.5,
+     "close": 16.75,
+     "change": -1.45,
+     "pct": -7.97,
+     "volume": 210
+    },
+    {
+     "code": "3323",
+     "name": "加百裕",
+     "market": "上櫃",
+     "open": 21.0,
+     "high": 21.0,
+     "low": 19.25,
+     "close": 19.55,
+     "change": -1.8,
+     "pct": -8.43,
+     "volume": 435
+    },
+    {
+     "code": "4931",
+     "name": "新盛力",
+     "market": "上櫃",
+     "open": 134.0,
+     "high": 143.0,
+     "low": 127.0,
+     "close": 129.0,
+     "change": -12.0,
+     "pct": -8.51,
+     "volume": 2196
+    }
+   ],
+   "avg_pct": -6.95,
+   "up": 0,
+   "down": 7,
+   "flat": 0
+  },
+  {
    "slug": "machine-tools",
    "title": "工具機概念股",
    "desc": "工具機概念股指製造金屬加工母機與其關鍵零組件的台股：整機有 CNC 車床、立式與臥式加工中心機、龍門機、磨床與沖床，零組件有控制器與主軸。",
@@ -4571,256 +4666,6 @@
    "flat": 0
   },
   {
-   "slug": "bbu",
-   "title": "BBU 概念股",
-   "desc": "BBU 概念股指供應資料中心備援電池（Battery Backup Unit）的台股：AI 伺服器機櫃功率快速拉高後，斷電瞬間由 BBU 電池模組接手供電、保護運算不中斷，從電池芯、電池管理系統（BMS）到機櫃電源整合都有台廠參與。",
-   "members": [
-    {
-     "code": "2308",
-     "name": "台達電",
-     "market": "上市",
-     "open": 1095.0,
-     "high": 1115.0,
-     "low": 989.0,
-     "close": 1055.0,
-     "change": -30.0,
-     "pct": -2.76,
-     "volume": 38130
-    },
-    {
-     "code": "6781",
-     "name": "AES-KY",
-     "market": "上市",
-     "open": 656.0,
-     "high": 669.0,
-     "low": 608.0,
-     "close": 633.0,
-     "change": -42.0,
-     "pct": -6.22,
-     "volume": 732
-    },
-    {
-     "code": "2301",
-     "name": "光寶科",
-     "market": "上市",
-     "open": 191.5,
-     "high": 205.0,
-     "low": 184.0,
-     "close": 189.0,
-     "change": -15.0,
-     "pct": -7.35,
-     "volume": 19405
-    },
-    {
-     "code": "3211",
-     "name": "順達",
-     "market": "上櫃",
-     "open": 185.0,
-     "high": 191.0,
-     "low": 171.0,
-     "close": 175.5,
-     "change": -14.0,
-     "pct": -7.39,
-     "volume": 3387
-    },
-    {
-     "code": "6558",
-     "name": "興能高",
-     "market": "上市",
-     "open": 17.75,
-     "high": 17.75,
-     "low": 16.5,
-     "close": 16.75,
-     "change": -1.45,
-     "pct": -7.97,
-     "volume": 210
-    },
-    {
-     "code": "3323",
-     "name": "加百裕",
-     "market": "上櫃",
-     "open": 21.0,
-     "high": 21.0,
-     "low": 19.25,
-     "close": 19.55,
-     "change": -1.8,
-     "pct": -8.43,
-     "volume": 435
-    },
-    {
-     "code": "4931",
-     "name": "新盛力",
-     "market": "上櫃",
-     "open": 134.0,
-     "high": 143.0,
-     "low": 127.0,
-     "close": 129.0,
-     "change": -12.0,
-     "pct": -8.51,
-     "volume": 2196
-    }
-   ],
-   "avg_pct": -6.95,
-   "up": 0,
-   "down": 7,
-   "flat": 0
-  },
-  {
-   "slug": "fab-facility",
-   "title": "廠務概念股",
-   "desc": "廠務概念股指承攬半導體與高科技廠房建廠工程的台股，環節涵蓋無塵室與機電空調統包、化學品與氣體供應系統、超純水與製程管線、製程排氣，以及無塵室微污染防治。",
-   "members": [
-    {
-     "code": "6667",
-     "name": "信紘科",
-     "market": "上櫃",
-     "open": 237.0,
-     "high": 244.0,
-     "low": 222.0,
-     "close": 244.0,
-     "change": 7.5,
-     "pct": 3.17,
-     "volume": 1083
-    },
-    {
-     "code": "3402",
-     "name": "漢科",
-     "market": "上櫃",
-     "open": 100.5,
-     "high": 102.0,
-     "low": 94.8,
-     "close": 98.6,
-     "change": -5.4,
-     "pct": -5.19,
-     "volume": 177
-    },
-    {
-     "code": "8383",
-     "name": "千附",
-     "market": "上櫃",
-     "open": 57.0,
-     "high": 57.8,
-     "low": 53.3,
-     "close": 55.0,
-     "change": -3.8,
-     "pct": -6.46,
-     "volume": 606
-    },
-    {
-     "code": "2404",
-     "name": "漢唐",
-     "market": "上市",
-     "open": 930.0,
-     "high": 941.0,
-     "low": 844.0,
-     "close": 875.0,
-     "change": -61.0,
-     "pct": -6.52,
-     "volume": 1273
-    },
-    {
-     "code": "6613",
-     "name": "朋億*",
-     "market": "上櫃",
-     "open": 210.0,
-     "high": 213.5,
-     "low": 197.5,
-     "close": 201.0,
-     "change": -16.0,
-     "pct": -7.37,
-     "volume": 182
-    },
-    {
-     "code": "6691",
-     "name": "洋基工程",
-     "market": "上市",
-     "open": 517.0,
-     "high": 525.0,
-     "low": 488.0,
-     "close": 495.0,
-     "change": -41.0,
-     "pct": -7.65,
-     "volume": 645
-    },
-    {
-     "code": "6196",
-     "name": "帆宣",
-     "market": "上市",
-     "open": 321.5,
-     "high": 332.5,
-     "low": 304.0,
-     "close": 311.5,
-     "change": -26.0,
-     "pct": -7.7,
-     "volume": 1050
-    },
-    {
-     "code": "5536",
-     "name": "聖暉*",
-     "market": "上櫃",
-     "open": 620.0,
-     "high": 641.0,
-     "low": 588.0,
-     "close": 598.0,
-     "change": -55.0,
-     "pct": -8.42,
-     "volume": 1134
-    },
-    {
-     "code": "6139",
-     "name": "亞翔",
-     "market": "上市",
-     "open": 598.0,
-     "high": 615.0,
-     "low": 546.0,
-     "close": 555.0,
-     "change": -51.0,
-     "pct": -8.42,
-     "volume": 3160
-    },
-    {
-     "code": "7631",
-     "name": "聚賢研發-創",
-     "market": "上市",
-     "open": 99.0,
-     "high": 99.3,
-     "low": 92.4,
-     "close": 92.7,
-     "change": -9.8,
-     "pct": -9.56,
-     "volume": 57
-    },
-    {
-     "code": "6903",
-     "name": "巨漢",
-     "market": "上櫃",
-     "open": 229.0,
-     "high": 230.0,
-     "low": 213.0,
-     "close": 213.5,
-     "change": -23.0,
-     "pct": -9.73,
-     "volume": 354
-    },
-    {
-     "code": "6823",
-     "name": "濾能",
-     "market": "上櫃",
-     "open": 48.25,
-     "high": 48.25,
-     "low": 43.3,
-     "close": 43.3,
-     "change": -4.8,
-     "pct": -9.98,
-     "volume": 80
-    }
-   ],
-   "avg_pct": -6.99,
-   "up": 1,
-   "down": 11,
-   "flat": 0
-  },
-  {
    "slug": "sic-gan",
    "title": "第三代半導體概念股",
    "desc": "第三代半導體概念股指投入碳化矽（SiC）與氮化鎵（GaN）等寬能隙材料的台股，環節涵蓋基板與晶圓、磊晶片、化合物半導體代工，以及 SiC 二極體與 MOSFET 元件。",
@@ -4937,6 +4782,161 @@
    "avg_pct": -6.99,
    "up": 0,
    "down": 9,
+   "flat": 0
+  },
+  {
+   "slug": "fab-facility",
+   "title": "廠務概念股",
+   "desc": "廠務概念股指承攬半導體與高科技廠房建廠工程的台股，環節涵蓋無塵室與機電空調統包、化學品與氣體供應系統、超純水與製程管線、製程排氣，以及無塵室微污染防治。",
+   "members": [
+    {
+     "code": "6667",
+     "name": "信紘科",
+     "market": "上櫃",
+     "open": 237.0,
+     "high": 244.0,
+     "low": 222.0,
+     "close": 244.0,
+     "change": 7.5,
+     "pct": 3.17,
+     "volume": 1083
+    },
+    {
+     "code": "3402",
+     "name": "漢科",
+     "market": "上櫃",
+     "open": 100.5,
+     "high": 102.0,
+     "low": 94.8,
+     "close": 98.6,
+     "change": -5.4,
+     "pct": -5.19,
+     "volume": 177
+    },
+    {
+     "code": "8383",
+     "name": "千附",
+     "market": "上櫃",
+     "open": 57.0,
+     "high": 57.8,
+     "low": 53.3,
+     "close": 55.0,
+     "change": -3.8,
+     "pct": -6.46,
+     "volume": 606
+    },
+    {
+     "code": "2404",
+     "name": "漢唐",
+     "market": "上市",
+     "open": 930.0,
+     "high": 941.0,
+     "low": 844.0,
+     "close": 875.0,
+     "change": -61.0,
+     "pct": -6.52,
+     "volume": 1273
+    },
+    {
+     "code": "6613",
+     "name": "朋億*",
+     "market": "上櫃",
+     "open": 210.0,
+     "high": 213.5,
+     "low": 197.5,
+     "close": 201.0,
+     "change": -16.0,
+     "pct": -7.37,
+     "volume": 182
+    },
+    {
+     "code": "6691",
+     "name": "洋基工程",
+     "market": "上市",
+     "open": 517.0,
+     "high": 525.0,
+     "low": 488.0,
+     "close": 495.0,
+     "change": -41.0,
+     "pct": -7.65,
+     "volume": 645
+    },
+    {
+     "code": "6196",
+     "name": "帆宣",
+     "market": "上市",
+     "open": 321.5,
+     "high": 332.5,
+     "low": 304.0,
+     "close": 311.5,
+     "change": -26.0,
+     "pct": -7.7,
+     "volume": 1050
+    },
+    {
+     "code": "6139",
+     "name": "亞翔",
+     "market": "上市",
+     "open": 598.0,
+     "high": 615.0,
+     "low": 546.0,
+     "close": 555.0,
+     "change": -51.0,
+     "pct": -8.42,
+     "volume": 3160
+    },
+    {
+     "code": "5536",
+     "name": "聖暉*",
+     "market": "上櫃",
+     "open": 620.0,
+     "high": 641.0,
+     "low": 588.0,
+     "close": 598.0,
+     "change": -55.0,
+     "pct": -8.42,
+     "volume": 1134
+    },
+    {
+     "code": "7631",
+     "name": "聚賢研發-創",
+     "market": "上市",
+     "open": 99.0,
+     "high": 99.3,
+     "low": 92.4,
+     "close": 92.7,
+     "change": -9.8,
+     "pct": -9.56,
+     "volume": 57
+    },
+    {
+     "code": "6903",
+     "name": "巨漢",
+     "market": "上櫃",
+     "open": 229.0,
+     "high": 230.0,
+     "low": 213.0,
+     "close": 213.5,
+     "change": -23.0,
+     "pct": -9.73,
+     "volume": 354
+    },
+    {
+     "code": "6823",
+     "name": "濾能",
+     "market": "上櫃",
+     "open": 48.25,
+     "high": 48.25,
+     "low": 43.3,
+     "close": 43.3,
+     "change": -4.8,
+     "pct": -9.98,
+     "volume": 80
+    }
+   ],
+   "avg_pct": -6.99,
+   "up": 1,
+   "down": 11,
    "flat": 0
   },
   {
@@ -6054,7 +6054,7 @@
     },
     {
      "code": "8155",
-     "name": "博智",
+     "name": "博智電子",
      "market": "上櫃",
      "open": 200.0,
      "high": 219.0,
@@ -6660,18 +6660,6 @@
      "volume": 338
     },
     {
-     "code": "8054",
-     "name": "安國",
-     "market": "上櫃",
-     "open": 58.1,
-     "high": 59.6,
-     "low": 55.2,
-     "close": 55.2,
-     "change": -6.1,
-     "pct": -9.95,
-     "volume": 1056
-    },
-    {
      "code": "3443",
      "name": "創意",
      "market": "上市",
@@ -6682,6 +6670,18 @@
      "change": -560.0,
      "pct": -9.95,
      "volume": 803
+    },
+    {
+     "code": "8054",
+     "name": "安國",
+     "market": "上櫃",
+     "open": 58.1,
+     "high": 59.6,
+     "low": 55.2,
+     "close": 55.2,
+     "change": -6.1,
+     "pct": -9.95,
+     "volume": 1056
     },
     {
      "code": "8227",

@@ -1,40 +1,40 @@
 [
  {
   "date": "2026-11-25",
-  "composite": -3.39,
-  "sox": -4.42,
+  "composite": -0.73,
+  "sox": -0.65,
   "top3Up": [
-   {
-    "key": "devices",
-    "title": "消費電子",
-    "pct": 0.54
-   },
-   {
-    "key": "internet",
-    "title": "網路平台",
-    "pct": -0.4
-   },
    {
     "key": "aiserver",
     "title": "AI 伺服器／資料中心硬體",
-    "pct": -1.2
+    "pct": 2.79
+   },
+   {
+    "key": "devices",
+    "title": "消費電子",
+    "pct": 0.79
+   },
+   {
+    "key": "semis",
+    "title": "半導體",
+    "pct": 0.44
    }
   ],
   "top3Down": [
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -11.91
+    "pct": -7.3
    },
    {
     "key": "semicap",
     "title": "半導體設備",
-    "pct": -5.39
+    "pct": -1.95
    },
    {
     "key": "networking",
     "title": "網通／光通訊",
-    "pct": -5.35
+    "pct": -1.13
    }
   ],
   "taiexNext": null
@@ -9173,8 +9173,8 @@
     "pct": -0.52
    },
    {
-    "key": "aiserver",
-    "title": "AI 伺服器／資料中心硬體",
+    "key": "internet",
+    "title": "網路平台",
     "pct": 0.69
    }
   ],

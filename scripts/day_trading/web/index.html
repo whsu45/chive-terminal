@@ -19,18 +19,17 @@ header .meta{margin-left:auto;display:flex;gap:18px;color:var(--muted);align-ite
 .phase{padding:4px 10px;border-radius:6px;background:var(--panel2);color:var(--fg);font-weight:600;cursor:help;border:1px solid var(--line)}
 .phase.early{border-color:var(--accent);background:#1b2a46}.phase.mid{border-color:#5a5f6b}.phase.late{border-color:var(--warn);background:#2b2210;color:var(--warn)}
 .phase.closed,.phase.pre,.phase.trial{color:var(--muted)}
-main{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:12px;padding:12px 16px;max-width:1800px;margin:0 auto}
-@media (max-width:1200px){main{grid-template-columns:1fr 1fr}}
-@media (max-width:760px){main{grid-template-columns:1fr;padding:8px}}
+/* 12 欄格線：每個區塊的寬度（佔幾欄）和高度由版面程式（lay*）設定、存在瀏覽器；dense 讓空出來的格子自動補上 */
+main{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-flow:row dense;gap:12px;padding:12px 16px;max-width:1800px;margin:0 auto}
+main>.card{grid-column:span 4}main>.card.span2{grid-column:span 8}
+@media (max-width:1200px){main>.card{grid-column:span 6}main>.card.span2{grid-column:span 12}}
+@media (max-width:760px){main{padding:8px}main>.card{grid-column:1 / -1!important}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
 .card h3{margin:0 0 8px;font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;font-weight:600}
-.charts{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr 2fr;gap:12px}
-@media (max-width:1200px){.charts{grid-template-columns:1fr 1fr}.charts .stock{grid-column:span 2}}
-@media (max-width:760px){.charts{grid-template-columns:1fr}.charts .stock{grid-column:span 1}}
-.charts .card{padding:8px 10px}
-.charts canvas{width:100%;height:230px;display:block}
-.charts .stock canvas{height:300px}
-.charts canvas.kd,.charts .stock canvas.kd{height:92px;margin-top:6px;cursor:pointer;border-top:1px solid var(--line)}
+.card.chart{padding:8px 10px}
+.card.chart canvas{width:100%;height:230px;display:block}
+.card.chart.stock canvas{height:300px}
+.card.chart canvas.kd,.card.chart.stock canvas.kd{height:92px;margin-top:6px;cursor:pointer;border-top:1px solid var(--line)}
 .price{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
 .price .big{font-size:44px;font-weight:700;line-height:1}
 .price .chg{font-size:22px;font-weight:600}
@@ -115,8 +114,7 @@ table.grid{width:100%;border-collapse:collapse;font-size:13px}
 table.grid th{color:var(--muted);text-align:left;font-weight:500;padding:3px 6px;border-bottom:1px solid var(--line)}
 table.grid td{padding:3px 6px;border-bottom:1px solid #20242d}
 table.grid td.n{text-align:right;font-family:var(--mono)}
-#chart{width:100%;height:220px;display:block}
-.span2{grid-column:span 2}@media (max-width:760px){.span2{grid-column:span 1}}
+#chart{width:100%;display:block}#c-chart:not(.sized) #chart{height:220px}
 .muted{color:var(--muted)}.small{font-size:12px}
 footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .stale{color:var(--warn)}
@@ -173,7 +171,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .rv-tabs{display:flex;flex-wrap:wrap;gap:6px}
 .rv-tab{padding:5px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--panel2);font-size:13px}
 .rv-tab.active{border-color:var(--accent);background:#1b2a46}.rv-tab .n{font-family:var(--mono);color:var(--muted);margin-left:4px;font-size:12px}
-.rv-full{grid-column:1 / -1}
+main>.card.rv-full{grid-column:1 / -1}
 .rv-score{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media (max-width:900px){.rv-score{grid-template-columns:1fr}}
 .rv-box{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .rv-box h4{margin:0 0 6px;font-size:13px}.rv-box .big{font-family:var(--mono);font-size:24px;font-weight:700}
@@ -229,6 +227,33 @@ main#review.hidden{display:none}
 .pk-err{color:var(--up);font-size:13px}
 .spin{display:inline-block;width:12px;height:12px;border:2px solid var(--muted);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;vertical-align:-2px;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
+/* 版面：拖標題列換位置；拉右邊（寬）、下緣（高）、右下角（兩個一起）調大小；雙擊邊框還原 */
+main>.card{position:relative}
+body:not(.lay-lock) main>.card>h3{cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
+body.lay-busy,body.lay-busy *{user-select:none!important;-webkit-user-select:none!important}
+body.lay-busy.lay-moving,body.lay-busy.lay-moving *{cursor:grabbing!important}
+main>.card.lay-drag{opacity:.35;outline:2px dashed var(--accent);outline-offset:-2px}
+main>.card.lay-rz{outline:2px solid var(--accent);outline-offset:-2px}
+.lay-ghost{position:fixed;z-index:50;pointer-events:none;padding:6px 10px;border-radius:8px;background:#1b2a46;border:1px solid var(--accent);color:var(--fg);font-size:12px;box-shadow:0 6px 20px rgba(0,0,0,.5);white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis}
+.lay-size{position:absolute;right:10px;bottom:10px;z-index:4;padding:2px 8px;border-radius:6px;background:#1b2a46;border:1px solid var(--accent);font:12px var(--mono);color:var(--fg);pointer-events:none}
+.rz{position:absolute;z-index:3;border-radius:4px;opacity:0;transition:opacity .15s,background .15s;touch-action:none}
+main>.card:hover>.rz,main>.card.lay-rz>.rz{opacity:1}
+.rz-e{top:14px;bottom:14px;right:-4px;width:9px;cursor:ew-resize}
+.rz-s{left:14px;right:14px;bottom:-4px;height:9px;cursor:ns-resize}
+.rz-e:hover,.rz-s:hover{background:rgba(76,141,255,.45)}
+.rz-se{right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;border-radius:0 0 11px 0;background:linear-gradient(135deg,transparent 52%,var(--muted) 52% 60%,transparent 60% 70%,var(--muted) 70% 78%,transparent 78%)}
+.rz-se:hover{background:linear-gradient(135deg,transparent 52%,var(--accent) 52% 60%,transparent 60% 70%,var(--accent) 70% 78%,transparent 78%)}
+body.lay-lock .rz{display:none}
+@media (max-width:760px){.rz-e,.rz-se{display:none}.lay-body{overflow-x:auto}}   /* 手機：太寬的表格（開盤策略）在區塊裡左右捲，不把整頁撐寬 */
+/* 區塊 = 標題列 h3 + 內容 .lay-body（版面程式包的）。拉過高度的區塊：固定高度，標題列不動、內容超出就在區塊裡捲動；
+   圖表、警示清單（.fill）跟著區塊撐滿 */
+.lay-body{min-width:0}
+main>.card.sized{display:flex;flex-direction:column}
+main>.card.sized>h3{flex:0 0 auto}
+main>.card.sized>.lay-body{flex:1 1 0;min-height:0;overflow:auto;overscroll-behavior:contain;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+main>.card.sized>.lay-body>*{flex:0 0 auto}
+main>.card.sized>.lay-body>canvas.fill,main>.card.sized>.lay-body>div.fill{flex:1 1 0;min-height:80px;height:auto}
+#lay-reset.hidden,#lay-btn.hidden{display:none}
 </style>
 </head>
 <body>
@@ -244,6 +269,7 @@ main#review.hidden{display:none}
     <span id="shioaji"></span>
     <span class="phase" id="phase"></span>
     <button class="vbtn" id="view-btn" onclick="toggleView()" title="收盤後的回顧：成績單、每個訊號的結果、被擋掉的訊號、警示、明天的準備">復盤</button>
+    <button class="vbtn" id="lay-btn" onclick="layLock()"></button><button class="vbtn hidden" id="lay-reset" onclick="layReset()" title="把目前這個畫面（盤中或復盤）的區塊位置和大小還原成預設">↺ 重設版面</button>
     <span class="clock num" id="clock"></span>
   </div>
 </header>
@@ -265,26 +291,24 @@ main#review.hidden{display:none}
 <main id="review" class="hidden">
   <div class="rv-bar"><label class="small muted">日期 <select id="rv-date" onchange="loadReview(this.value)"></select></label>
     <div class="rv-tabs" id="rv-tabs"></div><span class="small muted" id="rv-meta"></span></div>
-  <section class="card rv-full"><h3>1. 成績單 <span class="small muted">（損益都已扣來回成本）</span></h3><div class="rv-score" id="rv-score"></div><div class="rv-note" id="rv-score-note"></div></section>
-  <section class="card span2"><h3>2. 訊號回顧 <span class="small muted" id="rv-chart-t"></span></h3><canvas id="rv-chart"></canvas>
+  <section class="card rv-full" id="rv-c-score"><h3>1. 成績單 <span class="small muted">（損益都已扣來回成本）</span></h3><div class="rv-score" id="rv-score"></div><div class="rv-note" id="rv-score-note"></div></section>
+  <section class="card span2" id="rv-c-sigs"><h3>2. 訊號回顧 <span class="small muted" id="rv-chart-t"></span></h3><canvas id="rv-chart"></canvas>
     <div class="rv-legend"><span><i style="background:#f5c542"></i>贏</span><span><i style="background:#c678dd"></i>輸</span><span><i style="background:transparent;border:1.5px solid #8b93a3"></i>沒成交</span>
       <span>▲ 做多　▼ 做空</span><span>淡色＋虛線圈 = 被過濾擋掉（沒發出，事後追蹤照做會怎樣）</span><span>細線 = 進場到出場</span><span><b style="color:#4c8dff">◆ 藍色菱形</b> = 你自己的單（實心成交、空心出場）</span><span>下方色塊 = 模型多空強度差（紅偏多、綠偏空）</span></div>
     <div id="rv-sigs"></div></section>
-  <section class="card"><h3>3. 被擋掉的訊號：照做會怎樣</h3><div id="rv-blocked"></div></section>
-  <section class="card"><h3>4. 模型方向準不準</h3><div id="rv-dir"></div></section>
-  <section class="card span2"><h3>5. 警示回顧 <span class="small muted">（發出後 30 分鐘）</span></h3><div id="rv-alerts"></div></section>
-  <section class="card rv-full"><h3>6. <span id="rv-tom-h">明天的準備</span> <span class="small muted" id="rv-tom-t"></span></h3><div id="rv-tom"></div></section>
-  <section class="card rv-full"><h3>7. 開盤策略 <span class="small muted">（建議的 5 檔＋全市場觀察；不設停損、13:25 前回補）</span></h3><div id="rv-gap"></div></section>
+  <section class="card" id="rv-c-blocked"><h3>3. 被擋掉的訊號：照做會怎樣</h3><div id="rv-blocked"></div></section>
+  <section class="card" id="rv-c-dir"><h3>4. 模型方向準不準</h3><div id="rv-dir"></div></section>
+  <section class="card span2" id="rv-c-alerts"><h3>5. 警示回顧 <span class="small muted">（發出後 30 分鐘）</span></h3><div id="rv-alerts"></div></section>
+  <section class="card rv-full" id="rv-c-tom"><h3>6. <span id="rv-tom-h">明天的準備</span> <span class="small muted" id="rv-tom-t"></span></h3><div id="rv-tom"></div></section>
+  <section class="card rv-full" id="rv-c-gap"><h3>7. 開盤策略 <span class="small muted">（建議的 5 檔＋全市場觀察；不設停損、13:25 前回補）</span></h3><div id="rv-gap"></div></section>
 </main>
 <main id="main">
-  <section class="charts">
-    <div class="card"><h3 id="t-tse">加權</h3><canvas id="jb-tse"></canvas><canvas id="kd-tse" class="kd" onclick="kdToggle()" title="點一下切換 1 分 K / 5 分 K"></canvas></div>
-    <div class="card"><h3 id="t-otc">櫃買</h3><canvas id="jb-otc"></canvas><canvas id="kd-otc" class="kd" onclick="kdToggle()" title="點一下切換 1 分 K / 5 分 K"></canvas></div>
-    <div class="card stock"><h3 id="t-stk">個股</h3><canvas id="jb-stk"></canvas><canvas id="kd-stk" class="kd" onclick="kdToggle()" title="點一下切換 1 分 K / 5 分 K"></canvas></div>
-  </section>
+    <div class="card chart" id="c-tse"><h3 id="t-tse">加權</h3><canvas id="jb-tse" class="fill"></canvas><canvas id="kd-tse" class="kd" onclick="kdToggle()" title="點一下切換 1 分 K / 5 分 K"></canvas></div>
+    <div class="card chart" id="c-otc"><h3 id="t-otc">櫃買</h3><canvas id="jb-otc" class="fill"></canvas><canvas id="kd-otc" class="kd" onclick="kdToggle()" title="點一下切換 1 分 K / 5 分 K"></canvas></div>
+    <div class="card chart stock" id="c-stk"><h3 id="t-stk">個股</h3><canvas id="jb-stk" class="fill"></canvas><canvas id="kd-stk" class="kd" onclick="kdToggle()" title="點一下切換 1 分 K / 5 分 K"></canvas></div>
   <section class="card" id="c-price"><h3>即時 <span class="small muted" id="live-t"></span></h3><div id="price"></div></section>
   <section class="card" id="c-verdict"><h3>多空強度 <span class="small muted" id="eval-t"></span></h3><div id="signal" class="signal hidden"></div><div id="pos" class="pos hidden"></div><div id="verdict"></div></section>
-  <section class="card" id="c-alerts"><h3>警示 <span class="small muted" id="alerts-n"></span></h3><div class="alerts" id="alerts"></div></section>
+  <section class="card" id="c-alerts"><h3>警示 <span class="small muted" id="alerts-n"></span></h3><div class="alerts fill" id="alerts"></div></section>
   <section class="card" id="c-flow"><h3>大戶 / 散戶</h3>
     <div class="fs" id="fs"><div class="hl" id="fs-big-t"></div><canvas id="fs-big"></canvas><div class="hl" id="fs-small-t"></div><canvas id="fs-small"></canvas><div class="small muted" id="fs-ck"></div></div>
     <div class="subh">主力 / 散戶 分流</div><div class="flow" id="flow"></div></section>
@@ -297,7 +321,7 @@ main#review.hidden{display:none}
   <section class="card" id="c-hist"><h3>交戰紀錄 <span class="small muted">（做熟悉的股票）</span></h3><div id="hist"></div></section>
   <section class="card" id="c-warr"><h3>權證</h3><div id="warr"></div></section>
   <section class="card span2" id="c-gap"><h3>🔔 開盤策略：建議放空成交值前 5 檔（A 開高 2～7%、B 隔日沖倒貨）＋觀察 <span class="small muted" id="gap-t"></span></h3><div id="gap"></div></section>
-  <section class="card span2" id="c-chart"><h3>多空強度曲線（每次估算）</h3><canvas id="chart" height="220"></canvas></section>
+  <section class="card span2" id="c-chart"><h3>多空強度曲線（每次估算）</h3><canvas id="chart" class="fill"></canvas></section>
   <section class="card" id="c-pre"><h3>盤前摘要</h3><pre id="pre" class="small" style="white-space:pre-wrap;margin:0;color:var(--muted)"></pre></section>
 </main>
 <footer id="foot">以上為技術面與籌碼面推算，不構成投資建議。</footer>
@@ -1032,7 +1056,7 @@ function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
     const q=ev.quote;$('price').innerHTML=`<div class="price"><span class="big num ${cls(i.chg_pct)}${limCls(CUR,q.ref)}">${fp(q.ref)}</span><span class="chg num ${cls(i.chg_pct)}">${chgTxt(q.ref,q.y,dec(q.ref))}</span><span class="muted">${esc(ev.time)}</span></div>`;}
   else renderLive();
 }
-function drawChart(){const h=HIST[CUR]||[];const c=$('chart');const dpr=window.devicePixelRatio||1;const W=c.width=c.clientWidth*dpr,H=c.height=220*dpr;const g=c.getContext('2d');g.clearRect(0,0,W,H);
+function drawChart(){const h=HIST[CUR]||[];const c=$('chart');const dpr=window.devicePixelRatio||1;const W=c.width=c.clientWidth*dpr,H=c.height=(c.clientHeight||220)*dpr;const g=c.getContext('2d');g.clearRect(0,0,W,H);
   const F=px=>px*dpr;g.font=`${F(11)}px ${getComputedStyle(document.body).fontFamily}`;
   if(!h.length){g.fillStyle='#8b93a3';g.fillText('等待第一次估算…',F(10),F(20));return;}
   const padL=F(6),padR=F(70),padT=F(8),padB=F(16),gap=F(12);const x0=padL,x1=W-padR;
@@ -1073,7 +1097,7 @@ function applyView(){const rv=VIEW==='review';$('review').classList.toggle('hidd
   if(rv){$('picker').classList.add('hidden');$('main').classList.add('hidden');}else showPicker(PICKER_ON);
   $('tabs').style.display=rv?'none':'';viewBtn();
   clearInterval(RV_TIMER);if(rv){loadReview(RV&&RV.date);RV_TIMER=setInterval(()=>loadReview(RV&&RV.date),60000);}}
-function viewBtn(){const rv=VIEW==='review',b=$('view-btn');b.textContent=rv?(PICKER_ON?'← 去選股':'← 回盤中畫面'):'復盤';b.classList.toggle('on',rv);}
+function viewBtn(){const rv=VIEW==='review',b=$('view-btn');b.textContent=rv?(PICKER_ON?'← 去選股':'← 回盤中畫面'):'復盤';b.classList.toggle('on',rv);if(window.LAY_READY)layBtns();}
 function toggleView(){VIEW=VIEW==='review'?'live':'review';applyView();}
 // 預設畫面跟著時段走：盤中（交易日 08:25–13:35，後端 in_session）看即時畫面，其餘時間（收盤後、開盤前、休市日）看最新的復盤，
 // 還沒選監控標的也一樣。只在「剛打開」和「時段切換」那一刻切，中間使用者自己按的不會被蓋掉。
@@ -1226,6 +1250,108 @@ function renderTomorrow(){const el=$('rv-tom');if(!el)return;const t=RV_TOM;
   el.innerHTML=(hl?`<div class="rv-note" style="color:#9ecbff;margin-bottom:6px" title="${esc(hz.text||'')}">🌐 ${D1}（${esc((hz.date||'').slice(5).replace('-','/'))}）國際休市：${esc(hl)}（只顯示、未驗證）</div>`:'')
     +`<div class="rv-score" style="grid-template-columns:1fr 1fr"><div class="rv-box"><h4>${esc(RV_CUR||'')} ${esc((RV.names||{})[RV_CUR]||'')}：${D0}的隔日沖分點（${D1}的庫存）</h4>${left}</div><div class="rv-box"><h4>${D1}的選股名單</h4>${right}</div></div>`;}
 window.addEventListener('resize',()=>{if(VIEW==='review')drawReview();});
+// ── 版面（2026-11-26）：盤中、復盤兩個畫面的每個區塊都能拖標題列換位置；拉右邊調寬（12 欄格線，吸附到整欄）、
+// 拉下緣調高（之後內容超出就在區塊裡捲動，圖表和警示清單跟著撐滿）、拉右下角兩個一起；雙擊邊框還原那一邊。
+// 存在這台電腦這個瀏覽器的 localStorage（不會傳到 monitor）；寬度分寬螢幕（>1200px）/ 中螢幕各存一份，手機（≤760px）一律整排。
+const LAY_KEY='dt_layout_v1';
+const LAY_DEF={'c-tse':[3,6],'c-otc':[3,6],'c-stk':[6,12]};   // 預設寬度 [寬螢幕, 中螢幕]；其餘：一般 4/6、span2 8/12、rv-full 12
+const LAY_ORDER={};                                          // 各畫面的預設順序（HTML 裡的順序）
+let LAY={},LAYD=null,LAY_BP=null,LAY_RT=0;var LAY_READY=false;   // var：viewBtn 在這段跑之前就可能被呼叫
+try{LAY=JSON.parse(localStorage.getItem(LAY_KEY)||'{}')||{};}catch(e){LAY={};}
+function laySave(){try{localStorage.setItem(LAY_KEY,JSON.stringify(LAY));}catch(e){}}
+const layBoxes=()=>[$('main'),$('review')].filter(Boolean);
+const layName=box=>box.id==='review'?'review':'live';
+const layBp=()=>innerWidth<=760?'s':innerWidth<=1200?'m':'l';
+const layCards=box=>[...box.children].filter(x=>x.classList.contains('card')&&x.id);
+function laySt(v){const st=LAY[v]||(LAY[v]={});st.w=st.w||{};st.h=st.h||{};return st;}
+function layDefSpan(card,bp){const d=LAY_DEF[card.id];if(card.classList.contains('rv-full'))return 12;if(d)return bp==='l'?d[0]:d[1];
+  if(card.classList.contains('span2'))return bp==='l'?8:12;return bp==='l'?4:6;}
+const layMinSpan=bp=>bp==='l'?2:3;
+function laySpan(card){const bp=layBp(),w=(laySt(layName(card.parentElement)).w[bp]||{})[card.id];return w||layDefSpan(card,bp);}
+function laySize(card){const bp=layBp(),st=laySt(layName(card.parentElement)),h=st.h[card.id];
+  card.style.gridColumn=bp==='s'?'':`span ${laySpan(card)}`;
+  card.style.height=h?h+'px':'';card.classList.toggle('sized',!!h);}
+// 依存的順序排；新加的區塊（存檔裡沒有）放在它預設的前一個區塊後面
+function layOrder(box){const v=layName(box),def=LAY_ORDER[v]||[],saved=(LAY[v]&&LAY[v].order)||null;
+  let ids=def.slice();
+  if(saved){ids=saved.filter(id=>def.includes(id));def.forEach((id,i)=>{if(ids.includes(id))return;
+    let k=-1;for(let j=i-1;j>=0;j--){k=ids.indexOf(def[j]);if(k>=0)break;}ids.splice(k+1,0,id);});}
+  ids.forEach(id=>{const c=$(id);if(c&&c.parentElement===box)box.appendChild(c);});}
+function layApply(box){layOrder(box);layCards(box).forEach(laySize);}
+function layBtns(){const b=$('lay-btn'),r=$('lay-reset');if(!b)return;const off=VIEW!=='review'&&PICKER_ON;
+  b.classList.toggle('hidden',off);r.classList.toggle('hidden',off||!!LAY.locked);
+  b.textContent=LAY.locked?'🔒 版面':'🔓 版面';
+  b.title=LAY.locked?'版面已鎖定：區塊不能拖、不能調大小。點一下解鎖'
+    :'拖區塊的標題列換位置；拉右邊調寬、拉下緣調高、拉右下角兩個一起；雙擊邊框還原那一邊。版面存在這個瀏覽器。點一下鎖定（避免盤中誤拖）';
+  document.body.classList.toggle('lay-lock',!!LAY.locked);}
+function layLock(){LAY.locked=!LAY.locked;laySave();layBtns();}
+function layReset(){const box=VIEW==='review'?$('review'):$('main');if(!box)return;
+  if(!confirm(`把${VIEW==='review'?'復盤':'盤中'}畫面的區塊位置和大小還原成預設？`))return;
+  delete LAY[layName(box)];laySave();layApply(box);layRedraw();}
+function layRedraw(){try{if(VIEW==='review'){drawReview();return;}
+  drawAll();drawChart();const ev=(STATE&&STATE.latest&&STATE.latest[CUR])||{};const fl=LIVE&&LIVE.flow&&(LIVE.flow[CUR]||ev.flow);if(fl)drawFlowSeries(fl);}catch(e){}}
+function layInit(){layBoxes().forEach(box=>{LAY_ORDER[layName(box)]=layCards(box).map(c=>c.id);
+    layCards(box).forEach(c=>{const h3=c.querySelector(':scope>h3'),body=document.createElement('div');body.className='lay-body';
+      [...c.childNodes].forEach(n=>{if(n!==h3)body.appendChild(n);});c.appendChild(body);
+      for(const d of ['e','s','se']){const h=document.createElement('div');h.className='rz rz-'+d;h.dataset.d=d;
+      h.title=d==='e'?'拉：調寬（雙擊還原寬度）':d==='s'?'拉：調高（雙擊還原成自動高度）':'拉：寬高一起調（雙擊兩個都還原）';c.appendChild(h);}});
+    layApply(box);});
+  LAY_BP=layBp();LAY_READY=true;layBtns();
+  // 區塊大小變了（拖拉、換寬度、視窗縮放）就重畫圖：畫布要跟著新的寬高重算解析度
+  if(window.ResizeObserver){const ro=new ResizeObserver(()=>{clearTimeout(LAY_RT);LAY_RT=setTimeout(layRedraw,80);});
+    document.querySelectorAll('main canvas').forEach(c=>ro.observe(c));}}
+window.addEventListener('resize',()=>{const bp=layBp();if(bp!==LAY_BP){LAY_BP=bp;layBoxes().forEach(b=>layCards(b).forEach(laySize));}});
+// 拖曳：標題列 = 換位置；.rz = 調大小。超過 6px 才算開始拖，單純點標題不會動
+document.addEventListener('pointerdown',e=>{if(LAY.locked||e.button!==0||LAYD)return;
+  const rz=e.target.closest&&e.target.closest('main>.card>.rz');
+  if(rz){const card=rz.parentElement,box=card.parentElement,cs=getComputedStyle(box);const gap=parseFloat(cs.columnGap)||12;
+    const inner=box.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0);const r=card.getBoundingClientRect();
+    LAYD={mode:'size',d:rz.dataset.d,card,x0:e.clientX,y0:e.clientY+scrollY,x:e.clientX,y:e.clientY,w0:r.width,h0:r.height,
+      colW:(inner-gap*11)/12,gap,span0:laySpan(card),span:null,h:null,started:true};
+    card.classList.add('lay-rz');document.body.classList.add('lay-busy');try{rz.setPointerCapture(e.pointerId);}catch(_){}
+    const tag=document.createElement('div');tag.className='lay-size';card.appendChild(tag);LAYD.tag=tag;layTag();
+    e.preventDefault();LAYD.raf=requestAnimationFrame(layTick);return;}
+  const h=e.target.closest&&e.target.closest('main>.card>h3');if(!h||e.target.closest('a,button,input,select,label,textarea'))return;
+  LAYD={mode:'move',card:h.parentElement,h3:h,pid:e.pointerId,x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,started:false,lastT:0};});
+function layTag(){const D=LAYD;if(!D||!D.tag)return;const bp=layBp();
+  D.tag.textContent=(bp==='s'?'整排':`${D.span??D.span0}/12 欄`)+' · '+(D.h?D.h+'px':(D.card.classList.contains('sized')?Math.round(D.card.getBoundingClientRect().height)+'px':'自動高度'));}
+function layMoveTo(x,y){const D=LAYD,card=D.card,box=card.parentElement;
+  const el=document.elementFromPoint(x,y),t=el&&el.closest&&el.closest('main>.card');
+  if(!t||t===card||t.parentElement!==box||Date.now()-D.lastT<120)return;
+  const r=t.getBoundingClientRect(),wide=r.width>box.clientWidth*0.8;
+  const before=wide?y<r.top+r.height/2:x<r.left+r.width/2;
+  if(before?t.previousElementSibling===card:t.nextElementSibling===card)return;
+  box.insertBefore(card,before?t:t.nextSibling);D.lastT=Date.now();}
+function layStep(){const D=LAYD;if(!D)return;
+  if(D.mode==='move'){if(!D.started)return;D.ghost.style.left=(D.x+14)+'px';D.ghost.style.top=(D.y+12)+'px';layMoveTo(D.x,D.y);return;}
+  const bp=layBp(),dx=D.x-D.x0,dy=D.y+scrollY-D.y0;
+  if(D.d!=='s'&&bp!=='s'){const span=Math.max(layMinSpan(bp),Math.min(12,Math.round((D.w0+dx+D.gap)/(D.colW+D.gap))));
+    if(span!==(D.span??D.span0)){D.span=span;D.card.style.gridColumn=`span ${span}`;}}
+  if(D.d!=='e'&&Math.abs(dy)>=4){D.h=Math.max(80,Math.round(D.h0+dy));D.card.style.height=D.h+'px';D.card.classList.add('sized');}
+  layTag();}
+document.addEventListener('pointermove',e=>{const D=LAYD;if(!D)return;D.x=e.clientX;D.y=e.clientY;
+  if(D.mode==='move'&&!D.started){if(Math.hypot(D.x-D.x0,D.y-D.y0)<6)return;D.started=true;
+    D.card.classList.add('lay-drag');document.body.classList.add('lay-busy','lay-moving');try{D.h3.setPointerCapture(D.pid);}catch(_){}
+    const g=document.createElement('div');g.className='lay-ghost';g.textContent='↕ '+(D.h3.textContent||'').trim().replace(/\s+/g,' ').slice(0,40);document.body.appendChild(g);D.ghost=g;
+    D.raf=requestAnimationFrame(layTick);}
+  layStep();});
+// 拖到畫面上緣 / 下緣時自動捲動（上緣要扣掉固定在頂端的標題列）
+function layTick(){const D=LAYD;if(!D||!D.started)return;const hd=document.querySelector('header');
+  const top=(hd?hd.getBoundingClientRect().bottom:0)+30,bot=innerHeight-40;let v=0;
+  if(D.mode==='move'&&D.y<top)v=-Math.min(24,(top-D.y)/2+4);else if(D.y>bot)v=Math.min(24,(D.y-bot)/2+4);
+  if(v){const y0=scrollY;scrollBy(0,v);if(scrollY!==y0)layStep();}D.raf=requestAnimationFrame(layTick);}
+function layEnd(){const D=LAYD;if(!D)return;LAYD=null;cancelAnimationFrame(D.raf);
+  document.body.classList.remove('lay-busy','lay-moving');D.card.classList.remove('lay-drag','lay-rz');
+  if(D.ghost)D.ghost.remove();if(D.tag)D.tag.remove();if(!D.started)return;
+  const box=D.card.parentElement,st=laySt(layName(box));
+  if(D.mode==='move')st.order=layCards(box).map(c=>c.id);
+  else{const bp=layBp();if(D.span!=null&&bp!=='s'){(st.w[bp]=st.w[bp]||{})[D.card.id]=D.span;}if(D.h!=null)st.h[D.card.id]=D.h;}
+  laySave();layRedraw();}
+document.addEventListener('pointerup',layEnd);document.addEventListener('pointercancel',layEnd);
+document.addEventListener('dblclick',e=>{const rz=e.target.closest&&e.target.closest('main>.card>.rz');if(!rz||LAY.locked)return;
+  const card=rz.parentElement,st=laySt(layName(card.parentElement)),d=rz.dataset.d,bp=layBp();
+  if(d!=='s'&&st.w[bp])delete st.w[bp][card.id];if(d!=='e')delete st.h[card.id];laySave();laySize(card);layRedraw();});
+layInit();
 </script>
 </body>
 </html>

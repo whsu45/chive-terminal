@@ -142,6 +142,23 @@ def kd_state(hlc, n=9):
     return {"k": round(k, 1), "d": round(d, 1), "cross": cross, "zone": "高檔" if k >= 80 else ("低檔" if k <= 20 else None), "bars": len(s)}
 
 
+def kd_dual(stk_series, idx_series, tf=3, lo=20, hi=80, min_bars=3):
+    """
+    KD 共振（2026-11-26 加，使用者要求）：大盤與個股同一個週期（預設 3 分 K）的 KD(9,3,3) 同時在低檔或高檔。
+    - 兩邊 K 都 ≤lo → state = "low"（雙低檔，買進訊號）；兩邊 K 都 ≥hi → "high"（雙高檔，賣出訊號）；其餘 None。
+    - 只看 K（跟儀表板「K≤20 低檔」同一個定義）；最後一根是還沒走完的那根（跟儀表板 KD 圖一樣，盤中每分鐘會變）。
+    - 每天 09:00 從 50 起算，開盤前 min_bars 根（3 分 K 就是 9 分鐘）還在暖身，不判斷。
+    stk_series：個股 1 分 K [[HH:MM, 開, 高, 低, 收, ...]]；idx_series：指數 [[HH:MM, 值]]。
+    回 {tf, stk, idx（各是 kd_state 的結果或 None）, state}。
+    """
+    s = kd_state(tf_hlc(stk_series, tf)) if stk_series else None
+    i = kd_state(tf_hlc(idx_series, tf)) if idx_series else None
+    st = None
+    if s and i and s["bars"] >= min_bars and i["bars"] >= min_bars:
+        st = "low" if (s["k"] <= lo and i["k"] <= lo) else ("high" if (s["k"] >= hi and i["k"] >= hi) else None)
+    return {"tf": tf, "stk": s, "idx": i, "state": st}
+
+
 def tf_hlc(series, tf=5):
     """
     盤中 1 分 K → tf 分 K 的 [(高, 低, 收)]（09:00 起每 tf 分鐘一根，最後一根是還沒走完的，跟儀表板 KD 圖一樣）。

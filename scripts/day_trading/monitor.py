@@ -743,6 +743,9 @@ class Monitor:
         self._combo_at = {}                          # code -> {組合種類: 上次提醒的時間}（combo.py：因子組合提醒，觀察用、不計分）
         self.runs = {}                               # code -> 目前的連外次 / 連內次（_exhaustion 的回傳；訊號用來看反向是不是還亮著燈）
         self.liq = {}                                # code -> 最近一次流動性統計
+        self.kd_live = {}                            # code -> 最近一次 KD 共振判斷（_kd_dual：大盤與個股 3 分 K）
+        self.idx_chg_now = {}                        # t00 / o00 -> (今天漲跌幅 %, epoch)：快迴圈更新
+        self.kd_ep = {}                              # code -> KD 共振的這一段（哪一邊、幾點開始、什麼時候結束），控制通知只發一次
         self._liq_alerted = set()                    # 今天已經發過「掛單薄」警示的 code
         self._sig_done = {}                          # code -> [結束的訊號 {side, lo, hi, since, label, res, ext}]：同價位不重發用（_repeat_block）
         self._sig_seen = {}                          # (code, side, px) -> epoch，同一個點 15 分鐘內不重發
@@ -1590,6 +1593,9 @@ class Monitor:
         ih = self._idx_day_hlc()
         vals = [v for _, v in (idx_ser or []) if v]
         out["idx_day"] = I.kd_state(ih + ([(max(vals), min(vals), vals[-1])] if vals else [])) if ih else None
+        out["stk_3m"] = I.kd_state(I.tf_hlc(bars, 3)) if bars else None
+        out["idx_3m"] = I.kd_state(I.tf_hlc(idx_ser, 3)) if idx_ser else None
+        out["dual"] = (self.kd_live.get(c) or {}).get("active")      # KD 共振（3 分 K 雙低檔 low / 雙高檔 high / None）
         return out
 
     @staticmethod
@@ -1601,8 +1607,103 @@ class Monitor:
             tag = "".join(f"・{t}" for t in (x.get("zone"), x.get("cross")) if t)
             return f"K{x['k']:.0f}/D{x['d']:.0f}{tag}"
         kdv = kdv or {}
-        return (f"加權 日 {one(kdv.get('idx_day'))}、5分 {one(kdv.get('idx_5m'))}；"
-                f"個股 日 {one(kdv.get('stk_day'))}、5分 {one(kdv.get('stk_5m'))}（只顯示、未驗證）")
+        return (f"加權 日 {one(kdv.get('idx_day'))}、5分 {one(kdv.get('idx_5m'))}、3分 {one(kdv.get('idx_3m'))}；"
+                f"個股 日 {one(kdv.get('stk_day'))}、5分 {one(kdv.get('stk_5m'))}、3分 {one(kdv.get('stk_3m'))}（只顯示、未驗證）")
+
+    # ──────────────────────────────────────────────── KD 共振（2026-11-26 加，使用者要求）
+    # 大盤（加權）和個股的 3 分 K KD(9,3,3) 同時在低檔（兩邊 K 都 ≤20 = 雙低檔，買進訊號）或高檔（都 ≥80 = 雙高檔，賣出訊號）：
+    # 發警示 + 聲音「叮叮」+ Mac 通知，而且同方向進場加分（模型因子 ±KD_DUAL_BONUS，跟竭盡加分同一個量級，約強度 3 點）、反方向扣分。
+    # 加分只讓同方向的建議比較容易成立，不會單獨觸發進場；其他過濾（逆勢、恐慌暫停…）照舊。
+    # 每筆訊號都記 sig["kd_dual"]、警示有自己的種類（KD 雙低檔 / 雙高檔），之後用 signal_outcomes / alert_outcomes 驗證。
+    KD_DUAL_TF = 3
+    KD_DUAL_LO, KD_DUAL_HI = 20, 80
+    KD_DUAL_BONUS = float(os.environ.get("DAYTRADE_KD_BONUS", "0.3"))   # 設 0 = 只通知、不加分
+    KD_DUAL_GAP = 540       # 一段結束後隔 9 分鐘（3 根 3 分 K）以內又成立，算同一段、不再通知
+    # 雙高檔要加做空分，個股還要「弱勢」或「碰壓力不過」其中一個（使用者 2026-11-26 補充）；雙低檔做多照原本不加條件
+    KD_WEAK_RS = float(os.environ.get("DAYTRADE_KD_WEAK_RS", "-0.5"))   # 弱勢：今天漲跌幅比加權低 ≥0.5 個百分點（模型「略弱於大盤」的門檻）
+    KD_REJ_BARS = 12        # 碰壓力不過：最近 12 根 1 分 K 碰過壓力（差 1 tick 內）、沒有一根收在壓力之上、現價在壓力之下
+    KD_DUAL_STALE = 20      # 模型估算時，快迴圈超過幾秒沒更新就自己重算
+
+    def _kd_bars(self, c):
+        return self.flow_src.series(c) if self.flow_src else [[kk] + v for kk, v in sorted(self.mis_bars[c].items()) if kk != "_v"]
+
+    def _kd_dual(self, c, now, alert=True):
+        """算大盤與個股 3 分 K 的 KD 共振，追蹤這一段，剛成立時通知一次。回 indicators.kd_dual 的結果再加
+        active（目前成立的那一邊 low / high / None）、since（這一段幾點開始）、bonus（加幾分）。"""
+        bars = self._kd_bars(c)
+        r = I.kd_dual(bars, self._idx_ser("t00"), self.KD_DUAL_TF, self.KD_DUAL_LO, self.KD_DUAL_HI)
+        r["short_ok"], r["short_why"] = self._kd_short_ok(c, bars, now) if r["state"] == "high" else (None, [])
+        ep = self.kd_ep.setdefault(c, {"active": None, "side": None, "since": None, "off": None, "bonus_alerted": False})
+        nowts, cur = now.timestamp(), r["state"]
+        hm = now.strftime("%H:%M")
+        if cur and not ("09:00" <= hm < "13:25"):
+            cur = None                                     # 13:25 收盤試撮之後不算（不開新單），盤前也不算
+        if cur:
+            if ep["active"] != cur:
+                resumed = ep["side"] == cur and ep["off"] is not None and nowts - ep["off"] < self.KD_DUAL_GAP
+                ep.update(active=cur, off=None)
+                if not resumed:
+                    ep.update(side=cur, since=now.strftime("%H:%M:%S"), bonus_alerted=False)
+                    if alert and hm < "13:20":
+                        self._kd_dual_alert(c, now, r)
+                        ep["bonus_alerted"] = cur == "low" or bool(r["short_ok"])
+            elif cur == "high" and r["short_ok"] and not ep["bonus_alerted"] and alert and hm < "13:20":
+                self._kd_dual_alert(c, now, r)              # 雙高檔途中才變弱 / 才碰壓力不過：這時候開始加分，再通知一次
+                ep["bonus_alerted"] = True
+        elif ep["active"]:
+            ep.update(active=None, off=nowts)
+        on = ep["active"] == "low" or (ep["active"] == "high" and bool(r["short_ok"]))
+        r.update(active=ep["active"], since=ep["since"] if ep["active"] else None,
+                 bonus=self.KD_DUAL_BONUS if on else 0.0, ts=nowts)
+        self.kd_live[c] = r
+        return r
+
+    def _kd_short_ok(self, c, bars, now):
+        """雙高檔的做空加分條件：弱勢股 或 碰壓力不過。回 (成立與否, [理由])。
+        - 弱勢股：前一天弱勢股五條件全中（選股頁的「做空弱勢股」，theme_screener.short_conditions），或今天漲跌幅比加權低 ≥0.5 個百分點。
+        - 碰壓力不過：壓力 = 模型計畫的「壓」（空方觸發價）和壓力 / 支撐卡上現價以上的價位；最近 12 根已走完的 1 分 K
+          最高碰到壓力（差 1 tick 內）、沒有一根收在壓力之上、現價在壓力之下。"""
+        why = []
+        ws = (self.daily.get(c) or {}).get("weak_screen") or {}
+        if ws.get("hit"):
+            why.append("弱勢股五條件全中")
+        q = (getattr(self, "_last_quotes", None) or {}).get(c) or {}
+        done = [b for b in (bars or []) if b and len(b) >= 5 and b[2] is not None and b[4] is not None]
+        p = (done[-1][4] if done else None)
+        y = q.get("y") or ((WEB.latest.get(c) or {}).get("quote") or {}).get("y")
+        ic = self.idx_chg_now.get("t00")
+        if p and y and ic and now.timestamp() - ic[1] < 120:
+            rs = (p / y - 1) * 100 - ic[0]
+            if rs <= self.KD_WEAK_RS:
+                why.append(f"弱於大盤 {rs:+.1f} 個百分點")
+        ev = WEB.latest.get(c) or {}
+        plan = ev.get("plan") or {}
+        lv = [("壓", (plan.get("short") or {}).get("trigger_px"))] + [(n, v) for n, v in (plan.get("resistance") or [])]
+        rec = done[-(self.KD_REJ_BARS + 1):-1] if len(done) > 1 else []      # 最後一根還沒走完，不算
+        if rec and p:
+            tk = I.tick_size(p)
+            for n, R in lv:
+                if R and p < R and max(b[2] for b in rec) >= R - tk and all(b[4] <= R for b in rec):
+                    why.append(f"碰{n} {R:g} 不過")
+                    break
+        return bool(why), why
+
+    def _kd_dual_alert(self, c, now, r):
+        low = r["state"] == "low"
+        s_, i_ = r["stk"], r["idx"]
+        pts = round(11 * self.KD_DUAL_BONUS, 1)
+        lv = f"都 ≤{self.KD_DUAL_LO}" if low else f"都 ≥{self.KD_DUAL_HI}"
+        kd_txt = f"加權 {r['tf']}分K K{i_['k']:.0f}/D{i_['d']:.0f}、個股 K{s_['k']:.0f}/D{s_['d']:.0f} {lv}"
+        if not low and not r.get("short_ok"):
+            # 雙高檔但個股不弱、也沒碰壓力不過：只提醒、不加分、不出聲（使用者：要弱勢股或碰壓力不過才對做空加分）
+            self._add_alert(c, now, f"ⓘ KD 雙高檔（賣出訊號，條件未齊不加分）：{kd_txt}；個股不是弱勢股、也沒碰壓力不過，等其中一個成立才加做空分")
+            return
+        bon = (f"{'做多' if low else '做空'}加分 +{pts:g}、{'做空' if low else '做多'}扣分（加分只讓同方向的建議比較容易成立，不是單獨的進場點）"
+               if self.KD_DUAL_BONUS else "只通知、不加分（DAYTRADE_KD_BONUS=0）")
+        cond = "" if low else "＋" + "、".join(r.get("short_why") or [])
+        self._add_alert(c, now, f"➕ KD 雙{'低' if low else '高'}檔（{'買進' if low else '賣出'}訊號）{cond}：{kd_txt} → {bon}")
+        self._notify("kd", c, f"KD 雙{'低' if low else '高'}檔{cond}：大盤和個股 {r['tf']} 分 K {lv}（{'買進' if low else '賣出'}訊號）",
+                     f"加權 K{i_['k']:.0f}、個股 K{s_['k']:.0f}；{bon.split('（')[0]}")
 
     REPEAT_TICKS = 3        # 進場區相差這麼多 tick 以內算「同一個價位」
 
@@ -1982,6 +2083,14 @@ class Monitor:
             ps, pl = min(85, ps + pts), max(15, pl - pts)
         if self._exh_bonus(c, "long", now) and "賣盤竭盡" not in counted:
             pl, ps = min(85, pl + pts), max(15, ps - pts)
+        # KD 共振加分也立刻生效（模型這一輪還沒列成因子的話先補上）
+        kdd = self.kd_live.get(c) or {}
+        if kdd.get("active") and kdd.get("bonus") and not any(str(k).startswith("KD 雙") for k in counted):
+            kp = round(11 * kdd["bonus"], 1)
+            if kdd["active"] == "low":
+                pl, ps = min(85, pl + kp), max(15, ps - kp)
+            else:
+                ps, pl = min(85, ps + kp), max(15, pl - kp)
 
         def vol_ok():
             if len(f5) < 4:
@@ -2089,6 +2198,10 @@ class Monitor:
             try:
                 sig["kd"] = self._kd_ref(c, q, bars, self._idx_ser("t00"))
                 sig.setdefault("refs", []).append({"kind": "KD", "text": self._kd_text(sig["kd"])})
+                kdd = self.kd_live.get(c) or {}
+                # KD 共振：low / high / None，加上跟訊號同不同方向（之後分組比勝率）
+                sig["kd_dual"] = {"state": kdd.get("active"), "with": (kdd.get("active") == ("high" if side == "short" else "low")) if kdd.get("active") else None,
+                                  "bonus": kdd.get("bonus") or 0.0, "short_ok": kdd.get("short_ok"), "short_why": kdd.get("short_why")}
             except Exception as e:
                 print(f"[{now:%H:%M:%S}] {c} KD 參考失敗：{str(e)[:100]}")
             try:
@@ -2135,6 +2248,10 @@ class Monitor:
                 sig["exh"] = {k: ex.get(k) for k in ("side", "time", "n", "vol", "vr", "push_tk", "push_pct", "ext", "pre", "over", "kind")}
                 score_txt += (f"｜➕ 轉折確認：{ex['time']} {'買' if short else '賣'}盤竭盡（連{'外' if short else '內'} {ex['n']} 次 {ex['vol']} 張"
                               f"{'推過今高' if short else '殺破今低'} {ex['pre']} 到 {ex['ext']} 後熄燈）")
+            kdd = self.kd_live.get(c) or {}
+            if kdd.get("active") == ("high" if short else "low") and kdd.get("bonus"):
+                score_txt += (f"｜➕ KD 共振：加權和個股 {kdd['tf']} 分 K 都在{'高檔' if short else '低檔'}（加權 K{kdd['idx']['k']:.0f}、個股 K{kdd['stk']['k']:.0f}，"
+                              f"{(kdd.get('since') or '')[:5]} 起），{'空' if short else '多'}方加分")
             la = self._exh_lit_against(c, side)
             if la:
                 sig["exh_lit"] = {"n": la[0], "vol": la[1]}
@@ -2192,6 +2309,7 @@ class Monitor:
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
                    ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("追價過濾", r"⏸ 追價過濾"), ("環境過濾", r"⏸ 環境過濾"), ("恐慌暫停", r"⏸ 恐慌暫停"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
                    ("掛單薄", r"^⚠ 掛單薄"), ("買盤竭盡", r"^➕ 買盤竭盡"), ("賣盤竭盡", r"^➕ 賣盤竭盡"),
+                   ("KD 雙低檔", r"^➕ KD 雙低檔"), ("KD 雙高檔", r"^➕ KD 雙高檔"), ("KD 雙高檔不加分", r"^ⓘ KD 雙高檔"),   # KD 共振（2026-11-26 加）
                    # 撤單觀察 / 程式單偵測（orderflow.py，2026-11-26 加）：分類後 alert_outcomes 有 10 / 30 分鐘後的價格，之後驗證有沒有用
                    ("撤單觀察", r"^⚠ 撤單觀察"), ("整數撤單", r"^⚠ 整數撤單"), ("固定張數撤掛", r"^⚠ 固定張數(撤單|掛單|掛撤)"),
                    ("掛單牆", r"^⚠ (買單牆|賣單牆)"), ("疑似程式單", r"^⚠ 疑似程式單"), ("固定張數成交", r"^⚠ 固定張數成交"), ("大單拆單", r"^⚠ 大單拆單"), ("固定張數連發", r"^⚠ 固定張數連發")]
@@ -2243,7 +2361,7 @@ class Monitor:
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs", "filters", "fear", "support_pull", "kd", "holidays", "orderflow")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs", "filters", "fear", "support_pull", "kd", "kd_dual", "holidays", "orderflow")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -2457,7 +2575,7 @@ class Monitor:
                **score,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors"), "exh": sg.get("exh"), "exh_lit": sg.get("exh_lit"),
-               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs"), "filters": sg.get("filters"), "fear": sg.get("fear"), "support_pull": sg.get("support_pull"), "kd": sg.get("kd"), "holidays": sg.get("holidays"), "orderflow": sg.get("orderflow")}
+               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs"), "filters": sg.get("filters"), "fear": sg.get("fear"), "support_pull": sg.get("support_pull"), "kd": sg.get("kd"), "kd_dual": sg.get("kd_dual"), "holidays": sg.get("holidays"), "orderflow": sg.get("orderflow")}
         if sg.get("blocked"):
             out.update(blocked=True, block_reason=sg.get("block_reason"), block_kind=sg.get("block_kind"))
         if sg.get("cancelled"):
@@ -2643,9 +2761,15 @@ class Monitor:
             except Exception:
                 continue
         ex = self.exh.get(c)
+        kdd = self.kd_live.get(c)
+        if not kdd or now.timestamp() - kdd.get("ts", 0) > self.KD_DUAL_STALE:
+            try:
+                kdd = self._kd_dual(c, now)
+            except Exception as e:
+                print(f"[{now:%H:%M:%S}] {c} KD 共振失敗：{str(e)[:100]}")
         return {"bars": bars, "idx_series": idx_series, "peer_hist": self.peer_hist.get(c, {}), "alerts": alerts, "market": mkt,
                 "exhaust": ex if ex and ex.get("near") and now.timestamp() - ex["ts"] <= self.EXH_TTL else None,
-                "signs": self.sign_sum.get(c)}
+                "signs": self.sign_sum.get(c), "kd_dual": kdd}
 
     # ------------------------------------------------------------ 快迴圈（圖表、報價、分流、即時警示；有永豐 3 秒，否則 10 秒）
     def _record_flow_hist(self, c, flow, q, now, min_gap=50):
@@ -2855,7 +2979,7 @@ class Monitor:
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
-                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "orderflow": {}, "liquidity": {}, "runs": {}, "signs": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": (self.flow_src.ticks_budget() if self.flow_src else None),
+                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "orderflow": {}, "kd_dual": {}, "liquidity": {}, "runs": {}, "signs": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": (self.flow_src.ticks_budget() if self.flow_src else None),
                 "mis_fail": self._mis_fail,
                 "capture": {"mode": mode, "text": self._capture_text(mode)}}
         for k in ("t00", "o00"):
@@ -2866,6 +2990,7 @@ class Monitor:
                     ref = self.flow_src.index_last(k) or ref
                 if ref:
                     live["index"][k] = {"ref": ref, "y": q["y"], "chg": (ref / q["y"] - 1) * 100}
+                    self.idx_chg_now[k] = (live["index"][k]["chg"], now.timestamp())     # KD 共振的弱勢判斷用（個股 vs 大盤）
                     if self.index_stream:
                         live["index_series"][k] = self.flow_src.index_series(k)
                     else:
@@ -2957,6 +3082,11 @@ class Monitor:
                     self.runs[c] = rn
             except Exception as e:
                 print(f"[fast] 竭盡判斷失敗：{str(e)[:100]}")
+            try:
+                kdd = self._kd_dual(c, now)
+                live["kd_dual"][c] = {k: kdd.get(k) for k in ("tf", "stk", "idx", "state", "active", "since", "bonus", "short_ok", "short_why")}
+            except Exception as e:
+                print(f"[fast] KD 共振失敗：{str(e)[:100]}")
             try:
                 sm = self._exh_signs(c, q, now)
                 if sm:

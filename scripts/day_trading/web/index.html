@@ -303,9 +303,9 @@ main>.card.sized>.lay-body>canvas.fill,main>.card.sized>.lay-body>div.fill{flex:
   <section class="card rv-full" id="rv-c-gap"><h3>7. 開盤策略 <span class="small muted">（建議的 5 檔＋全市場觀察；不設停損、13:25 前回補）</span></h3><div id="rv-gap"></div></section>
 </main>
 <main id="main">
-    <div class="card chart" id="c-tse"><h3 id="t-tse">加權</h3><canvas id="jb-tse" class="fill"></canvas><canvas id="kd-tse" class="kd" onclick="kdToggle()" title="點一下切換 1 分 K / 5 分 K"></canvas></div>
-    <div class="card chart" id="c-otc"><h3 id="t-otc">櫃買</h3><canvas id="jb-otc" class="fill"></canvas><canvas id="kd-otc" class="kd" onclick="kdToggle()" title="點一下切換 1 分 K / 5 分 K"></canvas></div>
-    <div class="card chart stock" id="c-stk"><h3 id="t-stk">個股</h3><canvas id="jb-stk" class="fill"></canvas><canvas id="kd-stk" class="kd" onclick="kdToggle()" title="點一下切換 1 分 K / 5 分 K"></canvas></div>
+    <div class="card chart" id="c-tse"><h3 id="t-tse">加權</h3><canvas id="jb-tse" class="fill"></canvas><canvas id="kd-tse" class="kd" onclick="kdToggle()" title="點一下依序切換 3 分 K → 5 分 K → 1 分 K"></canvas></div>
+    <div class="card chart" id="c-otc"><h3 id="t-otc">櫃買</h3><canvas id="jb-otc" class="fill"></canvas><canvas id="kd-otc" class="kd" onclick="kdToggle()" title="點一下依序切換 3 分 K → 5 分 K → 1 分 K"></canvas></div>
+    <div class="card chart stock" id="c-stk"><h3 id="t-stk">個股</h3><canvas id="jb-stk" class="fill" onclick="jbToggle()" title="點一下切換 江波圖 / K 線（K 線週期跟 KD 圖一樣：點 KD 圖依序切 3 / 5 / 1 分 K）" style="cursor:pointer"></canvas><canvas id="kd-stk" class="kd" onclick="kdToggle()" title="點一下依序切換 3 分 K → 5 分 K → 1 分 K"></canvas></div>
   <section class="card" id="c-price"><h3>即時 <span class="small muted" id="live-t"></span></h3><div id="price"></div></section>
   <section class="card" id="c-verdict"><h3>多空強度 <span class="small muted" id="eval-t"></span></h3><div id="signal" class="signal hidden"></div><div id="pos" class="pos hidden"></div><div id="verdict"></div></section>
   <section class="card" id="c-alerts"><h3>警示 <span class="small muted" id="alerts-n"></span></h3><div class="alerts fill" id="alerts"></div></section>
@@ -673,10 +673,19 @@ function drawJB(c,o){
   // 成交量
   if(o.stock&&volH){const mv=Math.max(1,...pts.map(p=>p.v||0));const bw=Math.max(F(1),(x1-x0)/270*0.8);pts.forEach(p=>{const hgt=(p.v||0)/mv*volH;g.fillStyle=p.c>=p.o?'rgba(255,77,79,.55)':'rgba(46,204,113,.55)';g.fillRect(X(mins(p.t))-bw/2,H-padB-hgt,bw,hgt);});}
   // 價格線（分段上色 + 與昨收間淡填色）
+  // 個股可切成 K 線（點個股圖切換，週期跟 KD 圖同一個：3 / 5 / 1 分 K）；紅 = 收 ≥ 開、綠 = 收 < 開
+  if(o.stock&&JB_K){const kb=[];for(const p of pts){const m=mins(p.t),b=Math.floor(m/KD_TF),L=kb[kb.length-1];
+      if(L&&L.b===b){L.h=Math.max(L.h,p.h??p.c);L.l=Math.min(L.l,p.l??p.c);L.c=p.c;}else kb.push({b,o:p.o??p.c,h:p.h??p.c,l:p.l??p.c,c:p.c});}
+    const bw=Math.max(F(1.5),(x1-x0)/270*KD_TF*0.68);g.lineWidth=F(1);
+    kb.forEach(b=>{const x=X(Math.min(270,b.b*KD_TF+KD_TF/2)),col=b.c>=b.o?'#ff4d4f':'#2ecc71';g.strokeStyle=col;g.fillStyle=col;
+      g.beginPath();g.moveTo(x,Y(b.h));g.lineTo(x,Y(b.l));g.stroke();const yt=Y(Math.max(b.o,b.c)),yb=Y(Math.min(b.o,b.c));g.fillRect(x-bw/2,yt,bw,Math.max(F(1),yb-yt));});
+    g.fillStyle='#8b93a3';g.fillText(`${KD_TF}分K 線（點圖切回江波圖；點 KD 圖換週期）`,x0+F(4),y0+F(10));
+  }else{
   for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i];const col=b.c>=ref?'#ff4d4f':'#2ecc71';const xa=X(mins(a.t)),xb=X(mins(b.t));
     g.fillStyle=col;g.globalAlpha=.10;g.beginPath();g.moveTo(xa,Y(ref));g.lineTo(xa,Y(a.c));g.lineTo(xb,Y(b.c));g.lineTo(xb,Y(ref));g.closePath();g.fill();g.globalAlpha=1;
     g.strokeStyle=col;g.lineWidth=F(1.6);g.beginPath();g.moveTo(xa,Y(a.c));g.lineTo(xb,Y(b.c));g.stroke();}
   if(pts.length===1){const p=pts[0];g.fillStyle=p.c>=ref?'#ff4d4f':'#2ecc71';g.beginPath();g.arc(X(mins(p.t)),Y(p.c),F(2.5),0,7);g.fill();}
+  }
   // VWAP
   if(o.stock){let cv=0,ca=0;g.strokeStyle='#f5c542';g.lineWidth=F(1);g.beginPath();let s=false;pts.forEach(p=>{cv+=p.v||0;ca+=p.a||0;if(!cv)return;const vw=ca/cv;const x=X(mins(p.t)),y=Y(vw);s?g.lineTo(x,y):g.moveTo(x,y);s=true;});g.stroke();}
   // 買賣點
@@ -692,10 +701,13 @@ function drawJB(c,o){
 }
 // ---------------------------------------------------------------- KD 圖（江波圖正下方，時間軸對齊）
 // KD(9,3,3)：RSV =（收盤 − 最近 9 根最低）÷（最近 9 根最高 − 最低）×100，不足 9 根用現有的；
-// K = 前一個 K×2/3 + RSV×1/3，D = 前一個 D×2/3 + K×1/3，開盤從 50 起算。預設 5 分 K，點圖切 1 分 K。
+// K = 前一個 K×2/3 + RSV×1/3，D = 前一個 D×2/3 + K×1/3，開盤從 50 起算。預設 3 分 K（KD 共振用的週期），點圖依序切 5 分 K、1 分 K。
 // 指數只有每分鐘一個取樣值，高低用取樣值代替。
-let KD_TF=5;try{KD_TF=Number(localStorage.getItem('kd_tf'))===1?1:5;}catch(e){}
-function kdToggle(){KD_TF=KD_TF===5?1:5;try{localStorage.setItem('kd_tf',String(KD_TF));}catch(e){}drawAll();}
+const KD_TFS=[3,5,1];
+let KD_TF=3;try{const v=Number(localStorage.getItem('kd_tf'));if(KD_TFS.includes(v))KD_TF=v;}catch(e){}
+let JB_K=false;try{JB_K=localStorage.getItem('jb_k')==='1';}catch(e){}
+function jbToggle(){JB_K=!JB_K;try{localStorage.setItem('jb_k',JB_K?'1':'0');}catch(e){}drawAll();}
+function kdToggle(){KD_TF=KD_TFS[(KD_TFS.indexOf(KD_TF)+1)%KD_TFS.length];try{localStorage.setItem('kd_tf',String(KD_TF));}catch(e){}drawAll();}
 function kdCalc(pts,tf){const bars=[];
   for(const p of pts){const b=Math.floor(p.m/tf);const last=bars[bars.length-1];
     if(last&&last.b===b){last.h=Math.max(last.h,p.h);last.l=Math.min(last.l,p.l);last.c=p.c;last.m=p.m;}else bars.push({b,m:p.m,h:p.h,l:p.l,c:p.c});}
@@ -728,6 +740,15 @@ function drawKD(c,o){if(!c)return;
   g.fillStyle='#4c8dff';g.fillText('K '+last.k.toFixed(0),x1+F(4),clampY(yk));g.fillStyle='#f5a623';g.fillText('D '+last.d.toFixed(0),x1+F(44),clampY(yd));
   const zone=last.k>=80?`${KD_TF}分K 高檔（K≥80）`:last.k<=20?`${KD_TF}分K 低檔（K≤20）`:'';   // 標明是分 K 的，跟標題裡的日 KD 分開
   if(zone){g.fillStyle=last.k>=80?'#ff4d4f':'#2ecc71';g.fillText(zone,x0+g.measureText(head).width+F(10),F(11));}
+  // KD 共振（monitor._kd_dual）：加權和個股的 3 分 K 同時 ≤20（雙低檔 → 做多加分）或 ≥80（雙高檔 → 做空加分）；靠右寫在個股 KD 圖標題列
+  const du=o.dual;if(du&&du.stk&&du.idx){const a=du.active,kk=`加權 K${du.idx.k.toFixed(0)} / 個股 K${du.stk.k.toFixed(0)}`;
+    const used=x0+g.measureText(head).width+(zone?g.measureText(zone).width+F(10):0)+F(16);
+    const nob=a==='high'&&!du.bonus,why=(du.short_why||[]).join('、');   // 雙高檔要弱勢股或碰壓力不過才加做空分
+    let t=!a?`${du.tf}分K 共振：${kk}`:nob?`KD 雙高檔・條件未齊不加分（不弱、沒碰壓力不過；${du.tf}分K ${kk}）`
+      :`⚡ KD 共振 ${a==='low'?'雙低檔 → 做多加分':'雙高檔'+(why?'＋'+why:'')+' → 做空加分'}（${du.tf}分K ${kk}${du.since?'，'+du.since.slice(0,5)+' 起':''}）`;
+    if(x1-g.measureText(t).width<used)t=!a?`${du.tf}分 ${kk}`:nob?'KD 雙高檔 不加分':`⚡ ${a==='low'?'雙低檔 做多加分':'雙高檔 做空加分'}`;
+    if(x1-g.measureText(t).width>=used){g.font=`${a&&!nob?'bold ':''}${F(11)}px ${getComputedStyle(document.body).fontFamily}`;
+      g.fillStyle=!a?'#8b93a3':nob?'#f0b429':(a==='low'?'#ff4d4f':'#2ecc71');g.fillText(t,x1-g.measureText(t).width,F(11));}}
 }
 function drawAll(){if(!LIVE||!LIVE.quotes)return;const ev=STATE&&STATE.latest[CUR];
   for(const [k,id,tid,nm] of [['t00','jb-tse','t-tse','加權'],['o00','jb-otc','t-otc','櫃買']]){const ix=LIVE.index[k];const s=LIVE.index_series[k]||[];
@@ -735,7 +756,7 @@ function drawAll(){if(!LIVE||!LIVE.quotes)return;const ev=STATE&&STATE.latest[CU
     drawJB($(id),{series:s,y:ix?.y,last:ix?.ref,stock:false});drawKD($(id.replace('jb-','kd-')),{series:s,stock:false,day:k==='t00'?ev?.info?.kd?.idx_day:null});}
   const q=LIVE.quotes[CUR];const s=LIVE.series[CUR]||[];
   $('t-stk').innerHTML=`${CUR} ${esc(q?.name||ev?.name||'')} <b class="num ${cls(q?.chg_pct)}${q?limCls(CUR,q.ref):''}">${q?fp(q.ref):'-'} ${q?chgTxt(q.ref,q.y,dec(q.ref)):''}</b> <span class="small muted">— 價 · <span style="color:var(--vwap)">VWAP</span> · ${LIVE.shioaji?'逐筆分K':'MIS 取樣'} · 線：<span style="color:#9aa4b2">壓/撐</span>＝要先測試的價位、<span class="dn">空進</span>/<span class="up">多進</span>＝測試失敗後才掛的進場價、<span style="color:var(--warn)">損</span>、T1/T2</span>`;
-  drawJB($('jb-stk'),{series:s,y:q?.y,last:q?.ref,stock:true,plan:ev?.plan,side:activeSide(ev)});drawKD($('kd-stk'),{series:s,stock:true,day:ev?.info?.kd?.stk_day});}
+  drawJB($('jb-stk'),{series:s,y:q?.y,last:q?.ref,stock:true,plan:ev?.plan,side:activeSide(ev)});drawKD($('kd-stk'),{series:s,stock:true,day:ev?.info?.kd?.stk_day,dual:LIVE.kd_dual&&LIVE.kd_dual[CUR]});}
 window.addEventListener('resize',()=>{drawAll();drawChart();});
 
 // ---------------------------------------------------------------- 即時區（10 秒）

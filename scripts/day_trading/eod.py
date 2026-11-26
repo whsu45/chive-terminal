@@ -48,7 +48,7 @@ ALERT_DIR = {
 }
 for _t, _ in __import__("exhaust").alert_types():      # 竭盡跡象（觀察用的 👁 警示）：買盤用完 → 預期跌；賣盤用完 → 預期漲
     ALERT_DIR[_t] = -1 if _t.startswith("買盤") else 1
-ALERT_DIR.update({"大盤急漲": 1, "大盤急跌": -1})          # 大盤 5 分鐘 ≥0.4% 或 10 分鐘 ≥0.6%：看個股之後有沒有跟著走
+ALERT_DIR.update({"大盤急漲": 1, "大盤急跌": -1, "KD 雙低檔": 1, "KD 雙高檔": -1, "KD 雙高檔不加分": -1})   # KD 共振：雙低檔 → 預期漲、雙高檔 → 預期跌          # 大盤 5 分鐘 ≥0.4% 或 10 分鐘 ≥0.6%：看個股之後有沒有跟著走
 ALERT_DIR.update(__import__("combo").directions())     # 因子組合提醒（👁 組合·…）：三方同向、逆勢強弱、族群先動還沒跟
 # 「其他」裡面其實有好幾種，照文字再分；訊號結案的訊息（贏 / 輸 / 未成交…）不是警示，不列
 _OTHER = (
@@ -140,7 +140,7 @@ def series(rows):
 
 _SIG_KEYS = ("code", "name", "time", "side", "label", "alert_px", "zone", "price", "stop", "t1", "score_stop", "score_tgt", "verdict", "exit",
              "exit_px", "net_pct", "mae_ticks", "mfe_ticks", "fill_min", "first_stop_min", "first_t1_min", "ret_30m", "why", "blocked",
-             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src", "run5", "run5_tk", "space", "env", "refs", "filters", "kd", "holidays", "orderflow")
+             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src", "run5", "run5_tk", "space", "env", "refs", "filters", "kd", "kd_dual", "holidays", "orderflow")
 
 CHASE_PCT, CHASE_TICKS = 0.5, 2        # 跟 monitor.CHASE_* 一致：確認前 5 分鐘已順向走這麼多算「追價」
 # 追價的訊號再依「當時離漲跌停多遠」分三段（順向漲跌幅：做多看漲幅、做空看跌幅；漲跌停是 10%）。

@@ -29,7 +29,7 @@ from config import CACHE_DIR
 
 SOUND_DIR = os.path.join(CACHE_DIR, "sounds")
 SR = 44100
-KINDS = {"entry": "進場「叮」", "exit": "出場「叮咚」"}
+KINDS = {"entry": "進場「叮」", "exit": "出場「叮咚」", "kd": "KD 共振「叮叮」"}
 ENABLED = os.environ.get("DAYTRADE_SOUND", "1") != "0"
 BANNER = os.environ.get("DAYTRADE_BANNER", "1") != "0"
 SOUND_VER = 2            # 改音色就加 1（快取的音效檔名帶版本）
@@ -61,6 +61,16 @@ def render(kind):
     進場：A6（1760 Hz）一聲，清脆。出場：G5（784 Hz）接 C5（523 Hz）的叮咚，低沉、泛音少、餘音長一點（2026-11-19 使用者要出場低沉一點）。"""
     if kind == "entry":
         s = _bell(1760.0, 0.9)
+    elif kind == "kd":
+        # KD 共振（2026-11-26 加）：E6 → G6 兩聲短促的「叮叮」，跟進場的單聲「叮」分得出來；只是加分提醒，不是進場點
+        a = _bell(1318.5, 0.35, tau=0.12)
+        b = _bell(1568.0, 0.7, tau=0.22)
+        off = int(SR * 0.16)
+        s = [0.0] * (off + len(b))
+        for i, x in enumerate(a):
+            s[i] += x
+        for i, x in enumerate(b):
+            s[off + i] += 0.9 * x
     else:
         a = _bell(784.0, 1.0, parts=DEEP, tau=0.45)
         b = _bell(523.25, 1.3, parts=DEEP, tau=0.55)
@@ -122,9 +132,9 @@ def banner(title, msg):
 
 
 def notify(kind, title, msg=""):
-    """kind = entry / exit。聲音太密時（MIN_GAP 內）只跳橫幅、不重複發聲；終端機一律印一行。"""
+    """kind = entry / exit / kd。聲音太密時（MIN_GAP 內）只跳橫幅、不重複發聲；終端機一律印一行。"""
     global _last_play
-    print(f"[通知] {'🔔' if kind == 'entry' else '🔕'} {title}" + (f"｜{msg}" if msg else ""))
+    print(f"[通知] {({'entry': '🔔', 'kd': '📶'}).get(kind, '🔕')} {title}" + (f"｜{msg}" if msg else ""))
     if ENABLED:
         with _lock:
             now = time.time()
@@ -142,7 +152,10 @@ if __name__ == "__main__":
     time.sleep(1.6)
     print("試聽：出場「叮咚」")
     play("exit")
+    time.sleep(2.0)
+    print("試聽：KD 共振「叮叮」")
+    play("kd")
     time.sleep(0.4)
     banner("▶ 建議做空 1815 富喬 @122.5（測試）", "停損 124.0，目標 119.0｜這是通知測試，不是真的訊號")
     time.sleep(1.5)
-    print(f"音效檔：{sound_path('entry')}、{sound_path('exit')}")
+    print(f"音效檔：{sound_path('entry')}、{sound_path('exit')}、{sound_path('kd')}")

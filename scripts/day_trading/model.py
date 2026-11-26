@@ -570,6 +570,18 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx=None):
                   f"{'過今高' if buy else '破今低'} {ex['near'][1]} 到 {ex.get('ext')} 後熄燈：{'買' if buy else '賣'}盤力道用完的型態，"
                   f"{'空' if buy else '多'}方加分（轉折確認，不是進場訊號）"))
 
+    # KD 共振（monitor._kd_dual，2026-11-26 使用者要求）：大盤（加權）和個股的 3 分 K KD 同時在低檔（K 都 ≤20）= 多方加分、
+    # 同時在高檔（K 都 ≥80）= 空方加分。分數跟竭盡加分同一個量級（預設 0.3，約強度 3 點；DAYTRADE_KD_BONUS 可改，0 = 不加分）。
+    # 只讓同方向的建議比較容易成立，不是單獨的進場訊號；之後用 signal_outcomes 的 kd_dual 欄位驗證。
+    kdd = ctx.get("kd_dual")
+    if kdd and kdd.get("active") and kdd.get("bonus") and kdd.get("stk") and kdd.get("idx") and not pre_open:
+        low = kdd["active"] == "low"
+        F.append(("KD 雙低檔" if low else "KD 雙高檔", kdd["bonus"] if low else -kdd["bonus"],
+                  f"加權和個股的 {kdd.get('tf', 3)} 分 K KD 同時在{'低檔（K 都 ≤20）' if low else '高檔（K 都 ≥80）'}："
+                  f"加權 K{kdd['idx']['k']:.0f}/D{kdd['idx']['d']:.0f}、個股 K{kdd['stk']['k']:.0f}/D{kdd['stk']['d']:.0f}"
+                  f"{'，' + str(kdd['since'])[:5] + ' 起' if kdd.get('since') else ''}"
+                  f"{'' if low else '，而且' + '、'.join(kdd.get('short_why') or [])}。{'多' if low else '空'}方加分（使用者要求；只讓同方向的建議容易成立，不是單獨進場點）"))
+
     # 竭盡跡象（exhaust.py：五檔、明細、K 棒三個畫面的「買盤 / 賣盤用完了」型態）。只列出、不計分：
     # 回測（9 檔 × 42 天逐筆）這些型態出現後並沒有比「正在漲、價格在高點附近」的任意時點更常反轉，幅度也都小於成本。
     for sd_, lab_ in (("buy", "買盤"), ("sell", "賣盤")):

@@ -1,0 +1,3452 @@
+{
+ "version": 9,
+ "code": "2313",
+ "name": "華通",
+ "market": "tse",
+ "date": "2026-11-26",
+ "prev_date": "2026-11-25",
+ "group": null,
+ "peers": [],
+ "peers_arg": null,
+ "peer_info": {},
+ "tech": {
+  "date": "2026-11-25",
+  "close": 153.0,
+  "open": 158.0,
+  "high": 169.0,
+  "low": 153.0,
+  "vol": 21928,
+  "ma5": 159.7,
+  "ma10": 176.5,
+  "ma20": 181.4,
+  "ma60": 216.86666666666667,
+  "bb_up": 217.72299547118877,
+  "bb_dn": 145.07700452881124,
+  "atr14": 17.428571428571427,
+  "rsi14": 36.06743605739005,
+  "vol_ma5": 22135.6,
+  "vol_ma20": 30157.05,
+  "chg_pct": -9.734513274336287,
+  "high20": 224.0,
+  "low20": 139.5,
+  "high60": 266.0,
+  "low60": 139.5,
+  "prev_high": 169.5,
+  "prev_low": 169.5,
+  "ret5": -18.400000000000006,
+  "ret20": -31.69642857142857,
+  "streak": -1,
+  "atr_pct": 11.391223155929037
+ },
+ "hist_tail": [
+  {
+   "date": "2026-10-13",
+   "o": 247.0,
+   "h": 247.5,
+   "l": 235.5,
+   "c": 243.5,
+   "v": 27232,
+   "amt": 6583743952.0
+  },
+  {
+   "date": "2026-10-14",
+   "o": 243.5,
+   "h": 252.5,
+   "l": 240.0,
+   "c": 250.5,
+   "v": 18948,
+   "amt": 4679184942.0
+  },
+  {
+   "date": "2026-10-15",
+   "o": 240.0,
+   "h": 240.5,
+   "l": 228.0,
+   "c": 228.0,
+   "v": 29342,
+   "amt": 6845819143.0
+  },
+  {
+   "date": "2026-10-16",
+   "o": 234.0,
+   "h": 250.5,
+   "l": 233.0,
+   "c": 248.0,
+   "v": 50348,
+   "amt": 12434507119.0
+  },
+  {
+   "date": "2026-10-19",
+   "o": 239.0,
+   "h": 252.0,
+   "l": 237.0,
+   "c": 248.0,
+   "v": 32526,
+   "amt": 7970452042.0
+  },
+  {
+   "date": "2026-10-20",
+   "o": 248.0,
+   "h": 255.0,
+   "l": 243.0,
+   "c": 243.5,
+   "v": 30997,
+   "amt": 7725274714.0
+  },
+  {
+   "date": "2026-10-21",
+   "o": 265.0,
+   "h": 266.0,
+   "l": 238.5,
+   "c": 240.5,
+   "v": 62594,
+   "amt": 15558846926.0
+  },
+  {
+   "date": "2026-10-22",
+   "o": 242.5,
+   "h": 248.5,
+   "l": 224.0,
+   "c": 224.5,
+   "v": 40886,
+   "amt": 9632207157.0
+  },
+  {
+   "date": "2026-10-27",
+   "o": 227.0,
+   "h": 229.0,
+   "l": 215.0,
+   "c": 216.0,
+   "v": 24534,
+   "amt": 5388335572.0
+  },
+  {
+   "date": "2026-10-28",
+   "o": 223.0,
+   "h": 227.5,
+   "l": 222.0,
+   "c": 224.0,
+   "v": 12843,
+   "amt": 2889985456.0
+  },
+  {
+   "date": "2026-10-29",
+   "o": 223.0,
+   "h": 224.0,
+   "l": 212.5,
+   "c": 213.5,
+   "v": 17481,
+   "amt": 3767269177.0
+  },
+  {
+   "date": "2026-10-30",
+   "o": 205.5,
+   "h": 207.0,
+   "l": 198.0,
+   "c": 202.0,
+   "v": 22067,
+   "amt": 4449298403.0
+  },
+  {
+   "date": "2026-11-02",
+   "o": 198.0,
+   "h": 209.0,
+   "l": 196.5,
+   "c": 205.0,
+   "v": 15513,
+   "amt": 3160592116.0
+  },
+  {
+   "date": "2026-11-03",
+   "o": 200.5,
+   "h": 202.0,
+   "l": 186.0,
+   "c": 186.0,
+   "v": 21755,
+   "amt": 4194108924.0
+  },
+  {
+   "date": "2026-11-04",
+   "o": 188.5,
+   "h": 190.5,
+   "l": 172.0,
+   "c": 182.5,
+   "v": 24668,
+   "amt": 4485789959.0
+  },
+  {
+   "date": "2026-11-05",
+   "o": 177.5,
+   "h": 179.0,
+   "l": 165.0,
+   "c": 165.5,
+   "v": 23733,
+   "amt": 4031294123.0
+  },
+  {
+   "date": "2026-11-06",
+   "o": 149.0,
+   "h": 163.5,
+   "l": 149.0,
+   "c": 159.0,
+   "v": 29763,
+   "amt": 4606707205.0
+  },
+  {
+   "date": "2026-11-09",
+   "o": 162.0,
+   "h": 174.5,
+   "l": 159.0,
+   "c": 174.5,
+   "v": 27954,
+   "amt": 4745637609.0
+  },
+  {
+   "date": "2026-11-10",
+   "o": 181.0,
+   "h": 189.0,
+   "l": 178.0,
+   "c": 182.5,
+   "v": 26829,
+   "amt": 4943295286.0
+  },
+  {
+   "date": "2026-11-11",
+   "o": 183.5,
+   "h": 193.5,
+   "l": 179.5,
+   "c": 192.5,
+   "v": 23671,
+   "amt": 4429092754.0
+  },
+  {
+   "date": "2026-11-12",
+   "o": 190.0,
+   "h": 211.5,
+   "l": 190.0,
+   "c": 196.0,
+   "v": 57449,
+   "amt": 11780404881.0
+  },
+  {
+   "date": "2026-11-13",
+   "o": 208.0,
+   "h": 215.5,
+   "l": 202.5,
+   "c": 205.5,
+   "v": 47554,
+   "amt": 10010173917.0
+  },
+  {
+   "date": "2026-11-16",
+   "o": 208.0,
+   "h": 212.0,
+   "l": 191.5,
+   "c": 193.0,
+   "v": 66032,
+   "amt": 13199473731.0
+  },
+  {
+   "date": "2026-11-17",
+   "o": 185.0,
+   "h": 192.5,
+   "l": 181.5,
+   "c": 184.5,
+   "v": 40516,
+   "amt": 7546390309.0
+  },
+  {
+   "date": "2026-11-18",
+   "o": 193.0,
+   "h": 194.5,
+   "l": 168.5,
+   "c": 187.5,
+   "v": 47478,
+   "amt": 8693319966.0
+  },
+  {
+   "date": "2026-11-19",
+   "o": 187.0,
+   "h": 189.0,
+   "l": 169.0,
+   "c": 169.0,
+   "v": 36906,
+   "amt": 6447845750.0
+  },
+  {
+   "date": "2026-11-20",
+   "o": 156.0,
+   "h": 159.0,
+   "l": 152.5,
+   "c": 152.5,
+   "v": 12524,
+   "amt": 1924099724.0
+  },
+  {
+   "date": "2026-11-23",
+   "o": 140.0,
+   "h": 156.0,
+   "l": 139.5,
+   "c": 154.5,
+   "v": 37155,
+   "amt": 5479226302.0
+  },
+  {
+   "date": "2026-11-24",
+   "o": 169.5,
+   "h": 169.5,
+   "l": 169.5,
+   "c": 169.5,
+   "v": 2165,
+   "amt": 367087413.0
+  },
+  {
+   "date": "2026-11-25",
+   "o": 158.0,
+   "h": 169.0,
+   "l": 153.0,
+   "c": 153.0,
+   "v": 21928,
+   "amt": 3469049496.0
+  }
+ ],
+ "limit_up": 168.0,
+ "limit_down": 138.0,
+ "insti": {
+  "2026-11-25": {
+   "foreign": -77,
+   "trust": -347,
+   "dealer": -126,
+   "total": -549
+  },
+  "2026-11-24": {
+   "foreign": -840,
+   "trust": 0,
+   "dealer": 52,
+   "total": -787
+  },
+  "2026-11-23": {
+   "foreign": -1270,
+   "trust": 102,
+   "dealer": 143,
+   "total": -1025
+  }
+ },
+ "insti_sum": {
+  "foreign": -2187,
+  "trust": -245,
+  "dealer": 69,
+  "total": -2361
+ },
+ "weak_screen": {
+  "close": 153.0,
+  "r10": -20.52,
+  "idx_r10": -13.7,
+  "ma60": 216.87,
+  "idx": 38195.43,
+  "idx_ma20": 41517.39,
+  "mkt_weak": true,
+  "foreign": -77,
+  "trust": -347,
+  "under": true,
+  "drop10": true,
+  "below_ma": true,
+  "px100": true,
+  "sell": true,
+  "n_ok": 5,
+  "hit": true
+ },
+ "margin": {
+  "fin_prev": 26621,
+  "fin_now": 26486,
+  "fin_chg": -135,
+  "short_prev": 218,
+  "short_now": 185,
+  "short_chg": -33,
+  "fin_limit": 308455
+ },
+ "sbl": {
+  "sbl_sell": 0,
+  "sbl_return": 1352,
+  "sbl_bal": 78455
+ },
+ "brokers": {
+  "day": {
+   "daytrade_net": -95,
+   "daytrade_buy": 623,
+   "foreign_net": 474,
+   "top5_buy": 1551,
+   "top5_sell": -3407,
+   "daytrade_names": [
+    "國票-敦北法人",
+    "富邦證券"
+   ],
+   "top_buyers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "bid": "1470",
+     "bhid": "1470",
+     "buy": 1552,
+     "sell": 959,
+     "net": 593,
+     "pct": 2.7
+    },
+    {
+     "broker": "國票-敦北法人",
+     "bid": "0037003700390063",
+     "bhid": "7790",
+     "buy": 503,
+     "sell": 61,
+     "net": 442,
+     "pct": 2.02
+    },
+    {
+     "broker": "摩根大通",
+     "bid": "8440",
+     "bhid": "8440",
+     "buy": 1025,
+     "sell": 810,
+     "net": 215,
+     "pct": 0.98
+    },
+    {
+     "broker": "富邦證券",
+     "bid": "9600",
+     "bhid": "9600",
+     "buy": 216,
+     "sell": 35,
+     "net": 181,
+     "pct": 0.83
+    },
+    {
+     "broker": "兆豐證券",
+     "bid": "7000",
+     "bhid": "7000",
+     "buy": 120,
+     "sell": 0,
+     "net": 120,
+     "pct": 0.55
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "元大證券",
+     "bid": "9800",
+     "bhid": "9800",
+     "buy": 2780,
+     "sell": 4816,
+     "net": -2036,
+     "pct": 9.28
+    },
+    {
+     "broker": "凱基-台北",
+     "bid": "9268",
+     "bhid": "9200",
+     "buy": 1388,
+     "sell": 1892,
+     "net": -504,
+     "pct": 2.3
+    },
+    {
+     "broker": "凱基",
+     "bid": "9200",
+     "bhid": "9200",
+     "buy": 6,
+     "sell": 384,
+     "net": -378,
+     "pct": 1.72
+    },
+    {
+     "broker": "新加坡商瑞銀",
+     "bid": "1650",
+     "bhid": "1650",
+     "buy": 781,
+     "sell": 1051,
+     "net": -270,
+     "pct": 1.23
+    },
+    {
+     "broker": "康和",
+     "bid": "8450",
+     "bhid": "8450",
+     "buy": 5,
+     "sell": 224,
+     "net": -219,
+     "pct": 1.0
+    }
+   ],
+   "daytrade_buy_pct": 2.85,
+   "foreign_net_pct": 2.1616198467712513,
+   "top5_buy_pct": 7.0731484859540315,
+   "top5_sell_pct": 15.537212696096315
+  },
+  "day_date": "2026/11/25",
+  "range4": {
+   "daytrade_net": -3571,
+   "daytrade_buy": 629,
+   "foreign_net": 3110,
+   "top5_buy": 4399,
+   "top5_sell": -7663,
+   "daytrade_names": [
+    "國票-敦北法人",
+    "凱基-台北"
+   ],
+   "top_buyers": [
+    {
+     "broker": "台灣摩根士丹利",
+     "bid": "1470",
+     "bhid": "1470",
+     "buy": 4692,
+     "sell": 2097,
+     "net": 2595,
+     "pct": 3.52
+    },
+    {
+     "broker": "元大證券",
+     "bid": "9800",
+     "bhid": "9800",
+     "buy": 12157,
+     "sell": 11430,
+     "net": 727,
+     "pct": 0.99
+    },
+    {
+     "broker": "國票-敦北法人",
+     "bid": "0037003700390063",
+     "bhid": "7790",
+     "buy": 508,
+     "sell": 69,
+     "net": 439,
+     "pct": 0.6
+    },
+    {
+     "broker": "摩根大通",
+     "bid": "8440",
+     "bhid": "8440",
+     "buy": 2086,
+     "sell": 1743,
+     "net": 343,
+     "pct": 0.46
+    },
+    {
+     "broker": "群益金鼎-台北",
+     "bid": "0039003100380058",
+     "bhid": "9100",
+     "buy": 304,
+     "sell": 9,
+     "net": 295,
+     "pct": 0.4
+    }
+   ],
+   "top_sellers": [
+    {
+     "broker": "富邦證券",
+     "bid": "9600",
+     "bhid": "9600",
+     "buy": 262,
+     "sell": 4462,
+     "net": -4200,
+     "pct": 5.69
+    },
+    {
+     "broker": "永豐金-匯立",
+     "bid": "0039004100380031",
+     "bhid": "9A00",
+     "buy": 4,
+     "sell": 1392,
+     "net": -1388,
+     "pct": 1.88
+    },
+    {
+     "broker": "永豐金-忠孝",
+     "bid": "0039004100390044",
+     "bhid": "9A00",
+     "buy": 23,
+     "sell": 735,
+     "net": -712,
+     "pct": 0.97
+    },
+    {
+     "broker": "華南永昌-南京",
+     "bid": "9326",
+     "bhid": "9300",
+     "buy": 106,
+     "sell": 810,
+     "net": -704,
+     "pct": 0.95
+    },
+    {
+     "broker": "凱基",
+     "bid": "9200",
+     "bhid": "9200",
+     "buy": 25,
+     "sell": 684,
+     "net": -659,
+     "pct": 0.89
+    }
+   ],
+   "daytrade_buy_pct": 0.8526270129588462,
+   "foreign_net_pct": 4.215691590305265,
+   "top5_buy_pct": 5.962966979341756,
+   "top5_sell_pct": 10.38740985739847
+  },
+  "daytraders": {
+   "buy": 623,
+   "buy_pct": 2.85,
+   "expect_sell": 383,
+   "list": [
+    {
+     "broker": "國票-敦北法人",
+     "net": 442,
+     "buy": 503,
+     "sell": 61,
+     "pct": 2.02,
+     "n": 133,
+     "rate": 0.647,
+     "mean_f": 0.635,
+     "here_n": 1,
+     "here_flip": 0
+    },
+    {
+     "broker": "富邦證券",
+     "net": 181,
+     "buy": 216,
+     "sell": 35,
+     "pct": 0.83,
+     "n": 316,
+     "rate": 0.589,
+     "mean_f": 0.563,
+     "here_n": 6,
+     "here_flip": 1
+    }
+   ],
+   "source": "dynamic",
+   "stat_days": 61,
+   "stat_last": "2026-11-24"
+  }
+ },
+ "winners": {
+  "winners": [],
+  "losers": [],
+  "winners_last_net": 0,
+  "winners_last_net_pct": 0.0,
+  "winners_inventory": 0,
+  "winners_inventory_pct": 0,
+  "losers_last_net": 0,
+  "losers_last_net_pct": 0.0,
+  "n_scored": 170
+ },
+ "warrants": {
+  "call_vol": 10145,
+  "put_vol": 444,
+  "call_amt": 6567000.0,
+  "put_amt": 550390.0,
+  "n_call": 424,
+  "n_put": 25,
+  "n_call_active": 104,
+  "n_put_active": 11,
+  "call_share": 0.9580696949664746,
+  "amt_share": 0.845339373000496,
+  "hedge_net": -81,
+  "hedge_pct": -0.3693907333090113,
+  "call_amt_5d": 8673878.0,
+  "call_surge": 0.7571008031240467,
+  "list": [
+   {
+    "code": "030053",
+    "name": "華通凱基65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030152",
+    "name": "華通永豐64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030153",
+    "name": "華通永豐65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030387",
+    "name": "華通群益64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030739",
+    "name": "華通凱基64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030919",
+    "name": "華通元大64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030920",
+    "name": "華通元大64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030921",
+    "name": "華通元大66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "030997",
+    "name": "華通中信65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031133",
+    "name": "華通群益64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031193",
+    "name": "華通凱基64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031519",
+    "name": "華通統一7A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031534",
+    "name": "華通群益64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031596",
+    "name": "華通凱基64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "031857",
+    "name": "華通國泰67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032011",
+    "name": "華通群益66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032069",
+    "name": "華通台新64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032070",
+    "name": "華通台新67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032400",
+    "name": "華通凱基64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032471",
+    "name": "華通國票65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032653",
+    "name": "華通永豐64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "032654",
+    "name": "華通永豐64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033040",
+    "name": "華通群益64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033108",
+    "name": "華通永豐64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033109",
+    "name": "華通永豐64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033177",
+    "name": "華通元大64購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033178",
+    "name": "華通元大64購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033179",
+    "name": "華通元大64購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033180",
+    "name": "華通元大67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033365",
+    "name": "華通凱基64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033548",
+    "name": "華通統一62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033570",
+    "name": "華通國票65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033720",
+    "name": "華通元大64購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033721",
+    "name": "華通元大64購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033722",
+    "name": "華通元大64購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033889",
+    "name": "華通富邦64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "033925",
+    "name": "華通群益64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034132",
+    "name": "華通元大64購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034133",
+    "name": "華通元大64購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034134",
+    "name": "華通元大67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034371",
+    "name": "華通凱基67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034437",
+    "name": "華通國泰65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034506",
+    "name": "華通永豐64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034508",
+    "name": "華通永豐64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034815",
+    "name": "華通群益66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034816",
+    "name": "華通群益66購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "034895",
+    "name": "華通凱基64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035205",
+    "name": "華通國票64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035230",
+    "name": "華通台新64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035231",
+    "name": "華通台新67購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035495",
+    "name": "華通中信64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035496",
+    "name": "華通中信66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035517",
+    "name": "華通永豐64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035631",
+    "name": "華通台新64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035632",
+    "name": "華通台新67購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035722",
+    "name": "華通凱基65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035723",
+    "name": "華通凱基65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035928",
+    "name": "華通富邦64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "035976",
+    "name": "華通永豐64購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036285",
+    "name": "華通群益6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036537",
+    "name": "華通凱基66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036617",
+    "name": "華通國票67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036846",
+    "name": "華通統一64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036910",
+    "name": "華通永豐64購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "036911",
+    "name": "華通永豐65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037557",
+    "name": "華通富邦6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037728",
+    "name": "華通永豐65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037773",
+    "name": "華通元大65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037774",
+    "name": "華通元大65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037775",
+    "name": "華通元大67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037776",
+    "name": "華通元大6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037971",
+    "name": "華通群益67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "037972",
+    "name": "華通群益69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038049",
+    "name": "華通中信65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038144",
+    "name": "華通國票65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038382",
+    "name": "華通凱基67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038431",
+    "name": "華通群益69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038722",
+    "name": "華通國泰66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038723",
+    "name": "華通國泰66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038769",
+    "name": "華通元大65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038770",
+    "name": "華通元大65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "038921",
+    "name": "華通群益69購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039113",
+    "name": "華通富邦65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039114",
+    "name": "華通富邦68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039408",
+    "name": "華通凱基69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039537",
+    "name": "華通國票65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "039888",
+    "name": "華通元大65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040047",
+    "name": "華通永豐65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040268",
+    "name": "華通群益69購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040269",
+    "name": "華通群益69購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040531",
+    "name": "華通元大65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040532",
+    "name": "華通元大65購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040610",
+    "name": "華通統一6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040806",
+    "name": "華通統一7B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040959",
+    "name": "華通國票65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040988",
+    "name": "華通富邦65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "040989",
+    "name": "華通富邦65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041089",
+    "name": "華通凱基65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041188",
+    "name": "華通群益67購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041251",
+    "name": "華通凱基67購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041646",
+    "name": "華通元大65購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041647",
+    "name": "華通元大65購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041648",
+    "name": "華通元大68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041722",
+    "name": "華通凱基65購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041847",
+    "name": "華通中信66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041892",
+    "name": "華通群益69購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "041924",
+    "name": "華通國票67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042037",
+    "name": "華通凱基65購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042065",
+    "name": "華通富邦65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042066",
+    "name": "華通富邦65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042100",
+    "name": "華通國泰68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042101",
+    "name": "華通國泰68購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042230",
+    "name": "華通永豐65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042231",
+    "name": "華通永豐65購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042451",
+    "name": "華通元大65購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042452",
+    "name": "華通元大65購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042453",
+    "name": "華通元大65購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042454",
+    "name": "華通元大67購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042544",
+    "name": "華通群益69購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042545",
+    "name": "華通群益69購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042651",
+    "name": "華通富邦6C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042674",
+    "name": "華通國泰68購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042893",
+    "name": "華通凱基67購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "042922",
+    "name": "華通國票66購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043151",
+    "name": "華通群益69購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043152",
+    "name": "華通群益72購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043290",
+    "name": "華通富邦6B購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043337",
+    "name": "華通永豐65購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043601",
+    "name": "華通群益65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043680",
+    "name": "華通中信66購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "043713",
+    "name": "華通元大65購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049421",
+    "name": "華通中信5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049717",
+    "name": "華通元大5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "049949",
+    "name": "華通元大5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "050350",
+    "name": "華通富邦5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "051229",
+    "name": "華通統一61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "051230",
+    "name": "華通統一61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052182",
+    "name": "華通統一63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052183",
+    "name": "華通統一64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052184",
+    "name": "華通統一67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052185",
+    "name": "華通統一71購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052186",
+    "name": "華通統一71購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052255",
+    "name": "華通國票61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052377",
+    "name": "華通元大5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052576",
+    "name": "華通群益61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052645",
+    "name": "華通統一5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052646",
+    "name": "華通統一61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052647",
+    "name": "華通統一64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052780",
+    "name": "華通統一61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052781",
+    "name": "華通統一63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "052825",
+    "name": "華通凱基61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053029",
+    "name": "華通富邦61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053085",
+    "name": "華通元大61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "053185",
+    "name": "華通國票62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054705",
+    "name": "華通統一71購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054706",
+    "name": "華通統一71購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054790",
+    "name": "華通群益5B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054830",
+    "name": "華通元富61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "054854",
+    "name": "華通元大61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055392",
+    "name": "華通富邦61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055658",
+    "name": "華通統一62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055659",
+    "name": "華通統一62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055660",
+    "name": "華通統一62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055661",
+    "name": "華通統一65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "055662",
+    "name": "華通統一68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057020",
+    "name": "華通群益62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057027",
+    "name": "華通富邦63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057056",
+    "name": "華通凱基61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057114",
+    "name": "華通元大61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057154",
+    "name": "華通統一62購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057155",
+    "name": "華通統一65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057156",
+    "name": "華通統一72購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057340",
+    "name": "華通元大61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057445",
+    "name": "華通富邦63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057483",
+    "name": "華通國票62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057509",
+    "name": "華通統一65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057552",
+    "name": "華通永豐5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057637",
+    "name": "華通元大5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057638",
+    "name": "華通元大62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "057680",
+    "name": "華通凱基61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059229",
+    "name": "華通永豐5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059237",
+    "name": "華通富邦63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059298",
+    "name": "華通元大61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059614",
+    "name": "華通元富5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059633",
+    "name": "華通統一73購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059705",
+    "name": "華通元大63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "059750",
+    "name": "華通群益63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060181",
+    "name": "華通永豐5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060182",
+    "name": "華通永豐5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060251",
+    "name": "華通凱基5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060252",
+    "name": "華通凱基63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060347",
+    "name": "華通元大5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060348",
+    "name": "華通元大63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060401",
+    "name": "華通群益63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060402",
+    "name": "華通群益63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060435",
+    "name": "華通永豐5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "060523",
+    "name": "華通國票61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061760",
+    "name": "華通富邦63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061808",
+    "name": "華通凱基62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061846",
+    "name": "華通群益63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061862",
+    "name": "華通元富63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061863",
+    "name": "華通元富63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061864",
+    "name": "華通元富63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061947",
+    "name": "華通中信62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "061956",
+    "name": "華通兆豐5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062006",
+    "name": "華通凱基63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062040",
+    "name": "華通永豐62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062064",
+    "name": "華通元大62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062126",
+    "name": "華通群益63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062287",
+    "name": "華通元大62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062596",
+    "name": "華通國票61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062652",
+    "name": "華通統一63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062653",
+    "name": "華通統一64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "062821",
+    "name": "華通元大61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065608",
+    "name": "華通富邦61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065838",
+    "name": "華通永豐61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065839",
+    "name": "華通永豐63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065874",
+    "name": "華通凱基61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065898",
+    "name": "華通國泰5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "065927",
+    "name": "華通元大61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067438",
+    "name": "華通富邦62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067479",
+    "name": "華通凱基63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067882",
+    "name": "華通凱基61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067941",
+    "name": "華通群益5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067988",
+    "name": "華通統一63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "067989",
+    "name": "華通統一65購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068106",
+    "name": "華通富邦5C購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068181",
+    "name": "華通凱基61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068242",
+    "name": "華通統一75購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "068371",
+    "name": "華通永豐61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069084",
+    "name": "華通兆豐5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069093",
+    "name": "華通永豐5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069112",
+    "name": "華通元大5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069113",
+    "name": "華通元大61購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069154",
+    "name": "華通凱基63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069188",
+    "name": "華通群益5B購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069233",
+    "name": "華通台新5B購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069234",
+    "name": "華通台新5B購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069235",
+    "name": "華通台新5B購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "069236",
+    "name": "華通台新5B購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070145",
+    "name": "華通永豐5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070186",
+    "name": "華通富邦5C購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070275",
+    "name": "華通元大5C購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070276",
+    "name": "華通元大5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070277",
+    "name": "華通元大5C購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070278",
+    "name": "華通元大61購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070279",
+    "name": "華通元大64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070444",
+    "name": "華通元大5C購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070445",
+    "name": "華通元大61購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070446",
+    "name": "華通元大64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070617",
+    "name": "華通凱基5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070746",
+    "name": "華通元大5C購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070747",
+    "name": "華通元大5C購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070748",
+    "name": "華通元大61購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070749",
+    "name": "華通元大64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070855",
+    "name": "華通群益5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070959",
+    "name": "華通元大5C購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070960",
+    "name": "華通元大61購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "070961",
+    "name": "華通元大64購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071252",
+    "name": "華通元大61購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071289",
+    "name": "華通凱基5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071633",
+    "name": "華通國泰61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071681",
+    "name": "華通中信63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "071773",
+    "name": "華通統一66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072015",
+    "name": "華通台新5C購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072954",
+    "name": "華通永豐5C購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "072955",
+    "name": "華通永豐5C購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073032",
+    "name": "華通凱基5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073033",
+    "name": "華通凱基61購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073064",
+    "name": "華通富邦5C購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073071",
+    "name": "華通群益5C購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073202",
+    "name": "華通凱基5C購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073346",
+    "name": "華通群益5C購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073400",
+    "name": "華通永豐5C購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073401",
+    "name": "華通永豐5C購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073402",
+    "name": "華通永豐5C購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073403",
+    "name": "華通永豐62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073404",
+    "name": "華通永豐62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073405",
+    "name": "華通永豐62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073406",
+    "name": "華通永豐63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073407",
+    "name": "華通永豐66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073508",
+    "name": "華通國泰62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073581",
+    "name": "華通國票62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073599",
+    "name": "華通台新61購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073600",
+    "name": "華通台新61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073675",
+    "name": "華通元大61購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073712",
+    "name": "華通國泰62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "073725",
+    "name": "華通凱基61購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074448",
+    "name": "華通群益67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074491",
+    "name": "華通中信64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074647",
+    "name": "華通群益61購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074833",
+    "name": "華通凱基61購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074962",
+    "name": "華通統一65購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "074963",
+    "name": "華通統一67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075313",
+    "name": "華通永豐61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075314",
+    "name": "華通永豐64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075629",
+    "name": "華通富邦61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075868",
+    "name": "華通富邦61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075929",
+    "name": "華通國泰62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "075941",
+    "name": "華通凱基61購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076062",
+    "name": "華通群益61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076519",
+    "name": "華通凱基67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076646",
+    "name": "華通元大61購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076647",
+    "name": "華通元大63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076703",
+    "name": "華通凱基61購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076806",
+    "name": "華通永豐61購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076807",
+    "name": "華通永豐64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076808",
+    "name": "華通永豐67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076872",
+    "name": "華通群益61購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076937",
+    "name": "華通國泰62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "076977",
+    "name": "華通富邦67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077165",
+    "name": "華通群益61購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077535",
+    "name": "華通凱基61購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077593",
+    "name": "華通台新61購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077594",
+    "name": "華通台新63購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077784",
+    "name": "華通國票69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "077879",
+    "name": "華通凱基63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078004",
+    "name": "華通台新67購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078007",
+    "name": "華通台新67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078254",
+    "name": "華通國票64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078277",
+    "name": "華通元大63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078278",
+    "name": "華通元大63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078279",
+    "name": "華通元大64購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078414",
+    "name": "華通永豐63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078459",
+    "name": "華通元大64購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078550",
+    "name": "華通凱基64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078715",
+    "name": "華通凱基63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078768",
+    "name": "華通群益62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078806",
+    "name": "華通台新68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078826",
+    "name": "華通永豐63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078882",
+    "name": "華通富邦62購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078883",
+    "name": "華通富邦65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078934",
+    "name": "華通凱基63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "078969",
+    "name": "華通群益62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079024",
+    "name": "華通元大64購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079124",
+    "name": "華通統一6B購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079189",
+    "name": "華通元大63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079190",
+    "name": "華通元大63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079191",
+    "name": "華通元大64購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079286",
+    "name": "華通國票65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079394",
+    "name": "華通群益64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079423",
+    "name": "華通凱基63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079556",
+    "name": "華通元大63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079557",
+    "name": "華通元大63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079558",
+    "name": "華通元大64購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079689",
+    "name": "華通凱基6A購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079794",
+    "name": "華通富邦62購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079795",
+    "name": "華通富邦68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079823",
+    "name": "華通台新65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079824",
+    "name": "華通台新65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079949",
+    "name": "華通群益63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "079984",
+    "name": "華通凱基63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080069",
+    "name": "華通台新62購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080223",
+    "name": "華通群益62購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080468",
+    "name": "華通凱基65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080515",
+    "name": "華通元大63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080516",
+    "name": "華通元大64購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080604",
+    "name": "華通群益62購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "080979",
+    "name": "華通凱基63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081155",
+    "name": "華通群益62購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081475",
+    "name": "華通群益62購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081527",
+    "name": "華通凱基63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081703",
+    "name": "華通凱基68購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081741",
+    "name": "華通群益62購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "081923",
+    "name": "華通群益62購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082238",
+    "name": "華通凱基63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082435",
+    "name": "華通凱基63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082518",
+    "name": "華通群益64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "082868",
+    "name": "華通凱基63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083033",
+    "name": "華通中信63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083034",
+    "name": "華通中信65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083239",
+    "name": "華通群益63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083240",
+    "name": "華通群益66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083420",
+    "name": "華通元大63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083421",
+    "name": "華通元大63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083464",
+    "name": "華通永豐63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083465",
+    "name": "華通永豐63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083525",
+    "name": "華通凱基63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083570",
+    "name": "華通群益65購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083709",
+    "name": "華通元大63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083710",
+    "name": "華通元大64購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083962",
+    "name": "華通永豐63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "083963",
+    "name": "華通永豐64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084108",
+    "name": "華通群益63購10",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084161",
+    "name": "華通凱基65購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084197",
+    "name": "華通國票64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084264",
+    "name": "華通永豐63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084288",
+    "name": "華通國泰64購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084305",
+    "name": "華通群益63購11",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084406",
+    "name": "華通富邦67購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "084718",
+    "name": "華通凱基63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085275",
+    "name": "華通台新63購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085276",
+    "name": "華通台新63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085279",
+    "name": "華通台新63購04",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085318",
+    "name": "華通富邦73購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085464",
+    "name": "華通富邦69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085577",
+    "name": "華通統一69購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085672",
+    "name": "華通富邦79購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085708",
+    "name": "華通元大63購17",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085709",
+    "name": "華通元大63購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085802",
+    "name": "華通凱基63購18",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085989",
+    "name": "華通元大63購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "085990",
+    "name": "華通元大63購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086043",
+    "name": "華通群益63購12",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086278",
+    "name": "華通凱基63購19",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086469",
+    "name": "華通群益63購13",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086471",
+    "name": "華通群益65購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "086947",
+    "name": "華通凱基63購20",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087026",
+    "name": "華通國票66購01",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087177",
+    "name": "華通台新63購05",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087178",
+    "name": "華通台新63購06",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087204",
+    "name": "華通群益63購14",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087413",
+    "name": "華通凱基63購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087451",
+    "name": "華通群益63購15",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087850",
+    "name": "華通中信63購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "087889",
+    "name": "華通永豐63購09",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088064",
+    "name": "華通群益63購16",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088405",
+    "name": "華通凱基64購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "088467",
+    "name": "華通富邦69購02",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089110",
+    "name": "華通元大63購21",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089111",
+    "name": "華通元大63購22",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089246",
+    "name": "華通台新63購07",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089247",
+    "name": "華通台新63購08",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "089616",
+    "name": "華通群益64購03",
+    "right": "call",
+    "ex": "tse"
+   },
+   {
+    "code": "03426T",
+    "name": "華通元大5B售12",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03435T",
+    "name": "華通台新5B售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03607T",
+    "name": "華通國票61售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03683T",
+    "name": "華通群益5C售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03687T",
+    "name": "華通凱基5C售08",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03741T",
+    "name": "華通元大61售16",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03798T",
+    "name": "華通國票61售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03813T",
+    "name": "華通凱基61售11",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03817T",
+    "name": "華通群益61售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03898T",
+    "name": "華通國票65售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03939T",
+    "name": "華通群益61售07",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03940T",
+    "name": "華通元大61售18",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03964T",
+    "name": "華通群益61售08",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "03990T",
+    "name": "華通凱基65售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04041T",
+    "name": "華通元大62售05",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04175T",
+    "name": "華通元大63售13",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04266T",
+    "name": "華通國票63售01",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "04803T",
+    "name": "華通中信64售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05358T",
+    "name": "華通元大65售14",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05446T",
+    "name": "華通國票66售03",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "05463T",
+    "name": "華通群益65售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "07750U",
+    "name": "華通群益5C售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08735U",
+    "name": "華通群益63售04",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08836U",
+    "name": "華通凱基63售02",
+    "right": "put",
+    "ex": "tse"
+   },
+   {
+    "code": "08842U",
+    "name": "華通群益63售06",
+    "right": "put",
+    "ex": "tse"
+   }
+  ]
+ },
+ "flags": [],
+ "market_ctx": {
+  "prev_date": "2026-11-25",
+  "breadth": {
+   "up": 39,
+   "down": 1033
+  },
+  "foreign_amt_b": -1236.5,
+  "trust_amt_b": 550.3,
+  "tx_night": {
+   "contract": "202612",
+   "o": 37868.0,
+   "h": 38397.0,
+   "l": 35933.0,
+   "c": 38397.0,
+   "chg": 274.0,
+   "chg_pct": 0.72,
+   "vol": 79451,
+   "title": "2026/11/25"
+  },
+  "tx_day_prev": {
+   "contract": "202612",
+   "o": 38450.0,
+   "h": 38890.0,
+   "l": 36500.0,
+   "c": 38062.0,
+   "chg": -2262.0,
+   "chg_pct": -5.61,
+   "vol": 95642,
+   "title": null
+  },
+  "foreign_oi": {
+   "net_oi": -105709,
+   "raw": [
+    140910,
+    1081806404,
+    143418,
+    1103244795,
+    -2508,
+    -21438391,
+    11439,
+    87247894,
+    117148,
+    893255233,
+    -105709,
+    -806007339
+   ]
+  },
+  "us": {
+   "SOX": {
+    "date": "2026/11/25",
+    "c": 8716.5,
+    "pct": 1.11,
+    "src": "taifex",
+    "label": "費半期",
+    "vol": 282
+   },
+   "NDX": {
+    "date": "2026/11/25",
+    "c": 26066.0,
+    "pct": 0.56,
+    "src": "taifex",
+    "label": "那斯達克100期",
+    "vol": 426
+   },
+   "SPX": {
+    "date": "2026/11/25",
+    "c": 7200.0,
+    "pct": 0.32,
+    "src": "taifex",
+    "label": "標普期",
+    "vol": 15
+   },
+   "DOW": {
+    "date": "2026/11/25",
+    "c": 50400.0,
+    "pct": 1.0,
+    "src": "taifex",
+    "label": "道瓊期",
+    "vol": 70
+   }
+  }
+ },
+ "fit": {
+  "cap_e8": 123.38,
+  "market": "tse",
+  "mcap_rank": 78,
+  "heavy": false,
+  "amp5": 6.95,
+  "amp_x_cost": 27.8,
+  "tags": [
+   [
+    "ok",
+    "近 5 日平均振幅 7.0%（來回成本的 28 倍）"
+   ],
+   [
+    "info",
+    "股本 123 億（偏大）"
+   ]
+  ]
+ }
+}

@@ -2224,9 +2224,10 @@
   "days": [
    "2026-11-11",
    "2026-11-12",
-   "2026-11-24"
+   "2026-11-24",
+   "2026-11-26"
   ],
-  "launches": 3,
+  "launches": 4,
   "signals": [],
   "notes": []
  },
@@ -6026,9 +6027,10 @@
   "days": [
    "2026-11-18",
    "2026-11-20",
-   "2026-11-23"
+   "2026-11-23",
+   "2026-11-26"
   ],
-  "launches": 3,
+  "launches": 4,
   "signals": [
    {
     "date": "2026-11-18",
@@ -6124,9 +6126,10 @@
   "market": "otc",
   "group": null,
   "days": [
-   "2026-11-19"
+   "2026-11-19",
+   "2026-11-26"
   ],
-  "launches": 1,
+  "launches": 2,
   "signals": [],
   "notes": []
  },
@@ -7039,9 +7042,10 @@
   "market": "tse",
   "group": null,
   "days": [
-   "2026-11-24"
+   "2026-11-24",
+   "2026-11-26"
   ],
-  "launches": 1,
+  "launches": 2,
   "signals": [],
   "notes": []
  },
@@ -7128,6 +7132,39 @@
   "group": null,
   "days": [
    "2026-11-25"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "8358": {
+  "name": "金居",
+  "market": "otc",
+  "group": null,
+  "days": [
+   "2026-11-26"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2313": {
+  "name": "華通",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-26"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "8039": {
+  "name": "台虹",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-26"
   ],
   "launches": 1,
   "signals": [],

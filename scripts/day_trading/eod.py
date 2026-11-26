@@ -140,7 +140,7 @@ def series(rows):
 
 _SIG_KEYS = ("code", "name", "time", "side", "label", "alert_px", "zone", "price", "stop", "t1", "score_stop", "score_tgt", "verdict", "exit",
              "exit_px", "net_pct", "mae_ticks", "mfe_ticks", "fill_min", "first_stop_min", "first_t1_min", "ret_30m", "why", "blocked",
-             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src", "run5", "run5_tk", "space", "env", "refs", "filters", "kd")
+             "block_kind", "block_reason", "filled_at_alert", "fast_adverse", "scoring", "src", "run5", "run5_tk", "space", "env", "refs", "filters", "kd", "holidays", "orderflow")
 
 CHASE_PCT, CHASE_TICKS = 0.5, 2        # 跟 monitor.CHASE_* 一致：確認前 5 分鐘已順向走這麼多算「追價」
 # 追價的訊號再依「當時離漲跌停多遠」分三段（順向漲跌幅：做多看漲幅、做空看跌幅；漲跌停是 10%）。
@@ -616,6 +616,11 @@ def tomorrow(codes, names=None):
     iso = today.isoformat()
     out = {"date": iso, "for_today": iso != cal.today_tw().isoformat() and cal.is_trading_day(cal.today_tw()),
            "brokers": {}, "screener": None, "built": dt.datetime.now().strftime("%H:%M:%S")}
+    try:        # 下一個交易日的國際休市（world_holidays.py）：昨晚美股、當天日韓新陸有沒有開
+        import world_holidays
+        out["holidays"] = world_holidays.status(cal.next_trading_day(today))
+    except Exception as e:
+        out["holidays"] = {"error": str(e)[:120]}
     for c in codes:
         try:
             s = src_moneydj.broker_summary(c)

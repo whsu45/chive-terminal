@@ -12,6 +12,7 @@ import os
 import math
 import time
 import threading
+import collections
 import datetime as dt
 
 from config import load_env, CACHE_DIR
@@ -20,6 +21,8 @@ from config import load_env, CACHE_DIR
 # 超過 → 暫停服務一分鐘，當日連續多次超過 → 暫停該 IP 及 ID 使用權。限制是算在同一個身分證字號（person_id）上，不是每台電腦各 10 次。
 TICKS_DAILY_LIMIT = 10
 LIVE_DIR = os.path.join(CACHE_DIR, "ticks_live")     # 盤中收到的逐筆，每分鐘存一次；重啟時先讀這裡，不重複查（不進 git）
+BOOK_DIR = os.path.join(CACHE_DIR, "book_live")      # 五檔每一次變動（BidAsk 串流），每分鐘 append 一次（gzip）；回放、調撤單觀察門檻用（不進 git）
+BOOK_KEEP_DAYS = 30
 # 本機存的逐筆離現在不到這麼多秒就直接用、不花查詢額度。原本是 300 秒：2026-11-17 盤中重開 monitor，事欣科的存檔停在 11:14:42、
 # 新程式 11:18 才接上串流，差 3 分多鐘照樣直接用，中間約 140 張逐筆就這樣沒了（大戶散戶跟籌碼K線對不上的原因之一）。
 # 現在超過 20 秒、而且還有額度就重查全日逐筆（一次額度）；額度用完才用存檔，空檔標在儀表板上（flow()["partial"]["gaps"]）。
@@ -290,6 +293,7 @@ def _new_acc():
     return {"ticks": [], "last": None, "high": None, "low": None, "open": None, "total_volume": None, "last_t": None,
             "bid_total": None, "ask_total": None, "bid_cnt": None, "ask_cnt": None,
             "bids": [], "asks": [], "book_t": None,     # 五檔 [[price, vol] ×5]（BidAsk 串流）
+            "book_ev": collections.deque(maxlen=20000), "book_saved": 0.0,   # 五檔每一次變動 (epoch, bids, asks)：撤單觀察（orderflow.py）與存檔
             "bars": {},   # "HH:MM" -> [o, h, l, c, vol, amt]（分 K，給江波圖）
             "auction": {}}   # 集合競價那一筆：{"open": [價, 張, 永豐標的內外盤], "close": [...]}，不算進買賣分流
 
@@ -507,6 +511,9 @@ def start_stream(codes, big_lot=None):
                 acc = _state.setdefault(ba.code, _new_acc())
                 acc["bids"], acc["asks"], acc["book_t"] = bids, asks, getattr(ba, "datetime", None)
                 acc["book_recv_t"] = time.time()
+                t = acc["book_t"]
+                ev = acc.setdefault("book_ev", collections.deque(maxlen=20000))
+                ev.append((t.timestamp() if isinstance(t, dt.datetime) else time.time(), bids, asks))
         except Exception:
             pass
 
@@ -678,6 +685,77 @@ def book(code):
         if not acc or not (acc["bids"] or acc["asks"]):
             return None
         return {"bids": list(acc["bids"]), "asks": list(acc["asks"]), "t": acc["book_t"]}
+
+
+def book_events(code, since_ts):
+    """since_ts（epoch）之後的五檔變動 [(epoch, bids, asks)]（時間由舊到新）。給撤單觀察（orderflow.py）。"""
+    with _lock:
+        acc = _state.get(code)
+        if not acc or not acc.get("book_ev"):
+            return []
+        out = []
+        for e in reversed(acc["book_ev"]):
+            if e[0] <= since_ts:
+                break
+            out.append(e)
+    return out[::-1]
+
+
+def ticks_from(code, i):
+    """第 i 筆以後的逐筆 [(epoch, 價, 張, 內外盤)] 與目前總筆數。重啟回補把清單重建、變短時從頭給（呼叫端看總筆數 < i 就知道重來）。"""
+    with _lock:
+        acc = _state.get(code)
+        if not acc:
+            return [], 0
+        ticks = acc["ticks"]
+        n = len(ticks)
+        if i > n:
+            i = 0
+        rows = ticks[i:]
+    out = []
+    for ts, p, v, tt in rows:
+        t = ts if isinstance(ts, dt.datetime) else ns_to_dt(ts)
+        out.append((t.timestamp(), p, v, tt))
+    return out, n
+
+
+def save_book_cache():
+    """把上次存檔後的五檔變動 append 到 .cache/book_live/<代碼>_<日期>.jsonl.gz（一行一次變動：[epoch, bids, asks]）。
+    monitor 快迴圈每分鐘叫一次（跟逐筆存檔一起）、收盤登出前再叫一次。超過 BOOK_KEEP_DAYS 天的檔案刪掉。回存了幾檔。"""
+    import gzip
+    import json
+    today = dt.date.today().isoformat()
+    with _lock:
+        snap = {}
+        for c, a in _state.items():
+            evs = [e for e in a.get("book_ev") or () if e[0] > a.get("book_saved", 0.0)]
+            if evs:
+                a["book_saved"] = evs[-1][0]
+                snap[c] = evs
+    n = 0
+    for code, evs in snap.items():
+        try:
+            os.makedirs(BOOK_DIR, exist_ok=True)
+            with gzip.open(os.path.join(BOOK_DIR, f"{code}_{today}.jsonl.gz"), "at", encoding="utf-8") as f:
+                for t, b, a in evs:
+                    f.write(json.dumps([round(t, 3), b, a], separators=(",", ":")) + "\n")
+            n += 1
+        except Exception as e:
+            print(f"[shioaji] {code} 五檔存檔失敗：{str(e)[:80]}")
+    global _book_pruned
+    if _book_pruned != today:
+        _book_pruned = today
+        cut = (dt.date.today() - dt.timedelta(days=BOOK_KEEP_DAYS)).isoformat()
+        try:
+            for fn in os.listdir(BOOK_DIR):
+                if fn.endswith(".jsonl.gz") and fn.rsplit("_", 1)[-1][:10] < cut:
+                    os.remove(os.path.join(BOOK_DIR, fn))
+        except OSError:
+            pass
+    return n
+
+
+_book_pruned = None
 
 
 def stats(code):

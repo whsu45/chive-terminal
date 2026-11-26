@@ -1,4 +1,7 @@
 import re
+import os
+import json
+import importlib.util
 from datetime import datetime, timezone, timedelta
 from .utils import format_signed_num, format_pts_str
 from .chart_generator import generate_svg_kline_chart
@@ -53,6 +56,81 @@ def verify_status_display(rec):
     return status, ""
 
 
+# 國際休市參考卡（2026-11-26 加）：美國、日本、韓國、新加坡、中國大陸的國定假日 / 股市休市，給當沖當參考。
+# 資料跟 monitor 儀表板同一份（scripts/day_trading/world_holidays.py）。建置時把前 10 天～後 120 天的表嵌進頁面，
+# 「今天、昨晚美股、接下來 30 天」由瀏覽器依台灣日期算：頁面晚一點才重建、或隔天才打開也不會過期。
+_WORLD_HOL_HTML = """
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <h2 class="text-sm font-bold text-slate-800">🌐 國際休市參考：美國・日本・韓國・新加坡・中國大陸 <span id="wh-day" class="font-normal text-slate-500"></span></h2>
+                <span class="text-xs text-slate-400">當沖參考（只顯示、未驗證）</span>
+            </div>
+            <div id="wh-now" class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm"></div>
+            <div id="wh-next" class="mt-3 text-sm"></div>
+            <p class="text-[11px] text-slate-400 mt-3">美股（NYSE）、日股（JPX）照交易所規則算；韓股（KRX）、新加坡（SGX）、陸股（上交所）逐年建表，名稱標「估計」的是交易所還沒正式公告。日韓新陸跟台股同一個白天交易；美股在台灣時間晚上交易，台股開盤前看的是「昨晚」那一場。</p>
+        </div>
+        <script>
+        (function () {
+            const D = __WORLD_HOL_DATA__;
+            const WD = '日一二三四五六';
+            const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+            const iso = d => d.toISOString().slice(0, 10);
+            const add = (d, n) => { const x = new Date(d); x.setUTCDate(x.getUTCDate() + n); return x; };
+            const md = s => (+s.slice(5, 7)) + '/' + (+s.slice(8, 10));
+            const wkend = d => d.getUTCDay() === 0 || d.getUTCDay() === 6;
+            let t = new Date(Date.now() + 8 * 3600e3);                       // 台灣日期；週末就看下週一
+            t = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate()));
+            const t0 = iso(t);
+            while (wkend(t)) t = add(t, 1);
+            const ti = iso(t), dl = ti === t0 ? '今天' : `${md(ti)}（${WD[t.getUTCDay()]}）`;
+            let p = add(t, -1);
+            while (wkend(p)) p = add(p, -1);
+            const at = (s, cc) => D.entries.find(e => e.date === s && e.cc === cc && e.kind !== 'open');
+            const st = e => e.kind === 'closed' ? '休市' : e.kind === 'half'
+                ? (e.cc === 'US' ? `提早收盤（美東 ${esc(e.note)} = 台灣 ${esc(e.tw_close)}）` : `只開半天（${esc(e.note)} 收）`) : '股市照常';
+            const box = (title, body, alert) => `<div class="rounded-lg border p-3 ${alert ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200'}">`
+                + `<div class="text-xs text-slate-500">${title}</div><div class="mt-1 font-semibold ${alert ? 'text-amber-800' : 'text-slate-700'}">${body}</div></div>`;
+            const up = at(iso(p), 'US'), ut = at(ti, 'US');
+            const asia = D.entries.filter(e => e.date === ti && e.cc !== 'US' && e.kind !== 'open');
+            const pw = iso(add(t, -1)) === iso(p) ? '昨晚' : `${md(iso(p))}（${WD[p.getUTCDay()]}）晚上`;
+            document.getElementById('wh-day').textContent = `· 台股 ${md(ti)}（${WD[t.getUTCDay()]}）`;
+            document.getElementById('wh-now').innerHTML =
+                box(`上一場美股（${pw}）`, up ? `${st(up)}（${esc(up.name)}）<div class="text-xs font-normal mt-1">${up.kind === 'closed' ? '開盤前沒有新的美股、台積電 ADR 方向可參考' : '只開半天、量小，方向參考性比較低'}</div>` : '正常交易', !!up)
+                + box(`${dl}日本・韓國・新加坡・中國大陸`, asia.length ? asia.map(e => `${esc(e.market)}${st(e)}（${esc(e.name)}）`).join('<br>')
+                    + '<div class="text-xs font-normal mt-1">區域連動與外資進出可能比較少</div>' : '都有開', asia.length > 0)
+                + box(ti === t0 ? '今晚美股' : `${dl}晚上美股`, ut ? `${st(ut)}（${esc(ut.name)}）` : '正常交易', !!ut);
+            const end = iso(add(t, 30));
+            const nx = D.entries.filter(e => e.date > ti && e.date <= end);
+            let h = `<div class="text-xs font-semibold text-slate-500 mb-1">接下來 30 天</div>`;
+            h += nx.length ? `<div class="overflow-x-auto"><table class="w-full text-left text-slate-600"><tbody>` + nx.map(e =>
+                `<tr class="border-t border-slate-100 ${e.kind === 'open' ? 'text-slate-400' : ''}"><td class="py-1.5 pr-3 whitespace-nowrap">${md(e.date)}（${esc(e.wd)}）</td>`
+                + `<td class="py-1.5 pr-3 whitespace-nowrap"><span class="text-slate-400">${esc(e.country)}</span> ${esc(e.name)}</td>`
+                + `<td class="py-1.5 ${e.kind === 'closed' ? 'text-red-600 font-medium' : e.kind === 'half' ? 'text-amber-700' : ''}">${e.kind === 'open' ? esc(e.note || '股市照常')
+                    : e.kind === 'half' && e.cc === 'US' ? `美股提早收盤（台灣 ${esc(e.tw_close)} 收）` : esc(e.market) + st(e)}</td></tr>`).join('')
+                + `</tbody></table></div>` : `<div class="text-slate-400">五個市場都沒有休市</div>`;
+            if (D.missing && D.missing.length) h += `<div class="text-xs text-amber-700 mt-2">⚠ 還沒建休市表：${D.missing.map(esc).join('、')}（scripts/day_trading/world_holidays.py）</div>`;
+            document.getElementById('wh-next').innerHTML = h;
+        })();
+        </script>
+"""
+
+
+def world_holidays_html(tw_now):
+    """首頁的國際休市參考卡；讀不到 world_holidays.py 就整張略過（不影響其他區塊）。"""
+    try:
+        path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "day_trading", "world_holidays.py")
+        spec = importlib.util.spec_from_file_location("world_holidays", path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        today = tw_now.date()
+        entries, missing = mod.calendar(today - timedelta(days=10), today + timedelta(days=120))
+    except Exception as e:
+        print(f"國際休市參考略過：{e}")
+        return ""
+    data = json.dumps({"entries": entries, "missing": missing}, ensure_ascii=False).replace("</", "<\\/")
+    return _WORLD_HOL_HTML.replace("__WORLD_HOL_DATA__", data)
+
+
 def generate_index_html(history_records, tw_kline_data, us_kline_data):
     latest_data = history_records[0]
 
@@ -63,6 +141,7 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
 
     tw_kline_svg = generate_svg_kline_chart(tw_kline_data, "台股加權指數")
     us_kline_svg = generate_svg_kline_chart(us_kline_data, "美股 NASDAQ 指數")
+    world_hol_html = world_holidays_html(tw_now)
 
     scenario_badge_class = "bg-slate-100 text-slate-700 border-slate-200"
     if latest_data["scenario"] == "劇本一":
@@ -205,7 +284,7 @@ def generate_index_html(history_records, tw_kline_data, us_kline_data):
                 <a href="./limit-up.html" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">🔥 最新漲停個股</a>
             </div>
         </div>
-
+{world_hol_html}
         <!-- 3個月台股與美股原生 SVG K 線走勢圖區塊 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">

@@ -239,7 +239,7 @@ python fetch_and_build.py
 - **GitHub Pages**：前端靜態網站託管
 
 ---
-- https://whsu45.github.io/chive-terminal/index.html
+- https://whsu45.github.io/chive-terminal/index.html （首頁上方有「🌐 國際休市參考」卡：美日韓新陸今天 / 昨晚美股有沒有開、接下來 30 天的假日；資料是 `scripts/day_trading/world_holidays.py`，由 `modules/html_generator.py` 在 deploy 時嵌進頁面）
 - https://whsu45.github.io/chive-terminal/us-tech.html （美股科技族群趨勢 × 台股連動：`scripts/build_us_tech.mjs` 產生 `data/us_tech.json` 與逐日累積的 `data/us_tech_history.json`，族群與台股候選定義在 `data/us_tech_config.json`）
 - https://whsu45.github.io/chive-terminal/night-futures.html （期貨夜盤走勢：台灣市值前 50 名裡有夜盤期貨的個股、每天夜盤漲跌與「夜盤 → 當天開盤跳空」對照；`scripts/build_night_futures.py` 產生 `data/night_futures.json`，隨 deploy 排程更新）
 - https://fubon-ebrokerdj.fbs.com.tw/z/zg/zgb/zgb0.djhtm

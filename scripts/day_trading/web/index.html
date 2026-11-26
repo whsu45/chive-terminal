@@ -87,6 +87,9 @@ header .addbox .msg{font-size:12px;color:var(--muted);max-width:340px}header .ad
 .fs .hl{font-size:13px;line-height:1.5}.fs .hl b{font-family:var(--mono);font-weight:700}.fs .hl .def{color:var(--muted);font-size:12px}
 .wall{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--panel2);font-size:12px;border-left:4px solid var(--line)}
 .wall.bid{border-left-color:var(--up)}.wall.ask{border-left-color:var(--dn)}.wall.ended{opacity:.6}
+.oflow{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--panel2);font-size:12px}
+.oflow h4{margin:0 0 4px;font-size:12px;color:var(--muted);font-weight:600}.oflow .r{padding:2px 0;border-top:1px solid var(--line)}.oflow .r:first-of-type{border-top:0}
+.oflow .r b{font-family:var(--mono)}.oflow .t{color:var(--muted);font-family:var(--mono);margin-right:6px}.oflow .b{color:var(--up)}.oflow .a{color:var(--dn)}
 .wall b{font-family:var(--mono)}.wall .v{font-weight:700}.wall .v.real{color:var(--up)}.wall .v.fake{color:var(--warn)}
 .hist .kv b{font-size:14px}.hist table{width:100%;font-size:12px;border-collapse:collapse;margin-top:6px}.hist td{padding:2px 4px}.hist td.n{text-align:right;font-family:var(--mono)}
 .hist .wl{font-weight:700}.hist .note{font-size:12px;color:var(--muted);margin-top:4px}
@@ -129,6 +132,7 @@ footer{padding:8px 16px;color:var(--muted);font-size:12px;text-align:center}
 .sitebar{margin:10px 16px 0;padding:8px 12px;border:1px solid #f0b429;border-radius:10px;background:rgba(240,180,41,.08);color:#f0b429;font-size:13px;line-height:1.6}
 .fear{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);white-space:nowrap;cursor:help}
 .fear.sup{color:#ffd166;border-color:#6b5520}.fear.pull{color:#fff;background:#7a5b00;border-color:#ffd166;animation:pulse 1.2s infinite}
+.fear.hol{color:#9ecbff;border-color:#2b4a6b}.fear.hol0{color:var(--muted)}
 .fear.l0{color:#7fd18b}.fear.l1{color:var(--muted)}.fear.l2{color:#f0b429;border-color:#6b5520}.fear.l3{color:#fff;background:#8b1e2b;border-color:#c0392b}
 .sitebar.hidden{display:none}.sitebar a{color:#ffd166;font-weight:700;margin:0 4px}.sitebar .muted{color:var(--muted);font-size:12px}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 12px 1px currentColor}}
@@ -236,6 +240,7 @@ main#review.hidden{display:none}
     <span id="idx"></span>
     <span id="fear" class="fear"></span>
     <span id="support" class="fear"></span>
+    <span id="hol" class="fear"></span>
     <span id="shioaji"></span>
     <span class="phase" id="phase"></span>
     <button class="vbtn" id="view-btn" onclick="toggleView()" title="收盤後的回顧：成績單、每個訊號的結果、被擋掉的訊號、警示、明天的準備">復盤</button>
@@ -284,7 +289,7 @@ main#review.hidden{display:none}
     <div class="fs" id="fs"><div class="hl" id="fs-big-t"></div><canvas id="fs-big"></canvas><div class="hl" id="fs-small-t"></div><canvas id="fs-small"></canvas><div class="small muted" id="fs-ck"></div></div>
     <div class="subh">主力 / 散戶 分流</div><div class="flow" id="flow"></div></section>
   <section class="card" id="c-plan"><h3>模組 A（現有）進出場計畫（已畫在個股江波圖）</h3><div class="plan" id="plan"></div></section>
-  <section class="card" id="c-book"><h3>五檔</h3><div class="book" id="book"></div><div id="runs"></div><div id="signs"></div><div id="liq"></div><div id="walls"></div></section>
+  <section class="card" id="c-book"><h3>五檔</h3><div class="book" id="book"></div><div id="runs"></div><div id="signs"></div><div id="liq"></div><div id="walls"></div><div id="oflow"></div></section>
   <section class="card" id="c-factors"><h3>因子（滑鼠停留看理由）</h3><div id="factors"></div></section>
   <section class="card" id="c-ladder"><h3>壓力 / 支撐</h3><div class="ladder" id="ladder"></div></section>
   <section class="card" id="c-dt"><h3>隔日沖分點 <span class="small muted" id="dt-t"></span></h3><div id="dt"></div></section>
@@ -341,6 +346,28 @@ function renderSupport(){const el=$('support');if(!el)return;const z=STATE&&STAT
   el.className='fear '+(p?'pull':'sup');
   el.innerHTML=p?`⚠ 護盤拉抬 ${esc((p.time||'').slice(0,5))} 加權 ${p.r_tx>0?'+':''}${f(p.r_tx,1)}%`:`護盤期 第 ${z.week} 週${z.pulls_today?`・今天拉抬 ${z.pulls_today} 次`:''}`;
   el.title=(p?p.text+'。'+p.note+'\n':'')+(z.text||'');}
+// 國際休市（world_holidays.py）：昨晚美股、今天日韓新陸有沒有開；沒事就寫 7 天內最近的一筆（灰色）。滑過看接下來 30 天。只顯示、未驗證
+function renderHol(){const el=$('hol');if(!el)return;const z=STATE&&STATE.holidays;
+  if(!z||!z.chip){el.textContent='';el.className='fear';el.title=(z&&z.text)||'';return;}
+  el.className='fear '+(z.active?'hol':'hol0');el.textContent='🌐 '+z.chip;el.title=z.text||'';}
+// 給「下一個交易日」看的休市句子：今天 → 那天、今晚 → 那天晚上、昨晚 → 前一晚
+const holFor=(z,day)=>z&&z.chip?z.chip.replace(/昨晚/g,'前一晚').replace(/今天/g,day).replace(/今晚/g,day+'晚上'):'';
+// 撤單觀察與程式單偵測（orderflow.py）：五檔每次變動扣掉成交算撤單、逐筆找定時定量 / 固定張數 / 拆單。只顯示、未驗證，詳細規則看 README
+const TT_WORD={1:'外盤買進',2:'內盤賣出',0:'買賣兩邊'};
+function renderOflow(){const el=$('oflow');if(!el)return;const o=LIVE&&LIVE.orderflow&&LIVE.orderflow[CUR];
+  if(!o){el.innerHTML='';return;}
+  const sd=k=>k==='b'?'<span class="b">委買</span>':'<span class="a">委賣</span>';
+  const can=(o.cancels||[]).slice(-5).reverse().map(a=>`<div class="r"><span class="t">${esc((a.t||'').slice(0,5))}</span>${sd(a.side)} <b>${fp(a.px)}</b> 撤 <b>${a.lots}</b> 張`
+    +(a.kind==='cancel'?`（${a.before} → ${a.after}${a.traded!=null?`，成交 ${a.traded}`:''}）${a.round?` · 一次整 ${a.round}`:''}`:`（一次整數，${a.before} → ${a.after}）`)+'</div>').join('');
+  const fx=(o.log||[]).filter(a=>/^fix/.test(a.kind)).slice(-3).reverse().map(a=>`<div class="r"><span class="t">${esc((a.t||'').slice(0,5))}</span>${sd(a.side)} ${a.kind==='fix_add'?'反覆掛':a.kind==='fix_cancel'?'反覆撤':'反覆掛撤'} <b>${a.v}</b> 張 ${a.n} 次</div>`).join('');
+  const pk={periodic:a=>`定時：${TT_WORD[a.tt]} <b>${a.v}</b> 張、約每 <b>${f(a.period,0)}</b> 秒一筆（${esc((a.t0||'').slice(0,5))} 起 ${a.n} 筆）`,
+    fixed:a=>`固定張數：${TT_WORD[a.tt]} <b>${a.v}</b> 張 20 分鐘 ${a.n} 筆（平常約 ${f(a.exp,1)}）`,
+    slice:a=>`拆單：${TT_WORD[a.tt]} 499 張 20 分鐘 ${a.n} 筆（共 ${(a.n*499).toLocaleString()} 張）`,
+    burst:a=>`連發：${TT_WORD[a.tt]}同時 ${a.n} 筆 <b>${a.v}</b> 張${a.times>1?`（10 分鐘內 ${a.times} 次）`:''}`};
+  const pg=(o.prog||[]).slice(-5).reverse().map(a=>`<div class="r"><span class="t">${esc((a.t||'').slice(0,5))}</span>${(pk[a.kind]||(x=>esc(x.text||'')))(a)}</div>`).join('');
+  el.innerHTML=`<div class="oflow" title="只顯示、未驗證：撤單 = 五檔減少的張數扣掉同一價位的成交；被擠出看得到的五檔不算。程式單 = 逐筆裡同張數同邊的成交時間間隔固定、張數比平常多很多、499 張拆單或同時連發">`
+    +`<h4>撤單觀察${o.has_ticks?'':'（沒有逐筆：只算價格沒碰過的價位）'}</h4>${can||'<div class="muted">目前沒有大量撤單</div>'}${fx}`
+    +`<h4 style="margin-top:6px">程式單偵測</h4>${pg||'<div class="muted">最近 20 分鐘沒有看到定時定量、固定張數或拆單</div>'}</div>`;}
 function renderSite(){const el=$('sitebar');if(!el)return;const s=STATE&&STATE.site;
   if(!s){el.classList.add('hidden');el.innerHTML='';return;}
   el.classList.remove('hidden');
@@ -423,7 +450,7 @@ function renderGapReview(){const el=$('rv-gap');if(!el)return;const G=RV&&RV.gap
 let BOOT=null;   // 這次 monitor 程序的 ID：開著過夜時 monitor 會在新交易日 08:25 自動重開，ID 變了就整頁重新載入，畫面上不留前一天的分時、大盤、漲跌停
 async function loadState(){try{const r=await fetch('/api/state?_='+Date.now());const s=await r.json();
   if(s.boot&&BOOT&&s.boot!==BOOT){location.reload();return;}if(s.boot)BOOT=s.boot;
-  STATE=s;autoReview();renderSite();renderFear();renderSupport();renderGap();
+  STATE=s;autoReview();renderSite();renderFear();renderSupport();renderHol();renderGap();
   if(!STATE.codes.length){loadPicker();return;}            // 選股模式：還沒選標的
   showPicker(false);
   if(ADD_WAIT&&STATE.codes.includes(ADD_WAIT)){CUR=ADD_WAIT;}renderAdd();
@@ -530,6 +557,7 @@ function renderPicker(){
       +(res.long_panic_rule?`<div class="small" style="margin-top:4px">做多：${esc(res.long_panic_rule)}</div>`:'')
       +(res.open_rule?`<div class="small" style="margin-top:4px">🔔 ${esc(res.open_rule)}</div>`:'')
       +(res.support&&res.support.on?`<div class="small" style="margin-top:4px;color:#ffd166">🛡 ${esc(res.support.text)}</div>`:'')
+      +(res.holidays&&res.holidays.chip?`<div class="small" style="margin-top:4px;color:#9ecbff" title="${esc(res.holidays.text||'')}">🌐 ${esc(res.holidays.date.slice(5).replace('-','/'))} 國際休市：${esc(res.holidays.chip)}（只顯示、未驗證）</div>`:'')
       +(res.vix?`<div class="small" style="margin-top:4px">恐慌指數：臺指 VIX <b class="num">${f(res.vix.close,2)}</b>（${esc(res.vix.date)}，${esc(res.vix.level||'')}）${res.vix.extreme?' <b style="color:#ff6b6b">≥40 極度恐慌：隔日沖倒貨、恐慌開低做多今天不做</b>':''}</div>`:'')
       // 沒有適合的就不做（2026-11-18）：盤前就成立的名單一檔都沒有時，畫面直接寫不做，也不預設勾選任何一檔
       +(res.no_trade?'<div class="pk-err" style="margin-top:6px;font-size:14px">今天沒有適合的個股：不做（只看開盤才成立的隔日沖倒貨，和大盤恐慌開低時的做多）</div>':'')
@@ -758,7 +786,8 @@ function renderLive(){if(!LIVE||!LIVE.quotes){return;}const q=LIVE.quotes[CUR];c
     const ws=(LIVE.walls&&LIVE.walls[CUR])||{};
     $('walls').innerHTML=['bid','ask'].map(k=>{const w=ws[k];if(!w)return '';const vc=/^真/.test(w.verdict||'')?'real':/^假/.test(w.verdict||'')?'fake':'';
       return `<div class="wall ${k} ${w.status?'ended':''}">${k==='bid'?'買單牆':'賣單牆'} <b>${fp(w.px)}</b>：<b>${w.size0}</b>→<b>${w.last}</b> 張（${esc(w.since)} 起）· 被吃 <b>${w.traded}</b> · 撤 <b>${w.pulled}</b> · 補 <b>${w.refilled}</b> → <span class="v ${vc}">${esc(w.status||w.verdict||'')}</span></div>`;}).join('')
-      ||'<div class="small muted" style="margin-top:6px">五檔沒有特別大的掛單（牆＝某檔 ≥2 倍其他四檔平均且 ≥30 張）</div>';}
+      ||'<div class="small muted" style="margin-top:6px">五檔沒有特別大的掛單（牆＝某檔 ≥2 倍其他四檔平均且 ≥30 張）</div>';
+    renderOflow();}
   const fl=LIVE.flow[CUR]||ev.flow;
   if(fl){const vol=fl.volume||1;const row=(lab,net,p)=>{const w=Math.min(50,Math.abs(p||0)*2.5);return `<div class="row"><span>${lab}</span><div class="track"><i class="${(net||0)>=0?'p':'n'}" style="width:${w}%"></i></div><b class="num ${cls(net)}">${net>0?'+':''}${net??0} <span class="muted">${pct(p,1)}</span></b></div>`};
     const th=fl.thresholds||{};
@@ -877,7 +906,7 @@ function renderSignal(){const sg=LIVE&&LIVE.signal&&LIVE.signal[CUR];const el=$(
   const sp=(sg.space?`<span class="d space" title="以前的「空間過濾」：實盤和 69.9 萬個回測訊號都顯示擋掉的並沒有比較差，所以只提醒、不擋">📏 空間參考：${esc(sg.space.text)}（只提醒，不擋訊號）</span>`:'')
     // 環境組合：這筆符合哪幾種實盤贏過的環境（env_combos.py）。重複 / 追價只提醒（ⓘ），逆勢照擋（11/24 復盤定案，monitor.REF_ONLY）
     +(sg.env_txt&&sg.env_txt.length?`<span class="d env" title="實盤 11/10–11/18 的 90 筆裡贏最多的環境組合；大樣本沒有重現，抽樣誤差大">✅ 環境符合：${sg.env_txt.map(esc).join('；')}</span>`:'')
-    +(sg.refs||[]).map(r=>`<span class="d space" title="只提醒、不擋（重複、追價：全期驗證擋了沒有比較好；恐慌升溫、護盤拉抬；KD：還沒驗證，先記錄）">ⓘ ${esc(r.kind)}參考：${esc(r.text)}</span>`).join('');
+    +(sg.refs||[]).map(r=>`<span class="d space" title="只提醒、不擋（重複、追價：全期驗證擋了沒有比較好；恐慌升溫、護盤拉抬；KD、休市：還沒驗證，先記錄）">ⓘ ${esc(r.kind)}參考：${esc(r.text)}</span>`).join('');
   el.innerHTML=(waiting
     ?`<span class="h">▶ 建議${esc(sg.label)}：掛</span><span class="zone">${zs}</span>
     <span class="d">現價 <b>${fp(sg.now)}</b> 已${sg.side==='short'?'殺低':'追高'}，等回進場區再進（20 分鐘沒回就取消）· 停損 <b>${fp(sg.stop)}</b> · 目標 <b>${fp(sg.t1)}</b> / <b>${fp(sg.t2)}</b> · ${rr} · ${esc(sg.since)} 起</span>
@@ -1193,7 +1222,9 @@ function renderTomorrow(){const el=$('rv-tom');if(!el)return;const t=RV_TOM;
       +(s.no_trade?'<div class="rv-note" style="color:var(--warn)">盤前成立的名單一檔都沒有：不做（只看開盤才成立的隔日沖倒貨）</div>':'')
       +`${blk('short',PK_TITLE.short,s.short_active)}${blk('long',PK_TITLE.long,s.long_active)}`
       +((s.nds||[]).length?`<div style="margin-top:6px"><b class="dn">${esc(s.nds_title||'隔日沖倒貨')}</b> <span class="rv-tag">開盤開高 0～9%、離漲停 ≥3% 才成立</span></div><table class="rv">${s.nds.slice(0,5).map(r=>li(r,'short')).join('')}</table>`:'');}
-  el.innerHTML=`<div class="rv-score" style="grid-template-columns:1fr 1fr"><div class="rv-box"><h4>${esc(RV_CUR||'')} ${esc((RV.names||{})[RV_CUR]||'')}：${D0}的隔日沖分點（${D1}的庫存）</h4>${left}</div><div class="rv-box"><h4>${D1}的選股名單</h4>${right}</div></div>`;}
+  const hz=res.holidays,hl=holFor(hz,D1);
+  el.innerHTML=(hl?`<div class="rv-note" style="color:#9ecbff;margin-bottom:6px" title="${esc(hz.text||'')}">🌐 ${D1}（${esc((hz.date||'').slice(5).replace('-','/'))}）國際休市：${esc(hl)}（只顯示、未驗證）</div>`:'')
+    +`<div class="rv-score" style="grid-template-columns:1fr 1fr"><div class="rv-box"><h4>${esc(RV_CUR||'')} ${esc((RV.names||{})[RV_CUR]||'')}：${D0}的隔日沖分點（${D1}的庫存）</h4>${left}</div><div class="rv-box"><h4>${D1}的選股名單</h4>${right}</div></div>`;}
 window.addEventListener('resize',()=>{if(VIEW==='review')drawReview();});
 </script>
 </body>

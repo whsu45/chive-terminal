@@ -29,6 +29,8 @@ import env_combos
 import notify
 import fear
 import support
+import world_holidays
+import orderflow
 import history
 import src_mis
 import src_warrants as W
@@ -280,6 +282,19 @@ class WebState:
         self.gap = None                   # 開高放空觀察（gapfade_watch，全市場、只記錄不建議下單）：GapFade.view()
         self.fear = None                  # 恐慌指數（fear_watch）：fear.state()
         self.support = None               # 國安基金護盤期與盤中拉抬偵測（fear_watch）：support.status() + pull
+        self._hol = None                  # 國際休市參考（world_holidays.status，純計算、不連網）：holidays() 一天算一次
+
+    def holidays(self):
+        """美、日、韓、新、陸的國定假日 / 股市休市（world_holidays.py）：今天日韓新陸有沒有開、昨晚美股有沒有開、接下來 30 天。只顯示、記錄，不擋。"""
+        d = dt.date.today()
+        h = self._hol
+        if not h or h.get("date") != d.isoformat():
+            try:
+                h = world_holidays.status(d)
+            except Exception as e:
+                h = {"date": d.isoformat(), "error": str(e)[:120]}
+            self._hol = h
+        return h
 
     def put_live(self, obj):
         with self.lock:
@@ -312,7 +327,8 @@ class WebState:
             return json.dumps({"codes": self.codes, "latest": self.latest, "daily": self.daily, "describe": self.describe,
                                "index": self.index, "updated": self.updated, "interval": self.interval, "shioaji": self.shioaji,
                                "picks": self.picks, "in_session": sess, "adding": self.adding, "winding": self.winding, "max_codes": MAX_CODES,
-                               "boot": BOOT_ID, "site": self.site, "gap": self.gap, "fear": self.fear, "support": self.support},
+                               "boot": BOOT_ID, "site": self.site, "gap": self.gap, "fear": self.fear, "support": self.support,
+                               "holidays": self.holidays()},
                               ensure_ascii=False, default=str)
 
     def history_json(self, code):
@@ -713,6 +729,8 @@ class Monitor:
         self.sig_block = {}                          # code -> 最近一次被逆勢過濾擋掉的訊號（照樣追蹤假設進場的結果，驗證過濾有沒有擋對）
         self._idx_day = {"date": None, "hlc": None, "ts": 0}   # 加權指數日 K（前一天為止），給大盤日 KD（_kd_ref）
         self.walls = {}                              # code -> {"bid": 牆, "ask": 牆}：五檔裡特別大的那一檔，追蹤被吃/被撤/補單判真假
+        # 撤單觀察與程式單偵測（orderflow.py，2026-11-26 加）：五檔每次變動扣掉成交算撤單、逐筆找定時定量 / 固定張數 / 拆單。只顯示、記錄
+        self.of = orderflow.OrderFlow(CACHE_DIR, dev_path(LOG_DIR, "orderflow", ".jsonl"))
         self._fs_cache = {}                          # code -> (epoch, 每分鐘主力/散戶累積淨額序列)，10 秒重算一次給「大戶散戶」圖
         self.pending = []                            # 警示結果追蹤：每則 ⚠/▶ 記下當時狀態，10/30 分鐘後補上漲跌，寫 logs/alert_outcomes.jsonl
         self._tracked = set()
@@ -1533,6 +1551,7 @@ class Monitor:
     # 大盤（加權）與個股的 KD(9,3,3)：盤中 5 分 K（跟江波圖下面的 KD 圖同一套算法）與日 KD（前一天為止 + 今天盤中這一根）。
     # 只顯示、寫進訊號紀錄（sig["kd"] → signal_outcomes），不加分、不擋訊號：還沒驗證 KD 對這套訊號有沒有用，
     # 照「過濾要先證明有效」的原則先當參考，之後用 signal_outcomes 的 kd 欄位分組比勝率再決定。
+    WALL_HIDDEN_MAX = 600         # 掛單牆跑出看得到的五檔超過幾秒就不追了（_track_walls；看不到的時候不判斷撤單）
     IDX_DAY_RETRY = 600     # 加權日 K 抓失敗，隔多久再試
 
     def _idx_ser(self, k):
@@ -2072,6 +2091,19 @@ class Monitor:
                 sig.setdefault("refs", []).append({"kind": "KD", "text": self._kd_text(sig["kd"])})
             except Exception as e:
                 print(f"[{now:%H:%M:%S}] {c} KD 參考失敗：{str(e)[:100]}")
+            try:
+                # 國際休市（2026-11-26 加）：昨晚美股、今天日韓新陸有沒有開。每筆都記 flags（之後比休市日的訊號表現），有休市才寫參考
+                hs = WEB.holidays()
+                sig["holidays"] = hs.get("flags")
+                ht = world_holidays.ref_text(hs)
+                if ht:
+                    sig.setdefault("refs", []).append({"kind": "休市", "text": ht})
+            except Exception as e:
+                print(f"[{now:%H:%M:%S}] {c} 休市參考失敗：{str(e)[:100]}")
+            try:
+                sig["orderflow"] = self.of.summary(c, now)      # 撤單觀察 / 程式單：只記錄，之後驗證
+            except Exception:
+                pass
             if blk:
                 bkey = ("block",) + key            # 被擋的另外去重：趨勢轉回來後同一個進場區還能正常發
                 if now.timestamp() - self._sig_seen.get(bkey, 0) < 900:
@@ -2159,7 +2191,10 @@ class Monitor:
                    ("主力加速出貨", r"再倒"), ("主力加速吃貨", r"再買"), ("主力拉高出貨", r"拉高出貨"),
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
                    ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("追價過濾", r"⏸ 追價過濾"), ("環境過濾", r"⏸ 環境過濾"), ("恐慌暫停", r"⏸ 恐慌暫停"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
-                   ("掛單薄", r"^⚠ 掛單薄"), ("買盤竭盡", r"^➕ 買盤竭盡"), ("賣盤竭盡", r"^➕ 賣盤竭盡")]
+                   ("掛單薄", r"^⚠ 掛單薄"), ("買盤竭盡", r"^➕ 買盤竭盡"), ("賣盤竭盡", r"^➕ 賣盤竭盡"),
+                   # 撤單觀察 / 程式單偵測（orderflow.py，2026-11-26 加）：分類後 alert_outcomes 有 10 / 30 分鐘後的價格，之後驗證有沒有用
+                   ("撤單觀察", r"^⚠ 撤單觀察"), ("整數撤單", r"^⚠ 整數撤單"), ("固定張數撤掛", r"^⚠ 固定張數(撤單|掛單|掛撤)"),
+                   ("掛單牆", r"^⚠ (買單牆|賣單牆)"), ("疑似程式單", r"^⚠ 疑似程式單"), ("固定張數成交", r"^⚠ 固定張數成交"), ("大單拆單", r"^⚠ 大單拆單"), ("固定張數連發", r"^⚠ 固定張數連發")]
 
     @classmethod
     def _alert_type(cls, text):
@@ -2208,7 +2243,7 @@ class Monitor:
                 ev = WEB.latest.get(c) or {}
                 inf = ev.get("info") or {}
                 walls = self.walls.get(c, {})
-                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs", "filters", "fear", "support_pull", "kd")},
+                extra = {"sig": {k: sg.get(k) for k in ("side", "price", "stop", "t1", "t2", "why", "label", "zone", "filled_at_alert", "alert_px", "chase", "run5", "run5_tk", "rr_now", "rr_zone", "blocked", "block_reason", "block_kind", "cancelled", "exh", "exh_lit", "space", "env", "env_conds", "refs", "filters", "fear", "support_pull", "kd", "holidays", "orderflow")},
                          "features": {"idx_trend_10m": inf.get("idx_trend_10m"), "group_trend_10m": inf.get("group_trend_10m"),
                                       "momentum": (inf.get("momentum") or {}).get("dir"), "vol_pace": inf.get("vol_pace"),
                                       "rs_vs_index": inf.get("rs_vs_index"), "group_avg": inf.get("group_avg"), "chg_pct": inf.get("chg_pct"),
@@ -2422,7 +2457,7 @@ class Monitor:
                **score,
                "ret_10m": (rec["out"].get("10m") or {}).get("ret_pct"), "ret_30m": (rec["out"].get("30m") or {}).get("ret_pct"),
                "suspects": suspects, "why": sg.get("why"), "features": feat, "factors": rec.get("factors"), "exh": sg.get("exh"), "exh_lit": sg.get("exh_lit"),
-               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs"), "filters": sg.get("filters"), "fear": sg.get("fear"), "support_pull": sg.get("support_pull"), "kd": sg.get("kd")}
+               "space": sg.get("space"), "env": sg.get("env"), "env_conds": sg.get("env_conds"), "refs": sg.get("refs"), "filters": sg.get("filters"), "fear": sg.get("fear"), "support_pull": sg.get("support_pull"), "kd": sg.get("kd"), "holidays": sg.get("holidays"), "orderflow": sg.get("orderflow")}
         if sg.get("blocked"):
             out.update(blocked=True, block_reason=sg.get("block_reason"), block_kind=sg.get("block_kind"))
         if sg.get("cancelled"):
@@ -2460,6 +2495,25 @@ class Monitor:
         except Exception as e:
             print(f"[fast] 訊號結案寫入失敗：{str(e)[:80]}")
 
+    def _orderflow(self, c, q, now):
+        """撤單觀察與程式單偵測（orderflow.py）：把這 3 秒新的五檔變動、逐筆餵進去，新的偵測進警示清單（同一檔 10 分鐘最多 6 則）。
+        永豐五檔串流有接上就用每一次變動；沒有就用這一輪的五檔快照（MIS 10 秒一次，比較粗）。沒有逐筆時只算價格沒碰過的價位。"""
+        evs, tks, n_t = [], [], None
+        if self.flow_src:
+            i0 = self.of.tick_index(c)
+            tks, n_t = self.flow_src.ticks_from(c, i0)
+            if n_t < i0:                       # 重啟回補把逐筆清單重建了：這一檔從頭算
+                self.of.reset(c)
+                tks, n_t = self.flow_src.ticks_from(c, 0)
+            if q.get("book_src") == "shioaji":
+                evs = self.flow_src.book_events(c, self.of.book_since(c))
+        if not evs and q.get("bids") and q.get("asks"):
+            evs = [(now.timestamp(), q["bids"], q["asks"])]
+        texts, _, view = self.of.update(c, now, evs, tks, tick_i=n_t, has_ticks=bool(self.flow_src), price=q.get("ref"))
+        for t in texts:
+            self._add_alert(c, now, t)
+        return view
+
     def _track_walls(self, c, q, flow, now):
         """
         掛單牆追蹤（11/05 晶豪科 13:00 215 掛 103 張）：五檔中最大的一檔若 ≥2 倍其他四檔平均且 ≥max(30, 0.5% 今量) 就開始追，
@@ -2478,12 +2532,35 @@ class Monitor:
             w = W.get(key)
             if w and w.get("status") and now.timestamp() - w["end_ts"] > 180:
                 W.pop(key, None); w = None
-            if w and not w.get("status"):
+            # 牆的價位跑出看得到的五檔（價格往反方向走、牆被擠到第 6 檔以外）時，五檔裡找不到它不代表撤單，只是看不到：
+            #   2026-11-26 日月光 11:10:55 賣單牆 508（第 5 檔）在最佳賣價掉到 503 的那一個快照裡被擠出畫面，被當成整面撤掉
+            #   報「假壓力」，其實前後每分鐘的五檔 508 都還掛 181～183 張。看不到的時候不更新、不判斷；回到五檔再接著追，
+            #   回來時已經不在了就照實寫「離開五檔時不見了」（不算假支撐 / 假壓力）；看不到超過 WALL_HIDDEN_MAX 秒就不追了（不發警示）。
+            hidden = False
+            if w and not w.get("status") and len(levels) >= 5:
+                pxs = [x for x, _ in levels]
+                hidden = (w["px"] > max(pxs)) if key == "ask" else (w["px"] < min(pxs))
+            if hidden:
+                w.setdefault("hidden_ts", now.timestamp())
+                w["now"] = p
+                w["verdict"] = "離開五檔（看不到，不判斷）"
+                if now.timestamp() - w["hidden_ts"] > self.WALL_HIDDEN_MAX:
+                    w["status"], w["end_ts"] = "離開五檔太久，不追了", now.timestamp()
+            elif w and not w.get("status"):
                 cur = dict(levels).get(w["px"])
                 traded = self.flow_src.traded_at(c, w["px"], w["since_ts"])[0] if self.flow_src else 0
-                d_tr = traded - w["traded"]
                 if cur is None:
                     cur = 0
+                if w.pop("hidden_ts", None) is not None:
+                    # 剛回到五檔：看不到的那段時間的增減分不出是撤單還是補單，從現在的量重新接著追（成交量照算，成交不會看不到）
+                    if cur <= 0.2 * w["size0"] and traded < 0.5 * w["size0"]:
+                        w["last"], w["traded"] = cur, traded
+                        w["status"], w["end_ts"] = f"離開五檔期間不見了（這個價位只成交 {traded} 張，是看不到的時候撤的）：價格回來時這道牆已經不在，不算假{'支撐' if key == 'bid' else '壓力'}", now.timestamp()
+                        self._add_alert(c, now, f"⚠ {lab} {w['px']}（{w['size0']} 張）{w['status']}")
+                        out[key] = w
+                        continue
+                    w["last"], w["traded"] = cur, traded
+                d_tr = traded - w["traded"]
                 drop = w["last"] - cur
                 if drop > 0:
                     w["pulled"] += max(0, drop - d_tr)
@@ -2778,7 +2855,7 @@ class Monitor:
                 "quotes": {}, "series": {}, "flow": {}, "warrants": {}, "alerts": {},
                 "shioaji": bool(self.flow_src), "index_stream": self.index_stream, "interval": self.interval,
                 "fast_every": 3 if self.flow_src else 10, "mis_t": dt.datetime.fromtimestamp(self._last_mis_t).strftime("%H:%M:%S"),
-                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "liquidity": {}, "runs": {}, "signs": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": (self.flow_src.ticks_budget() if self.flow_src else None),
+                "signal": {}, "sig_block": {}, "position": {}, "flow_series": {}, "walls": {}, "orderflow": {}, "liquidity": {}, "runs": {}, "signs": {}, "ticks_used": (self.flow_src.ticks_usage() if self.flow_src else None), "ticks_limit": (self.flow_src.ticks_budget() if self.flow_src else None),
                 "mis_fail": self._mis_fail,
                 "capture": {"mode": mode, "text": self._capture_text(mode)}}
         for k in ("t00", "o00"):
@@ -2806,6 +2883,10 @@ class Monitor:
                 self.flow_src.save_ticks_cache()
             except Exception as e:
                 print(f"[fast] 逐筆存檔失敗：{str(e)[:100]}")
+            try:
+                self.flow_src.save_book_cache()       # 五檔每次變動 append 到 .cache/book_live（撤單觀察回放、調門檻用）
+            except Exception as e:
+                print(f"[fast] 五檔存檔失敗：{str(e)[:100]}")
         for c in self.codes:
             q = quotes.get(c)
             if not q or not q.get("ref"):
@@ -2859,6 +2940,12 @@ class Monitor:
                     live["walls"][c] = ws
             except Exception as e:
                 print(f"[fast] 掛單牆追蹤失敗：{str(e)[:100]}")
+            try:
+                ofv = self._orderflow(c, q, now)
+                if ofv:
+                    live["orderflow"][c] = ofv
+            except Exception as e:
+                print(f"[fast] 撤單觀察 / 程式單偵測失敗：{str(e)[:100]}")
             if not self._trading_today():
                 # 週末/休市日報價是凍結的舊價：不發訊號、不追蹤結果（11/07、11/08 舊版這樣寫進 22 筆假訊號）
                 live["alerts"][c] = list(self.live_alerts.get(c, []))[-12:]
@@ -2948,6 +3035,7 @@ class Monitor:
             self._stream_off = True
             try:
                 self.flow_src.save_ticks_cache()        # 今天的逐筆存到本機：之後重啟不用再查，也累積成回測資料
+                self.flow_src.save_book_cache()
             except Exception as e:
                 print(f"[shioaji] 逐筆存檔失敗：{str(e)[:80]}")
             try:
@@ -3197,6 +3285,7 @@ def main():
             if not m._stream_off:
                 try:
                     m.flow_src.save_ticks_cache()   # 結束前把逐筆存最後一次：下次重開時存檔是新的，少一段空檔、少花查詢額度
+                    m.flow_src.save_book_cache()
                 except Exception:
                     pass
             m.flow_src.logout()

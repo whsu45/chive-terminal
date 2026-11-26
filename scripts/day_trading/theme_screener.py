@@ -348,6 +348,15 @@ def vix_on(date_iso):
         return None
 
 
+def _holidays_for(date_iso):
+    """選股是給下一個交易日用的：那一天昨晚美股、當天日韓新陸有沒有開（world_holidays.py，只顯示）。"""
+    try:
+        import world_holidays
+        return world_holidays.status(cal.next_trading_day(dt.date.fromisoformat(date_iso)))
+    except Exception:
+        return None
+
+
 def _support_for(date_iso):
     """選股是給下一個交易日用的：那一天是不是國安基金護盤期（support.py）。"""
     try:
@@ -1008,6 +1017,7 @@ def to_dict(r):
             # 極度恐慌（前一天臺指 VIX ≥40）時隔日沖倒貨不做：2026 全市場這時勝率 50%、每筆 −0.28%（17 天），tw_stocker 勝率 45%（4 天）
             "vix": r.get("vix"), "nds_active": not ((r.get("vix") or {}).get("extreme")),
             "support": _support_for(r["date"]),
+            "holidays": _holidays_for(r["date"]),
             "open_rule": ("09:05 開盤策略：開高 2～7%（任何恐慌程度）" + ("" if (r.get("vix") or {}).get("extreme") else "與隔日沖倒貨") +
                           "的股票，挑昨日成交值最大的 5 檔建議放空、13:25 前回補（儀表板「開盤策略」卡會叮一聲通知）"),
             "no_trade": not (r["mkt"]["weak"] and r["short"]),                # 盤前就成立的名單一檔都沒有：今天不做（開盤條件型的另看）

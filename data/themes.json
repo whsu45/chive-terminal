@@ -6,7 +6,7 @@
  "date_counts": {
   "2026-11-26": 369
  },
- "members_fetched": "2026-11-26",
+ "members_fetched": "2026-11-27",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -2921,7 +2921,7 @@
      "volume": 2925
     }
    ],
-   "avg_pct": 6.16,
+   "avg_pct": 6.15,
    "up": 12,
    "down": 0,
    "flat": 0
@@ -3230,18 +3230,6 @@
    "desc": "低軌衛星概念股指切入低軌道衛星（LEO）通訊供應鏈的台股，環節涵蓋微波與毫米波元件、相控陣列天線、地面站與用戶終端設備、衛星用 PCB 與射頻功率放大器。",
    "members": [
     {
-     "code": "6271",
-     "name": "同欣電",
-     "market": "上市",
-     "open": 176.5,
-     "high": 187.5,
-     "low": 176.0,
-     "close": 187.5,
-     "change": 17.0,
-     "pct": 9.97,
-     "volume": 4303
-    },
-    {
      "code": "6285",
      "name": "啟碁",
      "market": "上市",
@@ -3252,6 +3240,18 @@
      "change": 17.5,
      "pct": 9.97,
      "volume": 11232
+    },
+    {
+     "code": "6271",
+     "name": "同欣電",
+     "market": "上市",
+     "open": 176.5,
+     "high": 187.5,
+     "low": 176.0,
+     "close": 187.5,
+     "change": 17.0,
+     "pct": 9.97,
+     "volume": 4303
     },
     {
      "code": "3491",
@@ -4117,6 +4117,101 @@
    "flat": 0
   },
   {
+   "slug": "silicon-ip",
+   "title": "矽智財概念股",
+   "desc": "矽智財概念股指以半導體 IP 授權與 ASIC 設計服務為主要營收的台股，涵蓋記憶體 IP、處理器 IP、介面 IP，以及從委託設計到量產管理的 ASIC 設計服務。",
+   "members": [
+    {
+     "code": "3035",
+     "name": "智原",
+     "market": "上市",
+     "open": 166.5,
+     "high": 176.0,
+     "low": 165.0,
+     "close": 173.0,
+     "change": 12.0,
+     "pct": 7.45,
+     "volume": 5494
+    },
+    {
+     "code": "3529",
+     "name": "力旺",
+     "market": "上櫃",
+     "open": 1900.0,
+     "high": 2015.0,
+     "low": 1895.0,
+     "close": 1970.0,
+     "change": 130.0,
+     "pct": 7.07,
+     "volume": 750
+    },
+    {
+     "code": "3443",
+     "name": "創意",
+     "market": "上市",
+     "open": 5000.0,
+     "high": 5510.0,
+     "low": 4950.0,
+     "close": 5390.0,
+     "change": 320.0,
+     "pct": 6.31,
+     "volume": 1714
+    },
+    {
+     "code": "6533",
+     "name": "晶心科",
+     "market": "上市",
+     "open": 203.0,
+     "high": 214.5,
+     "low": 203.0,
+     "close": 210.0,
+     "change": 10.0,
+     "pct": 5.0,
+     "volume": 1036
+    },
+    {
+     "code": "3661",
+     "name": "世芯-KY",
+     "market": "上市",
+     "open": 3780.0,
+     "high": 3895.0,
+     "low": 3695.0,
+     "close": 3735.0,
+     "change": 130.0,
+     "pct": 3.61,
+     "volume": 3266
+    },
+    {
+     "code": "6531",
+     "name": "愛普*",
+     "market": "上市",
+     "open": 535.0,
+     "high": 562.0,
+     "low": 518.0,
+     "close": 533.0,
+     "change": 17.0,
+     "pct": 3.29,
+     "volume": 4095
+    },
+    {
+     "code": "6643",
+     "name": "M31",
+     "market": "上櫃",
+     "open": 329.5,
+     "high": 338.0,
+     "low": 324.0,
+     "close": 324.5,
+     "change": 5.0,
+     "pct": 1.56,
+     "volume": 236
+    }
+   ],
+   "avg_pct": 4.9,
+   "up": 7,
+   "down": 0,
+   "flat": 0
+  },
+  {
    "slug": "ic-design",
    "title": "IC 設計概念股",
    "desc": "IC 設計概念股指採無晶圓廠（Fabless）模式的台股：公司負責晶片規格與電路設計，晶圓製造、封裝與測試委外。這頁依產品線挑出各領域的代表公司，涵蓋手機與網通 SoC、顯示驅動、伺服器 BMC、高速介面、電源管理、感測與 MCU。",
@@ -4304,101 +4399,6 @@
    ],
    "avg_pct": 4.9,
    "up": 15,
-   "down": 0,
-   "flat": 0
-  },
-  {
-   "slug": "silicon-ip",
-   "title": "矽智財概念股",
-   "desc": "矽智財概念股指以半導體 IP 授權與 ASIC 設計服務為主要營收的台股，涵蓋記憶體 IP、處理器 IP、介面 IP，以及從委託設計到量產管理的 ASIC 設計服務。",
-   "members": [
-    {
-     "code": "3035",
-     "name": "智原",
-     "market": "上市",
-     "open": 166.5,
-     "high": 176.0,
-     "low": 165.0,
-     "close": 173.0,
-     "change": 12.0,
-     "pct": 7.45,
-     "volume": 5494
-    },
-    {
-     "code": "3529",
-     "name": "力旺",
-     "market": "上櫃",
-     "open": 1900.0,
-     "high": 2015.0,
-     "low": 1895.0,
-     "close": 1970.0,
-     "change": 130.0,
-     "pct": 7.07,
-     "volume": 750
-    },
-    {
-     "code": "3443",
-     "name": "創意",
-     "market": "上市",
-     "open": 5000.0,
-     "high": 5510.0,
-     "low": 4950.0,
-     "close": 5390.0,
-     "change": 320.0,
-     "pct": 6.31,
-     "volume": 1714
-    },
-    {
-     "code": "6533",
-     "name": "晶心科",
-     "market": "上市",
-     "open": 203.0,
-     "high": 214.5,
-     "low": 203.0,
-     "close": 210.0,
-     "change": 10.0,
-     "pct": 5.0,
-     "volume": 1036
-    },
-    {
-     "code": "3661",
-     "name": "世芯-KY",
-     "market": "上市",
-     "open": 3780.0,
-     "high": 3895.0,
-     "low": 3695.0,
-     "close": 3735.0,
-     "change": 130.0,
-     "pct": 3.61,
-     "volume": 3266
-    },
-    {
-     "code": "6531",
-     "name": "愛普*",
-     "market": "上市",
-     "open": 535.0,
-     "high": 562.0,
-     "low": 518.0,
-     "close": 533.0,
-     "change": 17.0,
-     "pct": 3.29,
-     "volume": 4095
-    },
-    {
-     "code": "6643",
-     "name": "M31",
-     "market": "上櫃",
-     "open": 329.5,
-     "high": 338.0,
-     "low": 324.0,
-     "close": 324.5,
-     "change": 5.0,
-     "pct": 1.56,
-     "volume": 236
-    }
-   ],
-   "avg_pct": 4.9,
-   "up": 7,
    "down": 0,
    "flat": 0
   },

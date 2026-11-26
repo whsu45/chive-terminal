@@ -1,7 +1,7 @@
 [
  {
   "date": "2026-11-25",
-  "composite": -0.73,
+  "composite": -0.24,
   "sox": -0.65,
   "top3Up": [
    {
@@ -24,7 +24,7 @@
    {
     "key": "memory",
     "title": "記憶體／儲存",
-    "pct": -7.3
+    "pct": -2.39
    },
    {
     "key": "semicap",
@@ -37,7 +37,10 @@
     "pct": -1.13
    }
   ],
-  "taiexNext": null
+  "taiexNext": {
+   "date": "2026-11-26",
+   "pct": 2.45
+  }
  },
  {
   "date": "2026-11-24",

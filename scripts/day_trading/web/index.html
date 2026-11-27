@@ -93,6 +93,10 @@ header .addbox .msg{font-size:12px;color:var(--muted);max-width:340px}header .ad
 .hist .kv b{font-size:14px}.hist table{width:100%;font-size:12px;border-collapse:collapse;margin-top:6px}.hist td{padding:2px 4px}.hist td.n{text-align:right;font-family:var(--mono)}
 .hist .wl{font-weight:700}.hist .note{font-size:12px;color:var(--muted);margin-top:4px}
 .tab .days{font-size:11px;color:var(--muted);margin-left:4px}
+/* 上市「市」/ 上櫃「櫃」小標（2026-11-27 使用者要求）：顏色分開，一眼看出是哪個市場、對照的是加權還是櫃買 */
+.tab .mk{display:inline-block;font-size:11px;line-height:1;padding:2px 4px;margin:0 2px 0 4px;border-radius:4px;border:1px solid;vertical-align:1px}
+.tab .mk.tse{color:#8fb8ff;border-color:rgba(76,141,255,.45);background:rgba(76,141,255,.12)}
+.tab .mk.otc{color:#d7a8ff;border-color:rgba(176,120,255,.45);background:rgba(176,120,255,.12)}
 .ladder{font-family:var(--mono);font-size:13px}
 .ladder .row{display:flex;justify-content:space-between;padding:3px 8px;border-radius:6px}
 .ladder .row.r{color:var(--dn)}.ladder .row.s{color:var(--up)}
@@ -1043,7 +1047,9 @@ function renderWarr(ev){const w=(LIVE&&LIVE.warrants&&LIVE.warrants[CUR])||ev.wa
 // ---------------------------------------------------------------- 估算區（每 interval 秒）
 function render(){const ev=STATE.latest[CUR];const d=STATE.daily[CUR]||{};
   $('tabs').innerHTML=STATE.codes.map(c=>{const lq=LIVE&&LIVE.quotes[c];const e=STATE.latest[c];const ch=lq?lq.chg_pct:e?.info?.chg_pct;
-    const hd=(STATE.daily[c]||{}).history;return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||(STATE.daily[c]||{}).name||'')} <span class="num ${cls(ch)}${limCls(c,lq?lq.ref:e?.quote?.ref)}">${pct(ch)}</span><span class="sigb" id="sigb-${c}"></span>${(e?.combos||[]).length?`<span class="cb" title="${esc(e.combos.map(x=>x.name).join('、'))}">◆</span>`:''}${hd?`<span class="days">${hd.days}天</span>`:''}${STATE.codes.length>1?`<span class="rm" title="移除這檔監控（盤中省資源）" onclick="event.stopPropagation();removeCode('${c}')">✕</span>`:''}</div>`}).join('');renderSigBadges();
+    const hd=(STATE.daily[c]||{}).history;const mk=(STATE.daily[c]||{}).market||lq?.ex;
+    const mkb=mk==='tse'?'<span class="mk tse" title="上市（證交所），大盤對照加權指數">市</span>':mk==='otc'?'<span class="mk otc" title="上櫃（櫃買中心），大盤對照櫃買指數">櫃</span>':'';
+    return `<div class="tab ${c===CUR?'active':''}" onclick="CUR='${c}';render();renderLive&&LIVE&&renderLive();loadState()">${c} ${esc(lq?.name||e?.name||(STATE.daily[c]||{}).name||'')}${mkb} <span class="num ${cls(ch)}${limCls(c,lq?lq.ref:e?.quote?.ref)}">${pct(ch)}</span><span class="sigb" id="sigb-${c}"></span>${(e?.combos||[]).length?`<span class="cb" title="${esc(e.combos.map(x=>x.name).join('、'))}">◆</span>`:''}${hd?`<span class="days">${hd.days}天</span>`:''}${STATE.codes.length>1?`<span class="rm" title="移除這檔監控（盤中省資源）" onclick="event.stopPropagation();removeCode('${c}')">✕</span>`:''}</div>`}).join('');renderSigBadges();
   renderHist();renderDT();
   if(!LIVE){const idx=STATE.index||{};$('idx').innerHTML=Object.entries(idx).map(([k,v])=>`${k==='t00'?'加權':'櫃買'} <b class="num ${cls(v.chg)}">${f(v.ref,0)} ${v.y?chgTxt(v.ref,v.y,0):pct(v.chg)}</b>`).join(' &nbsp; ');
     $('shioaji').innerHTML=STATE.shioaji?'<span class="up">● 永豐串流</span>':'<span class="muted">○ 公開報價</span>';}

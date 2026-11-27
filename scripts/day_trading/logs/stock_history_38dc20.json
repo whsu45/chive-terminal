@@ -3328,9 +3328,10 @@
   "days": [
    "2026-11-16",
    "2026-11-24",
-   "2026-11-25"
+   "2026-11-25",
+   "2026-11-27"
   ],
-  "launches": 3,
+  "launches": 4,
   "signals": [
    {
     "date": "2026-11-16",
@@ -4873,9 +4874,10 @@
    "2026-11-17",
    "2026-11-19",
    "2026-11-20",
-   "2026-11-23"
+   "2026-11-23",
+   "2026-11-27"
   ],
-  "launches": 5,
+  "launches": 6,
   "signals": [
    {
     "date": "2026-11-19",
@@ -7020,9 +7022,10 @@
   "market": "tse",
   "group": "DRAM原廠",
   "days": [
-   "2026-11-24"
+   "2026-11-24",
+   "2026-11-27"
   ],
-  "launches": 1,
+  "launches": 2,
   "signals": [],
   "notes": []
  },
@@ -7120,9 +7123,10 @@
   "market": "otc",
   "group": "光通訊",
   "days": [
-   "2026-11-25"
+   "2026-11-25",
+   "2026-11-27"
   ],
-  "launches": 1,
+  "launches": 2,
   "signals": [],
   "notes": []
  },
@@ -7165,6 +7169,50 @@
   "group": null,
   "days": [
    "2026-11-26"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3450": {
+  "name": "聯鈞",
+  "market": "tse",
+  "group": "光通訊",
+  "days": [
+   "2026-11-27"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "3715": {
+  "name": "定穎投控",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-27"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "2337": {
+  "name": "旺宏",
+  "market": "tse",
+  "group": null,
+  "days": [
+   "2026-11-27"
+  ],
+  "launches": 1,
+  "signals": [],
+  "notes": []
+ },
+ "7767": {
+  "name": "仁大資訊",
+  "market": "otc",
+  "group": null,
+  "days": [
+   "2026-11-27"
   ],
   "launches": 1,
   "signals": [],

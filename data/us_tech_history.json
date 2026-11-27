@@ -1,40 +1,40 @@
 [
  {
   "date": "2026-11-27",
-  "composite": 2.68,
-  "sox": 3.19,
+  "composite": 3.76,
+  "sox": 4.69,
   "top3Up": [
    {
     "key": "networking",
     "title": "網通／光通訊",
-    "pct": 6.31
+    "pct": 7.96
    },
    {
     "key": "aiserver",
     "title": "AI 伺服器／資料中心硬體",
-    "pct": 3.61
+    "pct": 4.65
    },
    {
     "key": "semis",
     "title": "半導體",
-    "pct": 3.18
+    "pct": 4.58
    }
   ],
   "top3Down": [
    {
     "key": "devices",
     "title": "消費電子",
-    "pct": 0.89
+    "pct": 1
    },
    {
-    "key": "memory",
-    "title": "記憶體／儲存",
-    "pct": 1.15
+    "key": "internet",
+    "title": "網路平台",
+    "pct": 2.15
    },
    {
-    "key": "semicap",
-    "title": "半導體設備",
-    "pct": 1.83
+    "key": "software",
+    "title": "軟體／雲端",
+    "pct": 2.37
    }
   ],
   "taiexNext": null
@@ -523,13 +523,13 @@
     "pct": 0.99
    },
    {
-    "key": "cyber",
-    "title": "資安",
+    "key": "semicap",
+    "title": "半導體設備",
     "pct": 0.07
    },
    {
-    "key": "semicap",
-    "title": "半導體設備",
+    "key": "cyber",
+    "title": "資安",
     "pct": 0.07
    }
   ],
@@ -7057,8 +7057,8 @@
     "pct": 0.93
    },
    {
-    "key": "internet",
-    "title": "網路平台",
+    "key": "semicap",
+    "title": "半導體設備",
     "pct": 0.67
    }
   ],

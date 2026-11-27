@@ -258,6 +258,37 @@ def for_stock(summary, volume, tbl=None):
             "list": rows, "source": tbl["_meta"]["source"], "stat_days": tbl["_meta"]["days"], "stat_last": tbl["_meta"]["last"]}
 
 
+def dt_cost(code, d, tbl=None, fetch=True):
+    """
+    隔日沖均價（2026-11-27 加，使用者要求當成盤中壓力 / 支撐）：d 那天（通常是昨天）買超前 15 名裡的隔日沖分點，
+    各自在這檔的買均價（src_moneydj.branch_avg，分點進出的金額 ÷ 張數），用買進張數加權平均。
+    回 {"avg": 元, "lots": 有均價的買進張數, "dt_lots": 隔日沖分點買進總張數, "cover": 有均價的比例 0–1,
+        "branches": [{"broker", "buy", "avg"}...]}（avg None = 那個分點的表上沒有這檔）；那天沒有隔日沖分點買超回 None。
+    cover 低（大分點的表沒列到這檔）時均價只代表一部分隔日沖，顯示時要寫出來。
+    """
+    tbl = tbl or table()
+    summ = src_moneydj.zco_day(code, d, fetch=fetch)
+    if not summ:
+        return None
+    rows = []
+    for r in summ.get("buyers", []):
+        if (r.get("net") or 0) > 0 and is_daytrader(r["broker"], tbl):
+            av = None
+            if r.get("bhid") and r.get("bid"):
+                try:
+                    av = src_moneydj.branch_avg(r["bhid"], r["bid"], code, d, fetch=fetch)
+                except Exception:
+                    av = None
+            rows.append({"broker": r["broker"], "buy": r.get("buy") or r["net"], "avg": av["buy_avg"] if av else None})
+    if not rows:
+        return None
+    got = [x for x in rows if x["avg"]]
+    lots = sum(x["buy"] for x in got)
+    total = sum(x["buy"] for x in rows)
+    return {"avg": round(sum(x["buy"] * x["avg"] for x in got) / lots, 2) if lots else None, "lots": lots, "dt_lots": total,
+            "cover": round(lots / total, 2) if total else 0.0, "branches": rows}
+
+
 def add_local_habit(dts, broker_days, vols):
     """
     補上每個隔日沖分點「在這一檔」的紀錄：broker_days = {iso: {分點: 買賣超}}（winners.broker_daily_history）、vols = {iso: 成交張數}。

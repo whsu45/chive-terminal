@@ -197,6 +197,69 @@ def branch_detail(a, b, start=None, end=None):
     return out
 
 
+ZGB_DIR = os.path.join(CACHE_DIR, "zgb")     # 分點單日進出（張數＋金額）的永久存檔：zgb/{券商}_{分點}.json
+_zgb_lock = threading.Lock()
+_zgb_mem = {}
+
+
+def _zgb_rows(a, b, c, d, cache_ttl):
+    """zgb0 單日一頁：c="E" 張數、c="B" 金額（千元）→ {code: (買, 賣)}。"""
+    iso = d.strftime("%Y-%m-%d")
+    html = _fetch("/z/zg/zgb/zgb0.djhtm", params={"a": a, "b": b, "c": c, "e": iso, "f": iso}, cache_ttl=cache_ttl)
+    return {code: (http.to_int(buy) or 0, http.to_int(sell) or 0) for code, _name, buy, sell, _net in _ZGB.findall(html)}
+
+
+def _zgb_load(key):
+    if key not in _zgb_mem:
+        try:
+            with open(os.path.join(ZGB_DIR, f"{key}.json"), encoding="utf-8") as f:
+                _zgb_mem[key] = json.load(f)
+        except (OSError, ValueError):
+            _zgb_mem[key] = {}
+    return _zgb_mem[key]
+
+
+def branch_day(a, b, d, fetch=True):
+    """
+    某分點某一天每檔股票的買賣張數與金額 → {code: [買張, 賣張, 買金額, 賣金額]}（金額單位千元，所以 金額 ÷ 張數 = 每股均價 元）。
+    a = 所屬券商代號（分點表的 bhid），b = 分點代號（bid）。zgb0 張數版（c=E）、金額版（c=B）各抓一頁；
+    只出現在其中一頁的股票，金額記 None（算不出均價）。過去的交易日抓一次就存在 .cache/zgb/，之後不再連線。
+    限制：每頁只列這個分點當天進出前幾十名。大分點（像凱基-台北）幾千萬元以下的進出常不在表上，那些股票查不到均價。
+    2026-11-27 對過看盤軟體的 3711 11/26 券商分點：元大 買均 508.45 / 賣均 502.96（軟體 508.48 / 503.03），
+    台灣摩根士丹利 504.91 / 508.01（軟體 504.99 / 508.01），差都在 1 tick（0.5 元）以內。
+    """
+    key, iso = f"{a}_{b}", d.isoformat()
+    with _zgb_lock:
+        rec = _zgb_load(key).get(iso)
+    if rec is not None:
+        return rec
+    if not fetch:
+        return None
+    today = cal.today_tw()
+    ttl = 0 if d < today else 600
+    lots, amt = _zgb_rows(a, b, "E", d, ttl), _zgb_rows(a, b, "B", d, ttl)
+    rec = {code: [bl, sl] + (list(amt[code]) if code in amt else [None, None]) for code, (bl, sl) in lots.items()}
+    if d < today and rec:                          # 當天的表可能還沒出齊，不存檔；空表也不存（可能只是還沒公布）
+        with _zgb_lock:
+            db = _zgb_load(key)
+            db[iso] = rec
+            os.makedirs(ZGB_DIR, exist_ok=True)
+            path = os.path.join(ZGB_DIR, f"{key}.json")
+            with open(path + ".tmp", "w", encoding="utf-8") as f:
+                json.dump(db, f, ensure_ascii=False, separators=(",", ":"))
+            os.replace(path + ".tmp", path)
+    return rec
+
+
+def branch_avg(a, b, code, d, fetch=True):
+    """某分點某天在某檔的買均價、賣均價（元）→ {buy_lots, sell_lots, buy_avg, sell_avg}；不在分點表上或算不出均價回 None。"""
+    r = (branch_day(a, b, d, fetch) or {}).get(code)
+    if not r or r[2] is None:
+        return None
+    bl, sl, ba, sa = r
+    return {"buy_lots": bl, "sell_lots": sl, "buy_avg": round(ba / bl, 2) if bl else None, "sell_avg": round(sa / sl, 2) if sl else None}
+
+
 def is_foreign(broker_name):
     return any(k in broker_name for k in FOREIGN_KEYWORDS)
 

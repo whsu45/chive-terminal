@@ -6,7 +6,7 @@
  "date_counts": {
   "2026-11-27": 369
  },
- "members_fetched": "2026-11-27",
+ "members_fetched": "2026-11-28",
  "source": "https://finlab.finance/stocks/themes",
  "themes": [
   {
@@ -195,7 +195,7 @@
     },
     {
      "code": "6806",
-     "name": "森崴能源",
+     "name": "6806",
      "market": null,
      "open": null,
      "high": null,
@@ -979,7 +979,7 @@
      "volume": 72
     }
    ],
-   "avg_pct": 0.18,
+   "avg_pct": 0.19,
    "up": 4,
    "down": 7,
    "flat": 1
@@ -1146,7 +1146,7 @@
     },
     {
      "code": "6806",
-     "name": "森崴能源",
+     "name": "6806",
      "market": null,
      "open": null,
      "high": null,
@@ -2002,18 +2002,6 @@
      "volume": 423
     },
     {
-     "code": "2401",
-     "name": "凌陽",
-     "market": "上市",
-     "open": 20.45,
-     "high": 20.65,
-     "low": 20.25,
-     "close": 20.4,
-     "change": 0.0,
-     "pct": 0.0,
-     "volume": 978
-    },
-    {
      "code": "2458",
      "name": "義隆",
      "market": "上市",
@@ -2024,6 +2012,18 @@
      "change": 0.0,
      "pct": 0.0,
      "volume": 420
+    },
+    {
+     "code": "2401",
+     "name": "凌陽",
+     "market": "上市",
+     "open": 20.45,
+     "high": 20.65,
+     "low": 20.25,
+     "close": 20.4,
+     "change": 0.0,
+     "pct": 0.0,
+     "volume": 978
     },
     {
      "code": "6202",
@@ -3188,6 +3188,101 @@
    "flat": 0
   },
   {
+   "slug": "bbu",
+   "title": "BBU 概念股",
+   "desc": "BBU 概念股指供應資料中心備援電池（Battery Backup Unit）的台股：AI 伺服器機櫃功率快速拉高後，斷電瞬間由 BBU 電池模組接手供電、保護運算不中斷，從電池芯、電池管理系統（BMS）到機櫃電源整合都有台廠參與。",
+   "members": [
+    {
+     "code": "3323",
+     "name": "加百裕",
+     "market": "上櫃",
+     "open": 20.45,
+     "high": 20.7,
+     "low": 20.2,
+     "close": 20.45,
+     "change": 0.25,
+     "pct": 1.24,
+     "volume": 152
+    },
+    {
+     "code": "2308",
+     "name": "台達電",
+     "market": "上市",
+     "open": 1120.0,
+     "high": 1130.0,
+     "low": 1095.0,
+     "close": 1125.0,
+     "change": 5.0,
+     "pct": 0.45,
+     "volume": 14470
+    },
+    {
+     "code": "6558",
+     "name": "興能高",
+     "market": "上市",
+     "open": 16.65,
+     "high": 17.1,
+     "low": 16.25,
+     "close": 16.5,
+     "change": -0.05,
+     "pct": -0.3,
+     "volume": 174
+    },
+    {
+     "code": "3211",
+     "name": "順達",
+     "market": "上櫃",
+     "open": 190.5,
+     "high": 191.5,
+     "low": 183.0,
+     "close": 185.0,
+     "change": -2.0,
+     "pct": -1.07,
+     "volume": 1310
+    },
+    {
+     "code": "2301",
+     "name": "光寶科",
+     "market": "上市",
+     "open": 201.0,
+     "high": 203.0,
+     "low": 195.0,
+     "close": 195.5,
+     "change": -3.0,
+     "pct": -1.51,
+     "volume": 16347
+    },
+    {
+     "code": "6781",
+     "name": "AES-KY",
+     "market": "上市",
+     "open": 666.0,
+     "high": 670.0,
+     "low": 649.0,
+     "close": 652.0,
+     "change": -16.0,
+     "pct": -2.4,
+     "volume": 240
+    },
+    {
+     "code": "4931",
+     "name": "新盛力",
+     "market": "上櫃",
+     "open": 142.0,
+     "high": 144.0,
+     "low": 136.5,
+     "close": 137.0,
+     "change": -4.5,
+     "pct": -3.18,
+     "volume": 1429
+    }
+   ],
+   "avg_pct": -0.97,
+   "up": 2,
+   "down": 5,
+   "flat": 0
+  },
+  {
    "slug": "industrial-pc",
    "title": "工業電腦概念股",
    "desc": "工業電腦概念股指設計與製造工業用電腦（Industrial PC，IPC）的台股，產品有嵌入式板卡與系統、強固型電腦、工業顯示器、POS 與 Kiosk，用在工廠自動化、醫療、交通、零售與網通設備。",
@@ -3377,101 +3472,6 @@
    "up": 2,
    "down": 12,
    "flat": 1
-  },
-  {
-   "slug": "bbu",
-   "title": "BBU 概念股",
-   "desc": "BBU 概念股指供應資料中心備援電池（Battery Backup Unit）的台股：AI 伺服器機櫃功率快速拉高後，斷電瞬間由 BBU 電池模組接手供電、保護運算不中斷，從電池芯、電池管理系統（BMS）到機櫃電源整合都有台廠參與。",
-   "members": [
-    {
-     "code": "3323",
-     "name": "加百裕",
-     "market": "上櫃",
-     "open": 20.45,
-     "high": 20.7,
-     "low": 20.2,
-     "close": 20.45,
-     "change": 0.25,
-     "pct": 1.24,
-     "volume": 152
-    },
-    {
-     "code": "2308",
-     "name": "台達電",
-     "market": "上市",
-     "open": 1120.0,
-     "high": 1130.0,
-     "low": 1095.0,
-     "close": 1125.0,
-     "change": 5.0,
-     "pct": 0.45,
-     "volume": 14470
-    },
-    {
-     "code": "6558",
-     "name": "興能高",
-     "market": "上市",
-     "open": 16.65,
-     "high": 17.1,
-     "low": 16.25,
-     "close": 16.5,
-     "change": -0.05,
-     "pct": -0.3,
-     "volume": 174
-    },
-    {
-     "code": "3211",
-     "name": "順達",
-     "market": "上櫃",
-     "open": 190.5,
-     "high": 191.5,
-     "low": 183.0,
-     "close": 185.0,
-     "change": -2.0,
-     "pct": -1.07,
-     "volume": 1310
-    },
-    {
-     "code": "2301",
-     "name": "光寶科",
-     "market": "上市",
-     "open": 201.0,
-     "high": 203.0,
-     "low": 195.0,
-     "close": 195.5,
-     "change": -3.0,
-     "pct": -1.51,
-     "volume": 16347
-    },
-    {
-     "code": "6781",
-     "name": "AES-KY",
-     "market": "上市",
-     "open": 666.0,
-     "high": 670.0,
-     "low": 649.0,
-     "close": 652.0,
-     "change": -16.0,
-     "pct": -2.4,
-     "volume": 240
-    },
-    {
-     "code": "4931",
-     "name": "新盛力",
-     "market": "上櫃",
-     "open": 142.0,
-     "high": 144.0,
-     "low": 136.5,
-     "close": 137.0,
-     "change": -4.5,
-     "pct": -3.18,
-     "volume": 1429
-    }
-   ],
-   "avg_pct": -0.97,
-   "up": 2,
-   "down": 5,
-   "flat": 0
   },
   {
    "slug": "passive-components",
@@ -4636,18 +4636,6 @@
      "volume": 9227
     },
     {
-     "code": "2441",
-     "name": "超豐",
-     "market": "上市",
-     "open": 98.6,
-     "high": 100.5,
-     "low": 96.8,
-     "close": 97.0,
-     "change": -1.9,
-     "pct": -1.92,
-     "volume": 2260
-    },
-    {
      "code": "3264",
      "name": "欣銓",
      "market": "上櫃",
@@ -4658,6 +4646,18 @@
      "change": -3.0,
      "pct": -1.92,
      "volume": 5701
+    },
+    {
+     "code": "2441",
+     "name": "超豐",
+     "market": "上市",
+     "open": 98.6,
+     "high": 100.5,
+     "low": 96.8,
+     "close": 97.0,
+     "change": -1.9,
+     "pct": -1.92,
+     "volume": 2260
     },
     {
      "code": "3265",
@@ -5112,18 +5112,6 @@
      "volume": 259
     },
     {
-     "code": "6640",
-     "name": "均華",
-     "market": "上櫃",
-     "open": 673.0,
-     "high": 674.0,
-     "low": 656.0,
-     "close": 658.0,
-     "change": -13.0,
-     "pct": -1.94,
-     "volume": 69
-    },
-    {
      "code": "6770",
      "name": "力積電",
      "market": "上市",
@@ -5134,6 +5122,18 @@
      "change": -1.0,
      "pct": -1.94,
      "volume": 48617
+    },
+    {
+     "code": "6640",
+     "name": "均華",
+     "market": "上櫃",
+     "open": 673.0,
+     "high": 674.0,
+     "low": 656.0,
+     "close": 658.0,
+     "change": -13.0,
+     "pct": -1.94,
+     "volume": 69
     },
     {
      "code": "2449",
@@ -5339,18 +5339,6 @@
      "volume": 763
     },
     {
-     "code": "2434",
-     "name": "統懋",
-     "market": "上市",
-     "open": 35.75,
-     "high": 36.8,
-     "low": 35.3,
-     "close": 35.3,
-     "change": -1.25,
-     "pct": -3.42,
-     "volume": 52
-    },
-    {
      "code": "4923",
      "name": "力士",
      "market": "上櫃",
@@ -5361,6 +5349,18 @@
      "change": -1.5,
      "pct": -3.42,
      "volume": 659
+    },
+    {
+     "code": "2434",
+     "name": "統懋",
+     "market": "上市",
+     "open": 35.75,
+     "high": 36.8,
+     "low": 35.3,
+     "close": 35.3,
+     "change": -1.25,
+     "pct": -3.42,
+     "volume": 52
     }
    ],
    "avg_pct": -1.74,

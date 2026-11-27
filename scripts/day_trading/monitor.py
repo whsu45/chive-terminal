@@ -1613,12 +1613,14 @@ class Monitor:
 
     # ──────────────────────────────────────────────── KD 共振（2026-11-26 加，使用者要求）
     # 大盤（加權）和個股的 3 分 K KD(9,3,3) 同時在低檔（兩邊 K 都 ≤20 = 雙低檔，買進訊號）或高檔（都 ≥80 = 雙高檔，賣出訊號）：
-    # 發警示 + 聲音「叮叮」+ Mac 通知，而且同方向進場加分（模型因子 ±KD_DUAL_BONUS，跟竭盡加分同一個量級，約強度 3 點）、反方向扣分。
+    # 發警示 + 聲音「叮叮」+ Mac 通知，之後追蹤出場（做多碰壓力不過、做空碰支撐不破）。
+    # 2026-11-27 起預設只通知、不加分（使用者同意）：兩次回測（抱到收盤、碰壓力不過 / 支撐不破出場）每一種都扣成本後賠，
+    # 而且多要求大盤也在高低檔比只看個股 KD 還差。DAYTRADE_KD_BONUS=0.3 可以打開加分（模型因子 ±0.3，約強度 3 點、反方向扣分），
     # 加分只讓同方向的建議比較容易成立，不會單獨觸發進場；其他過濾（逆勢、恐慌暫停…）照舊。
     # 每筆訊號都記 sig["kd_dual"]、警示有自己的種類（KD 雙低檔 / 雙高檔），之後用 signal_outcomes / alert_outcomes 驗證。
     KD_DUAL_TF = 3
     KD_DUAL_LO, KD_DUAL_HI = 20, 80
-    KD_DUAL_BONUS = float(os.environ.get("DAYTRADE_KD_BONUS", "0.3"))   # 設 0 = 只通知、不加分
+    KD_DUAL_BONUS = float(os.environ.get("DAYTRADE_KD_BONUS", "0"))   # 預設 0 = 只通知、不加分；0.3 = 加分（約強度 3 點）
     KD_DUAL_GAP = 540       # 一段結束後隔 9 分鐘（3 根 3 分 K）以內又成立，算同一段、不再通知
     # 雙高檔要加做空分，個股還要「弱勢」或「碰壓力不過」其中一個（使用者 2026-11-26 補充）；雙低檔做多照原本不加條件
     KD_WEAK_RS = float(os.environ.get("DAYTRADE_KD_WEAK_RS", "-0.5"))   # 弱勢：今天漲跌幅比加權低 ≥0.5 個百分點（模型「略弱於大盤」的門檻）
@@ -1778,12 +1780,13 @@ class Monitor:
         kd_txt = f"加權 {r['tf']}分K K{i_['k']:.0f}/D{i_['d']:.0f}、個股 K{s_['k']:.0f}/D{s_['d']:.0f} {lv}"
         if not low and not r.get("short_ok"):
             # 雙高檔但個股不弱、也沒碰壓力不過：只提醒、不加分、不出聲（使用者：要弱勢股或碰壓力不過才對做空加分）
-            self._add_alert(c, now, f"ⓘ KD 雙高檔（賣出訊號，條件未齊不加分）：{kd_txt}；個股不是弱勢股、也沒碰壓力不過，等其中一個成立才加做空分")
+            self._add_alert(c, now, f"ⓘ KD 雙高檔（賣出訊號，條件未齊{'不加分' if self.KD_DUAL_BONUS else ''}）：{kd_txt}；"
+                                    f"個股不是弱勢股、也沒碰壓力不過，等其中一個成立{'才加做空分' if self.KD_DUAL_BONUS else '再通知'}")
             return
         bon = (f"{'做多' if low else '做空'}加分 +{pts:g}、{'做空' if low else '做多'}扣分（加分只讓同方向的建議比較容易成立，不是單獨的進場點）"
-               if self.KD_DUAL_BONUS else "只通知、不加分（DAYTRADE_KD_BONUS=0）")
+               if self.KD_DUAL_BONUS else "只通知、不加分（回測扣成本後沒有優勢；要加分在 .env 設 DAYTRADE_KD_BONUS=0.3）")
         cond = "" if low else "＋" + "、".join(r.get("short_why") or [])
-        self._add_alert(c, now, f"➕ KD 雙{'低' if low else '高'}檔（{'買進' if low else '賣出'}訊號）{cond}：{kd_txt} → {bon}")
+        self._add_alert(c, now, f"{'➕' if self.KD_DUAL_BONUS else '📶'} KD 雙{'低' if low else '高'}檔（{'買進' if low else '賣出'}訊號）{cond}：{kd_txt} → {bon}")
         self._notify("kd", c, f"KD 雙{'低' if low else '高'}檔{cond}：大盤和個股 {r['tf']} 分 K {lv}（{'買進' if low else '賣出'}訊號）",
                      f"加權 K{i_['k']:.0f}、個股 K{s_['k']:.0f}；{bon.split('（')[0]}")
 
@@ -2331,9 +2334,10 @@ class Monitor:
                 score_txt += (f"｜➕ 轉折確認：{ex['time']} {'買' if short else '賣'}盤竭盡（連{'外' if short else '內'} {ex['n']} 次 {ex['vol']} 張"
                               f"{'推過今高' if short else '殺破今低'} {ex['pre']} 到 {ex['ext']} 後熄燈）")
             kdd = self.kd_live.get(c) or {}
-            if kdd.get("active") == ("high" if short else "low") and kdd.get("bonus"):
-                score_txt += (f"｜➕ KD 共振：加權和個股 {kdd['tf']} 分 K 都在{'高檔' if short else '低檔'}（加權 K{kdd['idx']['k']:.0f}、個股 K{kdd['stk']['k']:.0f}，"
-                              f"{(kdd.get('since') or '')[:5]} 起），{'空' if short else '多'}方加分")
+            if kdd.get("active") == ("high" if short else "low") and (not short or kdd.get("short_ok")):
+                kd_on = f"{'空' if short else '多'}方加分" if kdd.get("bonus") else "只提醒、不加分（回測沒有優勢）"
+                score_txt += (f"｜{'➕' if kdd.get('bonus') else 'ⓘ'} KD 共振：加權和個股 {kdd['tf']} 分 K 都在{'高檔' if short else '低檔'}（加權 K{kdd['idx']['k']:.0f}、個股 K{kdd['stk']['k']:.0f}，"
+                              f"{(kdd.get('since') or '')[:5]} 起），{kd_on}")
             la = self._exh_lit_against(c, side)
             if la:
                 sig["exh_lit"] = {"n": la[0], "vol": la[1]}
@@ -2391,7 +2395,7 @@ class Monitor:
                    ("反彈動能", r"反彈動能"), ("殺盤動能", r"殺盤動能"), ("權證急漲+委買厚", r"權證急漲 \+ 委買"),
                    ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("追價過濾", r"⏸ 追價過濾"), ("環境過濾", r"⏸ 環境過濾"), ("恐慌暫停", r"⏸ 恐慌暫停"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
                    ("掛單薄", r"^⚠ 掛單薄"), ("買盤竭盡", r"^➕ 買盤竭盡"), ("賣盤竭盡", r"^➕ 賣盤竭盡"),
-                   ("KD 雙低檔", r"^➕ KD 雙低檔"), ("KD 雙高檔", r"^➕ KD 雙高檔"), ("KD 雙高檔不加分", r"^ⓘ KD 雙高檔"),   # KD 共振（2026-11-26 加）
+                   ("KD 雙低檔", r"^[➕📶] KD 雙低檔"), ("KD 雙高檔", r"^[➕📶] KD 雙高檔"), ("KD 雙高檔不加分", r"^ⓘ KD 雙高檔"),   # KD 共振（2026-11-26 加）
                    ("KD 雙低檔出場", r"^➖ KD 雙低檔出場"), ("KD 雙高檔出場", r"^➖ KD 雙高檔出場"),
                    # 撤單觀察 / 程式單偵測（orderflow.py，2026-11-26 加）：分類後 alert_outcomes 有 10 / 30 分鐘後的價格，之後驗證有沒有用
                    ("撤單觀察", r"^⚠ 撤單觀察"), ("整數撤單", r"^⚠ 整數撤單"), ("固定張數撤掛", r"^⚠ 固定張數(撤單|掛單|掛撤)"),

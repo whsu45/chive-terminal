@@ -740,16 +740,18 @@ function drawKD(c,o){if(!c)return;
   g.fillStyle='#4c8dff';g.fillText('K '+last.k.toFixed(0),x1+F(4),clampY(yk));g.fillStyle='#f5a623';g.fillText('D '+last.d.toFixed(0),x1+F(44),clampY(yd));
   const zone=last.k>=80?`${KD_TF}分K 高檔（K≥80）`:last.k<=20?`${KD_TF}分K 低檔（K≤20）`:'';   // 標明是分 K 的，跟標題裡的日 KD 分開
   if(zone){g.fillStyle=last.k>=80?'#ff4d4f':'#2ecc71';g.fillText(zone,x0+g.measureText(head).width+F(10),F(11));}
-  // KD 共振（monitor._kd_dual）：加權和個股的 3 分 K 同時 ≤20（雙低檔 → 做多加分）或 ≥80（雙高檔 → 做空加分）；靠右寫在個股 KD 圖標題列
+  // KD 共振（monitor._kd_dual）：加權和個股的 3 分 K 同時 ≤20（雙低檔 = 買進訊號）或 ≥80（雙高檔 = 賣出訊號）；靠右寫在個股 KD 圖標題列。
+  // 2026-11-27 起預設只通知、不加分（回測沒有優勢）；DAYTRADE_KD_BONUS>0 時 bonus>0，才寫「加分」
   const du=o.dual;if(du&&du.stk&&du.idx){const a=du.active,kk=`加權 K${du.idx.k.toFixed(0)} / 個股 K${du.stk.k.toFixed(0)}`;
     const used=x0+g.measureText(head).width+(zone?g.measureText(zone).width+F(10):0)+F(16);
-    const nob=a==='high'&&!du.bonus,why=(du.short_why||[]).join('、');   // 雙高檔要弱勢股或碰壓力不過才加做空分
-    let t=!a?`${du.tf}分K 共振：${kk}`:nob?`KD 雙高檔・條件未齊不加分（不弱、沒碰壓力不過；${du.tf}分K ${kk}）`
-      :`⚡ KD 共振 ${a==='low'?'雙低檔 → 做多加分':'雙高檔'+(why?'＋'+why:'')+' → 做空加分'}（${du.tf}分K ${kk}${du.since?'，'+du.since.slice(0,5)+' 起':''}）`;
+    const nob=a==='high'&&!du.short_ok,why=(du.short_why||[]).join('、');   // 雙高檔要弱勢股或碰壓力不過才算數
+    const add=du.bonus>0,lw=add?'做多加分':'買進訊號（只通知）',hw=add?'做空加分':'賣出訊號（只通知）';
+    let t=!a?`${du.tf}分K 共振：${kk}`:nob?`KD 雙高檔・條件未齊${add?'不加分':''}（不弱、沒碰壓力不過；${du.tf}分K ${kk}）`
+      :`⚡ KD 共振 ${a==='low'?'雙低檔 → '+lw:'雙高檔'+(why?'＋'+why:'')+' → '+hw}（${du.tf}分K ${kk}${du.since?'，'+du.since.slice(0,5)+' 起':''}）`;
     // KD 共振通知後追蹤的假想部位（monitor._kd_exit）：做多等碰壓力不過、做空等碰支撐不破就警示出場
     const ps=du.pos,pst=ps?`追蹤${ps.side==='long'?'多':'空'} @${fp(ps.entry)}${ps.next?` → 等碰${ps.next[0]} ${fp(ps.next[1])}${ps.side==='long'?'不過':'不破'}出場`:' → 上面沒有壓力，13:20 前平倉'}`:'';
     if(pst)t=(a?t+'｜':'')+pst;
-    if(x1-g.measureText(t).width<used)t=pst&&x1-g.measureText(pst).width>=used?pst:!a?`${du.tf}分 ${kk}`:nob?'KD 雙高檔 不加分':`⚡ ${a==='low'?'雙低檔 做多加分':'雙高檔 做空加分'}`;
+    if(x1-g.measureText(t).width<used)t=pst&&x1-g.measureText(pst).width>=used?pst:!a?`${du.tf}分 ${kk}`:nob?'KD 雙高檔 條件未齊':`⚡ ${a==='low'?'雙低檔 '+(add?'做多加分':'買進訊號'):'雙高檔 '+(add?'做空加分':'賣出訊號')}`;
     if(x1-g.measureText(t).width>=used){g.font=`${a&&!nob?'bold ':''}${F(11)}px ${getComputedStyle(document.body).fontFamily}`;
       g.fillStyle=!a?(ps?'#9ecbff':'#8b93a3'):nob?'#f0b429':(a==='low'?'#ff4d4f':'#2ecc71');g.fillText(t,x1-g.measureText(t).width,F(11));}}
 }

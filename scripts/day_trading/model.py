@@ -571,7 +571,7 @@ def intraday_factors(d, q, idx, peers_q, flow, samples, now, ctx=None):
                   f"{'空' if buy else '多'}方加分（轉折確認，不是進場訊號）"))
 
     # KD 共振（monitor._kd_dual，2026-11-26 使用者要求）：大盤（加權）和個股的 3 分 K KD 同時在低檔（K 都 ≤20）= 多方加分、
-    # 同時在高檔（K 都 ≥80）= 空方加分。分數跟竭盡加分同一個量級（預設 0.3，約強度 3 點；DAYTRADE_KD_BONUS 可改，0 = 不加分）。
+    # 同時在高檔（K 都 ≥80）= 空方加分。2026-11-27 起預設 0 = 只通知、不加分（回測沒有優勢）；DAYTRADE_KD_BONUS=0.3 打開，約強度 3 點。
     # 只讓同方向的建議比較容易成立，不是單獨的進場訊號；之後用 signal_outcomes 的 kd_dual 欄位驗證。
     kdd = ctx.get("kd_dual")
     if kdd and kdd.get("active") and kdd.get("bonus") and kdd.get("stk") and kdd.get("idx") and not pre_open:

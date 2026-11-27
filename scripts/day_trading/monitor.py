@@ -745,6 +745,7 @@ class Monitor:
         self.liq = {}                                # code -> 最近一次流動性統計
         self.kd_live = {}                            # code -> 最近一次 KD 共振判斷（_kd_dual：大盤與個股 3 分 K）
         self.idx_chg_now = {}                        # t00 / o00 -> (今天漲跌幅 %, epoch)：快迴圈更新
+        self.kd_pos = {}                             # code -> KD 共振通知後追蹤的假想部位（_kd_exit：碰壓力不過 / 碰支撐不破就警示出場）
         self.kd_ep = {}                              # code -> KD 共振的這一段（哪一邊、幾點開始、什麼時候結束），控制通知只發一次
         self._liq_alerted = set()                    # 今天已經發過「掛單薄」警示的 code
         self._sig_done = {}                          # code -> [結束的訊號 {side, lo, hi, since, label, res, ext}]：同價位不重發用（_repeat_block）
@@ -1647,14 +1648,24 @@ class Monitor:
                     if alert and hm < "13:20":
                         self._kd_dual_alert(c, now, r)
                         ep["bonus_alerted"] = cur == "low" or bool(r["short_ok"])
+                        if ep["bonus_alerted"]:
+                            self._kd_open(c, now, "long" if cur == "low" else "short", bars)
             elif cur == "high" and r["short_ok"] and not ep["bonus_alerted"] and alert and hm < "13:20":
                 self._kd_dual_alert(c, now, r)              # 雙高檔途中才變弱 / 才碰壓力不過：這時候開始加分，再通知一次
                 ep["bonus_alerted"] = True
+                self._kd_open(c, now, "short", bars)
+        if alert:
+            try:
+                self._kd_exit(c, now, bars)
+            except Exception as e:
+                print(f"[{now:%H:%M:%S}] {c} KD 出場追蹤失敗：{str(e)[:100]}")
         elif ep["active"]:
             ep.update(active=None, off=nowts)
         on = ep["active"] == "low" or (ep["active"] == "high" and bool(r["short_ok"]))
         r.update(active=ep["active"], since=ep["since"] if ep["active"] else None,
                  bonus=self.KD_DUAL_BONUS if on else 0.0, ts=nowts)
+        kp = self.kd_pos.get(c)
+        r["pos"] = ({k: kp.get(k) for k in ("side", "entry", "t", "next")} if kp and not kp.get("done") else None)
         self.kd_live[c] = r
         return r
 
@@ -1687,6 +1698,77 @@ class Monitor:
                     why.append(f"碰{n} {R:g} 不過")
                     break
         return bool(why), why
+
+    # ── KD 共振的出場警示（使用者 11/26：出場條件 = 做多碰到壓力不過、做空碰到支撐不破）
+    # 雙低檔（或雙高檔＋弱勢 / 碰壓力不過）通知的那一刻，用現價當假想進場，記下當時的壓力（做多）/ 支撐（做空）：
+    # 模型計畫的壓力 / 支撐卡（今高低、昨高低收、均線、布林、VWAP、整數…）＋ 計畫的「壓 / 撐」。之後每根走完的 1 分 K：
+    #   做多：最近一個還沒被突破的壓力 R；收盤站上 R = 突破，換下一個；最高碰到 R（差 1 tick 內）但收在 R 之下 = 碰壓力不過 → 警示出場。
+    #   做空：反過來，最低碰到支撐 S（差 1 tick 內）但收在 S 之上 = 碰支撐不破 → 警示出場。
+    # 13:20 還沒出場就提醒收盤前平倉。這是提醒，不是你的實際部位（你的單看持倉面板）；沒有停損，停損照你自己的計畫。
+    def _kd_levels(self, c, side, px):
+        ev = WEB.latest.get(c) or {}
+        plan = ev.get("plan") or {}
+        if side == "long":
+            lv = list(plan.get("resistance") or []) + [("壓", (plan.get("short") or {}).get("trigger_px"))]
+        else:
+            lv = list(plan.get("support") or []) + [("撐", (plan.get("long") or {}).get("trigger_px"))]
+        q = (getattr(self, "_last_quotes", None) or {}).get(c) or {}
+        lv += [("昨收", q.get("y")), ("今開", q.get("o")), ("今高" if side == "long" else "今低", q.get("h") if side == "long" else q.get("l"))]
+        tk = I.tick_size(px)
+        out = {}
+        for n, v in lv:
+            if v and ((v >= px + tk) if side == "long" else (v <= px - tk)):
+                out.setdefault(round(float(v), 2), n)
+        return sorted(((v, n) for v, n in out.items()), reverse=(side == "short"))
+
+    def _kd_open(self, c, now, side, bars):
+        done = [b for b in (bars or []) if b and len(b) >= 5 and b[4] is not None]
+        if not done:
+            return
+        px = round(float(done[-1][4]), 2)
+        old = self.kd_pos.get(c)
+        if old and not old.get("done"):
+            if old["side"] == side:
+                return                                     # 同方向還在追蹤，不重開
+            self._kd_close(c, now, px, f"反向的 KD 共振出現（{'雙高檔' if side == 'short' else '雙低檔'}）")
+        lv = self._kd_levels(c, side, px)
+        self.kd_pos[c] = {"side": side, "entry": px, "t": now.strftime("%H:%M:%S"), "minute": str(done[-1][0])[:5],
+                          "levels": lv, "next": (lv[0][1], lv[0][0]) if lv else None, "done": False}
+
+    def _kd_close(self, c, now, px, why):
+        kp = self.kd_pos.get(c)
+        if not kp or kp.get("done"):
+            return
+        kp["done"] = True
+        long_ = kp["side"] == "long"
+        pnl = ((px / kp["entry"] - 1) * 100) * (1 if long_ else -1)
+        lab = "雙低檔" if long_ else "雙高檔"
+        self._add_alert(c, now, f"➖ KD {lab}出場：{why}（{kp['t'][:5]} 通知時 {kp['entry']:g} → {px:g}，{'做多' if long_ else '做空'} {pnl:+.2f}%，未扣成本）")
+        self._notify("exit", c, f"KD {lab}出場：{why}", f"{kp['t'][:5]} 通知時 {kp['entry']:g} → {px:g}（{pnl:+.2f}%）")
+
+    def _kd_exit(self, c, now, bars):
+        kp = self.kd_pos.get(c)
+        if not kp or kp.get("done"):
+            return
+        done = [b for b in (bars or []) if b and len(b) >= 5 and b[2] is not None and b[3] is not None and b[4] is not None][:-1]   # 最後一根還沒走完
+        new = [b for b in done if str(b[0])[:5] > max(kp["minute"], kp.get("seen", ""))]
+        long_ = kp["side"] == "long"
+        for b in new:
+            kp["seen"] = str(b[0])[:5]
+            hi, lo, cl = b[2], b[3], b[4]
+            while kp["levels"]:
+                lvl, name = kp["levels"][0]
+                if (cl > lvl) if long_ else (cl < lvl):
+                    kp["levels"].pop(0)                    # 收盤站上壓力 / 跌破支撐 = 過了，換下一個
+                    continue
+                tk = I.tick_size(lvl)
+                if (hi >= lvl - tk) if long_ else (lo <= lvl + tk):
+                    self._kd_close(c, now, cl, f"{kp['seen']} 碰{name} {lvl:g} {'不過' if long_ else '不破'}")
+                    return
+                break
+            kp["next"] = (kp["levels"][0][1], kp["levels"][0][0]) if kp["levels"] else None
+        if now.strftime("%H:%M") >= "13:20" and done:
+            self._kd_close(c, now, done[-1][4], f"13:20 還沒碰{'壓力不過' if long_ else '支撐不破'}，當沖收盤前平倉")
 
     def _kd_dual_alert(self, c, now, r):
         low = r["state"] == "low"
@@ -2310,6 +2392,7 @@ class Monitor:
                    ("建議做空", r"▶ 建議做空"), ("建議做多", r"▶ 建議做多"), ("掛單成交", r"▶ 掛單成交"), ("逆勢過濾", r"⏸ 逆勢過濾"), ("漲跌停過濾", r"⏸ 漲跌停過濾"), ("急漲過濾", r"⏸ 急漲過濾"), ("空間過濾", r"⏸ 空間過濾"), ("重複過濾", r"⏸ 重複過濾"), ("追價過濾", r"⏸ 追價過濾"), ("環境過濾", r"⏸ 環境過濾"), ("恐慌暫停", r"⏸ 恐慌暫停"), ("撤單", r"⚠ 撤單 "), ("延緩撮合", r"延緩撮合"),
                    ("掛單薄", r"^⚠ 掛單薄"), ("買盤竭盡", r"^➕ 買盤竭盡"), ("賣盤竭盡", r"^➕ 賣盤竭盡"),
                    ("KD 雙低檔", r"^➕ KD 雙低檔"), ("KD 雙高檔", r"^➕ KD 雙高檔"), ("KD 雙高檔不加分", r"^ⓘ KD 雙高檔"),   # KD 共振（2026-11-26 加）
+                   ("KD 雙低檔出場", r"^➖ KD 雙低檔出場"), ("KD 雙高檔出場", r"^➖ KD 雙高檔出場"),
                    # 撤單觀察 / 程式單偵測（orderflow.py，2026-11-26 加）：分類後 alert_outcomes 有 10 / 30 分鐘後的價格，之後驗證有沒有用
                    ("撤單觀察", r"^⚠ 撤單觀察"), ("整數撤單", r"^⚠ 整數撤單"), ("固定張數撤掛", r"^⚠ 固定張數(撤單|掛單|掛撤)"),
                    ("掛單牆", r"^⚠ (買單牆|賣單牆)"), ("疑似程式單", r"^⚠ 疑似程式單"), ("固定張數成交", r"^⚠ 固定張數成交"), ("大單拆單", r"^⚠ 大單拆單"), ("固定張數連發", r"^⚠ 固定張數連發")]
@@ -3084,7 +3167,7 @@ class Monitor:
                 print(f"[fast] 竭盡判斷失敗：{str(e)[:100]}")
             try:
                 kdd = self._kd_dual(c, now)
-                live["kd_dual"][c] = {k: kdd.get(k) for k in ("tf", "stk", "idx", "state", "active", "since", "bonus", "short_ok", "short_why")}
+                live["kd_dual"][c] = {k: kdd.get(k) for k in ("tf", "stk", "idx", "state", "active", "since", "bonus", "short_ok", "short_why", "pos")}
             except Exception as e:
                 print(f"[fast] KD 共振失敗：{str(e)[:100]}")
             try:

@@ -746,9 +746,12 @@ function drawKD(c,o){if(!c)return;
     const nob=a==='high'&&!du.bonus,why=(du.short_why||[]).join('、');   // 雙高檔要弱勢股或碰壓力不過才加做空分
     let t=!a?`${du.tf}分K 共振：${kk}`:nob?`KD 雙高檔・條件未齊不加分（不弱、沒碰壓力不過；${du.tf}分K ${kk}）`
       :`⚡ KD 共振 ${a==='low'?'雙低檔 → 做多加分':'雙高檔'+(why?'＋'+why:'')+' → 做空加分'}（${du.tf}分K ${kk}${du.since?'，'+du.since.slice(0,5)+' 起':''}）`;
-    if(x1-g.measureText(t).width<used)t=!a?`${du.tf}分 ${kk}`:nob?'KD 雙高檔 不加分':`⚡ ${a==='low'?'雙低檔 做多加分':'雙高檔 做空加分'}`;
+    // KD 共振通知後追蹤的假想部位（monitor._kd_exit）：做多等碰壓力不過、做空等碰支撐不破就警示出場
+    const ps=du.pos,pst=ps?`追蹤${ps.side==='long'?'多':'空'} @${fp(ps.entry)}${ps.next?` → 等碰${ps.next[0]} ${fp(ps.next[1])}${ps.side==='long'?'不過':'不破'}出場`:' → 上面沒有壓力，13:20 前平倉'}`:'';
+    if(pst)t=(a?t+'｜':'')+pst;
+    if(x1-g.measureText(t).width<used)t=pst&&x1-g.measureText(pst).width>=used?pst:!a?`${du.tf}分 ${kk}`:nob?'KD 雙高檔 不加分':`⚡ ${a==='low'?'雙低檔 做多加分':'雙高檔 做空加分'}`;
     if(x1-g.measureText(t).width>=used){g.font=`${a&&!nob?'bold ':''}${F(11)}px ${getComputedStyle(document.body).fontFamily}`;
-      g.fillStyle=!a?'#8b93a3':nob?'#f0b429':(a==='low'?'#ff4d4f':'#2ecc71');g.fillText(t,x1-g.measureText(t).width,F(11));}}
+      g.fillStyle=!a?(ps?'#9ecbff':'#8b93a3'):nob?'#f0b429':(a==='low'?'#ff4d4f':'#2ecc71');g.fillText(t,x1-g.measureText(t).width,F(11));}}
 }
 function drawAll(){if(!LIVE||!LIVE.quotes)return;const ev=STATE&&STATE.latest[CUR];
   for(const [k,id,tid,nm] of [['t00','jb-tse','t-tse','加權'],['o00','jb-otc','t-otc','櫃買']]){const ix=LIVE.index[k];const s=LIVE.index_series[k]||[];

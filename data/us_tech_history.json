@@ -1,7 +1,7 @@
 [
  {
   "date": "2026-11-27",
-  "composite": 3.76,
+  "composite": 4.18,
   "sox": 4.69,
   "top3Up": [
    {
@@ -10,14 +10,14 @@
     "pct": 7.96
    },
    {
+    "key": "memory",
+    "title": "記憶體／儲存",
+    "pct": 7.57
+   },
+   {
     "key": "aiserver",
     "title": "AI 伺服器／資料中心硬體",
     "pct": 4.65
-   },
-   {
-    "key": "semis",
-    "title": "半導體",
-    "pct": 4.58
    }
   ],
   "top3Down": [
